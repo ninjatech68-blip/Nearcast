@@ -37,9 +37,9 @@
 - [x] Enable RLS and explicit grants on every exposed table.
 - [x] Add anonymous privacy-safe public intent projection and idempotent response acceptance.
 - [x] Add local test personas and positive/negative pgTAP tests.
-- [ ] Start Docker, run `npm run db:start && npm run db:reset && npm run db:test`; expect migration and all pgTAP tests to pass.
-- [ ] Run `npx supabase db lint --level warning`; resolve every security warning.
-- [ ] Generate `src/infrastructure/supabase/database.types.ts` with `npm run db:types`.
+- [x] Start Docker, run `npm run db:start && npm run db:reset && npm run db:test`; expect migration and all pgTAP tests to pass.
+- [x] Run `npx supabase db lint --level warning`; resolve every security warning.
+- [x] Generate `src/infrastructure/supabase/database.types.ts` with `npm run db:types`.
 
 ## Exit Gate
 
@@ -51,3 +51,4 @@ A clean clone runs app and database checks without undocumented steps, authentic
 |---|---|
 | 2026-08-24 | Created foundation implementation plan and recorded completed scaffold work |
 | 2026-08-24 | Selected Expo Jest with React Native Testing Library for component interaction tests |
+| 2026-08-24 | Verified local Supabase reset, pgTAP, owned-schema lint, and generated database types |

@@ -1,4 +1,4 @@
-+-- Nearcast foundation: trust-aware intent lifecycle and privacy boundaries.
+-- Nearcast foundation: trust-aware intent lifecycle and privacy boundaries.
 create extension if not exists postgis with schema extensions;
 create extension if not exists pgcrypto with schema extensions;
 create schema if not exists private;
@@ -236,6 +236,44 @@ returns boolean language sql stable security definer set search_path = '' as $$
   );
 $$;
 
+create or replace function private.can_read_intent(intent_row_id uuid, requester_id uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (
+    select 1
+    from public.intents i
+    where i.id = intent_row_id
+      and (
+        i.broadcaster_id = requester_id
+        or (
+          i.status in ('live', 'matched')
+          and i.expires_at > now()
+          and not private.is_blocked(i.broadcaster_id, requester_id)
+          and (
+            exists (
+              select 1
+              from public.intent_deliveries d
+              where d.intent_id = i.id
+                and d.recipient_id = requester_id
+                and d.hidden_at is null
+            )
+            or exists (
+              select 1
+              from public.responses r
+              where r.intent_id = i.id
+                and r.respondent_id = requester_id
+            )
+            or exists (
+              select 1
+              from public.matches m
+              where m.intent_id = i.id
+                and m.participant_id = requester_id
+            )
+          )
+        )
+      )
+  );
+$$;
+
 create or replace function public.accept_response(
   response_to_accept uuid,
   expected_intent_status public.intent_status
@@ -398,19 +436,7 @@ create policy blocks_delete_own on public.blocks for delete to authenticated
 using (blocker_id = auth.uid());
 
 create policy intents_read_owner_or_delivery on public.intents for select to authenticated
-using (
-  broadcaster_id = auth.uid()
-  or (
-    status in ('live', 'matched')
-    and expires_at > now()
-    and not private.is_blocked(broadcaster_id, auth.uid())
-    and (
-      exists (select 1 from public.intent_deliveries d where d.intent_id = id and d.recipient_id = auth.uid() and d.hidden_at is null)
-      or exists (select 1 from public.responses r where r.intent_id = id and r.respondent_id = auth.uid())
-      or exists (select 1 from public.matches m where m.intent_id = id and m.participant_id = auth.uid())
-    )
-  )
-);
+using (private.can_read_intent(id, auth.uid()));
 create policy intents_insert_owner on public.intents for insert to authenticated
 with check (broadcaster_id = auth.uid() and status = 'draft');
 create policy intents_update_owner on public.intents for update to authenticated
@@ -515,7 +541,9 @@ grant usage, select on all sequences in schema public to authenticated;
 revoke execute on function public.accept_response(uuid, public.intent_status) from public, anon;
 revoke execute on function public.get_public_intent(uuid) from public;
 revoke execute on function private.is_blocked(uuid, uuid) from public, anon;
+revoke execute on function private.can_read_intent(uuid, uuid) from public, anon;
 grant execute on function public.accept_response(uuid, public.intent_status) to authenticated;
 grant execute on function public.get_public_intent(uuid) to anon, authenticated;
 grant execute on function private.is_blocked(uuid, uuid) to authenticated;
+grant execute on function private.can_read_intent(uuid, uuid) to authenticated;
 revoke execute on function public.set_updated_at() from public, anon, authenticated;

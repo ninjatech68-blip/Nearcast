@@ -4,10 +4,11 @@ import 'expo-sqlite/localStorage/install';
 import { createClient } from '@supabase/supabase-js';
 
 import { getPublicEnv } from '@/infrastructure/config/env';
+import type { Database } from '@/infrastructure/supabase/database.types';
 
 const env = getPublicEnv();
 
-export const supabase = createClient(
+export const supabase = createClient<Database>(
   env.supabaseUrl,
   env.supabasePublishableKey,
   {
