@@ -1,0 +1,51 @@
+# Discovery And Controlled Reach Implementation Plan
+
+> **For agentic workers:** Execute checkbox tasks in order with test-first changes and one coherent commit per task.
+
+**Goal:** Deliver a finite, explainable set of eligible intents after explicit reach expansion.
+
+**Architecture:** SQL eligibility filters precede ranking. Every materialized delivery stores a stable explanation code and privacy-safe rendered reason.
+
+**Tech Stack:** PostGIS, PostgreSQL functions, Edge Functions, Expo Router.
+
+## Task 1: Approximate Geography
+
+**Files:** new PostGIS migration, `src/features/location/`, pgTAP tests
+
+- [ ] Test distance bands and prove exact coordinates never appear in discovery responses.
+- [ ] Store approximate geography with GIST index and convert results to coarse distance labels.
+- [ ] Verify blocked, expired, restricted, and out-of-range candidates return no rows.
+
+## Task 2: Reach Expansion
+
+**Files:** `src/features/reach/`, `supabase/functions/change-intent-reach/`
+
+- [ ] Test no expansion without a matching current level, explicit target, and disclosure confirmation.
+- [ ] Implement ReachSelector with audience delta and privacy impact.
+- [ ] Log old/new reach and actor; keep reduction immediately available.
+
+## Task 3: Explainable Delivery
+
+**Files:** `supabase/functions/generate-deliveries/`, `src/features/feed/`
+
+- [ ] Test every delivered row has one approved explanation code and non-empty reason.
+- [ ] Apply eligibility in this order: lifecycle, reach, time, geography, explicit criteria, blocks, restriction, prior action.
+- [ ] Rank the surviving set by trust distance, geography, timing, relevance, recency, and fatigue.
+- [ ] Render a finite Home list with WhyYouSeeThis, hide, save, and not-relevant actions.
+
+## Task 4: Measurement
+
+**Files:** `src/infrastructure/analytics/`, matching-quality query/dashboard spec
+
+- [ ] Emit delivery, impression, detail-open, hide, and relevance-feedback events with approved properties only.
+- [ ] Add a test asserting analytics serialization rejects prohibited keys.
+
+## Exit Gate
+
+Every feed card has a valid explanation, blocked users never receive each other's intents, exact geography is absent from delivery payloads, and alpha relevance review meets the roadmap gate.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-24 | Created discovery and controlled reach implementation plan |
