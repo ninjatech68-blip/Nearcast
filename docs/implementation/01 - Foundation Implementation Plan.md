@@ -25,7 +25,7 @@
 - [x] Write failing tests for primitives, reach order, lifecycle transitions, environment parsing, and token invariants.
 - [x] Implement minimum pure domain modules and machine-readable tokens.
 - [x] Implement local composer-to-preview navigation without publishing incomplete data.
-- [ ] Add component interaction tests when the Expo-compatible React Native test renderer is selected.
+- [x] Add component interaction tests when the Expo-compatible React Native test renderer is selected.
 - [ ] Verify the flow on one iOS and one Android development build.
 
 ## Task 3: Database Boundary
@@ -50,3 +50,4 @@ A clean clone runs app and database checks without undocumented steps, authentic
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created foundation implementation plan and recorded completed scaffold work |
+| 2026-08-24 | Selected Expo Jest with React Native Testing Library for component interaction tests |
