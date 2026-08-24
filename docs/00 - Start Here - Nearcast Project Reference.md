@@ -12,6 +12,10 @@ When a software repository is created, copy this document's governance rules int
 
 Nearcast does not read or expose private WhatsApp conversations. A person explicitly creates an intent, shares it into an existing group when useful, gathers genuine confirmations, and controls how far it may travel beyond that group.
 
+## Project Starting Point
+
+Nearcast is a greenfield product build. There is no old app, legacy product codebase, or previous production system to migrate from. All implementation decisions must start from this documentation set, the root `AGENTS.md`, and the code in this repository.
+
 ## Mandatory Reading Order
 
 1. [Product Requirements Document](./01 - Product Requirements.md)
@@ -92,6 +96,7 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 | 2026-08-24 | Use one dense launch network rather than one content category | Preserves horizontal intent scope while concentrating liquidity |
 | 2026-08-24 | Use an AI-readable repository contract and phase-specific plans | Keeps implementation grounded in approved requirements instead of chat context |
 | 2026-08-24 | Keep production credentials and production MCP access outside AI tooling | Limits blast radius while retaining fast local and staging development |
+| 2026-08-24 | Treat Nearcast as a greenfield build with no legacy codebase dependency | Keeps future implementation from inheriting assumptions or patterns from unrelated projects |
 
 ## Document Change Rule
 
@@ -103,3 +108,4 @@ Every document must include a `Change Log` section. Material decisions require u
 |---|---|
 | 2026-08-24 | Created the governing documentation index and source-of-truth rules |
 | 2026-08-24 | Added implementation guide, mobile/API contracts, phase plans, and AI engineering governance |
+| 2026-08-24 | Added explicit greenfield project starting point |

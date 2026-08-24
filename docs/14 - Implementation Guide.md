@@ -10,6 +10,10 @@
 
 This guide connects the approved product documents to the executable repository. It defines how a founder and AI coding partner should choose, implement, test, and release work without relying on chat history.
 
+## Greenfield Rule
+
+Nearcast must be implemented from scratch inside this repository. Do not import architecture, naming, screens, database shape, or product behavior from an old codebase unless a future approved document explicitly adds that source.
+
 ## Repository Contract
 
 | Path | Responsibility |
@@ -71,3 +75,4 @@ A task is done only when positive and negative permission paths pass, retries ca
 | Date | Change |
 |---|---|
 | 2026-08-24 | Added executable repository conventions and AI-assisted delivery workflow |
+| 2026-08-24 | Added explicit greenfield implementation rule |

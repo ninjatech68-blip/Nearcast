@@ -2,6 +2,10 @@
 
 Nearcast is a mobile trust-aware intent network. A person can create an intent in the context of a trusted circle, collect genuine support, and deliberately extend it to relevant people without exposing the source group.
 
+## Build Status
+
+This is a greenfield project. Nearcast must be built from this repository and the documents in `docs/`; there is no old app or legacy codebase to migrate, reuse, or treat as a source of truth.
+
 ## Start Here
 
 - [Documentation Map](./docs/README.md): plain-language guide to every Nearcast document

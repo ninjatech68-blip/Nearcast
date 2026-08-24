@@ -2,6 +2,10 @@
 
 Nearcast is a trust-aware intent network. It lets an intent move beyond a closed group without exposing the group, fabricating activity, or silently expanding reach.
 
+## Project Starting Point
+
+This is a greenfield build. Use this repository and the documents in `docs/` as the only product and engineering source of truth. Do not assume any old app, old codebase, previous prototype, or external project will be reused.
+
 ## Read Before Editing
 
 1. `docs/00 - Start Here - Nearcast Project Reference.md`
