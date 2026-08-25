@@ -1,7 +1,7 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { accentFor, type AccentTone } from '@/design-system/accents';
-import { useAppearance } from '@/design-system/appearance';
+import { useAppearance, useColors } from '@/design-system/appearance';
 import { tokens } from '@/design-system/tokens';
 
 import { Button, type ButtonVariant } from './button';
@@ -23,11 +23,11 @@ export type StatePanelState = (typeof STATE_PANEL_STATES)[number];
  * the message and give the action outline recovery styling.
  */
 const PRESENTATION: Record<StatePanelState, { tone: AccentTone; action: ButtonVariant }> = {
-  loading: { tone: 'neutral', action: 'outline' },
+  loading: { tone: 'neutral', action: 'secondary' },
   empty: { tone: 'neutral', action: 'primary' },
-  offline: { tone: 'warning', action: 'outline' },
+  offline: { tone: 'warning', action: 'secondary' },
   restricted: { tone: 'info', action: 'primary' },
-  error: { tone: 'dangerMuted', action: 'outline' },
+  error: { tone: 'danger', action: 'secondary' },
   success: { tone: 'success', action: 'primary' },
   disabled: { tone: 'neutral', action: 'primary' },
 };
@@ -45,18 +45,27 @@ type StatePanelProps = {
 export function StatePanel({ state, title, description, action, reason }: StatePanelProps) {
   const { tone, action: actionVariant } = PRESENTATION[state];
   const accent = accentFor(useAppearance(), tone);
+  const color = useColors();
   const detail = state === 'disabled' ? (reason ?? description) : description;
 
   return (
-    <View style={[styles.panel, { backgroundColor: accent.background, borderColor: accent.border }]}>
-      {state === 'loading' ? <ActivityIndicator color={accent.foreground} /> : null}
+    <View
+      style={[
+        styles.panel,
+        { backgroundColor: color.background.surface, borderColor: color.border.subtle },
+      ]}>
+      <View style={[styles.signal, { backgroundColor: accent.background, borderColor: accent.border }]}>
+        {state === 'loading' ? <ActivityIndicator color={accent.foreground} /> : null}
+      </View>
       <Text
         accessibilityRole={state === 'error' ? 'alert' : 'header'}
         accessibilityState={{ busy: state === 'loading', disabled: state === 'disabled' }}
-        style={[styles.title, { color: accent.foreground }]}>
+        style={[styles.title, { color: state === 'error' ? color.status.danger : color.text.primary }]}>
         {title}
       </Text>
-      {detail ? <Text style={[styles.detail, { color: accent.foreground }]}>{detail}</Text> : null}
+      {detail ? (
+        <Text style={[styles.detail, { color: color.text.secondary }]}>{detail}</Text>
+      ) : null}
       {action ? (
         <Button
           disabled={state === 'disabled'}
@@ -78,6 +87,13 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     gap: tokens.component.intentCard.gap,
     padding: tokens.component.intentCard.padding,
+  },
+  signal: {
+    borderRadius: tokens.radius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: tokens.space[8],
+    justifyContent: 'center',
+    width: tokens.space[8],
   },
   title: { ...tokens.type.sectionTitle },
 });

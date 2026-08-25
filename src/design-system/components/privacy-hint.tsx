@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { accentFor } from '@/design-system/accents';
-import { useAppearance } from '@/design-system/appearance';
+import { useColors } from '@/design-system/appearance';
 import { tokens } from '@/design-system/tokens';
 
 /** The approved privacy copy from DESIGN.md. */
@@ -17,15 +16,18 @@ type PrivacyHintProps = {
 
 /** Shown before actions that may reveal information. */
 export function PrivacyHint({ lines = PRIVACY_HINT_LINES }: PrivacyHintProps) {
-  const accent = accentFor(useAppearance(), 'info');
+  const color = useColors();
 
   return (
     <View
       accessibilityLabel={lines.join(' ')}
       accessibilityRole="text"
-      style={[styles.hint, { backgroundColor: accent.background, borderColor: accent.border }]}>
+      style={[
+        styles.hint,
+        { backgroundColor: color.background.surfaceMuted, borderColor: color.border.subtle },
+      ]}>
       {lines.map((line) => (
-        <Text key={line} style={[styles.line, { color: accent.foreground }]}>
+        <Text key={line} style={[styles.line, { color: color.text.secondary }]}>
           {line}
         </Text>
       ))}

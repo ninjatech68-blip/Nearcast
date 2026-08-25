@@ -46,11 +46,11 @@ const approvedColors: Record<Appearance, Record<string, string>> = {
     'text.primary': '#F3F7F1',
     'text.secondary': '#BAC8C0',
     'action.primary': '#65D0A1',
-    'action.primaryPressed': '#4FBA8C',
+    'action.primaryPressed': '#8ADDB8',
     'action.secondary': '#8EB8E5',
     'border.subtle': '#33443C',
-    'status.info': '#DCEEFF',
-    'status.warning': '#FFEBC2',
+    'status.info': '#8EB8E5',
+    'status.warning': '#FFE2A7',
     'status.danger': '#FFD9D4',
     'on.primary': '#062C20',
     'on.info': '#DCEEFF',
@@ -119,31 +119,21 @@ describe('accessibility contract', () => {
     ['on.primary', 'action.primaryPressed'],
     ['on.warning', 'background.warning'],
     ['on.success', 'background.success'],
+    ['action.primary', 'background.success'],
     ['status.info', 'background.info'],
     ['status.warning', 'background.warning'],
     ['status.danger', 'background.danger'],
   ] as const;
 
   /**
-   * Light fills info and danger accents with a saturated colour and sets type
-   * on top of it; dark keeps those accents as tinted surfaces instead, so the
-   * on-colour pairs with a different token in each appearance.
+   * `on.info` and `on.danger` are deliberately absent: the approved treatments
+   * never fill an info or danger accent, so those two tokens have no consumer
+   * and no surface to be measured against. See DESIGN.md.
    */
-  const appearancePairs: Record<Appearance, readonly (readonly [string, string])[]> = {
-    light: [
-      ['on.info', 'action.secondary'],
-      ['on.danger', 'status.danger'],
-    ],
-    dark: [
-      ['on.info', 'background.info'],
-      ['on.danger', 'background.danger'],
-    ],
-  };
-
   it.each(APPEARANCES)('meets WCAG AA 4.5:1 for every %s text pair', (appearance) => {
     const scheme = colorsFor(appearance) as unknown as Record<string, unknown>;
 
-    for (const [foreground, background] of [...sharedPairs, ...appearancePairs[appearance]]) {
+    for (const [foreground, background] of sharedPairs) {
       const ratio = contrastRatio(read(scheme, foreground) as string, read(scheme, background) as string);
       expect(ratio, `${appearance} ${foreground} on ${background}`).toBeGreaterThanOrEqual(4.5);
     }

@@ -22,8 +22,8 @@ export function DeliveryReasonRow({ reason, deliveredAt }: DeliveryReasonRowProp
   return (
     <View
       accessibilityRole="text"
-      style={[styles.row, { backgroundColor: color.background.surface, borderColor: color.border.subtle }]}>
-      <Text style={[styles.reason, { color: readable ? color.text.primary : color.text.secondary }]}>
+      style={[styles.row, { backgroundColor: color.background.info, borderColor: color.border.subtle }]}>
+      <Text style={[styles.reason, { color: color.text.secondary }]}>
         {readable ? trimmed : MISSING_REASON_COPY}
       </Text>
       {deliveredAt ? (

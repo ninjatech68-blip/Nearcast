@@ -5,7 +5,7 @@ import { useAppearance } from '@/design-system/appearance';
 import { isInteractionBlocked, resolveComponentState } from '@/design-system/state';
 import { colorsFor, tokens } from '@/design-system/tokens';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'quiet' | 'destructive';
 
 type ButtonProps = {
   label: string;
@@ -21,9 +21,10 @@ type ButtonProps = {
 /**
  * The primary interactive control.
  *
- * `primary` carries consent and primary actions, `secondary` carries
- * information and provenance actions, `outline` is the recovery styling used by
- * retry, and `danger` is reserved for destructive meaning.
+ * Following the approved preview, only `primary` is filled. `secondary` is the
+ * outlined recovery styling used by retry, `quiet` is the low-emphasis
+ * provenance action, and `destructive` is outlined in danger rather than
+ * filled, so destructive meaning never carries the visual weight of consent.
  */
 export function Button({
   label,
@@ -40,13 +41,18 @@ export function Button({
   const blocked = isInteractionBlocked(state);
 
   const accent =
-    variant === 'outline'
-      ? {
+    variant === 'primary'
+      ? accentFor(appearance, 'primary')
+      : {
           background: 'transparent',
-          foreground: color.action.primary,
-          border: color.action.primary,
-        }
-      : accentFor(appearance, variant);
+          foreground: variant === 'destructive' ? color.status.danger : variant === 'quiet' ? color.action.secondary : color.action.primary,
+          border:
+            variant === 'quiet'
+              ? 'transparent'
+              : variant === 'destructive'
+                ? color.status.danger
+                : color.action.primary,
+        };
 
   const pressedBackground =
     variant === 'primary' ? color.action.primaryPressed : accent.background;

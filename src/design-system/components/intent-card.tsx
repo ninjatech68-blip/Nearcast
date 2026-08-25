@@ -111,12 +111,12 @@ export function IntentCard({
       />
 
       <View style={styles.meta}>
-        <Pill label={area} />
-        <Pill label={category} tone="neutral" />
-        {status ? <Pill label={STATUS_COPY[status].pill} tone="dangerMuted" /> : null}
+        <Pill label={category} tone="warning" />
+        {status ? <Pill label={STATUS_COPY[status].pill} tone="danger" /> : null}
       </View>
 
       <Text style={[styles.summary, { color: color.text.primary }]}>{summary}</Text>
+      <Text style={[styles.area, { color: color.text.secondary }]}>{area}</Text>
 
       <WhyShownChip onPress={onWhyShown} reason={reason} />
 
@@ -133,6 +133,7 @@ export function IntentCard({
 }
 
 const styles = StyleSheet.create({
+  area: { ...tokens.type.caption },
   broadcaster: { flexShrink: 1, gap: tokens.space[1] },
   card: {
     borderRadius: tokens.component.intentCard.radius,

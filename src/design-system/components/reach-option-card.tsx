@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useColors } from '@/design-system/appearance';
 import { isInteractionBlocked, resolveComponentState } from '@/design-system/state';

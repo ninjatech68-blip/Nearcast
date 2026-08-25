@@ -77,24 +77,52 @@ describe('Button', () => {
     );
   });
 
-  it('tints the danger variant on the dark appearance instead of filling it', async () => {
-    const dark = colorsFor('dark');
+  it('outlines the destructive variant in danger rather than filling it', async () => {
+    for (const appearance of ['light', 'dark'] as const) {
+      const view = await render(
+        <AppearanceProvider appearance={appearance}>
+          <Button label="Report" onPress={jest.fn()} variant="destructive" />
+        </AppearanceProvider>,
+      );
 
-    const view = await render(
-      <AppearanceProvider appearance="dark">
-        <Button label="Report" onPress={jest.fn()} variant="danger" />
-      </AppearanceProvider>,
-    );
-
-    expect(flatten(view.getByRole('button').props.style).backgroundColor).toBe(
-      dark.background.danger,
-    );
+      const style = flatten(view.getByRole('button').props.style);
+      expect(style.backgroundColor).toBe('transparent');
+      expect(style.borderColor).toBe(colorsFor(appearance).status.danger);
+    }
   });
 
-  it('draws the outline recovery variant with no fill', async () => {
+  it('fills the primary action and nothing else', async () => {
+    for (const appearance of ['light', 'dark'] as const) {
+      for (const variant of ['secondary', 'quiet', 'destructive'] as const) {
+        const view = await render(
+          <AppearanceProvider appearance={appearance}>
+            <Button label="Action" onPress={jest.fn()} variant={variant} />
+          </AppearanceProvider>,
+        );
+
+        expect({
+          appearance,
+          variant,
+          background: flatten(view.getByRole('button').props.style).backgroundColor,
+        }).toEqual({ appearance, variant, background: 'transparent' });
+      }
+
+      const primary = await render(
+        <AppearanceProvider appearance={appearance}>
+          <Button label="Action" onPress={jest.fn()} />
+        </AppearanceProvider>,
+      );
+
+      expect(flatten(primary.getByRole('button').props.style).backgroundColor).toBe(
+        colorsFor(appearance).action.primary,
+      );
+    }
+  });
+
+  it('draws the secondary recovery variant as an outline of the primary action', async () => {
     const view = await render(
       <AppearanceProvider appearance="light">
-        <Button label="Try again" onPress={jest.fn()} variant="outline" />
+        <Button label="Try again" onPress={jest.fn()} variant="secondary" />
       </AppearanceProvider>,
     );
 

@@ -41,6 +41,8 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Design contract completion | Recorded | Added the pressed, focus, and status rows the component state contract needs to `DESIGN.md`, so both appearances can express every documented state |
 | 2026-08-25 | Design system implementation | Passed | Reconciled `src/design-system` with the approved `DESIGN.md` contract (light and dark appearances, type scale, shape, spacing, motion, elevation) and built the remaining core components |
 | 2026-08-25 | App verification | Passed | `npm run verify` completed lint, TypeScript, 57 Vitest tests across 8 files, 51 Jest component tests across 8 suites, and the iOS export |
+| 2026-08-25 | Design preview reconciliation | Resolved | Confirmed the static preview already carried the dark pressed and status values, and adopted them in place of the derived ones; recorded the fill rule the preview establishes |
+| 2026-08-25 | App verification | Passed | `npm run verify` completed lint, TypeScript, 58 Vitest tests across 8 files, 52 Jest component tests across 8 suites, and the iOS export |
 | 2026-08-25 | Home feed UX | Resolved | Replaced the explainer-style home page with an honest `For You` empty-feed shell and bottom navigation for `For You`, `Broadcast`, `Activity`, and `You` |
 | 2026-08-25 | Native homepage UX pass | Resolved | Reworked the homepage as a native-style `For You` tab with grouped feed sections and moved primary navigation to Expo Router tabs |
 | 2026-08-25 | Native minimal design direction | Approved for exploration | Captured product truth in `PRODUCT.md` and generated a cohesive native minimal screen board for homepage, detail, profile, request, composer, review/reach, activity, and messages |
@@ -67,3 +69,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded native minimal design-system exploration checkpoint |
 | 2026-08-25 | Recorded native minimal page implementation checkpoint |
 | 2026-08-25 | Recorded design system token reconciliation and core component implementation |
+| 2026-08-25 | Recorded design system reconciliation against the approved static preview |

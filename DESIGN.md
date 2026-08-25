@@ -84,19 +84,32 @@ Components must use semantic tokens. Raw hex values belong only in token definit
 | `color.text.primary` | `#F3F7F1` | Primary text on dark surfaces |
 | `color.text.secondary` | `#BAC8C0` | Secondary text on dark surfaces |
 | `color.action.primary` | `#65D0A1` | Dark primary action |
-| `color.action.primaryPressed` | `#4FBA8C` | Pressed dark primary action |
+| `color.action.primaryPressed` | `#8ADDB8` | Pressed dark primary action |
 | `color.action.secondary` | `#8EB8E5` | Dark information/provenance action |
 | `color.border.subtle` | `#33443C` | Dark separators and outlines |
 | `color.border.focus` | `#8EB8E5` | Dark focus indicator, reusing the provenance action colour |
-| `color.status.info` | `#DCEEFF` | Dark informational status |
-| `color.status.warning` | `#FFEBC2` | Dark warning status |
+| `color.status.info` | `#8EB8E5` | Dark informational status |
+| `color.status.warning` | `#FFE2A7` | Dark warning status |
 | `color.status.danger` | `#FFD9D4` | Dark error/destructive status |
 
 The pressed, focus, and status rows complete the dark appearance so that the
-component state contract below can be honoured in both appearances. Light fills
-its info, secondary, and danger accents with a saturated colour and sets type on
-top; dark keeps those accents as tinted surfaces instead, so an on-colour pairs
-with a different token in each appearance.
+component state contract below can be honoured in both appearances. Their values
+are taken from the approved static preview in `docs/design-system-preview/`,
+which already carried them; note that the dark appearance brightens the pressed
+primary action rather than darkening it.
+
+### Fill Rule
+
+Only the primary action is filled. Every other accent — info, success, warning,
+danger, neutral — is a tinted surface carrying a status or action foreground, in
+both appearances. Destructive actions are outlined in danger rather than filled,
+so destructive meaning never carries the visual weight of consent.
+
+Two on-colour tokens have no consumer under this rule: `color.onInfo` and
+`color.onDanger` describe type on a filled info or danger accent, and no approved
+treatment fills either. They are retained for a future filled variant and are
+excluded from the automated contrast checks, which have no surface to measure
+them against. Resolving them one way or the other is open for the design owner.
 
 ### On-Color Tokens
 

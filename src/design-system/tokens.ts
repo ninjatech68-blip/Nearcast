@@ -111,7 +111,7 @@ const dark: ColorScheme = {
   },
   action: {
     primary: '#65D0A1',
-    primaryPressed: '#4FBA8C',
+    primaryPressed: '#8ADDB8',
     secondary: '#8EB8E5',
   },
   border: {
@@ -119,8 +119,8 @@ const dark: ColorScheme = {
     focus: '#8EB8E5',
   },
   status: {
-    info: '#DCEEFF',
-    warning: '#FFEBC2',
+    info: '#8EB8E5',
+    warning: '#FFE2A7',
     danger: '#FFD9D4',
   },
   on: {
