@@ -336,3 +336,17 @@ export async function confirmOutcome(
   });
   return { ok: true };
 }
+
+/**
+ * Deletes the caller's account data (MUST-004). The server anonymizes the
+ * profile, withdraws open intents, clears private fields, redacts sent
+ * content, and records a suppression row — while preserving safety evidence
+ * and the other party's history. The caller must sign out afterwards; session
+ * revocation itself is the Edge half of this contract.
+ */
+export async function deleteAccount(): Promise<DecisionResult> {
+  const { error } = await supabase.rpc('delete_account', { confirmation: 'DELETE' });
+  return error
+    ? { ok: false, message: 'Your account could not be deleted right now. Try again.' }
+    : { ok: true };
+}

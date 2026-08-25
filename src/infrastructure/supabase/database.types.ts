@@ -683,11 +683,38 @@ export type Database = {
           },
         ]
       }
+      account_deletions: {
+        Row: {
+          id: string
+          profile_id: string
+          requested_at: string
+        }
+        Insert: {
+          id?: string
+          profile_id: string
+          requested_at?: string
+        }
+        Update: {
+          id?: string
+          profile_id?: string
+          requested_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_deletions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_path: string | null
           city: string | null
           created_at: string
+          deleted_at: string | null
           display_name: string
           id: string
           is_restricted: boolean
@@ -697,6 +724,7 @@ export type Database = {
           avatar_path?: string | null
           city?: string | null
           created_at?: string
+          deleted_at?: string | null
           display_name: string
           id: string
           is_restricted?: boolean
@@ -706,6 +734,7 @@ export type Database = {
           avatar_path?: string | null
           city?: string | null
           created_at?: string
+          deleted_at?: string | null
           display_name?: string
           id?: string
           is_restricted?: boolean
@@ -1149,6 +1178,10 @@ export type Database = {
         }
         Returns: Database["public"]["Tables"]["reports"]["Row"]
       }
+      apply_retention_policy: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       decide_response: {
         Args: {
           decision: string
@@ -1156,6 +1189,10 @@ export type Database = {
           target_response_id: string
         }
         Returns: Database["public"]["Tables"]["responses"]["Row"]
+      }
+      delete_account: {
+        Args: { confirmation: string }
+        Returns: string
       }
       expire_intents: {
         Args: Record<PropertyKey, never>

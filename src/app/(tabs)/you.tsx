@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StatePanel, type ScreenState } from '@/design-system/components/state-panel';
 import { tokens } from '@/design-system/tokens';
 import { useSession } from '@/features/auth/session';
+import { deleteAccount } from '@/features/coordination/queries';
 import {
   describeReliability,
   fetchProfileSummary,
@@ -91,8 +93,77 @@ export default function YouScreen() {
           style={({ pressed }) => [styles.signOut, pressed && styles.signOutPressed]}>
           <Text style={styles.signOutLabel}>Sign out</Text>
         </Pressable>
+
+        <DeleteAccountSection onDeleted={() => void signOut()} />
       </ScrollView>
     </Frame>
+  );
+}
+
+/**
+ * In-product account deletion (MUST-004): a two-step confirmation stating
+ * plainly what is removed, what is preserved, and that it cannot be undone.
+ */
+function DeleteAccountSection({ onDeleted }: { onDeleted: () => void }) {
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function remove() {
+    setDeleting(true);
+    setError(null);
+    const result = await deleteAccount();
+    setDeleting(false);
+    if (!result.ok) {
+      setError(result.message);
+      return;
+    }
+    onDeleted();
+  }
+
+  if (!confirming) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setConfirming(true)}
+        style={({ pressed }) => [styles.deleteEntry, pressed && styles.deleteEntryPressed]}>
+        <Text style={styles.deleteEntryLabel}>Delete account</Text>
+      </Pressable>
+    );
+  }
+
+  return (
+    <View style={styles.deleteConfirm} testID="delete-confirm">
+      <Text style={styles.deleteTitle}>Delete your account?</Text>
+      <Text style={styles.deleteBody}>
+        Your profile is anonymized, open intents are withdrawn, exact locations and contact
+        details are removed, and messages you sent are redacted. Safety reports you filed are
+        preserved. This cannot be undone.
+      </Text>
+      {error ? (
+        <Text accessibilityRole="alert" style={styles.deleteError}>
+          {error}
+        </Text>
+      ) : null}
+      <View style={styles.deleteActions}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={deleting}
+          onPress={() => void remove()}
+          style={({ pressed }) => [styles.deleteConfirmButton, pressed && styles.deleteConfirmPressed]}>
+          <Text style={styles.deleteConfirmLabel}>
+            {deleting ? 'Deleting…' : 'Delete my account'}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={deleting}
+          onPress={() => setConfirming(false)}
+          style={({ pressed }) => [styles.deleteCancel, pressed && styles.deleteCancelPressed]}>
+          <Text style={styles.deleteCancelLabel}>Keep my account</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
@@ -119,4 +190,18 @@ const styles = StyleSheet.create({
   signOut: { marginTop: 24, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle },
   signOutPressed: { backgroundColor: tokens.semantic.color.backgroundSurfaceMuted },
   signOutLabel: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
+  deleteEntry: { marginTop: 12, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, borderWidth: 1, borderColor: tokens.semantic.color.statusDanger },
+  deleteEntryPressed: { backgroundColor: tokens.semantic.color.backgroundDanger },
+  deleteEntryLabel: { color: tokens.semantic.color.statusDanger, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
+  deleteConfirm: { marginTop: 12, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundDanger, gap: 8 },
+  deleteTitle: { color: tokens.semantic.color.statusDanger, fontFamily: 'Manrope_700Bold', fontSize: 16 },
+  deleteBody: { color: tokens.semantic.color.statusDanger, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  deleteError: { color: tokens.semantic.color.statusDanger, fontFamily: 'Manrope_700Bold', fontSize: 13 },
+  deleteActions: { flexDirection: 'row', gap: 10 },
+  deleteConfirmButton: { flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, backgroundColor: tokens.semantic.color.statusDanger },
+  deleteConfirmPressed: { opacity: 0.85 },
+  deleteConfirmLabel: { color: tokens.semantic.color.onDanger, fontFamily: 'Manrope_700Bold', fontSize: 16 },
+  deleteCancel: { flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface },
+  deleteCancelPressed: { backgroundColor: tokens.semantic.color.backgroundSurfaceMuted },
+  deleteCancelLabel: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
 });

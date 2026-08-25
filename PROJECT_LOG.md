@@ -22,6 +22,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 0.3.0 | 2026-08-25 | Design-system cutover and functional journey coverage | App now implements the approved Trustworthy Native Clarity palette, shape, motion, and type scale; added a 25-assertion functional journey test of the complete Phase 1 loop |
 | 0.4.0 | 2026-08-25 | Coordination surfaces delivered | Broadcaster inbox, coordination room with explicit disclosure release and in-room block/report, and feed relevance feedback — the tested server loop is now walkable in the interface |
 | 0.5.0 | 2026-08-25 | Realtime, resolution, and privacy-safe analytics | Private message channels with reconnect refetch, the resolution sheet and outcome confirmation, and the allowlisted analytics module with events wired after server success |
+| 0.6.0 | 2026-08-25 | Account deletion and retention | In-product deletion that anonymizes, withdraws, clears, and redacts while preserving safety evidence; retention jobs for aged messages and exact locations |
 
 ## Verification Log
 
@@ -73,6 +74,9 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Resolution and outcomes | Passed | Resolution sheet offers the four factual outcomes plus withdraw with an honest reliability note; the room asks "Did this interaction happen?" once resolved, with a dispute path; 31 Jest component assertions pass |
 | 2026-08-25 | Privacy-safe analytics | Passed | Client module enforces the Doc 09 taxonomy as per-event allowlists with substring prohibited-key rejection and drop-whole-event semantics; 7 Vitest assertions prove prohibited sample data is rejected; transport is a bounded buffer until the PostHog project exists (H-6) |
 | 2026-08-25 | Full verification | Passed | `npm run verify` fully clean (8 Vitest files, 31 Jest assertions, iOS export); clean-database run green at 126 of 126 including the guarded realtime migration |
+| 2026-08-25 | Account deletion | Passed | `delete_account` anonymizes the profile, withdraws open intents, deletes drafts, clears exact fields, redacts sent responses and messages, removes confirmations and deliveries, and records a suppression row — while preserving filed reports and the other party's messages; idempotent on repeat, and a deleted account is barred from every mutation function; 26 pgTAP assertions |
+| 2026-08-25 | Retention jobs | Passed | `apply_retention_policy` deletes messages 90 days after a room closes and clears exact location and contact fields 30 days after an intent closes; remaining Doc 04 rows join as their windows become reachable |
+| 2026-08-25 | Full verification | Passed | `npm run verify` fully clean (8 Vitest files, 35 Jest assertions including the two-step deletion flow, iOS export); clean-database run green at 152 of 152 across five suites |
 
 ## Governance Rules
 
@@ -106,3 +110,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Executed the semantic token cutover by founder direction and added the Phase 1 functional journey suite |
 | 2026-08-25 | Delivered the inbox, coordination room, disclosure release, in-room safety actions, and feed relevance feedback |
 | 2026-08-25 | Delivered Realtime channels, the resolution and outcome flow, and the allowlisted analytics module |
+| 2026-08-25 | Delivered the database half of account deletion, the first retention jobs, and the in-product deletion flow |

@@ -55,3 +55,4 @@ Logs contain request ID, actor hash, operation, object ID, result code, duration
 | 2026-08-24 | Defined server mutation inventory, public projection, errors, idempotency, and logging boundaries |
 | 2026-08-25 | Reconciled the function inventory with the implementation plans by adding the seven functions the plans already required |
 | 2026-08-25 | Named `idempotency_keys` as the storage backing the idempotency rule |
+| 2026-08-25 | Split `delete-account` into halves: the database function performs the data deletion, anonymization, and suppression record; session revocation and auth-record removal remain the Edge half, which must call the database function first |

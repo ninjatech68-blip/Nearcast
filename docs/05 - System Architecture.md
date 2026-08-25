@@ -109,6 +109,7 @@ Functions must be idempotent and validate both authentication and current lifecy
 | `notification_jobs` | Idempotent notification queue |
 | `analytics_outbox` | Privacy-filtered product event delivery |
 | `idempotency_keys` | Actor-scoped request fingerprint and stored result for mutation replay |
+| `account_deletions` | Minimal suppression record for deleted accounts, per the retention policy |
 
 ## Key Relationships
 
@@ -276,3 +277,4 @@ Evaluate a dedicated TypeScript API, specialized notification workers, feed mate
 | 2026-08-25 | Added the `invitations` entity, which the invitation-only launch assumption and implementation plan 02 already required but this document omitted |
 | 2026-08-25 | Added the `idempotency_keys` entity required by the idempotency rule in the API contracts |
 | 2026-08-25 | Recorded TanStack Query as the adopted server-state layer for all data screens |
+| 2026-08-25 | Added the `account_deletions` suppression entity and the deletion model: anonymize the profile, withdraw open intents, clear exact fields, redact sent content, preserve safety evidence and the other party's history |

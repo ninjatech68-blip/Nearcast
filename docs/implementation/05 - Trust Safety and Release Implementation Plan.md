@@ -30,7 +30,7 @@
 
 - [ ] Test moderator authorization from app metadata, not user metadata.
 - [ ] Add immutable action audit and restriction restoration to captured safe state.
-- [ ] Implement account deletion and retention jobs against the policy outline.
+- [x] Implement account deletion and retention jobs against the policy outline. The database half is done and tested; session revocation and auth-record removal remain the Edge half.
 
 ## Task 4: Privacy-Safe Telemetry
 
@@ -60,3 +60,5 @@ All Permissions Matrix tests pass, one report can be actioned end to end, accoun
 | 2026-08-24 | Created trust, safety, analytics, operations, and release implementation plan |
 | 2026-08-25 | Delivered the client analytics module: the Doc 09 taxonomy as an explicit per-event property allowlist, substring-based prohibited-key rejection, drop-whole-event semantics, a bounded buffer behind a swappable transport until PostHog exists (H-6), and emits wired after server success for publish, response, decision, message, feedback, resolution, and outcome |
 | 2026-08-25 | Delivered the resolution and outcome confirmation UI over the existing close_intent and confirm_interaction_outcome functions |
+| 2026-08-25 | Delivered account deletion (anonymize, withdraw, clear, redact, suppress; idempotent; deleted accounts barred from every mutation) and the first retention jobs (messages at 90 days after closure, exact location at 30 days after closure), with 26 pgTAP assertions and an in-product two-step deletion flow |
+| 2026-08-25 | Retention rows still to implement as their windows become reachable: 12-month intent history, 13-month analytics, 24-month moderation evidence |
