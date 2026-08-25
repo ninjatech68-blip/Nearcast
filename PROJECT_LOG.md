@@ -40,6 +40,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Composer keyboard UX | Resolved | Added keyboard dismissal and scroll-friendly handling to the intent composer so the review action remains reachable while typing |
 | 2026-08-25 | Home feed UX | Resolved | Replaced the explainer-style home page with an honest `For You` empty-feed shell and bottom navigation for `For You`, `Broadcast`, `Activity`, and `You` |
 | 2026-08-25 | Native homepage UX pass | Resolved | Reworked the homepage as a native-style `For You` tab with grouped feed sections and moved primary navigation to Expo Router tabs |
+| 2026-08-25 | Native minimal design direction | Approved for exploration | Captured product truth in `PRODUCT.md` and generated a cohesive native minimal screen board for homepage, detail, profile, request, composer, review/reach, activity, and messages |
 
 ## Governance Rules
 
@@ -59,3 +60,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded local mobile tooling installation, device-flow verification, and Android warning cleanup |
 | 2026-08-25 | Recorded composer keyboard and home feed UX updates |
 | 2026-08-25 | Recorded native homepage UX pass |
+| 2026-08-25 | Recorded native minimal design-system exploration checkpoint |
