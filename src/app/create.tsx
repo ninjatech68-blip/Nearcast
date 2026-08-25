@@ -1,6 +1,6 @@
 import { type Href, router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
@@ -18,48 +18,54 @@ export default function CreateIntentScreen() {
   const trimmed = statement.trim();
 
   function reviewDraft() {
+    Keyboard.dismiss();
     router.push({ pathname: '/preview', params: { primitive, statement: trimmed } } as unknown as Href);
   }
 
   return (
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.content}>
-        <Text style={styles.eyebrow}>WHAT IS YOUR INTENT?</Text>
-        <View style={styles.chips}>
-          {primitives.map((item) => {
-            const selected = primitive === item.value;
-            return (
-              <Pressable key={item.value} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => setPrimitive(item.value)} style={[styles.chip, selected && styles.chipSelected]}>
-                <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{item.label}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <TextInput
-          accessibilityLabel="Intent statement"
-          autoFocus
-          multiline
-          maxLength={500}
-          onChangeText={setStatement}
-          placeholder="For example: Looking for two people to help sort donated books tomorrow morning."
-          placeholderTextColor={tokens.semantic.color.textMuted}
-          style={styles.composer}
-          textAlignVertical="top"
-          value={statement}
-        />
-        <Text style={styles.counter}>{statement.length}/500</Text>
-        <View style={styles.privacyNote}>
-          <Text style={styles.privacyTitle}>Starts private</Text>
-          <Text style={styles.privacyBody}>This is only a draft. You will review reach, expiry, and what others can see before publishing.</Text>
-        </View>
-      </View>
-      <View style={styles.footer}><Button label="Review intent" onPress={reviewDraft} disabled={trimmed.length === 0} /></View>
+      <TouchableWithoutFeedback accessible={false} onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
+          <View style={styles.content}>
+            <Text style={styles.eyebrow}>WHAT IS YOUR INTENT?</Text>
+            <View style={styles.chips}>
+              {primitives.map((item) => {
+                const selected = primitive === item.value;
+                return (
+                  <Pressable key={item.value} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => setPrimitive(item.value)} style={[styles.chip, selected && styles.chipSelected]}>
+                    <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{item.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <TextInput
+              accessibilityLabel="Intent statement"
+              autoFocus
+              multiline
+              maxLength={500}
+              onChangeText={setStatement}
+              placeholder="For example: Looking for two people to help sort donated books tomorrow morning."
+              placeholderTextColor={tokens.semantic.color.textMuted}
+              style={styles.composer}
+              textAlignVertical="top"
+              value={statement}
+            />
+            <Text style={styles.counter}>{statement.length}/500</Text>
+            <View style={styles.privacyNote}>
+              <Text style={styles.privacyTitle}>Starts private</Text>
+              <Text style={styles.privacyBody}>This is only a draft. You will review reach, expiry, and what others can see before publishing.</Text>
+            </View>
+          </View>
+          <View style={styles.footer}><Button label="Review intent" onPress={reviewDraft} disabled={trimmed.length === 0} /></View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  scrollContent: { flexGrow: 1 },
   content: { flex: 1, padding: 20 },
   eyebrow: { fontFamily: 'Manrope_700Bold', fontSize: 12, letterSpacing: 1.2, color: tokens.semantic.color.textMuted },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
@@ -72,5 +78,5 @@ const styles = StyleSheet.create({
   privacyNote: { marginTop: 24, padding: 16, borderRadius: 16, backgroundColor: tokens.semantic.color.infoSurface },
   privacyTitle: { fontFamily: 'Manrope_600SemiBold', color: tokens.semantic.color.infoText },
   privacyBody: { marginTop: 4, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.infoText },
-  footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
+  footer: { marginTop: 'auto', padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
 });
