@@ -2,11 +2,13 @@ import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tokens } from '@/design-system/tokens';
+import { useThemedStyles } from '@/design-system/appearance';
+import { type ColorScheme } from '@/design-system/tokens';
 import { broadcaster, featuredIntent } from '@/features/native-demo/nearcast-fixtures';
 import { ActionTray, Group, IconLine, PrimitiveChip, PrivacyStrip, ProfileBlock, Section, SymbolIcon, TopBar } from '@/features/native-demo/native-ui';
 
 export default function IntentDetailScreen() {
+  const styles = useThemedStyles(createStyles);
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <TopBar title="Intent" onBack={() => router.back()} />
@@ -71,22 +73,23 @@ export default function IntentDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
+const createStyles = (color: ColorScheme) =>
+  StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: color.background.app },
   content: { paddingHorizontal: 20, paddingBottom: 26 },
   summary: { gap: 12, padding: 16 },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.color.light.text.primary },
-  meta: { fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.color.light.text.secondary },
-  expiryPill: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: tokens.color.light.background.success },
-  expiryText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.color.light.on.success },
+  title: { fontWeight: '700', fontSize: 24, lineHeight: 30, color: color.text.primary },
+  meta: { fontWeight: '400', fontSize: 15, lineHeight: 21, color: color.text.secondary },
+  expiryPill: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: color.background.success },
+  expiryText: { fontWeight: '600', fontSize: 13, color: color.on.success },
   context: { gap: 14, padding: 16 },
-  body: { fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 23, color: tokens.color.light.text.primary },
+  body: { fontWeight: '400', fontSize: 16, lineHeight: 23, color: color.text.primary },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  infoChip: { paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: tokens.color.light.background.surfaceMuted },
-  infoChipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: tokens.color.light.text.secondary },
-  reasonPanel: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, backgroundColor: tokens.color.light.background.success },
+  infoChip: { paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: color.background.surfaceMuted },
+  infoChipText: { fontWeight: '600', fontSize: 12, color: color.text.secondary },
+  reasonPanel: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, backgroundColor: color.background.success },
   reasonCopy: { flex: 1 },
-  reasonText: { fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, color: tokens.color.light.on.success },
-  reasonMeta: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.color.light.on.success },
+  reasonText: { fontWeight: '600', fontSize: 14, lineHeight: 20, color: color.on.success },
+  reasonMeta: { marginTop: 3, fontWeight: '400', fontSize: 13, lineHeight: 18, color: color.on.success },
   hiddenRow: { paddingHorizontal: 16, paddingBottom: 14 },
 });

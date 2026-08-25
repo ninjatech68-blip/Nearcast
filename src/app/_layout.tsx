@@ -1,55 +1,29 @@
-import {
-  Manrope_400Regular,
-  Manrope_600SemiBold,
-  Manrope_700Bold,
-} from '@expo-google-fonts/manrope';
-import { loadAsync } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
+import { useColors } from '@/design-system/appearance';
 import { tokens } from '@/design-system/tokens';
 
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsReady, setFontsReady] = useState(false);
+  const color = useColors();
 
+  // Typography is native (SF Pro / Roboto per DESIGN.md), so there are no
+  // fonts to load; the splash screen hides as soon as the shell mounts.
   useEffect(() => {
-    let isMounted = true;
-
-    async function prepareAppShell() {
-      try {
-        await loadAsync({
-          Manrope_400Regular,
-          Manrope_600SemiBold,
-          Manrope_700Bold,
-        });
-      } finally {
-        if (isMounted) {
-          setFontsReady(true);
-          await SplashScreen.hideAsync();
-        }
-      }
-    }
-
-    void prepareAppShell();
-
-    return () => {
-      isMounted = false;
-    };
+    void SplashScreen.hideAsync();
   }, []);
-
-  if (!fontsReady) return null;
 
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: tokens.color.light.background.app },
+        contentStyle: { backgroundColor: color.background.app },
         headerShadowVisible: false,
-        headerStyle: { backgroundColor: tokens.color.light.background.app },
-        headerTitleStyle: { fontFamily: 'Manrope_700Bold' },
-        headerTintColor: tokens.color.light.text.primary,
+        headerStyle: { backgroundColor: color.background.app },
+        headerTitleStyle: { fontWeight: tokens.type.bodyStrong.fontWeight },
+        headerTintColor: color.text.primary,
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="create" options={{ title: 'New intent', presentation: 'modal' }} />

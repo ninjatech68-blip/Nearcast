@@ -2,11 +2,13 @@ import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tokens } from '@/design-system/tokens';
+import { useThemedStyles } from '@/design-system/appearance';
+import { type ColorScheme } from '@/design-system/tokens';
 import { featuredIntent, secondIntent } from '@/features/native-demo/nearcast-fixtures';
 import { Group, IconLine, IntentCard, ScreenTitle, Section } from '@/features/native-demo/native-ui';
 
 export default function HomeScreen() {
+  const styles = useThemedStyles(createStyles);
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -39,14 +41,15 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
+const createStyles = (color: ColorScheme) =>
+  StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: color.background.app },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  filterIcon: { fontFamily: 'Manrope_700Bold', fontSize: 20, color: tokens.color.light.text.secondary },
+  filterIcon: { fontWeight: '700', fontSize: 20, color: color.text.secondary },
   filterRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
-  filterPill: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 1, borderColor: tokens.color.light.border.subtle, borderRadius: 12, backgroundColor: tokens.color.light.background.surface },
-  filterText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.color.light.text.secondary },
+  filterPill: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 1, borderColor: color.border.subtle, borderRadius: 12, backgroundColor: color.background.surface },
+  filterText: { fontWeight: '600', fontSize: 13, color: color.text.secondary },
   cardStack: { gap: 12 },
   privacyRow: { paddingHorizontal: 16, paddingBottom: 14 },
 });

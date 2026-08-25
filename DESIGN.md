@@ -338,10 +338,13 @@ disabled > loading > error > offline > pressed > focused > selected > success > 
 | Privacy-safe content rules | [`src/design-system/privacy.ts`](src/design-system/privacy.ts) |
 | Core components | [`src/design-system/components/`](src/design-system/components) |
 
-Typography follows the platform mapping above: components apply the shared
-size and weight hierarchy and inherit the native system face. Screens written
-before this implementation still declare Manrope directly and are not yet
-migrated to the token layer.
+Typography follows the platform mapping above: components and screens apply
+the shared size and weight hierarchy and inherit the native system face (SF
+Pro on iOS, Roboto on Android). No custom font family is bundled or loaded.
+Screens resolve their palette through `useColors()`/`useThemedStyles()` from
+[`src/design-system/appearance.tsx`](src/design-system/appearance.tsx), so both
+appearances render from the same code; automated checks refuse a hardcoded
+light or dark palette reference and any `fontFamily` outside the design system.
 
 ## Visual References
 

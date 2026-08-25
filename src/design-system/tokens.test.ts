@@ -186,6 +186,47 @@ describe('shape, spacing, and motion tokens', () => {
 
 describe('token discipline', () => {
   const componentsDir = path.join(__dirname, 'components');
+  const srcDir = path.join(__dirname, '..');
+
+  it('keeps screens appearance-aware: no hardcoded light or dark palette outside the design system', () => {
+    const offenders: string[] = [];
+    const visit = (dir: string) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (entry.name === 'design-system' || entry.name === 'node_modules') continue;
+          visit(full);
+        } else if (/\.(ts|tsx)$/.test(entry.name) && !entry.name.includes('.test.')) {
+          if (/tokens\.color\.(light|dark)\./.test(readFileSync(full, 'utf8'))) {
+            offenders.push(path.relative(srcDir, full));
+          }
+        }
+      }
+    };
+    visit(srcDir);
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('keeps custom font families out of the app: typography is native per DESIGN.md', () => {
+    const offenders: string[] = [];
+    const visit = (dir: string) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (entry.name === 'node_modules') continue;
+          visit(full);
+        } else if (/\.(ts|tsx)$/.test(entry.name) && !entry.name.includes('.test.')) {
+          if (/fontFamily/.test(readFileSync(full, 'utf8'))) {
+            offenders.push(path.relative(srcDir, full));
+          }
+        }
+      }
+    };
+    visit(srcDir);
+
+    expect(offenders).toEqual([]);
+  });
 
   it('keeps raw hex values out of component source', () => {
     const offenders = readdirSync(componentsDir)

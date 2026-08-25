@@ -1,11 +1,13 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tokens } from '@/design-system/tokens';
+import { useThemedStyles } from '@/design-system/appearance';
+import { type ColorScheme } from '@/design-system/tokens';
 import { broadcaster } from '@/features/native-demo/nearcast-fixtures';
 import { Group, ScreenTitle, Section, SymbolIcon } from '@/features/native-demo/native-ui';
 
 export default function MessagesScreen() {
+  const styles = useThemedStyles(createStyles);
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -40,16 +42,17 @@ export default function MessagesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
+const createStyles = (color: ColorScheme) =>
+  StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: color.background.app },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   roomRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
   emptyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
-  avatar: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.success },
-  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 18, color: tokens.color.light.on.success },
-  emptyIcon: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.surfaceMuted },
+  avatar: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: color.background.success },
+  avatarText: { fontWeight: '700', fontSize: 18, color: color.on.success },
+  emptyIcon: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: color.background.surfaceMuted },
   roomCopy: { flex: 1 },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.color.light.text.primary },
-  body: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.color.light.text.secondary },
-  status: { marginTop: 4, fontFamily: 'Manrope_600SemiBold', fontSize: 12, lineHeight: 17, color: tokens.color.light.on.success },
+  title: { fontWeight: '600', fontSize: 15, lineHeight: 21, color: color.text.primary },
+  body: { marginTop: 2, fontWeight: '400', fontSize: 13, lineHeight: 19, color: color.text.secondary },
+  status: { marginTop: 4, fontWeight: '600', fontSize: 12, lineHeight: 17, color: color.on.success },
 });

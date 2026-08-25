@@ -2,7 +2,7 @@ import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
 
-import { tokens } from '@/design-system/tokens';
+import { useColors } from '@/design-system/appearance';
 
 type TabIconName = Parameters<typeof SymbolView>[0]['name'];
 
@@ -23,20 +23,22 @@ const fallbackByRoute: Record<string, string> = {
 };
 
 export default function TabsLayout() {
+  const color = useColors();
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: tokens.color.light.action.primary,
-        tabBarInactiveTintColor: tokens.color.light.text.secondary,
-        tabBarLabelStyle: { fontFamily: 'Manrope_600SemiBold', fontSize: 11 },
+        tabBarActiveTintColor: color.action.primary,
+        tabBarInactiveTintColor: color.text.secondary,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarStyle: {
-          backgroundColor: tokens.color.light.background.surface,
-          borderTopColor: tokens.color.light.border.subtle,
+          backgroundColor: color.background.surface,
+          borderTopColor: color.border.subtle,
         },
         tabBarIcon: ({ color, size }) => (
           <SymbolView
-            fallback={<Text style={{ color, fontFamily: 'Manrope_700Bold', fontSize: 12 }}>{fallbackByRoute[route.name]}</Text>}
+            fallback={<Text style={{ color, fontSize: 12, fontWeight: '700' }}>{fallbackByRoute[route.name]}</Text>}
             name={tabIconByRoute[route.name]}
             size={size}
             tintColor={color}

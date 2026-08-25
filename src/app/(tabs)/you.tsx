@@ -1,10 +1,12 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tokens } from '@/design-system/tokens';
+import { useThemedStyles } from '@/design-system/appearance';
+import { type ColorScheme } from '@/design-system/tokens';
 import { Group, IconLine, ScreenTitle, Section } from '@/features/native-demo/native-ui';
 
 export default function YouScreen() {
+  const styles = useThemedStyles(createStyles);
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -27,13 +29,14 @@ export default function YouScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
+const createStyles = (color: ColorScheme) =>
+  StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: color.background.app },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   profileRow: { flexDirection: 'row', gap: 16, padding: 16 },
-  avatar: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.success },
-  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 24, color: tokens.color.light.on.success },
+  avatar: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: color.background.success },
+  avatarText: { fontWeight: '700', fontSize: 24, color: color.on.success },
   copy: { flex: 1 },
-  name: { fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28, color: tokens.color.light.text.primary },
-  meta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.color.light.text.secondary },
+  name: { fontWeight: '700', fontSize: 22, lineHeight: 28, color: color.text.primary },
+  meta: { marginTop: 2, fontWeight: '400', fontSize: 14, lineHeight: 20, color: color.text.secondary },
 });

@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 
 import { Button } from '@/design-system/components/button';
-import { tokens } from '@/design-system/tokens';
+import { useColors, useThemedStyles } from '@/design-system/appearance';
+import { type ColorScheme } from '@/design-system/tokens';
 import { IntentPrimitive } from '@/features/intents/domain/intent';
 
 const primitives: { value: IntentPrimitive; label: string }[] = [
@@ -13,6 +14,8 @@ const primitives: { value: IntentPrimitive; label: string }[] = [
 ];
 
 export default function CreateIntentScreen() {
+  const styles = useThemedStyles(createStyles);
+  const color = useColors();
   const [primitive, setPrimitive] = useState<IntentPrimitive>('request');
   const [statement, setStatement] = useState('');
   const trimmed = statement.trim();
@@ -46,7 +49,7 @@ export default function CreateIntentScreen() {
               maxLength={500}
               onChangeText={setStatement}
               placeholder="Share a clear and specific intent..."
-              placeholderTextColor={tokens.color.light.text.secondary}
+              placeholderTextColor={color.text.secondary}
               style={styles.composer}
               textAlignVertical="top"
               value={statement}
@@ -64,21 +67,22 @@ export default function CreateIntentScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: tokens.color.light.background.app },
+const createStyles = (color: ColorScheme) =>
+  StyleSheet.create({
+  screen: { flex: 1, backgroundColor: color.background.app },
   scrollContent: { flexGrow: 1 },
   content: { flex: 1, padding: 20 },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 17, lineHeight: 23, textAlign: 'center', color: tokens.color.light.text.primary },
-  prompt: { marginTop: 34, fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.color.light.text.primary },
-  chips: { flexDirection: 'row', gap: 0, marginTop: 18, overflow: 'hidden', borderWidth: 1, borderColor: tokens.color.light.border.subtle, borderRadius: 12, backgroundColor: tokens.color.light.background.surface },
-  chip: { flex: 1, minHeight: 42, paddingHorizontal: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.surface },
-  chipSelected: { borderColor: tokens.color.light.action.primary, backgroundColor: tokens.color.light.background.success },
-  chipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.color.light.text.secondary },
-  chipTextSelected: { color: tokens.color.light.on.success },
-  composer: { minHeight: 180, marginTop: 18, padding: 16, borderRadius: 14, borderWidth: 1, borderColor: tokens.color.light.border.subtle, backgroundColor: tokens.color.light.background.surface, fontFamily: 'Manrope_400Regular', fontSize: 17, lineHeight: 25, color: tokens.color.light.text.primary },
-  counter: { marginTop: 6, textAlign: 'right', fontFamily: 'Manrope_400Regular', fontSize: 12, color: tokens.color.light.text.secondary },
-  privacyNote: { marginTop: 22, padding: 16, borderRadius: 14, backgroundColor: tokens.color.light.background.success },
-  privacyTitle: { fontFamily: 'Manrope_600SemiBold', color: tokens.color.light.on.success },
-  privacyBody: { marginTop: 4, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.color.light.on.success },
-  footer: { marginTop: 'auto', padding: 20, borderTopWidth: 1, borderTopColor: tokens.color.light.border.subtle },
+  title: { fontWeight: '700', fontSize: 17, lineHeight: 23, textAlign: 'center', color: color.text.primary },
+  prompt: { marginTop: 34, fontWeight: '700', fontSize: 24, lineHeight: 30, color: color.text.primary },
+  chips: { flexDirection: 'row', gap: 0, marginTop: 18, overflow: 'hidden', borderWidth: 1, borderColor: color.border.subtle, borderRadius: 12, backgroundColor: color.background.surface },
+  chip: { flex: 1, minHeight: 42, paddingHorizontal: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: color.background.surface },
+  chipSelected: { borderColor: color.action.primary, backgroundColor: color.background.success },
+  chipText: { fontWeight: '600', fontSize: 13, color: color.text.secondary },
+  chipTextSelected: { color: color.on.success },
+  composer: { minHeight: 180, marginTop: 18, padding: 16, borderRadius: 14, borderWidth: 1, borderColor: color.border.subtle, backgroundColor: color.background.surface, fontWeight: '400', fontSize: 17, lineHeight: 25, color: color.text.primary },
+  counter: { marginTop: 6, textAlign: 'right', fontWeight: '400', fontSize: 12, color: color.text.secondary },
+  privacyNote: { marginTop: 22, padding: 16, borderRadius: 14, backgroundColor: color.background.success },
+  privacyTitle: { fontWeight: '600', color: color.on.success },
+  privacyBody: { marginTop: 4, fontWeight: '400', fontSize: 13, lineHeight: 19, color: color.on.success },
+  footer: { marginTop: 'auto', padding: 20, borderTopWidth: 1, borderTopColor: color.border.subtle },
 });

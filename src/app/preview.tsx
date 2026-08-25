@@ -1,7 +1,8 @@
 import { useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { tokens } from '@/design-system/tokens';
+import { useThemedStyles } from '@/design-system/appearance';
+import { type ColorScheme } from '@/design-system/tokens';
 import { Button } from '@/design-system/components/button';
 import { Group, PrimitiveChip, Section, SymbolIcon } from '@/features/native-demo/native-ui';
 
@@ -13,6 +14,7 @@ const reachLevels = [
 ] as const;
 
 export default function PreviewIntentScreen() {
+  const styles = useThemedStyles(createStyles);
   const { primitive = 'request', statement = '' } = useLocalSearchParams<{ primitive?: string; statement?: string }>();
   const primitiveLabel = primitive === 'offer' ? 'I offer' : primitive === 'plan' ? 'I want to' : 'I need';
 
@@ -60,20 +62,21 @@ export default function PreviewIntentScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  content: { flexGrow: 1, padding: 20, backgroundColor: tokens.color.light.background.app },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 17, lineHeight: 23, textAlign: 'center', color: tokens.color.light.text.primary },
+const createStyles = (color: ColorScheme) =>
+  StyleSheet.create({
+  content: { flexGrow: 1, padding: 20, backgroundColor: color.background.app },
+  title: { fontWeight: '700', fontSize: 17, lineHeight: 23, textAlign: 'center', color: color.text.primary },
   previewCard: { gap: 12, padding: 14 },
-  statement: { fontFamily: 'Manrope_700Bold', fontSize: 18, lineHeight: 24, color: tokens.color.light.text.primary },
+  statement: { fontWeight: '700', fontSize: 18, lineHeight: 24, color: color.text.primary },
   expiryRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  meta: { fontFamily: 'Manrope_400Regular', fontSize: 13, color: tokens.color.light.text.secondary },
+  meta: { fontWeight: '400', fontSize: 13, color: color.text.secondary },
   reachRow: { minHeight: 70, flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 14, paddingVertical: 12 },
   reachCopy: { flex: 1 },
-  reachTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.color.light.text.primary },
-  reachBody: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.color.light.text.secondary },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1, borderColor: tokens.color.light.border.subtle, alignItems: 'center', justifyContent: 'center' },
-  radioSelected: { borderColor: tokens.color.light.action.primary },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: tokens.color.light.action.primary },
-  divider: { height: 1, marginLeft: 14, backgroundColor: tokens.color.light.border.subtle },
+  reachTitle: { fontWeight: '600', fontSize: 15, lineHeight: 21, color: color.text.primary },
+  reachBody: { marginTop: 2, fontWeight: '400', fontSize: 13, lineHeight: 18, color: color.text.secondary },
+  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1, borderColor: color.border.subtle, alignItems: 'center', justifyContent: 'center' },
+  radioSelected: { borderColor: color.action.primary },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: color.action.primary },
+  divider: { height: 1, marginLeft: 14, backgroundColor: color.border.subtle },
   footer: { marginTop: 'auto', paddingTop: 24 },
 });

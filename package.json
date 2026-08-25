@@ -3,7 +3,6 @@
   "main": "expo-router/entry",
   "version": "0.1.1",
   "dependencies": {
-    "@expo-google-fonts/manrope": "^0.4.2",
     "@expo/ui": "~57.0.13",
     "@supabase/supabase-js": "^2.112.4",
     "expo": "~57.0.16",

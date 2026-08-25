@@ -2,11 +2,13 @@ import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tokens } from '@/design-system/tokens';
+import { useThemedStyles } from '@/design-system/appearance';
+import { type ColorScheme } from '@/design-system/tokens';
 import { broadcaster, featuredIntent } from '@/features/native-demo/nearcast-fixtures';
 import { ActionTray, Group, MiniIntentRow, ProfileBlock, Section, TopBar } from '@/features/native-demo/native-ui';
 
 export default function BroadcasterProfileScreen() {
+  const styles = useThemedStyles(createStyles);
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <TopBar title="Profile" onBack={() => router.back()} />
@@ -44,12 +46,13 @@ export default function BroadcasterProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
+const createStyles = (color: ColorScheme) =>
+  StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: color.background.app },
   content: { paddingHorizontal: 20, paddingBottom: 26 },
   textBlock: { padding: 16 },
-  body: { fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.color.light.text.primary },
-  muted: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.color.light.text.secondary },
+  body: { fontWeight: '400', fontSize: 15, lineHeight: 22, color: color.text.primary },
+  muted: { marginTop: 3, fontWeight: '400', fontSize: 14, lineHeight: 20, color: color.text.secondary },
   hiddenBlock: { padding: 16 },
-  hiddenTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 16, lineHeight: 22, color: tokens.color.light.text.primary },
+  hiddenTitle: { fontWeight: '600', fontSize: 16, lineHeight: 22, color: color.text.primary },
 });

@@ -73,3 +73,28 @@ export function useReducedMotion(): boolean {
 export function useMotionDuration(duration: number): number {
   return useReducedMotion() ? 0 : duration;
 }
+
+type StyleCache = Partial<Record<Appearance, unknown>>;
+
+const themedStyleCache = new WeakMap<object, StyleCache>();
+
+/**
+ * Resolve a per-appearance stylesheet.
+ *
+ * The factory must be declared at module level; its identity keys a cache so
+ * each appearance's stylesheet is built once per factory, not per render.
+ */
+export function useThemedStyles<T>(factory: (color: ColorScheme) => T): T {
+  const appearance = useAppearance();
+
+  let entry = themedStyleCache.get(factory);
+
+  if (!entry) {
+    entry = {};
+    themedStyleCache.set(factory, entry);
+  }
+
+  entry[appearance] ??= factory(colorsFor(appearance));
+
+  return entry[appearance] as T;
+}
