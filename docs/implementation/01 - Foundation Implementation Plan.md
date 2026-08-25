@@ -16,7 +16,7 @@
 - [x] Add lint, typecheck, unit-test, iOS-bundle, and database scripts.
 - [x] Add CI jobs for app and local Supabase verification.
 - [x] Run `npm run verify`; lint, typecheck, 10 unit tests, and the iOS bundle exit 0.
-- [ ] Run CI from a clean clone; expect both jobs green.
+- [x] Run CI from a clean clone; expect both jobs green.
 
 ## Task 2: Domain And Design Foundation
 
@@ -53,3 +53,4 @@ A clean clone runs app and database checks without undocumented steps, authentic
 | 2026-08-24 | Selected Expo Jest with React Native Testing Library for component interaction tests |
 | 2026-08-24 | Verified local Supabase reset, pgTAP, owned-schema lint, and generated database types |
 | 2026-08-25 | Verified the local composer preview route on iOS and Android development builds and fixed Android runtime warning sources found during verification |
+| 2026-08-25 | Confirmed GitHub Actions Verify run 1 on commit 7820a0a completed with both app and database jobs green from a clean clone |

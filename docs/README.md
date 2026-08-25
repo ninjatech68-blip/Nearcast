@@ -23,6 +23,7 @@ Read these documents first, in this order:
 - Trust and safety: Trust Privacy and Safety, Permissions and Access Rules, Community Policy Outline.
 - Engineering: System Architecture, API Contracts, Implementation Guide, implementation plans.
 - Operations: Metrics and Analytics Plan, Quality and Testing Plan, Release and Operations Plan.
+- Derived analysis (non-governing): [Requirements and Gap Analysis](./analysis/00%20-%20Requirements%20and%20Gap%20Analysis.md), which measures the approved requirements against the current repository and registers open documentation conflicts.
 
 ## Naming Rule
 
@@ -33,3 +34,4 @@ Document names should be readable by a non-technical stakeholder. Prefer names l
 | Date | Change |
 |---|---|
 | 2026-08-24 | Added a human-readable documentation map for the packaged Nearcast project |
+| 2026-08-25 | Added the derived requirements and gap analysis to the documentation map |
