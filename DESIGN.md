@@ -66,8 +66,8 @@ Components must use semantic tokens. Raw hex values belong only in token definit
 | `color.action.secondary` | `#17324D` | Information and provenance action |
 | `color.border.subtle` | `#DDD6C8` | Subtle separators and outlines |
 | `color.status.info` | `#1E5D8C` | Informational status |
-| `color.status.warning` | `#B7791F` | Warning status |
-| `color.status.danger` | `#D04A3A` | Error/destructive status |
+| `color.status.warning` | `#8A4B00` | Warning status |
+| `color.status.danger` | `#A33124` | Error/destructive status |
 
 ### Dark Appearance
 

@@ -11,7 +11,6 @@
 
     <header class="site-header">
       <div>
-        <p class="eyebrow">Approved review artifact</p>
         <h1>Nearcast Design System</h1>
         <p class="lede">Trustworthy Native Clarity for a calm, native, privacy-first intent network.</p>
       </div>
@@ -24,7 +23,6 @@
     <main id="main" class="page-shell">
       <section class="hero-card">
         <div>
-          <p class="section-kicker">Design thesis</p>
           <h2>Every screen answers the trust question before asking for action.</h2>
           <p>What is this? Why am I seeing it? What is safe to do next?</p>
         </div>
@@ -49,8 +47,10 @@
 
       <section class="board-section" aria-labelledby="tokens-title">
         <div class="section-heading">
-          <p class="section-kicker">01</p>
-          <h2 id="tokens-title">Semantic Tokens</h2>
+          <div class="section-title-row">
+            <span class="section-index" aria-hidden="true">01</span>
+            <h2 id="tokens-title">Semantic Tokens</h2>
+          </div>
           <p>Review real CSS variables for both appearances and the on-color contract.</p>
         </div>
 
@@ -98,8 +98,10 @@
 
       <section class="board-section" aria-labelledby="type-title">
         <div class="section-heading">
-          <p class="section-kicker">02</p>
-          <h2 id="type-title">Typography And Platform Mapping</h2>
+          <div class="section-title-row">
+            <span class="section-index" aria-hidden="true">02</span>
+            <h2 id="type-title">Typography And Platform Mapping</h2>
+          </div>
           <p>One shared hierarchy, mapped to native platform materials.</p>
         </div>
         <div class="split-grid">
@@ -135,8 +137,10 @@
 
       <section class="board-section" aria-labelledby="components-title">
         <div class="section-heading">
-          <p class="section-kicker">03</p>
-          <h2 id="components-title">Components In Real CSS</h2>
+          <div class="section-title-row">
+            <span class="section-index" aria-hidden="true">03</span>
+            <h2 id="components-title">Components In Real CSS</h2>
+          </div>
           <p>Core primitives and Nearcast-specific components with meaningful states.</p>
         </div>
 
@@ -201,8 +205,10 @@
 
       <section class="board-section" aria-labelledby="native-title">
         <div class="section-heading">
-          <p class="section-kicker">04</p>
-          <h2 id="native-title">Native Navigation, Sheets, And Forms</h2>
+          <div class="section-title-row">
+            <span class="section-index" aria-hidden="true">04</span>
+            <h2 id="native-title">Native Navigation, Sheets, And Forms</h2>
+          </div>
           <p>Main screens retain the tab bar; pushed details and chat use native back navigation.</p>
         </div>
 
@@ -222,13 +228,13 @@
               <p class="meta">Maple area · Food & Coffee</p>
               <button class="why-chip" type="button">Why shown</button>
             </div>
-            <nav class="tab-bar" aria-label="Mobile tab bar">
-              <a href="#" aria-current="page">Home</a>
-              <a href="#">Explore</a>
-              <a class="tab-bar__broadcast" href="#">Broadcast</a>
-              <a href="#">Chat</a>
-              <a href="#">Profile</a>
-            </nav>
+            <div class="tab-bar" role="tablist" aria-label="Mobile tab bar preview">
+              <button type="button" role="tab" aria-selected="true">Home</button>
+              <button type="button" role="tab" aria-selected="false">Explore</button>
+              <button class="tab-bar__broadcast" type="button" role="tab" aria-selected="false">Broadcast</button>
+              <button type="button" role="tab" aria-selected="false">Chat</button>
+              <button type="button" role="tab" aria-selected="false">Profile</button>
+            </div>
           </article>
 
           <article class="phone-frame" aria-label="Composer sheet preview">
@@ -250,8 +256,10 @@
 
       <section class="board-section" aria-labelledby="states-title">
         <div class="section-heading">
-          <p class="section-kicker">05</p>
-          <h2 id="states-title">App States And Accessibility</h2>
+          <div class="section-title-row">
+            <span class="section-index" aria-hidden="true">05</span>
+            <h2 id="states-title">App States And Accessibility</h2>
+          </div>
           <p>Empty and failure states stay honest, useful, and privacy-safe.</p>
         </div>
         <div class="state-card-grid">

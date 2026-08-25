@@ -105,6 +105,8 @@ The approved 2026-08-25 design direction introduces an implementation target for
 | `color.action.primary` | `#0F5E46` | `#65D0A1` |
 | `color.action.primaryPressed` | `#0A4936` | `#0A4936` |
 | `color.action.secondary` | `#17324D` | `#8EB8E5` |
+| `color.status.warning` | `#8A4B00` | `#FFE2A7` |
+| `color.status.danger` | `#A33124` | `#FFD9D4` |
 | `color.border.subtle` | `#DDD6C8` | `#33443C` |
 
 Every colored surface or accent must define a matching foreground token such as `color.onPrimary`, `color.onInfo`, `color.onWarning`, `color.onDanger`, `color.onSurface`, and `color.onSuccess`.
