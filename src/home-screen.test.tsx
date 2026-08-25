@@ -19,31 +19,24 @@ jest.mock('expo-symbols', () => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const HomeScreen = require('./app/index').default;
+const HomeScreen = require('./app/(tabs)/index').default;
 
 describe('HomeScreen', () => {
-  it('uses the home page as a self-explanatory For You feed', async () => {
+  it('uses a native-style For You feed as the home page', async () => {
     const view = await render(<HomeScreen />);
 
-    expect(view.getAllByText('For You')).toHaveLength(2);
-    expect(view.getByText('What is happening around you')).toBeTruthy();
+    expect(view.getByText('For You')).toBeTruthy();
+    expect(view.getByText('Around you')).toBeTruthy();
     expect(view.getByText('Nothing relevant is active right now. Adjust your preferences or broadcast an intent.')).toBeTruthy();
-    expect(view.getByText("Every future intent here will include a reason under Why you're seeing this.")).toBeTruthy();
+    expect(view.getByText("Every intent will show Why you're seeing this before you respond.")).toBeTruthy();
   });
 
-  it('opens the broadcast composer from the bottom navigation', async () => {
+  it('opens the composer from the in-feed broadcast action', async () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Broadcast' }));
+    await user.press(view.getByRole('button', { name: 'Broadcast an intent' }));
 
     expect(mockPush).toHaveBeenCalledWith('/create');
-  });
-
-  it('keeps unavailable navigation destinations visible with clear labels', async () => {
-    const view = await render(<HomeScreen />);
-
-    expect(view.getByRole('button', { name: 'Activity unavailable in this build' })).toBeDisabled();
-    expect(view.getByRole('button', { name: 'You unavailable in this build' })).toBeDisabled();
   });
 });

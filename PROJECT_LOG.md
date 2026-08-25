@@ -39,6 +39,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Physical iOS signing setup | In progress | Wired the iOS project to the logged-in personal team `Q2234855S8` and changed the development bundle identifier to `com.piyushsharma.nearcast.dev` so the app can be installed on a physical iPhone |
 | 2026-08-25 | Composer keyboard UX | Resolved | Added keyboard dismissal and scroll-friendly handling to the intent composer so the review action remains reachable while typing |
 | 2026-08-25 | Home feed UX | Resolved | Replaced the explainer-style home page with an honest `For You` empty-feed shell and bottom navigation for `For You`, `Broadcast`, `Activity`, and `You` |
+| 2026-08-25 | Native homepage UX pass | Resolved | Reworked the homepage as a native-style `For You` tab with grouped feed sections and moved primary navigation to Expo Router tabs |
 
 ## Governance Rules
 
@@ -57,3 +58,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-24 | Added greenfield build clarification |
 | 2026-08-25 | Recorded local mobile tooling installation, device-flow verification, and Android warning cleanup |
 | 2026-08-25 | Recorded composer keyboard and home feed UX updates |
+| 2026-08-25 | Recorded native homepage UX pass |

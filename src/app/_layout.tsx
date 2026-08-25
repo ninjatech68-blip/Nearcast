@@ -51,7 +51,7 @@ export default function RootLayout() {
         headerTitleStyle: { fontFamily: 'Manrope_700Bold' },
         headerTintColor: tokens.semantic.color.textPrimary,
       }}>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="create" options={{ title: 'New intent', presentation: 'modal' }} />
       <Stack.Screen name="preview" options={{ title: 'Review intent' }} />
     </Stack>
