@@ -1,55 +1,103 @@
-import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { StatePanel, type ScreenState } from '@/design-system/components/state-panel';
 import { tokens } from '@/design-system/tokens';
-import { broadcaster, featuredIntent } from '@/features/native-demo/nearcast-fixtures';
-import { ActionTray, Group, MiniIntentRow, ProfileBlock, Section, TopBar } from '@/features/native-demo/native-ui';
+import {
+  describeReliability,
+  fetchProfileSummary,
+  type ProfileSummary,
+} from '@/features/intents/data/activity-queries';
+
+type ProfileState = { kind: 'content'; profile: ProfileSummary } | ScreenState;
 
 export default function BroadcasterProfileScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  const summary = useQuery({
+    queryKey: ['profile', id],
+    queryFn: () => fetchProfileSummary(id ?? ''),
+  });
+
+  const state: ProfileState = summary.isPending
+    ? { kind: 'loading' }
+    : summary.isError || !summary.data || summary.data.state === 'error'
+      ? { kind: 'error', message: 'We could not load this profile. Try again.' }
+      : summary.data.data
+        ? { kind: 'content', profile: summary.data.data }
+        : { kind: 'restricted', message: 'This information is not available to you.' };
+
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <TopBar title="Profile" onBack={() => router.back()} />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Group>
-          <ProfileBlock {...broadcaster} />
-        </Group>
+    <SafeAreaView style={styles.screen}>
+      <Pressable
+        accessibilityLabel="Go back"
+        accessibilityRole="button"
+        hitSlop={12}
+        onPress={() => router.back()}
+        style={styles.backBar}>
+        <Text style={styles.backLabel}>Back</Text>
+      </Pressable>
 
-        <Section title="Current intent">
-          <Group>
-            <MiniIntentRow metadata={featuredIntent.metadata} status={featuredIntent.status} title={featuredIntent.title} />
-          </Group>
-        </Section>
+      {state.kind !== 'content' ? (
+        <StatePanel onRetry={() => void summary.refetch()} state={state} />
+      ) : (
+        <ScrollView contentContainerStyle={styles.content}>
+          <Text accessibilityRole="header" style={styles.name}>
+            {state.profile.displayName}
+          </Text>
+          {state.profile.city ? (
+            <Text style={styles.meta}>{state.profile.city} area</Text>
+          ) : null}
 
-        <Section title="Trust context">
-          <Group>
-            <View style={styles.textBlock}>
-              <Text style={styles.body}>Aarav is one connection away from your network.</Text>
-              <Text style={styles.muted}>Origin circle stays private.</Text>
+          {state.profile.isRestricted ? (
+            <View style={styles.restricted}>
+              <Text style={styles.restrictedText}>
+                Some actions are unavailable while we review a safety concern.
+              </Text>
             </View>
-          </Group>
-        </Section>
+          ) : null}
 
-        <Section>
-          <Group>
-            <View style={styles.hiddenBlock}>
-              <Text style={styles.hiddenTitle}>Hidden until accepted</Text>
-              <Text style={styles.muted}>Exact place and contact details</Text>
-            </View>
-          </Group>
-        </Section>
-      </ScrollView>
-      <ActionTray primaryLabel="Request to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
+          <Text style={styles.sectionTitle}>Trust context</Text>
+          <View style={styles.card}>
+            {state.profile.reliability.length === 0 ? (
+              <Text style={styles.body}>No confirmed interactions yet.</Text>
+            ) : (
+              state.profile.reliability.map((entry) => (
+                <Text key={entry.context} style={styles.body}>
+                  {entry.context}: {describeReliability(entry)}
+                </Text>
+              ))
+            )}
+            {state.profile.verifiedKinds.length > 0 ? (
+              <Text style={styles.body}>
+                {state.profile.verifiedKinds.join(', ')} verified. Verification does not guarantee
+                safety.
+              </Text>
+            ) : null}
+          </View>
+
+          <Text style={styles.privacy}>
+            Contact details are hidden until this person chooses to share them after a match.
+          </Text>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  content: { paddingHorizontal: 20, paddingBottom: 26 },
-  textBlock: { padding: 16 },
-  body: { fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.semantic.color.textPrimary },
-  muted: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
-  hiddenBlock: { padding: 16 },
-  hiddenTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 16, lineHeight: 22, color: tokens.semantic.color.textPrimary },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  backBar: { paddingHorizontal: 16, paddingVertical: 12 },
+  backLabel: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
+  content: { paddingHorizontal: 20, paddingBottom: 24, gap: 8 },
+  name: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 22 },
+  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 15 },
+  restricted: { marginTop: 8, padding: 14, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.warningSurface },
+  restrictedText: { color: tokens.semantic.color.warningText, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
+  sectionTitle: { marginTop: 16, color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 13, textTransform: 'uppercase' },
+  card: { padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, gap: 8 },
+  body: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20 },
+  privacy: { marginTop: 12, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
 });

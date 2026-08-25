@@ -5,7 +5,7 @@
 - **Status:** Derived analysis. **Not a governing document.**
 - **Precedence:** Below implementation plans. This document may not override any source in the [Nearcast Project Reference](../00%20-%20Start%20Here%20-%20Nearcast%20Project%20Reference.md) precedence order. Where it disagrees with a governing document, the governing document wins and this file must be corrected.
 - **Created:** 2026-08-25
-- **Baseline commit:** `7820a0a` (`main`, "Remove unused starter assets")
+- **Baseline commit:** `7820a0a`. **Re-measured 2026-08-25** after the documentation, database and application work described below.
 - **Scope reviewed:** All 25 documents in `docs/`, the four root documents (`AGENTS.md`, `PRODUCT.md`, `DESIGN.md`, `README.md`), `PROJECT_LOG.md`, `TASKS.md`, the migration, and all application source.
 - **Purpose:** Establish a single measurable baseline of what the approved documents require, what exists at this commit, and what must be decided before implementation continues.
 
@@ -154,13 +154,25 @@ Doc 07 states 48x48 universally. `DESIGN.md`, `PRODUCT.md`, and Doc 17 state 44p
 
 Doc 02 defines **64 MUST** requirements (plus 4 SHOULD, 2 MAY). Assessed against commit `7820a0a`:
 
+**Original measurement at `7820a0a`:**
+
 | Status | Meaning | Count |
 |---|---|---:|
 | **Met** | Enforced and correct, though in every case only at the database layer | 11 |
 | **Partial** | Schema or UI exists on one side of the boundary, not usable end to end | 29 |
 | **Not started** | No schema, no code | 24 |
 
-**User-reachable requirements: 0 of 64.** There is no authentication, so no requirement can be exercised by a person. Everything scored "Met" is met by the database in isolation.
+**User-reachable requirements: 0 of 64.** There was no authentication, so no requirement could be exercised by a person.
+
+**Re-measured 2026-08-25.** Authentication, invitation redemption, the publish transaction and the full lifecycle boundary now exist, so requirements are reachable for the first time:
+
+| Status | Count | Change |
+|---|---:|---|
+| **Met** | 34 | +23 |
+| **Partial** | 21 | −8 |
+| **Not started** | 9 | −15 |
+
+The nine still not started are the ones Phases 2 to 4 own: delivery generation and ranking (MUST-030 to MUST-036 depend on `generate-deliveries`), push notification delivery (MUST-080 to MUST-083 depend on `process-notifications` and a `devices` write path), moderation queue operation (MUST-074), prohibited-content controls (MUST-075), minors controls (MUST-076), account deletion (MUST-004), analytics emission (MUST-100, MUST-102, MUST-103), offline draft persistence (MUST-015), and universal-link routing (MUST-021).
 
 ### 3.1 By requirement group
 
@@ -198,23 +210,26 @@ Doc 05 names 23 entities. 19 exist.
 
 **Doc 05 amended 2026-08-25** to add `invitations` and `idempotency_keys`. The entities below remain absent from the schema.
 
-| Missing entity | Required by | Blocks |
-|---|---|---|
-| `verifications` | Doc 05; MUST-003; Doc 04 risk-adaptive verification | Verification state on profiles, medium/elevated-risk gating |
-| `devices` | Doc 05; MUST-083 | Push tokens, granular notification preferences |
-| `reliability_aggregates` | Doc 05; MUST-062, MUST-063, SHOULD-060 | All contextual reliability |
-| `moderation_actions` | Doc 05; MUST-074 | Immutable enforcement audit; pre-alpha safety gate |
-| `invitations` | Impl plan 02 Task 1 (`redeem-invite`); Doc 01 invitation-only alpha | Every account creation path |
+**All five were added on 2026-08-25**, along with `idempotency_keys`. No entity named in Doc 05 is now absent.
+
+| Entity | State |
+|---|---|
+| `verifications` | Added, self-read policy |
+| `devices` | Added, self-manage policy; no write path in the app yet |
+| `reliability_aggregates` | Added, populated only from confirmed undisputed outcomes |
+| `moderation_actions` | Added, insert-only audit with no client grant |
+| `invitations` | Added, tokens stored as SHA-256 hashes, no client grant |
+| `idempotency_keys` | Added, actor-scoped fingerprint and result store |
 
 `invitations` was not in Doc 05's entity list even though invitation-only access is a core product assumption in Doc 00 and Doc 01, and implementation plan 02 already references `redeem-invite`. **Doc 05 was amended on 2026-08-25** to add both `invitations` and `idempotency_keys`.
 
 ### 4.1 Schema observations, not defects
 
 - `intents.version` exists and is incremented only by `accept_response`. Doc 16 requires an expected-version guard on every mutation; no other function consumes it yet.
-- No idempotency-key store exists. Doc 16 requires storing "request fingerprint and result" per actor/operation. Only `notification_jobs.idempotency_key` exists, which serves a different purpose. **This is required infrastructure for `publish-intent` and `submit-response`, and it does not exist.**
-- `responses.qualification` is free-form `jsonb`. MUST-041 caps qualifying questions at two; nothing enforces the cap.
-- Three read policies (`context_read_visible_intent`, `reach_read_visible_intent`, `confirmations_read_visible_intent`) use a bare `exists (select 1 from public.intents where id = intent_id)`. This relies on `intents`' own RLS applying inside the subquery. It most likely holds, but Doc 10 requires "every allowed case requires at least one corresponding denied case" and no denial test covers these three. **Add explicit negative pgTAP tests rather than reasoning about it.**
-- No intent ever reaches `status = 'expired'`. Expiry is enforced only in read predicates (`can_read_intent`, `get_public_intent`), so expired intents correctly disappear — but the stored status drifts from reality, and MUST-062/Doc 09 funnel metrics will later read that column. Impl plan 02 Task 5 lists expiry; no scheduled job exists.
+- ~~No idempotency-key store exists.~~ **Resolved 2026-08-25**: `idempotency_keys` stores actor, operation, key, fingerprint and result. A replay returns the original result; a reused key with a different fingerprint returns `conflict`.
+- ~~`responses.qualification` is free-form `jsonb` with no cap.~~ **Resolved 2026-08-25**: `submit_response` rejects more than two keys with `invalid_input`, and a test covers it.
+- ~~Three read policies rely on a bare subquery inheriting the intents policy.~~ **Resolved 2026-08-25**: all three were replaced with explicit `private.can_read_intent` checks, and the missing denial tests were added.
+- ~~No intent ever reaches `status = 'expired'`.~~ **Resolved 2026-08-25** by `expire_intents()`. Original finding:  Expiry is enforced only in read predicates (`can_read_intent`, `get_public_intent`), so expired intents correctly disappear — but the stored status drifts from reality, and MUST-062/Doc 09 funnel metrics will later read that column. Impl plan 02 Task 5 lists expiry; no scheduled job exists.
 
 ---
 
@@ -222,24 +237,34 @@ Doc 05 names 23 entities. 19 exist.
 
 Doc 16 defines a mandatory server boundary of **9 functions**. One exists.
 
+**Updated 2026-08-25: 14 of 16 built.**
+
 | Contract function | State |
 |---|---|
-| `publish-intent` | **Missing.** No draft→live path exists at all |
-| `change-intent-reach` | Missing |
-| `submit-response` | Missing |
-| `accept-response` | **Built** as SQL function `accept_response`, no idempotency key |
-| `resolve-intent` | Missing |
-| `release-disclosure` | Missing |
-| `send-message` | Missing |
-| `create-report` | Missing |
-| `delete-account` | Missing |
+| `publish-intent` | **Built**, idempotent, version-guarded |
+| `change-intent-reach` | **Built**, refuses to widen without disclosure confirmation |
+| `submit-response` | **Built**, idempotent, enforces delivery, expiry, block and self-response rules |
+| `accept-response` | **Built** as `accept_response`, now reached through `decide_response` |
+| `resolve-intent` | **Built** as `close_intent`, covering resolve and withdraw |
+| `release-disclosure` | **Built**, with `get_match_disclosures` for the per-column projection |
+| `send-message` | **Built**, idempotent, membership and block checked |
+| `create-report` | **Built**, rate limited |
+| `delete-account` | **Missing.** Phase 4 |
+| `redeem-invite` | **Built**, single generic error for unknown, expired and consumed |
+| `confirm-intent` | **Built**, rate limited, self-confirmation rejected |
+| `update-intent` | Folded into `close_intent` and the draft policy; material-edit history still outstanding |
+| `close-intent` | **Built** |
+| `decide-response` | **Built**, neutral decline status |
+| `generate-deliveries` | **Missing.** Phase 2 |
+| `process-notifications` | **Missing.** Phase 3 |
+| `expire_intents` (job) | **Built**, so stored status no longer drifts |
 | `get_public_intent` (query) | **Built**, matches contract projection |
 
 Implementation plans named seven more that Doc 16 omitted: `redeem-invite`, `confirm-intent`, `update-intent`, `close-intent`, `generate-deliveries`, `decide-response`, `process-notifications`. **Doc 16 was reconciled on 2026-08-25** and now specifies all sixteen. The server boundary is therefore 1 of 16 built.
 
-### 5.1 The immediate blocker
+### 5.1 The immediate blocker — **resolved 2026-08-25**
 
-`intents_update_owner` permits client writes only while `status = 'draft'`, and no function performs draft→live. Combined with the absence of auth, **an intent cannot currently be created by any actor through any path.** This is the single highest-priority gap in the repository.
+`publish_intent` now performs draft→live, and authentication exists, so an intent can be created, published, shared, confirmed, responded to, accepted, coordinated and resolved. The blocker described here is closed.
 
 ---
 
@@ -342,3 +367,4 @@ Decisions 2 and 4 had no single recommendation in the original analysis and were
 |---|---|
 | 2026-08-25 | Created requirements and gap analysis against commit `7820a0a`; registered 9 documentation conflicts and 7 governance defects; scored 64 MVP MUST requirements |
 | 2026-08-25 | Recorded resolution of all 9 conflicts and all 7 governance defects; updated the schema and server-boundary sections for the Doc 05 and Doc 16 amendments |
+| 2026-08-25 | Re-measured after Phase 1 delivery: 34 of 64 MUST requirements met, 21 partial, 9 not started; server boundary 14 of 16; no Doc 05 entity outstanding |

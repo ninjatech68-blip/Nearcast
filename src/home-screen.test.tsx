@@ -1,42 +1,107 @@
-import { describe, expect, it, jest } from '@jest/globals';
-import { render, userEvent } from '@testing-library/react-native';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { screen, waitFor } from '@testing-library/react-native';
+
+import { renderScreen } from './test-utils';
 
 const mockPush = jest.fn();
 
 jest.mock('expo-router', () => ({
-  router: {
-    push: (...args: unknown[]) => mockPush(...args),
-  },
+  router: { push: (...args: unknown[]) => mockPush(...args) },
 }));
 
-jest.mock('expo-symbols', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Text } = require('react-native');
+const mockUseSession = jest.fn<() => unknown>();
+jest.mock('@/features/auth/session', () => ({
+  useSession: () => mockUseSession(),
+}));
 
-  return {
-    SymbolView: ({ fallback }: { fallback?: React.ReactNode }) => <Text>{fallback}</Text>,
-  };
-});
+const mockFetchFeed = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+jest.mock('@/features/intents/data/intent-queries', () => ({
+  fetchFeed: (...args: unknown[]) => mockFetchFeed(...args),
+  PRIMITIVE_LABELS: { request: 'I need', offer: 'I offer', plan: 'I want to' },
+}));
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const HomeScreen = require('./app/(tabs)/index').default;
 
-describe('HomeScreen', () => {
-  it('uses a native-style For You feed as the home page', async () => {
-    const view = await render(<HomeScreen />);
+const signedIn = { status: 'signed-in', hasProfile: true };
 
-    expect(view.getByText('For You')).toBeTruthy();
-    expect(view.getByText('Around you')).toBeTruthy();
-    expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
+function card(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'intent-1',
+    primitiveLabel: 'I need',
+    statement: 'Need one person to help sort books',
+    approximatePlace: 'Indiranagar',
+    expiresAt: new Date(Date.now() + 7_200_000).toISOString(),
+    reasonText: 'Shared through one trusted connection',
+    responseAction: 'Offer help',
+    confirmationCount: 3,
+    ...overrides,
+  };
+}
+
+describe('HomeScreen', () => {
+  beforeEach(() => {
+    mockPush.mockReset();
+    mockUseSession.mockReset();
+    mockFetchFeed.mockReset();
   });
 
-  it('opens intent detail from the primary feed card', async () => {
-    const user = userEvent.setup();
-    const view = await render(<HomeScreen />);
+  it('asks an unauthenticated visitor to sign in rather than showing an empty feed', async () => {
+    mockUseSession.mockReturnValue({ status: 'signed-out', hasProfile: false });
 
-    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
+    await renderScreen(<HomeScreen />);
 
-    expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
+    expect(screen.getByText(/Sign in with your invitation/)).toBeTruthy();
+    expect(mockFetchFeed).not.toHaveBeenCalled();
+  });
+
+  it('renders each delivered intent with its stored delivery reason', async () => {
+    mockUseSession.mockReturnValue(signedIn);
+    mockFetchFeed.mockResolvedValue({ state: 'ok', data: [card()] });
+
+    await renderScreen(<HomeScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Need one person to help sort books')).toBeTruthy();
+    });
+    expect(
+      screen.getByText('Why you are seeing this: Shared through one trusted connection'),
+    ).toBeTruthy();
+    expect(screen.getByText('Confirmed by 3 people at the origin')).toBeTruthy();
+  });
+
+  it('states an empty feed honestly instead of inventing activity', async () => {
+    mockUseSession.mockReturnValue(signedIn);
+    mockFetchFeed.mockResolvedValue({ state: 'ok', data: [] });
+
+    await renderScreen(<HomeScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Nothing relevant is active right now')).toBeTruthy();
+    });
+  });
+
+  it('offers recovery when the feed cannot load', async () => {
+    mockUseSession.mockReturnValue(signedIn);
+    mockFetchFeed.mockResolvedValue({ state: 'error', message: 'Check your connection.' });
+
+    await renderScreen(<HomeScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Something went wrong')).toBeTruthy();
+    });
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+  });
+
+  it('never shows a confirmation count when there are no confirmations', async () => {
+    mockUseSession.mockReturnValue(signedIn);
+    mockFetchFeed.mockResolvedValue({ state: 'ok', data: [card({ confirmationCount: 0 })] });
+
+    await renderScreen(<HomeScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Need one person to help sort books')).toBeTruthy();
+    });
+    expect(screen.queryByText(/Confirmed by/)).toBeNull();
   });
 });

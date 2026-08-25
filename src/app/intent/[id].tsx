@@ -1,92 +1,129 @@
-import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Button } from '@/design-system/components/button';
+import { StatePanel, type ScreenState } from '@/design-system/components/state-panel';
 import { tokens } from '@/design-system/tokens';
-import { broadcaster, featuredIntent } from '@/features/native-demo/nearcast-fixtures';
-import { ActionTray, Group, IconLine, PrimitiveChip, PrivacyStrip, ProfileBlock, Section, SymbolIcon, TopBar } from '@/features/native-demo/native-ui';
+import { useSession } from '@/features/auth/session';
+import { fetchIntentDetail, type IntentDetail } from '@/features/intents/data/intent-queries';
 
+type DetailState = { kind: 'content'; intent: IntentDetail } | ScreenState;
+
+/**
+ * Progressive disclosure order: what it is, why you received it, provenance,
+ * then the single contextual action. Identity never leads.
+ */
 export default function IntentDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { userId } = useSession();
+
+  const detail = useQuery({
+    queryKey: ['intent', id, userId],
+    queryFn: () => fetchIntentDetail(id ?? '', userId),
+  });
+
+  const state: DetailState = detail.isPending
+    ? { kind: 'loading' }
+    : detail.isError || !detail.data || detail.data.state === 'error'
+      ? { kind: 'error', message: 'We could not load this intent. Try again.' }
+      : detail.data.data
+        ? { kind: 'content', intent: detail.data.data }
+        : { kind: 'restricted', message: 'This information is not available to you.' };
+
+  if (state.kind !== 'content') {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <BackBar />
+        <StatePanel onRetry={() => void detail.refetch()} state={state} />
+      </SafeAreaView>
+    );
+  }
+
+  const { intent } = state;
+
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <TopBar title="Intent" onBack={() => router.back()} />
+    <SafeAreaView style={styles.screen}>
+      <BackBar />
       <ScrollView contentContainerStyle={styles.content}>
-        <Group>
-          <View style={styles.summary}>
-            <PrimitiveChip label={featuredIntent.primitive} />
-            <Text style={styles.title}>{featuredIntent.title}</Text>
-            <Text style={styles.meta}>{featuredIntent.metadata}</Text>
-            <View style={styles.expiryPill}>
-              <SymbolIcon fallback="E" name="clock" size={16} />
-              <Text style={styles.expiryText}>{featuredIntent.expiry}</Text>
-            </View>
+        <Text style={styles.primitive}>{intent.primitiveLabel}</Text>
+        <Text accessibilityRole="header" style={styles.statement}>
+          {intent.statement}
+        </Text>
+        {intent.approximatePlace ? (
+          <Text style={styles.meta}>{intent.approximatePlace} area</Text>
+        ) : null}
+
+        {intent.reasonText ? (
+          <View style={styles.reasonBox}>
+            <Text style={styles.reasonTitle}>Why you are seeing this</Text>
+            <Text style={styles.reasonBody}>{intent.reasonText}</Text>
           </View>
-        </Group>
+        ) : null}
 
-        <Section title="Posted by">
-          <Group>
-            <ProfileBlock {...broadcaster} onOpen={() => router.push('/profile/aarav')} />
-          </Group>
-        </Section>
+        <View style={styles.trustBox}>
+          <Text style={styles.trustText}>
+            {intent.confirmationCount === 0
+              ? 'No confirmations yet.'
+              : intent.confirmationCount === 1
+                ? 'Confirmed by 1 person at the origin.'
+                : `Confirmed by ${intent.confirmationCount} people at the origin.`}
+          </Text>
+          <Text style={styles.trustHint}>
+            Confirmation means someone recognises or supports this intent. It does not guarantee
+            attendance, accuracy, or safety.
+          </Text>
+        </View>
 
-        <Section title="What they need">
-          <Group>
-            <View style={styles.context}>
-              <Text style={styles.body}>{featuredIntent.summary}</Text>
-              <View style={styles.chipRow}>
-                {featuredIntent.chips.map((chip) => (
-                  <View key={chip} style={styles.infoChip}><Text style={styles.infoChipText}>{chip}</Text></View>
-                ))}
-              </View>
-            </View>
-          </Group>
-        </Section>
+        {intent.broadcasterFirstName ? (
+          <Text style={styles.meta}>Shared by {intent.broadcasterFirstName}</Text>
+        ) : null}
 
-        <Section>
-          <View style={styles.reasonPanel}>
-            <SymbolIcon fallback="W" name="person.2" size={28} />
-            <View style={styles.reasonCopy}>
-              <Text style={styles.reasonText}>Why this reached you: {featuredIntent.reason}</Text>
-              <Text style={styles.reasonMeta}>Origin circle stays private.</Text>
-            </View>
-          </View>
-        </Section>
-
-        <Section>
-          <Group>
-            <PrivacyStrip />
-          </Group>
-        </Section>
-
-        <Section>
-          <Group>
-            <View style={styles.hiddenRow}>
-              <IconLine fallback="H" icon="lock" text="Hidden until accepted. Exact place and contact details." />
-            </View>
-          </Group>
-        </Section>
+        <Text style={styles.privacy}>
+          No exact address or contact details are shown. The originating group stays private.
+        </Text>
       </ScrollView>
-      <ActionTray primaryLabel="Request to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
+
+      {!intent.isOwn ? (
+        <View style={styles.footer}>
+          <Button
+            label={intent.responseAction}
+            onPress={() => router.push(`/request/${intent.id}`)}
+          />
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
 
+function BackBar() {
+  return (
+    <Pressable
+      accessibilityLabel="Go back"
+      accessibilityRole="button"
+      hitSlop={12}
+      onPress={() => router.back()}
+      style={styles.backBar}>
+      <Text style={styles.backLabel}>Back</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  content: { paddingHorizontal: 20, paddingBottom: 26 },
-  summary: { gap: 12, padding: 16 },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
-  meta: { fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textSecondary },
-  expiryPill: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: tokens.semantic.color.trustSurface },
-  expiryText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.trustText },
-  context: { gap: 14, padding: 16 },
-  body: { fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 23, color: tokens.semantic.color.textPrimary },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  infoChip: { paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: tokens.semantic.color.backgroundSubtle },
-  infoChipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: tokens.semantic.color.textSecondary },
-  reasonPanel: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, backgroundColor: tokens.semantic.color.trustSurface },
-  reasonCopy: { flex: 1 },
-  reasonText: { fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.trustText },
-  reasonMeta: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.trustText },
-  hiddenRow: { paddingHorizontal: 16, paddingBottom: 14 },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  backBar: { paddingHorizontal: 16, paddingVertical: 12 },
+  backLabel: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
+  content: { paddingHorizontal: 20, paddingBottom: 24, gap: 10 },
+  primitive: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_600SemiBold', fontSize: 12, textTransform: 'uppercase' },
+  statement: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28 },
+  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 15 },
+  reasonBox: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.infoSurface, gap: 4 },
+  reasonTitle: { color: tokens.semantic.color.infoText, fontFamily: 'Manrope_600SemiBold', fontSize: 14 },
+  reasonBody: { color: tokens.semantic.color.infoText, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20 },
+  trustBox: { padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.trustSurface, gap: 4 },
+  trustText: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
+  trustHint: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
+  privacy: { marginTop: 8, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
+  footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
 });

@@ -50,3 +50,6 @@ supabase/.temp/
 /android
 /build/
 /work/
+
+# Local export output from npm run bundle:ios
+dist/

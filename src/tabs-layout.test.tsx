@@ -36,11 +36,12 @@ describe('TabsLayout', () => {
     const view = await render(<TabsLayout />);
 
     expect(view.getByTestId('native-tabs')).toBeTruthy();
+    // Four destinations per the governed information architecture. Coordination
+    // lives inside Activity, so there is deliberately no chat destination.
     expect(tabScreens).toEqual([
       { name: 'index', title: 'For You' },
-      { name: 'activity', title: 'Activity' },
       { name: 'broadcast', title: 'Broadcast' },
-      { name: 'messages', title: 'Messages' },
+      { name: 'activity', title: 'Activity' },
       { name: 'you', title: 'You' },
     ]);
   });

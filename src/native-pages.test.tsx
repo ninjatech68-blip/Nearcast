@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { render, userEvent } from '@testing-library/react-native';
+import { screen, waitFor } from '@testing-library/react-native';
+
+import { renderScreen } from './test-utils';
 
 const mockPush = jest.fn();
 const mockBack = jest.fn();
@@ -8,93 +10,131 @@ jest.mock('expo-router', () => ({
   router: {
     back: () => mockBack(),
     push: (...args: unknown[]) => mockPush(...args),
+    replace: (...args: unknown[]) => mockPush(...args),
   },
-  Redirect: ({ href }: { href: string }) => `Redirect:${href}`,
+  useLocalSearchParams: () => ({ id: 'intent-1', shareSlug: 'slug-1', token: 'tok' }),
 }));
 
-jest.mock('expo-symbols', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Text } = require('react-native');
+const mockUseSession = jest.fn<() => unknown>();
+jest.mock('@/features/auth/session', () => ({ useSession: () => mockUseSession() }));
 
-  return {
-    SymbolView: ({ fallback }: { fallback?: React.ReactNode }) => <Text>{fallback}</Text>,
-  };
-});
+const mockFetchDetail = jest.fn<(...a: unknown[]) => Promise<unknown>>();
+const mockFetchFeed = jest.fn<(...a: unknown[]) => Promise<unknown>>();
+jest.mock('@/features/intents/data/intent-queries', () => ({
+  fetchIntentDetail: (...a: unknown[]) => mockFetchDetail(...a),
+  fetchFeed: (...a: unknown[]) => mockFetchFeed(...a),
+  PRIMITIVE_LABELS: { request: 'I need', offer: 'I offer', plan: 'I want to' },
+}));
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const HomeScreen = require('./app/(tabs)/index').default;
+const mockFetchActivity = jest.fn<(...a: unknown[]) => Promise<unknown>>();
+const mockFetchProfile = jest.fn<(...a: unknown[]) => Promise<unknown>>();
+jest.mock('@/features/intents/data/activity-queries', () => ({
+  fetchActivity: (...a: unknown[]) => mockFetchActivity(...a),
+  fetchProfileSummary: (...a: unknown[]) => mockFetchProfile(...a),
+  describeReliability: () => '8 of 9 confirmed interactions were completed',
+  submitResponse: jest.fn(),
+  STATUS_LABELS: {},
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const IntentDetailScreen = require('./app/intent/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const BroadcasterProfileScreen = require('./app/profile/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const RequestSheetScreen = require('./app/request/[id]').default;
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ActivityScreen = require('./app/(tabs)/activity').default;
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const MessagesScreen = require('./app/(tabs)/messages').default;
+
+const signedIn = { status: 'signed-in', hasProfile: true, userId: 'user-1' };
 
 describe('native page set', () => {
   beforeEach(() => {
     mockPush.mockReset();
     mockBack.mockReset();
+    mockUseSession.mockReset();
+    mockUseSession.mockReturnValue(signedIn);
+    mockFetchDetail.mockReset();
+    mockFetchActivity.mockReset();
+    mockFetchProfile.mockReset();
   });
 
-  it('opens intent detail from the For You feed', async () => {
-    const user = userEvent.setup();
-    const view = await render(<HomeScreen />);
+  it('shows the delivery reason on intent detail', async () => {
+    mockFetchDetail.mockResolvedValue({
+      state: 'ok',
+      data: {
+        id: 'intent-1',
+        primitiveLabel: 'I need',
+        statement: 'Need one person to help sort books',
+        approximatePlace: 'Indiranagar',
+        startsAt: null,
+        deadlineAt: null,
+        expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
+        reasonText: 'Shared through one trusted connection',
+        responseAction: 'Offer help',
+        confirmationCount: 2,
+        broadcasterFirstName: 'Asha',
+        isOwn: false,
+      },
+    });
 
-    expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
+    await renderScreen(<IntentDetailScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
-
-    expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
+    await waitFor(() => {
+      expect(screen.getByText('Need one person to help sort books')).toBeTruthy();
+    });
+    expect(screen.getByText('Why you are seeing this')).toBeTruthy();
+    expect(screen.getByText('Confirmed by 2 people at the origin.')).toBeTruthy();
   });
 
-  it('shows recipient intent detail with profile and request paths', async () => {
-    const user = userEvent.setup();
-    const view = await render(<IntentDetailScreen />);
+  it('hides an intent the viewer may not read behind a neutral message', async () => {
+    mockFetchDetail.mockResolvedValue({ state: 'ok', data: null });
 
-    expect(view.getByText('Intent')).toBeTruthy();
-    expect(view.getByText('Posted by')).toBeTruthy();
-    expect(view.getByText('Aarav')).toBeTruthy();
-    expect(view.getByText('Area approximate')).toBeTruthy();
-    expect(view.getByText('Exact place hidden')).toBeTruthy();
+    await renderScreen(<IntentDetailScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Open broadcaster profile for Aarav' }));
-    expect(mockPush).toHaveBeenCalledWith('/profile/aarav');
-
-    await user.press(view.getByRole('button', { name: 'Request to join' }));
-    expect(mockPush).toHaveBeenCalledWith('/request/badminton-tonight');
+    await waitFor(() => {
+      expect(screen.getByText('This information is not available to you.')).toBeTruthy();
+    });
   });
 
-  it('keeps broadcaster profile minimal and contextual', async () => {
-    const view = await render(<BroadcasterProfileScreen />);
+  it('never renders a numeric trust score on a broadcaster profile', async () => {
+    mockFetchProfile.mockResolvedValue({
+      state: 'ok',
+      data: {
+        displayName: 'Asha Rao',
+        city: 'Bengaluru',
+        isRestricted: false,
+        verifiedKinds: ['phone'],
+        reliability: [{ context: 'I need', completed: 8, confirmed: 9 }],
+      },
+    });
 
-    expect(view.getByText('Profile')).toBeTruthy();
-    expect(view.getByText('One trusted connection')).toBeTruthy();
-    expect(view.getByText('Contact details hidden until accepted')).toBeTruthy();
-    expect(view.queryByText('Trust score')).toBeNull();
-    expect(view.queryByText('followers')).toBeNull();
+    await renderScreen(<BroadcasterProfileScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Asha Rao')).toBeTruthy();
+    });
+    expect(screen.getByText(/8 of 9 confirmed interactions were completed/)).toBeTruthy();
+    expect(screen.queryByText(/Trust \d/)).toBeNull();
   });
 
-  it('uses a bottom sheet style request screen with disclosure', async () => {
-    const view = await render(<RequestSheetScreen />);
+  it('states an empty activity list honestly', async () => {
+    mockFetchActivity.mockResolvedValue({
+      state: 'ok',
+      data: { owned: [], respondedCount: 0, matchCount: 0 },
+    });
 
-    expect(view.getByText('Request to join')).toBeTruthy();
-    expect(view.getByText('Aarav will see your first name and response.')).toBeTruthy();
-    expect(view.getByText('Exact contact details stay hidden')).toBeTruthy();
-    expect(view.getByPlaceholderText('Add a short note')).toBeTruthy();
+    await renderScreen(<ActivityScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('You have not broadcast anything yet')).toBeTruthy();
+    });
   });
 
-  it('shows minimal activity and messages tabs', async () => {
-    const activity = await render(<ActivityScreen />);
-    expect(activity.getByText('No responses yet')).toBeTruthy();
-    expect(activity.getByText('Two people for badminton tonight')).toBeTruthy();
+  it('offers recovery when activity cannot load', async () => {
+    mockFetchActivity.mockResolvedValue({ state: 'error', message: 'Check your connection.' });
 
-    const messages = await render(<MessagesScreen />);
-    expect(messages.getByText('Messages')).toBeTruthy();
-    expect(messages.getByText('Messages appear after acceptance')).toBeTruthy();
+    await renderScreen(<ActivityScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+    });
   });
 });

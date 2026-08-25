@@ -1,47 +1,108 @@
-import { router } from 'expo-router';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
-import { NoteInput, Section, SymbolIcon, TopBar } from '@/features/native-demo/native-ui';
+import { submitResponse } from '@/features/intents/data/activity-queries';
 
-export default function RequestSheetScreen() {
+/**
+ * A respondent must see exactly what the broadcaster will receive before
+ * sending. Nothing beyond this list is shared by responding.
+ */
+export default function RequestScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [idempotencyKey] = useState(() => globalThis.crypto.randomUUID());
+
+  const trimmed = message.trim();
+
+  async function send() {
+    setSending(true);
+    setError(null);
+    const result = await submitResponse(id ?? '', trimmed, {}, idempotencyKey);
+    setSending(false);
+    if (!result.ok) {
+      setError(result.message);
+      return;
+    }
+    router.back();
+  }
+
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
-        <TopBar title="Request" onBack={() => router.back()} />
-        <ScrollView contentContainerStyle={styles.content} keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
-          <View style={styles.sheet}>
-            <Text accessibilityRole="header" style={styles.title}>Request to join</Text>
-            <Text style={styles.body}>Aarav will see your first name and response.</Text>
-            <Section>
-              <NoteInput placeholder="Add a short note" />
-            </Section>
-            <View style={styles.privacyRow}>
-              <SymbolIcon fallback="L" name="lock" size={18} />
-              <Text style={styles.privacyText}>Exact contact details stay hidden</Text>
-            </View>
-            <View style={styles.actions}>
-              <Button label="Send request" onPress={() => router.back()} />
-              <Text style={styles.cancel}>Cancel</Text>
-            </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.screen}>
+      <SafeAreaView style={styles.screen}>
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <Text accessibilityRole="header" style={styles.title}>
+            Send a response
+          </Text>
+
+          <TextInput
+            accessibilityLabel="Response message"
+            autoFocus
+            maxLength={1000}
+            multiline
+            onChangeText={setMessage}
+            placeholder="Say briefly why you are a good fit."
+            placeholderTextColor={tokens.semantic.color.textMuted}
+            style={styles.composer}
+            textAlignVertical="top"
+            value={message}
+          />
+          <Text style={styles.counter}>{message.length}/1000</Text>
+
+          <View style={styles.disclosure}>
+            <Text style={styles.disclosureTitle}>What will be shared</Text>
+            <Text style={styles.disclosureBody}>Your display name and approximate area.</Text>
+            <Text style={styles.disclosureBody}>Your message and any confirmed interactions.</Text>
+            <Text style={styles.disclosureBody}>
+              Nothing else. Your contact details stay hidden unless you choose to release them
+              after a match.
+            </Text>
           </View>
+
+          {error ? (
+            <Text accessibilityRole="alert" style={styles.error}>
+              {error}
+            </Text>
+          ) : null}
         </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+        <View style={styles.footer}>
+          <Button
+            disabled={trimmed.length === 0}
+            label="Send response"
+            loading={sending}
+            onPress={() => void send()}
+          />
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  keyboard: { flex: 1 },
-  content: { flexGrow: 1, justifyContent: 'flex-end', padding: 16 },
-  sheet: { padding: 18, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 24, backgroundColor: tokens.semantic.color.backgroundSurface },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
-  body: { marginTop: 8, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.semantic.color.textSecondary },
-  privacyRow: { marginTop: 14, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSubtle },
-  privacyText: { flex: 1, fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
-  actions: { marginTop: 18, gap: 12 },
-  cancel: { textAlign: 'center', fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: tokens.semantic.color.textSecondary },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  content: { padding: 20, gap: 10 },
+  title: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28 },
+  composer: { minHeight: 140, padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, fontFamily: 'Manrope_400Regular', fontSize: 17, lineHeight: 25, color: tokens.semantic.color.textPrimary },
+  counter: { textAlign: 'right', color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 12 },
+  disclosure: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.trustSurface, gap: 6 },
+  disclosureTitle: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
+  disclosureBody: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
+  error: { color: tokens.semantic.color.dangerText, fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20 },
+  footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
 });

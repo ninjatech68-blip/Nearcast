@@ -1,47 +1,139 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { ScrollView, StyleSheet, Text, Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { StatePanel, type ScreenState } from '@/design-system/components/state-panel';
 import { tokens } from '@/design-system/tokens';
-import { featuredIntent } from '@/features/native-demo/nearcast-fixtures';
-import { Group, MiniIntentRow, ScreenTitle, Section, SymbolIcon } from '@/features/native-demo/native-ui';
+import { useSession } from '@/features/auth/session';
+import { fetchActivity, type ActivitySnapshot } from '@/features/intents/data/activity-queries';
+
+type ActivityState = { kind: 'content'; snapshot: ActivitySnapshot } | ScreenState;
 
 export default function ActivityScreen() {
+  const { status, hasProfile, userId } = useSession();
+  const enabled = status === 'signed-in' && hasProfile && userId !== null;
+
+  const activity = useQuery({
+    queryKey: ['activity', userId],
+    queryFn: () => fetchActivity(userId ?? ''),
+    enabled,
+  });
+
+  if (!enabled) {
+    return (
+      <Frame>
+        <StatePanel
+          state={{ kind: 'restricted', message: 'Sign in to see your broadcasts and responses.' }}
+        />
+      </Frame>
+    );
+  }
+
+  const state: ActivityState = activity.isPending
+    ? { kind: 'loading' }
+    : activity.isError || !activity.data || activity.data.state === 'error'
+      ? {
+          kind: 'error',
+          message:
+            activity.data?.state === 'error'
+              ? activity.data.message
+              : 'We could not load your activity. Try again.',
+        }
+      : { kind: 'content', snapshot: activity.data.data };
+
+  if (state.kind !== 'content') {
+    return (
+      <Frame>
+        <StatePanel onRetry={() => void activity.refetch()} state={state} />
+      </Frame>
+    );
+  }
+
+  const { owned, respondedCount, matchCount } = state.snapshot;
+
+  return (
+    <Frame>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.summaryRow}>
+          <Summary label="Your intents" value={owned.length} />
+          <Summary label="Your responses" value={respondedCount} />
+          <Summary label="Matches" value={matchCount} />
+        </View>
+
+        <Text style={styles.sectionTitle}>Your broadcasts</Text>
+        {owned.length === 0 ? (
+          <StatePanel
+            state={{
+              kind: 'empty',
+              title: 'You have not broadcast anything yet',
+              body: 'Create an intent when your circle cannot resolve it alone.',
+            }}
+          />
+        ) : (
+          owned.map((intent) => (
+            <Pressable
+              accessibilityLabel={`Open your intent: ${intent.statement}`}
+              accessibilityRole="button"
+              key={intent.id}
+              onPress={() => router.push(`/intent/${intent.id}`)}
+              style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
+              <View style={styles.rowTop}>
+                <Text style={styles.primitive}>{intent.primitiveLabel}</Text>
+                <Text style={styles.status}>{intent.statusLabel}</Text>
+              </View>
+              <Text style={styles.statement}>{intent.statement}</Text>
+              <Text style={styles.supporting}>{intent.statusSupporting}</Text>
+              <Text style={styles.responses}>
+                {intent.responseCount === 0
+                  ? 'No responses yet'
+                  : intent.responseCount === 1
+                    ? '1 response to review'
+                    : `${intent.responseCount} responses to review`}
+              </Text>
+            </Pressable>
+          ))
+        )}
+      </ScrollView>
+    </Frame>
+  );
+}
+
+function Summary({ label, value }: { label: string; value: number }) {
+  return (
+    <View style={styles.summary}>
+      <Text style={styles.summaryValue}>{value}</Text>
+      <Text style={styles.summaryLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function Frame({ children }: { children: React.ReactNode }) {
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <ScreenTitle>Activity</ScreenTitle>
-
-        <Section title="Requests">
-          <Group>
-            <View style={styles.emptyRow}>
-              <View style={styles.emptyIcon}><SymbolIcon fallback="R" name="tray" /></View>
-              <View style={styles.emptyCopy}>
-                <Text style={styles.title}>No responses yet</Text>
-                <Text style={styles.body}>When someone is interested, you will see it here.</Text>
-              </View>
-            </View>
-          </Group>
-        </Section>
-
-        <Section title="Your broadcasts">
-          <Group>
-            <MiniIntentRow metadata={`${featuredIntent.metadata} · Live`} status={featuredIntent.expiry} title={featuredIntent.title} />
-            <View style={styles.divider} />
-            <MiniIntentRow metadata="Draft · Not visible yet" status="Only you can see this" title="Coffee this weekend" tone="muted" />
-          </Group>
-        </Section>
-      </ScrollView>
+      <Text accessibilityRole="header" style={styles.screenTitle}>
+        Activity
+      </Text>
+      {children}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
-  emptyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
-  emptyIcon: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.backgroundSubtle },
-  emptyCopy: { flex: 1 },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
-  body: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.textSecondary },
-  divider: { height: 1, marginLeft: 78, backgroundColor: tokens.semantic.color.borderDefault },
+  screenTitle: { paddingHorizontal: 16, paddingTop: 12, color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 26, lineHeight: 32 },
+  content: { paddingHorizontal: 16, paddingBottom: 28, gap: 12 },
+  summaryRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
+  summary: { flex: 1, padding: 14, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundSurface, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault },
+  summaryValue: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 22 },
+  summaryLabel: { marginTop: 2, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 12 },
+  sectionTitle: { marginTop: 14, color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 13, textTransform: 'uppercase' },
+  row: { padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, gap: 5 },
+  rowPressed: { backgroundColor: tokens.semantic.color.backgroundSubtle },
+  rowTop: { flexDirection: 'row', justifyContent: 'space-between' },
+  primitive: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_600SemiBold', fontSize: 12, textTransform: 'uppercase' },
+  status: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 12 },
+  statement: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 16, lineHeight: 22 },
+  supporting: { color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13 },
+  responses: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 13 },
 });

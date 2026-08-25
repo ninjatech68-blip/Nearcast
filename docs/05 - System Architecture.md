@@ -39,7 +39,7 @@ Expo mobile app + Expo Router web fallback
 - **Expo/React Native/TypeScript:** Shared iOS and Android application.
 - **Expo Router:** Mobile navigation, HTTPS link handling, and privacy-safe web fallback.
 - **React Hook Form and Zod:** Form state and shared validation schemas.
-- **TanStack Query:** Server-state caching only where it simplifies invalidation and retries.
+- **TanStack Query:** Server-state caching for every screen that reads server data. It keeps retries and invalidation in one place and removes fetch-in-effect, which the React Compiler lint rejects.
 - **React Native StyleSheet and design tokens:** Internal design-system implementation.
 - **Local secure storage:** Authentication session and minimal sensitive preferences.
 - **Local draft storage:** Unpublished intent drafts only, with explicit clearing on account deletion.
@@ -275,3 +275,4 @@ Evaluate a dedicated TypeScript API, specialized notification workers, feed mate
 | 2026-08-24 | Established modular-monolith architecture, data model, matching, and deployment baseline |
 | 2026-08-25 | Added the `invitations` entity, which the invitation-only launch assumption and implementation plan 02 already required but this document omitted |
 | 2026-08-25 | Added the `idempotency_keys` entity required by the idempotency rule in the API contracts |
+| 2026-08-25 | Recorded TanStack Query as the adopted server-state layer for all data screens |

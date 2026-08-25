@@ -6,19 +6,19 @@ import { tokens } from '@/design-system/tokens';
 
 type TabIconName = Parameters<typeof SymbolView>[0]['name'];
 
+// Four destinations, per the information architecture in docs/17 and docs/03.
+// Coordination conversations live inside Activity; there is no chat destination.
 const tabIconByRoute: Record<string, TabIconName> = {
-  activity: 'bell',
-  broadcast: 'plus.circle.fill',
   index: 'house.fill',
-  messages: 'message',
+  broadcast: 'plus.circle.fill',
+  activity: 'bell',
   you: 'person.crop.circle',
 };
 
 const fallbackByRoute: Record<string, string> = {
-  activity: 'A',
-  broadcast: '+',
   index: 'FY',
-  messages: 'M',
+  broadcast: '+',
+  activity: 'A',
   you: 'Y',
 };
 
@@ -36,7 +36,11 @@ export default function TabsLayout() {
         },
         tabBarIcon: ({ color, size }) => (
           <SymbolView
-            fallback={<Text style={{ color, fontFamily: 'Manrope_700Bold', fontSize: 12 }}>{fallbackByRoute[route.name]}</Text>}
+            fallback={
+              <Text style={{ color, fontFamily: 'Manrope_700Bold', fontSize: 12 }}>
+                {fallbackByRoute[route.name]}
+              </Text>
+            }
             name={tabIconByRoute[route.name]}
             size={size}
             tintColor={color}
@@ -44,9 +48,8 @@ export default function TabsLayout() {
         ),
       })}>
       <Tabs.Screen name="index" options={{ title: 'For You' }} />
-      <Tabs.Screen name="activity" options={{ title: 'Activity' }} />
       <Tabs.Screen name="broadcast" options={{ title: 'Broadcast' }} />
-      <Tabs.Screen name="messages" options={{ title: 'Messages' }} />
+      <Tabs.Screen name="activity" options={{ title: 'Activity' }} />
       <Tabs.Screen name="you" options={{ title: 'You' }} />
     </Tabs>
   );

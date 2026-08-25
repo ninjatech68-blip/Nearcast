@@ -18,6 +18,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 0.1.0 | 2026-08-24 | Initial packaged project | Created clean Downloads project folder, normalized documentation names, included app scaffold, Supabase foundation, tests, and AI agent instructions |
 | 0.1.1 | 2026-08-24 | Greenfield clarification | Recorded that Nearcast has no old app or legacy codebase dependency |
 | 0.1.1 | 2026-08-25 | Documentation baseline established | Added derived requirements and gap analysis measuring all approved documents against commit `7820a0a`; no product behavior changed |
+| 0.2.0 | 2026-08-25 | Phase 1 lifecycle delivered | Resolved every documentation conflict, added the Phase 1 database layer and server boundary, added authentication and invitation redemption, and replaced all demo fixtures with real data |
 
 ## Verification Log
 
@@ -47,6 +48,13 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Full documentation review | Completed | Reviewed all 25 governed documents, the four root documents, the migration, and all application source against commit `7820a0a`; recorded results in `docs/analysis/00 - Requirements and Gap Analysis.md` |
 | 2026-08-25 | Requirements coverage baseline | Recorded | Of 64 MVP MUST requirements: 11 met at the database layer, 29 partial, 24 not started; 0 reachable by a user because authentication does not exist |
 | 2026-08-25 | Documentation conflict audit | Open | Registered 9 conflicts between approved documents (C-01 to C-09) and 7 governance defects (G-01 to G-07); C-01 authentication method, C-02 navigation model, and C-03 numeric trust score block Phase 1 and need decisions |
+| 2026-08-25 | Documentation conflict audit | Closed | All 9 conflicts and all 7 governance defects resolved and written into the governing documents; decisions recorded in the Doc 00 decision log |
+| 2026-08-25 | App verification | Passed | `npm run verify` completed lint, TypeScript, 17 Vitest assertions, 15 Jest component assertions, and the iOS export |
+| 2026-08-25 | Database verification | Passed | Both migrations applied to a clean database with seed; 9 of 9 foundation and 74 of 74 Phase 1 pgTAP assertions passed |
+| 2026-08-25 | Database tooling | Substituted | The Supabase container stack could not start because the environment blocks the Docker image registry; tests ran against local PostgreSQL 16 with an equivalent auth schema, `auth.uid()`, and anon/authenticated/service_role bootstrap |
+| 2026-08-25 | Generated database types | Hand-extended | `npm run db:types` needs the same blocked container, so `database.types.ts` was extended by hand to match the migration; re-run `npm run db:types` on a Docker-capable machine to confirm no drift |
+| 2026-08-25 | Server boundary coverage | Recorded | 14 of the 16 functions in the API contract now exist; `generate-deliveries` and `process-notifications` remain unbuilt and belong to Phases 2 and 3 |
+| 2026-08-25 | Demo fixtures | Removed | `src/features/native-demo/` deleted; every screen now reads real data or renders an honest loading, empty, error, or restricted state |
 
 ## Governance Rules
 
@@ -71,3 +79,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded first green CI run and closed the final Foundation Task 1 checkbox |
 | 2026-08-25 | Added `docs/analysis/00 - Requirements and Gap Analysis.md` and linked it from the documentation map |
 | 2026-08-25 | Opened the documentation conflict register; resolutions must be written into the governing documents before implementation continues |
+| 2026-08-25 | Closed the conflict register; recorded the authentication, navigation, trust-display, derived-document and dark-mode decisions in the Doc 00 decision log |
+| 2026-08-25 | Added the Phase 1 migration, 74 pgTAP assertions, and 14 of the 16 contract functions |
+| 2026-08-25 | Added Google and Apple sign-in, invitation redemption, session handling, and route guards |
+| 2026-08-25 | Adopted TanStack Query for server state and removed all demo fixtures |

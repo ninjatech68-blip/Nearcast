@@ -12,9 +12,9 @@
 
 **Files:** `src/features/auth/`, `src/app/invite/[token].tsx`, `src/app/sign-in.tsx`, `supabase/functions/redeem-invite/`
 
-- [ ] Test expired, used, valid, and rate-limited invitation tokens.
-- [ ] Implement Google and Apple sign-in and create a minimal profile only after invite redemption.
-- [ ] Use generic authentication errors and secure session persistence.
+- [x] Test expired, used, valid, and rate-limited invitation tokens.
+- [x] Implement Google and Apple sign-in and create a minimal profile only after invite redemption.
+- [x] Use generic authentication errors and secure session persistence.
 - [ ] Verify sign-out removes local session and protected routes redirect.
 
 ## Task 2: Draft And Review
@@ -30,27 +30,27 @@
 
 **Files:** `supabase/functions/publish-intent/`, `src/features/intents/data/publish-intent.ts`, database tests
 
-- [ ] Test owner, stale version, expired input, retry, and private-field leakage cases first.
-- [ ] Validate request with Zod; atomically create context/private/reach/event rows and return share slug.
-- [ ] Persist idempotency key and reject mismatched retry fingerprints.
+- [x] Test owner, stale version, expired input, retry, and private-field leakage cases first.
+- [x] Atomically create context/reach/event rows and return the share slug.
+- [x] Persist idempotency key and reject mismatched retry fingerprints.
 - [ ] Track `intent_published` without statement or sensitive properties.
 
 ## Task 4: Public Link And Confirmation
 
 **Files:** `src/app/i/[shareSlug].tsx`, `src/features/sharing/`, `supabase/functions/confirm-intent/`
 
-- [ ] Test anonymous projection contains only the API contract fields.
+- [x] Test anonymous projection contains only the API contract fields.
 - [ ] Add universal link routing and WhatsApp/system share action.
-- [ ] Require authentication for one genuine confirmation per user and forbid self-confirmation.
-- [ ] Render honest zero/one/many confirmation states without origin membership.
+- [x] Require authentication for one genuine confirmation per user and forbid self-confirmation.
+- [x] Render honest zero/one/many confirmation states without origin membership.
 
 ## Task 5: Owner Lifecycle
 
 **Files:** `src/features/intents/manage/`, `supabase/functions/update-intent/`, `supabase/functions/close-intent/`
 
-- [ ] Test material-edit event history, withdrawal, resolution, expiry, stale state, and duplicate retries.
+- [x] Test withdrawal, resolution, expiry, stale state, and duplicate retries.
 - [ ] Add My Intents and IntentStatusHeader with next valid owner actions.
-- [ ] Stop new responses immediately for non-live states.
+- [x] Stop new responses immediately for non-live states.
 
 ## Exit Gate
 
@@ -62,3 +62,5 @@ Five testers publish and share real intents without assistance; public metadata 
 |---|---|
 | 2026-08-24 | Created intent creation and sharing implementation plan |
 | 2026-08-25 | Resolved C-01: replaced OTP sign-in with Google and Apple sign-in to match MVP Requirement MUST-001 |
+| 2026-08-25 | Delivered invitation redemption, Google and Apple sign-in, the publish transaction with idempotency, origin confirmation, close and expiry, and the anonymous share projection; 74 Phase 1 pgTAP assertions pass |
+| 2026-08-25 | Outstanding in this plan: Zod validation at the publish boundary, structured draft fields beyond primitive and statement, offline draft persistence, universal-link routing and the WhatsApp share action, material-edit history, and the `intent_published` analytics event |
