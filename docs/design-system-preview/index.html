@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nearcast Design System Preview</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to design system preview</a>
+
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Approved review artifact</p>
+        <h1>Nearcast Design System</h1>
+        <p class="lede">Trustworthy Native Clarity for a calm, native, privacy-first intent network.</p>
+      </div>
+      <button class="theme-toggle" type="button" aria-pressed="false" data-theme-toggle>
+        <span class="theme-toggle__icon" aria-hidden="true"></span>
+        Toggle dark
+      </button>
+    </header>
+
+    <main id="main" class="page-shell">
+      <section class="hero-card">
+        <div>
+          <p class="section-kicker">Design thesis</p>
+          <h2>Every screen answers the trust question before asking for action.</h2>
+          <p>What is this? Why am I seeing it? What is safe to do next?</p>
+        </div>
+        <div class="pillar-grid" aria-label="Nearcast experience pillars">
+          <article class="pillar">
+            <span class="line-icon" aria-hidden="true">shield</span>
+            <h3>Controlled Reach</h3>
+            <p>You choose who, where, and how far.</p>
+          </article>
+          <article class="pillar">
+            <span class="line-icon" aria-hidden="true">reason</span>
+            <h3>Human Reasons</h3>
+            <p>Every recommendation explains itself.</p>
+          </article>
+          <article class="pillar">
+            <span class="line-icon" aria-hidden="true">reveal</span>
+            <h3>Progressive Disclosure</h3>
+            <p>Details appear only when useful.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="board-section" aria-labelledby="tokens-title">
+        <div class="section-heading">
+          <p class="section-kicker">01</p>
+          <h2 id="tokens-title">Semantic Tokens</h2>
+          <p>Review real CSS variables for both appearances and the on-color contract.</p>
+        </div>
+
+        <div class="token-layout">
+          <article class="panel">
+            <h3>Light Appearance</h3>
+            <div class="token-grid">
+              <div class="token"><span style="--swatch: #f7f3ea"></span><strong>background.app</strong><small>#F7F3EA</small></div>
+              <div class="token"><span style="--swatch: #ffffff"></span><strong>surface</strong><small>#FFFFFF</small></div>
+              <div class="token"><span style="--swatch: #f1f4ec"></span><strong>surfaceMuted</strong><small>#F1F4EC</small></div>
+              <div class="token"><span style="--swatch: #eaf2fa"></span><strong>info</strong><small>#EAF2FA</small></div>
+              <div class="token"><span style="--swatch: #e8f3ec"></span><strong>success</strong><small>#E8F3EC</small></div>
+              <div class="token"><span style="--swatch: #fff5df"></span><strong>warning</strong><small>#FFF5DF</small></div>
+              <div class="token"><span style="--swatch: #fff0ef"></span><strong>danger</strong><small>#FFF0EF</small></div>
+              <div class="token"><span style="--swatch: #0f5e46"></span><strong>action.primary</strong><small>#0F5E46</small></div>
+            </div>
+          </article>
+
+          <article class="panel panel--dark">
+            <h3>Dark Appearance</h3>
+            <div class="token-grid">
+              <div class="token"><span style="--swatch: #0e1714"></span><strong>background.app</strong><small>#0E1714</small></div>
+              <div class="token"><span style="--swatch: #15211d"></span><strong>surface</strong><small>#15211D</small></div>
+              <div class="token"><span style="--swatch: #1e2b25"></span><strong>surfaceMuted</strong><small>#1E2B25</small></div>
+              <div class="token"><span style="--swatch: #142a3a"></span><strong>info</strong><small>#142A3A</small></div>
+              <div class="token"><span style="--swatch: #143025"></span><strong>success</strong><small>#143025</small></div>
+              <div class="token"><span style="--swatch: #35270f"></span><strong>warning</strong><small>#35270F</small></div>
+              <div class="token"><span style="--swatch: #381b18"></span><strong>danger</strong><small>#381B18</small></div>
+              <div class="token"><span style="--swatch: #65d0a1"></span><strong>action.primary</strong><small>#65D0A1</small></div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3>On-Color Contract</h3>
+            <div class="on-color-grid">
+              <span class="on-chip on-chip--primary">onPrimary</span>
+              <span class="on-chip on-chip--info">onInfo</span>
+              <span class="on-chip on-chip--warning">onWarning</span>
+              <span class="on-chip on-chip--danger">onDanger</span>
+              <span class="on-chip on-chip--success">onSuccess</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="board-section" aria-labelledby="type-title">
+        <div class="section-heading">
+          <p class="section-kicker">02</p>
+          <h2 id="type-title">Typography And Platform Mapping</h2>
+          <p>One shared hierarchy, mapped to native platform materials.</p>
+        </div>
+        <div class="split-grid">
+          <article class="panel type-panel">
+            <div class="type-row type-row--large"><strong>Large Title</strong><span>34 / 41 · Bold</span></div>
+            <div class="type-row type-row--screen"><strong>Screen Title</strong><span>28 / 34 · Semibold</span></div>
+            <div class="type-row type-row--section"><strong>Section Title</strong><span>20 / 26 · Semibold</span></div>
+            <div class="type-row"><strong>Body</strong><span>16 / 24 · Regular</span></div>
+            <div class="type-row"><strong>Body Strong</strong><span>16 / 24 · Semibold</span></div>
+            <div class="type-row type-row--caption"><strong>Caption</strong><span>13 / 18 · Regular</span></div>
+            <div class="type-row type-row--micro"><strong>Micro</strong><span>11 / 16 · Medium</span></div>
+          </article>
+          <article class="platform-card">
+            <h3>iOS</h3>
+            <dl>
+              <div><dt>Typeface</dt><dd>SF Pro</dd></div>
+              <div><dt>Icons</dt><dd>SF Symbols</dd></div>
+              <div><dt>Touch</dt><dd>44pt minimum</dd></div>
+              <div><dt>Surfaces</dt><dd>Native sheets and controls</dd></div>
+            </dl>
+          </article>
+          <article class="platform-card">
+            <h3>Android</h3>
+            <dl>
+              <div><dt>Typeface</dt><dd>Roboto</dd></div>
+              <div><dt>Icons</dt><dd>Material Symbols</dd></div>
+              <div><dt>Touch</dt><dd>48dp minimum</dd></div>
+              <div><dt>Surfaces</dt><dd>Material tonal surfaces</dd></div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <section class="board-section" aria-labelledby="components-title">
+        <div class="section-heading">
+          <p class="section-kicker">03</p>
+          <h2 id="components-title">Components In Real CSS</h2>
+          <p>Core primitives and Nearcast-specific components with meaningful states.</p>
+        </div>
+
+        <div class="component-grid">
+          <article class="panel">
+            <h3>Buttons</h3>
+            <div class="button-stack">
+              <button class="button button--primary" type="button">Post intent</button>
+              <button class="button button--secondary" type="button">View intent</button>
+              <button class="button button--quiet" type="button">Why shown</button>
+              <button class="button button--destructive" type="button">Delete intent</button>
+              <button class="button" type="button" disabled>Unavailable</button>
+              <button class="button button--primary button--loading" type="button">Posting...</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3>State Contract</h3>
+            <div class="state-grid" aria-label="Component state examples">
+              <span class="state state--default">Default</span>
+              <span class="state state--pressed">Pressed</span>
+              <span class="state state--focused">Focused</span>
+              <span class="state state--disabled">Disabled</span>
+              <span class="state state--loading">Loading</span>
+              <span class="state state--selected">Selected</span>
+              <span class="state state--error">Error</span>
+              <span class="state state--offline">Offline</span>
+              <span class="state state--success">Success</span>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3>Trust And Privacy</h3>
+            <div class="chip-row">
+              <span class="trust-badge">Trust 812 · High trust</span>
+              <span class="verification-badge">Verified</span>
+              <button class="why-chip" type="button">Why shown</button>
+            </div>
+            <p class="privacy-hint">No exact address or contact details shown.</p>
+            <p class="delivery-row">Shown because: approximate area + public link</p>
+          </article>
+
+          <article class="panel intent-card-demo">
+            <div class="intent-card">
+              <div class="intent-card__header">
+                <div class="avatar" aria-hidden="true">A</div>
+                <div>
+                  <strong>Alex Morgan</strong>
+                  <p>Trust 812 · High trust</p>
+                </div>
+                <button class="icon-button" type="button" aria-label="Save intent"></button>
+              </div>
+              <span class="category-pill">Transportation</span>
+              <h3>Need a ride to the clinic this afternoon.</h3>
+              <p class="meta">Riverside area · Today</p>
+              <button class="why-chip" type="button">Why shown</button>
+              <button class="button button--primary" type="button">Offer help</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="board-section" aria-labelledby="native-title">
+        <div class="section-heading">
+          <p class="section-kicker">04</p>
+          <h2 id="native-title">Native Navigation, Sheets, And Forms</h2>
+          <p>Main screens retain the tab bar; pushed details and chat use native back navigation.</p>
+        </div>
+
+        <div class="phone-row">
+          <article class="phone-frame" aria-label="Home tab preview">
+            <div class="phone-header">
+              <span>9:41</span>
+              <span>Nearcast</span>
+            </div>
+            <h3>Near you</h3>
+            <div class="intent-card compact">
+              <div class="intent-card__header">
+                <div class="avatar" aria-hidden="true">M</div>
+                <div><strong>Maya R.</strong><p>Trust 812 · High trust</p></div>
+              </div>
+              <h4>Extra coffee for morning walkers</h4>
+              <p class="meta">Maple area · Food & Coffee</p>
+              <button class="why-chip" type="button">Why shown</button>
+            </div>
+            <nav class="tab-bar" aria-label="Mobile tab bar">
+              <a href="#" aria-current="page">Home</a>
+              <a href="#">Explore</a>
+              <a class="tab-bar__broadcast" href="#">Broadcast</a>
+              <a href="#">Chat</a>
+              <a href="#">Profile</a>
+            </nav>
+          </article>
+
+          <article class="phone-frame" aria-label="Composer sheet preview">
+            <div class="phone-header">
+              <span>9:41</span>
+              <span>Broadcast</span>
+            </div>
+            <div class="sheet-handle" aria-hidden="true"></div>
+            <h3>What do you need nearby?</h3>
+            <label class="field-label" for="intent">Your intent</label>
+            <textarea id="intent" rows="4" placeholder="Describe briefly..."></textarea>
+            <p class="privacy-hint">No exact address or contact details shown.</p>
+            <div class="keyboard-safe-bar">
+              <button class="button button--primary" type="button">Continue</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="board-section" aria-labelledby="states-title">
+        <div class="section-heading">
+          <p class="section-kicker">05</p>
+          <h2 id="states-title">App States And Accessibility</h2>
+          <p>Empty and failure states stay honest, useful, and privacy-safe.</p>
+        </div>
+        <div class="state-card-grid">
+          <article class="state-card"><span class="skeleton"></span><h3>Loading</h3><p>Reserve space and avoid layout shift.</p></article>
+          <article class="state-card"><span class="state-icon">search</span><h3>No intents yet</h3><p>Be the first to broadcast nearby.</p></article>
+          <article class="state-card"><span class="state-icon">offline</span><h3>You're offline</h3><p>We'll send when you're back online.</p></article>
+          <article class="state-card"><span class="state-icon">lock</span><h3>Sign-in required</h3><p>Create an account to respond.</p></article>
+          <article class="state-card state-card--error"><span class="state-icon">alert</span><h3>Something went wrong</h3><p>Please try again.</p><button class="button button--secondary" type="button">Retry</button></article>
+          <article class="state-card"><span class="state-icon">check</span><h3>Intent posted</h3><p>Your intent is live.</p></article>
+        </div>
+        <ul class="checklist">
+          <li>AA contrast for normal text and meaningful controls.</li>
+          <li>Dynamic Type and Android font scaling for trust, privacy, and safety copy.</li>
+          <li>VoiceOver and TalkBack labels describe action and state.</li>
+          <li>Keyboard, safe-area, and IME-safe calls to action.</li>
+          <li>Reduced motion keeps feedback without large travel.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      const button = document.querySelector('[data-theme-toggle]');
+      button.addEventListener('click', () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
+        button.setAttribute('aria-pressed', String(!isDark));
+        button.lastChild.textContent = isDark ? ' Toggle dark' : ' Toggle light';
+      });
+    </script>
+  </body>
+</html>
