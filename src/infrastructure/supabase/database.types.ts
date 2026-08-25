@@ -802,6 +802,266 @@ export type Database = {
           },
         ]
       }
+      devices: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen_at: string
+          locale: string | null
+          notify_decisions: boolean
+          notify_expiry: boolean
+          notify_messages: boolean
+          notify_responses: boolean
+          platform: Database["public"]["Enums"]["device_platform"]
+          profile_id: string
+          push_token: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          locale?: string | null
+          notify_decisions?: boolean
+          notify_expiry?: boolean
+          notify_messages?: boolean
+          notify_responses?: boolean
+          platform: Database["public"]["Enums"]["device_platform"]
+          profile_id: string
+          push_token: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          locale?: string | null
+          notify_decisions?: boolean
+          notify_expiry?: boolean
+          notify_messages?: boolean
+          notify_responses?: boolean
+          platform?: Database["public"]["Enums"]["device_platform"]
+          profile_id?: string
+          push_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devices_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idempotency_keys: {
+        Row: {
+          actor_id: string
+          created_at: string
+          fingerprint: string
+          key: string
+          operation: string
+          result: Json | null
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          fingerprint: string
+          key: string
+          operation: string
+          result?: Json | null
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          fingerprint?: string
+          key?: string
+          operation?: string
+          result?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idempotency_keys_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invitations: {
+        Row: {
+          consumed_at: string | null
+          consumed_by: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          issued_by: string | null
+          note: string | null
+          token_hash: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          consumed_by?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          token_hash: string
+        }
+        Update: {
+          consumed_at?: string | null
+          consumed_by?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_consumed_by_fkey"
+            columns: ["consumed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_issued_by_fkey"
+            columns: ["issued_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_actions: {
+        Row: {
+          action: string
+          captured_state: Json
+          created_at: string
+          id: string
+          moderator_id: string
+          reason_code: string
+          report_id: string | null
+          subject_id: string
+          subject_type: string
+        }
+        Insert: {
+          action: string
+          captured_state?: Json
+          created_at?: string
+          id?: string
+          moderator_id: string
+          reason_code: string
+          report_id?: string | null
+          subject_id: string
+          subject_type: string
+        }
+        Update: {
+          action?: string
+          captured_state?: Json
+          created_at?: string
+          id?: string
+          moderator_id?: string
+          reason_code?: string
+          report_id?: string | null
+          subject_id?: string
+          subject_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_moderator_id_fkey"
+            columns: ["moderator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reliability_aggregates: {
+        Row: {
+          completed_count: number
+          confirmed_count: number
+          context: Database["public"]["Enums"]["intent_primitive"]
+          disputed_count: number
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed_count?: number
+          confirmed_count?: number
+          context: Database["public"]["Enums"]["intent_primitive"]
+          disputed_count?: number
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed_count?: number
+          confirmed_count?: number
+          context?: Database["public"]["Enums"]["intent_primitive"]
+          disputed_count?: number
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reliability_aggregates_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verifications: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          kind: Database["public"]["Enums"]["verification_kind"]
+          profile_id: string
+          provider_reference: string | null
+          state: Database["public"]["Enums"]["verification_state"]
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["verification_kind"]
+          profile_id: string
+          provider_reference?: string | null
+          state?: Database["public"]["Enums"]["verification_state"]
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["verification_kind"]
+          profile_id?: string
+          provider_reference?: string | null
+          state?: Database["public"]["Enums"]["verification_state"]
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -848,6 +1108,102 @@ export type Database = {
           statement: string
         }[]
       }
+      change_intent_reach: {
+        Args: {
+          disclosure_confirmed: boolean
+          expected_version: number
+          target_intent_id: string
+          target_level: Database["public"]["Enums"]["reach_level"]
+        }
+        Returns: {
+          expanded_at: string | null
+          intent_id: string
+          level: Database["public"]["Enums"]["reach_level"]
+          public_link_enabled: boolean
+          show_broadcaster_first_name: boolean
+          updated_at: string
+        }
+      }
+      close_intent: {
+        Args: {
+          expected_status: Database["public"]["Enums"]["intent_status"]
+          outcome: Database["public"]["Enums"]["resolution_outcome"]
+          target_intent_id: string
+        }
+        Returns: Database["public"]["Tables"]["intents"]["Row"]
+      }
+      confirm_intent: {
+        Args: { requested_share_slug: string }
+        Returns: number
+      }
+      confirm_interaction_outcome: {
+        Args: { completed: boolean; disputed: boolean; target_match_id: string }
+        Returns: Database["public"]["Tables"]["interaction_outcomes"]["Row"]
+      }
+      create_report: {
+        Args: {
+          details: string
+          reason_code: string
+          subject_id: string
+          subject_type: string
+        }
+        Returns: Database["public"]["Tables"]["reports"]["Row"]
+      }
+      decide_response: {
+        Args: {
+          decision: string
+          expected_intent_status: Database["public"]["Enums"]["intent_status"]
+          target_response_id: string
+        }
+        Returns: Database["public"]["Tables"]["responses"]["Row"]
+      }
+      expire_intents: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      get_match_disclosures: {
+        Args: { target_match_id: string }
+        Returns: {
+          field_name: string
+          field_value: string
+        }[]
+      }
+      publish_intent: {
+        Args: {
+          draft_intent_id: string
+          enable_public_link: boolean
+          expected_version: number
+          idempotency_key: string
+          show_first_name: boolean
+          target_reach: Database["public"]["Enums"]["reach_level"]
+        }
+        Returns: Database["public"]["Tables"]["intents"]["Row"]
+      }
+      redeem_invite: {
+        Args: { chosen_display_name: string; invite_token: string }
+        Returns: Database["public"]["Tables"]["profiles"]["Row"]
+      }
+      release_disclosure: {
+        Args: { field_names: string[]; target_match_id: string }
+        Returns: number
+      }
+      send_message: {
+        Args: {
+          body: string
+          idempotency_key: string
+          target_conversation_id: string
+        }
+        Returns: Database["public"]["Tables"]["messages"]["Row"]
+      }
+      submit_response: {
+        Args: {
+          idempotency_key: string
+          qualification_answers: Json
+          response_message: string
+          target_intent_id: string
+        }
+        Returns: Database["public"]["Tables"]["responses"]["Row"]
+      }
     }
     Enums: {
       intent_primitive: "request" | "offer" | "plan"
@@ -866,6 +1222,15 @@ export type Database = {
         | "broader_approved"
       report_status: "open" | "reviewing" | "actioned" | "dismissed"
       response_status: "pending" | "accepted" | "declined" | "withdrawn"
+      device_platform: "ios" | "android"
+      resolution_outcome:
+        | "resolved_through_nearcast"
+        | "resolved_elsewhere"
+        | "no_longer_needed"
+        | "could_not_resolve"
+        | "withdrawn"
+      verification_kind: "email" | "phone" | "identity_document"
+      verification_state: "pending" | "verified" | "failed" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
