@@ -63,7 +63,7 @@ export default function IntentDetailScreen() {
         ) : null}
 
         <View style={styles.trustBox}>
-          <Text style={styles.trustText}>
+          <Text style={styles.actionPrimary}>
             {intent.confirmationCount === 0
               ? 'No confirmations yet.'
               : intent.confirmationCount === 1
@@ -111,19 +111,19 @@ function BackBar() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundApp },
   backBar: { paddingHorizontal: 16, paddingVertical: 12 },
-  backLabel: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
+  backLabel: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
   content: { paddingHorizontal: 20, paddingBottom: 24, gap: 10 },
-  primitive: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_600SemiBold', fontSize: 12, textTransform: 'uppercase' },
-  statement: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28 },
-  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 15 },
-  reasonBox: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.infoSurface, gap: 4 },
-  reasonTitle: { color: tokens.semantic.color.infoText, fontFamily: 'Manrope_600SemiBold', fontSize: 14 },
-  reasonBody: { color: tokens.semantic.color.infoText, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20 },
-  trustBox: { padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.trustSurface, gap: 4 },
-  trustText: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
-  trustHint: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
-  privacy: { marginTop: 8, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
-  footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
+  primitive: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 11, textTransform: 'uppercase' },
+  statement: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 20, lineHeight: 26 },
+  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 16 },
+  reasonBox: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundInfo, gap: 4 },
+  reasonTitle: { color: tokens.semantic.color.actionSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 13 },
+  reasonBody: { color: tokens.semantic.color.actionSecondary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  trustBox: { padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundSuccess, gap: 4 },
+  actionPrimary: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
+  trustHint: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  privacy: { marginTop: 8, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderSubtle },
 });

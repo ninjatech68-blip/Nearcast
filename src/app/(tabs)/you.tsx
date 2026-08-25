@@ -108,15 +108,15 @@ function Frame({ children }: { children: React.ReactNode }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  screenTitle: { paddingHorizontal: 16, paddingTop: 12, color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 26, lineHeight: 32 },
+  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundApp },
+  screenTitle: { paddingHorizontal: 16, paddingTop: 12, color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 28, lineHeight: 34 },
   content: { paddingHorizontal: 16, paddingBottom: 28, gap: 10 },
   name: { marginTop: 12, color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 20 },
-  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 14 },
+  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 13 },
   sectionTitle: { marginTop: 16, color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 13, textTransform: 'uppercase' },
-  card: { padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, gap: 8 },
-  body: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20 },
-  signOut: { marginTop: 24, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.control, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault },
-  signOutPressed: { backgroundColor: tokens.semantic.color.backgroundSubtle },
-  signOutLabel: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
+  card: { padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface, gap: 8 },
+  body: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  signOut: { marginTop: 24, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle },
+  signOutPressed: { backgroundColor: tokens.semantic.color.backgroundSurfaceMuted },
+  signOutLabel: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
 });

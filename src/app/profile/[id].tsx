@@ -88,16 +88,16 @@ export default function BroadcasterProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundApp },
   backBar: { paddingHorizontal: 16, paddingVertical: 12 },
-  backLabel: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
+  backLabel: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
   content: { paddingHorizontal: 20, paddingBottom: 24, gap: 8 },
-  name: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 22 },
-  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 15 },
-  restricted: { marginTop: 8, padding: 14, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.warningSurface },
-  restrictedText: { color: tokens.semantic.color.warningText, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
+  name: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 20 },
+  meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 16 },
+  restricted: { marginTop: 8, padding: 14, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundWarning },
+  restrictedText: { color: tokens.semantic.color.statusWarning, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
   sectionTitle: { marginTop: 16, color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 13, textTransform: 'uppercase' },
-  card: { padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, gap: 8 },
-  body: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20 },
-  privacy: { marginTop: 12, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
+  card: { padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface, gap: 8 },
+  body: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  privacy: { marginTop: 12, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
 });

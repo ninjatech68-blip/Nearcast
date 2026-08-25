@@ -6,7 +6,7 @@
 
 - **Status:** Derived implementation reference. **Not a governing document.**
 - **Precedence:** Rank 6.1 — subordinate to [`docs/07 - Design System Specification.md`](docs/07%20-%20Design%20System%20Specification.md) and [`docs/17 - Mobile App Design Foundation.md`](docs/17%20-%20Mobile%20App%20Design%20Foundation.md), which jointly govern all visual and interaction design. Where this file disagrees with either, they win and this file must be corrected in the same change.
-- **Last reconciled:** 2026-08-25 against commit `7820a0a`
+- **Last reconciled:** 2026-08-25, and implemented in the app tokens on the same day (semantic cutover executed by founder direction)
 - **Source boards:** Polished design-system board at [`docs/design/nearcast-design-system-board.png`](docs/design/nearcast-design-system-board.png)
 
 This file translates the governed design documents into a concrete native implementation reference. It does not replace product, privacy, permission, or engineering rules in `docs/`, and it may not introduce product behavior that those documents do not already permit.
@@ -301,7 +301,7 @@ disabled > loading > error > offline > pressed > focused > selected > success > 
 ## Implementation Guardrails
 
 - The approved design board is visual authority for the first formal implementation pass.
-- Existing app tokens may lag this contract until implementation is explicitly requested.
+- The app tokens implement this contract's light appearance as of 2026-08-25; the dark palette ships as data pending the appearance-switching pass.
 - Prefer semantic tokens over raw values in production code.
 - Use platform-native primitives where possible.
 - Do not implement web-shaped controls, hover-dependent interactions, or custom navigation that fights platform expectations.
@@ -324,3 +324,4 @@ disabled > loading > error > offline > pressed > focused > selected > success > 
 | 2026-08-25 | Resolved C-04: reordered `IntentCard` intent-first and removed the category pill |
 | 2026-08-25 | Resolved C-05 and C-06: marked the native typography, shape, and motion tables as future implementation targets subordinate to `docs/07` |
 | 2026-08-25 | Resolved G-06: removed the uncommitted local path previously cited as visual authority |
+| 2026-08-25 | Semantic token cutover executed in the app: light palette, radius, motion, and type scale now match this contract; Manrope retained per the C-05 resolution |

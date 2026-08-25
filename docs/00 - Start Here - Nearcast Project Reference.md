@@ -116,6 +116,9 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 | 2026-08-25 | Defer dark appearance beyond the first alpha build | The token cutover renames every semantic token; shipping light-only keeps Phase 1 scope honest |
 | 2026-08-25 | Derive trust adjacency from stored confirmations and completed matches until a circles model exists | The schema has no social-graph table yet; deliveries must still trace to real stored evidence, never to an assumed relationship |
 | 2026-08-25 | Allow a development-only password sign-in outside production, and make the share-link base URL configuration-driven | Keeps development, testing, and review active while OAuth credentials and the share domain remain pending human actions; production behavior is unchanged and the email provider is never enabled on production |
+| 2026-08-25 | Pull the semantic token cutover forward into the current build, revising the earlier C-07 timing | Founder direction: the app must match the approved Trustworthy Native Clarity palette now; deferring created a visible mismatch between the approved boards and the running app |
+| 2026-08-25 | Keep Manrope as the product typeface through the cutover, adopting the approved native type scale onto Manrope weights | The C-05 resolution stands; the SF Pro and Roboto mapping activates in a later platform-styling pass |
+| 2026-08-25 | Ship the dark palette as machine-readable token data while the app remains light-pinned | Dark appearance stays deferred per C-08; carrying the values in the tokens makes the future remap a data change rather than a redesign |
 
 ## Document Change Rule
 

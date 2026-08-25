@@ -19,7 +19,11 @@ export function Button({ label, onPress, disabled = false, loading = false }: Bu
       disabled={unavailable}
       onPress={onPress}
       style={({ pressed }) => [styles.button, pressed && styles.pressed, unavailable && styles.disabled]}>
-      {loading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.label}>{label}</Text>}
+      {loading ? (
+        <ActivityIndicator color={tokens.semantic.color.onPrimary} />
+      ) : (
+        <Text style={styles.label}>{label}</Text>
+      )}
     </Pressable>
   );
 }
@@ -28,5 +32,5 @@ const styles = StyleSheet.create({
   button: { minHeight: tokens.component.button.height, borderRadius: tokens.component.button.radius, backgroundColor: tokens.component.button.primary.background, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
   pressed: { backgroundColor: tokens.semantic.color.actionPrimaryPressed },
   disabled: { opacity: 0.45 },
-  label: { fontFamily: 'Manrope_700Bold', fontSize: 15, color: tokens.component.button.primary.foreground },
+  label: { fontFamily: 'Manrope_700Bold', fontSize: 16, color: tokens.component.button.primary.foreground },
 });

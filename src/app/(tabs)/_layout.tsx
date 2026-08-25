@@ -1,6 +1,6 @@
 import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { tokens } from '@/design-system/tokens';
 
@@ -32,20 +32,33 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontFamily: 'Manrope_600SemiBold', fontSize: 11 },
         tabBarStyle: {
           backgroundColor: tokens.semantic.color.backgroundSurface,
-          borderTopColor: tokens.semantic.color.borderDefault,
+          borderTopColor: tokens.semantic.color.borderSubtle,
         },
-        tabBarIcon: ({ color, size }) => (
-          <SymbolView
-            fallback={
-              <Text style={{ color, fontFamily: 'Manrope_700Bold', fontSize: 12 }}>
-                {fallbackByRoute[route.name]}
-              </Text>
-            }
-            name={tabIconByRoute[route.name]}
-            size={size}
-            tintColor={color}
-          />
-        ),
+        tabBarIcon: ({ color, size }) => {
+          const icon = (
+            <SymbolView
+              fallback={
+                <Text
+                  style={{
+                    color: route.name === 'broadcast' ? tokens.semantic.color.onPrimary : color,
+                    fontFamily: 'Manrope_700Bold',
+                    fontSize: 11,
+                  }}>
+                  {fallbackByRoute[route.name]}
+                </Text>
+              }
+              name={tabIconByRoute[route.name]}
+              size={size}
+              tintColor={route.name === 'broadcast' ? tokens.semantic.color.onPrimary : color}
+            />
+          );
+          // Broadcast is the raised primary action of the tab bar (DESIGN.md
+          // navigation rules); the only elevated element in the app.
+          if (route.name === 'broadcast') {
+            return <View style={styles.broadcastAction}>{icon}</View>;
+          }
+          return icon;
+        },
       })}>
       <Tabs.Screen name="index" options={{ title: 'For You' }} />
       <Tabs.Screen name="broadcast" options={{ title: 'Broadcast' }} />
@@ -54,3 +67,20 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  broadcastAction: {
+    marginTop: -14,
+    width: 48,
+    height: 48,
+    borderRadius: tokens.primitive.radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: tokens.semantic.color.actionPrimary,
+    shadowColor: tokens.semantic.color.actionPrimaryPressed,
+    shadowOpacity: 0.28,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+});

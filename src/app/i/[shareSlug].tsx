@@ -116,55 +116,55 @@ export default function PublicIntentScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundApp },
   content: { padding: 20, gap: 10 },
   primitive: {
-    color: tokens.semantic.color.trustText,
+    color: tokens.semantic.color.actionPrimary,
     fontFamily: 'Manrope_600SemiBold',
-    fontSize: 12,
+    fontSize: 11,
     textTransform: 'uppercase',
   },
   statement: {
     color: tokens.semantic.color.textPrimary,
     fontFamily: 'Manrope_700Bold',
-    fontSize: 22,
-    lineHeight: 28,
+    fontSize: 20,
+    lineHeight: 26,
   },
   meta: {
     color: tokens.semantic.color.textSecondary,
     fontFamily: 'Manrope_400Regular',
-    fontSize: 15,
+    fontSize: 16,
   },
   provenance: {
     marginTop: 8,
     padding: 16,
     borderRadius: tokens.primitive.radius.card,
-    backgroundColor: tokens.semantic.color.infoSurface,
+    backgroundColor: tokens.semantic.color.backgroundInfo,
     gap: 6,
   },
   provenanceText: {
-    color: tokens.semantic.color.infoText,
+    color: tokens.semantic.color.actionSecondary,
     fontFamily: 'Manrope_600SemiBold',
-    fontSize: 15,
+    fontSize: 16,
   },
   provenanceHint: {
-    color: tokens.semantic.color.infoText,
+    color: tokens.semantic.color.actionSecondary,
     fontFamily: 'Manrope_400Regular',
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 18,
   },
   privacy: {
     marginTop: 8,
     color: tokens.semantic.color.textMuted,
     fontFamily: 'Manrope_400Regular',
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 18,
   },
   footer: {
     padding: 20,
     gap: 8,
     borderTopWidth: 1,
-    borderTopColor: tokens.semantic.color.borderDefault,
+    borderTopColor: tokens.semantic.color.borderSubtle,
   },
   footerHint: {
     color: tokens.semantic.color.textMuted,

@@ -55,9 +55,9 @@ export default function RootLayout() {
       <SessionProvider>
         <Stack
           screenOptions={{
-            contentStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
+            contentStyle: { backgroundColor: tokens.semantic.color.backgroundApp },
             headerShadowVisible: false,
-            headerStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
+            headerStyle: { backgroundColor: tokens.semantic.color.backgroundApp },
             headerTitleStyle: { fontFamily: 'Manrope_700Bold' },
             headerTintColor: tokens.semantic.color.textPrimary,
           }}>

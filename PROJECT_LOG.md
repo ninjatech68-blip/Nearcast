@@ -19,6 +19,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 0.1.1 | 2026-08-24 | Greenfield clarification | Recorded that Nearcast has no old app or legacy codebase dependency |
 | 0.1.1 | 2026-08-25 | Documentation baseline established | Added derived requirements and gap analysis measuring all approved documents against commit `7820a0a`; no product behavior changed |
 | 0.2.0 | 2026-08-25 | Phase 1 lifecycle delivered | Resolved every documentation conflict, added the Phase 1 database layer and server boundary, added authentication and invitation redemption, and replaced all demo fixtures with real data |
+| 0.3.0 | 2026-08-25 | Design-system cutover and functional journey coverage | App now implements the approved Trustworthy Native Clarity palette, shape, motion, and type scale; added a 25-assertion functional journey test of the complete Phase 1 loop |
 
 ## Verification Log
 
@@ -60,6 +61,9 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Human-item bypasses | Recorded | Development-only password sign-in (gated from production), configuration-driven share base URL with scheme fallback, and seeded local invitation tokens keep testing active while H-1, H-2, H-4, and H-5 remain pending |
 | 2026-08-25 | App verification | Passed | `npm run verify` completed lint, TypeScript, 21 Vitest assertions, 18 Jest component assertions, and the iOS export |
 | 2026-08-25 | Database verification | Passed | All three migrations plus seed applied to a clean database; 9 foundation, 74 Phase 1, and 18 Phase 2 pgTAP assertions passed (101 of 101) on the substitute harness |
+| 2026-08-25 | Semantic token cutover | Passed | Replaced the app token layer with the approved native semantic palette, radius (card 20, button 14), motion (press 120, sheet 240, page 300), and the approved type scale on Manrope; 15 files swept, splash aligned to `#F7F3EA`, Broadcast rendered as the raised tab action; dark palette carried as data with a parity test |
+| 2026-08-25 | Phase 1 functional journey | Passed | New 25-assertion pgTAP journey drives the complete two-user loop exclusively through the public functions: redemption, publish, anonymous link, confirmation, delivery with reason, response, acceptance, progressive disclosure, messaging, notification hygiene, resolution, and reliability |
+| 2026-08-25 | Full verification after cutover | Passed | `npm run verify` green (25 Vitest, 18 Jest, iOS export); clean-database run green with 126 of 126 pgTAP assertions across four suites |
 
 ## Governance Rules
 
@@ -90,3 +94,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Adopted TanStack Query for server state and removed all demo fixtures |
 | 2026-08-25 | Added the Codex handoff plan and opened the matching GitHub issues; human-led items remain with the founder |
 | 2026-08-25 | Built explainable delivery generation and the development bypasses that keep testing active while human items are pending |
+| 2026-08-25 | Executed the semantic token cutover by founder direction and added the Phase 1 functional journey suite |

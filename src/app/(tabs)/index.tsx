@@ -156,13 +156,13 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundApp },
   content: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 28 },
   screenTitle: {
     color: tokens.semantic.color.textPrimary,
     fontFamily: 'Manrope_700Bold',
-    fontSize: 26,
-    lineHeight: 32,
+    fontSize: 28,
+    lineHeight: 34,
   },
   shellTitle: { paddingHorizontal: 16, paddingTop: 12 },
   subtitle: {
@@ -180,23 +180,23 @@ const styles = StyleSheet.create({
     padding: tokens.component.intentCard.padding,
     gap: 6,
   },
-  cardPressed: { backgroundColor: tokens.semantic.color.backgroundSubtle },
+  cardPressed: { backgroundColor: tokens.semantic.color.backgroundSurfaceMuted },
   cardTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   primitive: {
-    color: tokens.semantic.color.trustText,
+    color: tokens.semantic.color.actionPrimary,
     fontFamily: 'Manrope_600SemiBold',
-    fontSize: 12,
+    fontSize: 11,
     textTransform: 'uppercase',
   },
   expiry: {
-    color: tokens.semantic.color.warningText,
+    color: tokens.semantic.color.statusWarning,
     fontFamily: 'Manrope_400Regular',
-    fontSize: 12,
+    fontSize: 11,
   },
   statement: {
     color: tokens.semantic.color.textPrimary,
     fontFamily: 'Manrope_700Bold',
-    fontSize: 17,
+    fontSize: 16,
     lineHeight: 24,
   },
   meta: {
@@ -205,13 +205,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   reason: {
-    color: tokens.semantic.color.infoText,
+    color: tokens.semantic.color.actionSecondary,
     fontFamily: 'Manrope_400Regular',
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 18,
   },
   confirmations: {
-    color: tokens.semantic.color.trustText,
+    color: tokens.semantic.color.actionPrimary,
     fontFamily: 'Manrope_600SemiBold',
     fontSize: 13,
   },
@@ -219,13 +219,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: tokens.semantic.color.actionPrimary,
     fontFamily: 'Manrope_600SemiBold',
-    fontSize: 15,
+    fontSize: 16,
   },
   privacyNote: {
     marginTop: 20,
     color: tokens.semantic.color.textMuted,
     fontFamily: 'Manrope_400Regular',
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 18,
   },
 });

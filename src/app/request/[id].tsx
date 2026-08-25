@@ -95,14 +95,14 @@ export default function RequestScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundApp },
   content: { padding: 20, gap: 10 },
-  title: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28 },
-  composer: { minHeight: 140, padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, fontFamily: 'Manrope_400Regular', fontSize: 17, lineHeight: 25, color: tokens.semantic.color.textPrimary },
-  counter: { textAlign: 'right', color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 12 },
-  disclosure: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.trustSurface, gap: 6 },
-  disclosureTitle: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_600SemiBold', fontSize: 15 },
-  disclosureBody: { color: tokens.semantic.color.trustText, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19 },
-  error: { color: tokens.semantic.color.dangerText, fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20 },
-  footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
+  title: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 20, lineHeight: 26 },
+  composer: { minHeight: 140, padding: 16, borderRadius: tokens.primitive.radius.card, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface, fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 24, color: tokens.semantic.color.textPrimary },
+  counter: { textAlign: 'right', color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 11 },
+  disclosure: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundSuccess, gap: 6 },
+  disclosureTitle: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
+  disclosureBody: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  error: { color: tokens.semantic.color.statusDanger, fontFamily: 'Manrope_600SemiBold', fontSize: 13, lineHeight: 18 },
+  footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderSubtle },
 });

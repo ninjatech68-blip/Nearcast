@@ -89,9 +89,9 @@ Final production colors must pass contrast tests in their actual text/background
 
 Dark appearance is implemented by remapping semantic tokens, not by changing components. Dark primitives must preserve semantic contrast and avoid pure black surfaces.
 
-Dark appearance is **deferred beyond the first alpha build** (C-08). The dark values below remain the approved target; `app.json` pins the light appearance until the cutover.
+Dark appearance is **deferred beyond the first alpha build** (C-08). The dark values below are carried as machine-readable data in `src/design-system/tokens.ts`; `app.json` pins the light appearance until the appearance-switching pass.
 
-The approved 2026-08-25 design direction introduces an implementation target for native semantic naming. This is a **post-Phase-1 cutover** (C-07): the two systems use different token names, so every component changes at once and the migration must not be interleaved with feature work.
+**The cutover to the native semantic naming below was executed on 2026-08-25** by founder direction, revising the earlier post-Phase-1 timing. The implemented light palette, radius, spacing, and motion values now match this table; the original mapping higher in this section is retained as history.
 
 | Token | Light | Dark |
 |---|---:|---:|
@@ -349,6 +349,7 @@ Every screen page must link in its description to this specification, the App De
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | Executed the semantic token cutover: the app now implements the native semantic palette, radius (card 20, button 14), motion (press 120, sheet 240, page 300), and the approved type scale on Manrope weights; `textMuted` maps to `text.secondary` because the approved palette defines two text levels |
 | 2026-08-25 | Resolved C-03: replaced the numeric `Trust 812` TrustBadge with the contextual-evidence TrustContext component, because Product Requirements and Trust, Privacy, and Safety both prohibit a universal score and outrank this document |
 | 2026-08-25 | Resolved C-09: minimum touch target stated as 44pt on iOS and 48dp on Android, matching the App Design Foundation and platform guidance |
 | 2026-08-25 | Added approved Trustworthy Native Clarity direction, native semantic token target, adaptive platform mappings, trust display standard, and privacy-safe copy rules |
