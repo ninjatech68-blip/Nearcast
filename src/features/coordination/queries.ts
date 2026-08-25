@@ -1,3 +1,4 @@
+import { track } from '@/infrastructure/analytics/analytics';
 import { supabase } from '@/infrastructure/supabase/client';
 import type { Database } from '@/infrastructure/supabase/database.types';
 
@@ -75,11 +76,19 @@ export async function decideResponse(
   responseId: string,
   decision: 'accept' | 'decline',
 ): Promise<DecisionResult> {
-  const { error } = await supabase.rpc('decide_response', {
+  const { data, error } = await supabase.rpc('decide_response', {
     target_response_id: responseId,
     decision,
     expected_intent_status: 'live',
   });
+
+  if (!error && data) {
+    track('response_decided', {
+      intent_id: data.intent_id,
+      response_id: responseId,
+      decision,
+    });
+  }
 
   if (error) {
     return {
@@ -189,6 +198,7 @@ export async function sendRoomMessage(
   conversationId: string,
   body: string,
   idempotencyKey: string,
+  matchId?: string,
 ): Promise<DecisionResult> {
   const trimmed = body.trim();
   if (trimmed.length === 0) return { ok: false, message: 'Write a message first.' };
@@ -198,9 +208,13 @@ export async function sendRoomMessage(
     body: trimmed,
     idempotency_key: idempotencyKey,
   });
-  return error
-    ? { ok: false, message: 'Your message was not sent. Check your connection and try again.' }
-    : { ok: true };
+  if (error) {
+    return { ok: false, message: 'Your message was not sent. Check your connection and try again.' };
+  }
+  if (matchId) {
+    track('coordination_message_sent', { match_id: matchId, message_type: 'text' });
+  }
+  return { ok: true };
 }
 
 /** Human-readable labels for the four releasable private fields. */
@@ -256,7 +270,69 @@ export async function hideDelivery(
     })
     .eq('intent_id', intentId)
     .eq('recipient_id', recipientId);
-  return error
-    ? { ok: false, message: 'This could not be hidden right now. Try again.' }
-    : { ok: true };
+  if (error) {
+    return { ok: false, message: 'This could not be hidden right now. Try again.' };
+  }
+  if (notRelevant) {
+    track('intent_feedback_submitted', { intent_id: intentId, feedback_type: 'not_relevant' });
+  }
+  return { ok: true };
+}
+
+export const RESOLUTION_OUTCOMES: {
+  outcome: Database['public']['Enums']['resolution_outcome'];
+  label: string;
+  affectsReliability: boolean;
+}[] = [
+  { outcome: 'resolved_through_nearcast', label: 'Resolved through Nearcast', affectsReliability: true },
+  { outcome: 'resolved_elsewhere', label: 'Resolved elsewhere', affectsReliability: false },
+  { outcome: 'no_longer_needed', label: 'No longer needed', affectsReliability: false },
+  { outcome: 'could_not_resolve', label: 'Could not resolve before expiry', affectsReliability: false },
+];
+
+/**
+ * Closes an intent with a factual outcome. Only "resolved through Nearcast"
+ * with the other participant's confirmation ever affects reliability.
+ */
+export async function resolveIntent(
+  intentId: string,
+  expectedStatus: Database['public']['Enums']['intent_status'],
+  outcome: Database['public']['Enums']['resolution_outcome'],
+): Promise<DecisionResult> {
+  const { error } = await supabase.rpc('close_intent', {
+    target_intent_id: intentId,
+    expected_status: expectedStatus,
+    outcome,
+  });
+  if (error) {
+    return {
+      ok: false,
+      message: 'The intent could not be closed. It may have changed — refresh and try again.',
+    };
+  }
+  track('intent_resolution_submitted', { intent_id: intentId, resolution_type: outcome });
+  return { ok: true };
+}
+
+/** Records whether the interaction actually happened. Factual, never a rating. */
+export async function confirmOutcome(
+  matchId: string,
+  intentId: string,
+  completed: boolean,
+  disputed: boolean,
+): Promise<DecisionResult> {
+  const { error } = await supabase.rpc('confirm_interaction_outcome', {
+    target_match_id: matchId,
+    completed,
+    disputed,
+  });
+  if (error) {
+    return { ok: false, message: 'This could not be recorded right now. Try again.' };
+  }
+  track('interaction_completion_confirmed', {
+    intent_id: intentId,
+    match_id: matchId,
+    confirmed: completed,
+  });
+  return { ok: true };
 }

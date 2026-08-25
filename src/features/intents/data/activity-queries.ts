@@ -1,3 +1,4 @@
+import { track } from '@/infrastructure/analytics/analytics';
 import { supabase } from '@/infrastructure/supabase/client';
 import type { Database } from '@/infrastructure/supabase/database.types';
 
@@ -143,12 +144,21 @@ export async function submitResponse(
     return { ok: false, message: 'Answer at most two qualifying questions.' };
   }
 
-  const { error } = await supabase.rpc('submit_response', {
+  const { data, error } = await supabase.rpc('submit_response', {
     target_intent_id: intentId,
     response_message: trimmed,
     qualification_answers: qualification,
     idempotency_key: idempotencyKey,
   });
+
+  if (!error && data) {
+    track('response_submitted', {
+      intent_id: intentId,
+      response_id: data.id,
+      action_type: 'respond',
+      qualification_count: Object.keys(qualification).length,
+    });
+  }
 
   if (error) {
     return {

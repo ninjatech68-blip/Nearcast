@@ -75,6 +75,10 @@ export default function RootLayout() {
           <Stack.Screen name="i/[shareSlug]" options={{ title: 'Intent' }} />
           <Stack.Screen name="inbox/[intentId]" options={{ headerShown: false }} />
           <Stack.Screen name="room/[matchId]" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="resolve/[intentId]"
+            options={{ title: 'Resolve intent', presentation: 'modal' }}
+          />
         </Stack>
       </SessionProvider>
     </QueryClientProvider>

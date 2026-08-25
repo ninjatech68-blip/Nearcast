@@ -83,6 +83,17 @@ export default function IntentDetailScreen() {
         <Text style={styles.privacy}>
           No exact address or contact details are shown. The originating group stays private.
         </Text>
+
+        {intent.isOwn && (intent.status === 'live' || intent.status === 'matched') ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() =>
+              router.push(`/resolve/${intent.id}?status=${intent.status}`)
+            }
+            style={({ pressed }) => [styles.resolveLink, pressed && styles.resolveLinkPressed]}>
+            <Text style={styles.resolveLabel}>Resolve or withdraw intent</Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
 
       <View style={styles.footer}>
@@ -142,5 +153,8 @@ const styles = StyleSheet.create({
   actionPrimary: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
   trustHint: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
   privacy: { marginTop: 8, color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  resolveLink: { marginTop: 12, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle },
+  resolveLinkPressed: { backgroundColor: tokens.semantic.color.backgroundSurfaceMuted },
+  resolveLabel: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
   footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderSubtle },
 });

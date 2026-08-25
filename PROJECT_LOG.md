@@ -21,6 +21,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 0.2.0 | 2026-08-25 | Phase 1 lifecycle delivered | Resolved every documentation conflict, added the Phase 1 database layer and server boundary, added authentication and invitation redemption, and replaced all demo fixtures with real data |
 | 0.3.0 | 2026-08-25 | Design-system cutover and functional journey coverage | App now implements the approved Trustworthy Native Clarity palette, shape, motion, and type scale; added a 25-assertion functional journey test of the complete Phase 1 loop |
 | 0.4.0 | 2026-08-25 | Coordination surfaces delivered | Broadcaster inbox, coordination room with explicit disclosure release and in-room block/report, and feed relevance feedback — the tested server loop is now walkable in the interface |
+| 0.5.0 | 2026-08-25 | Realtime, resolution, and privacy-safe analytics | Private message channels with reconnect refetch, the resolution sheet and outcome confirmation, and the allowlisted analytics module with events wired after server success |
 
 ## Verification Log
 
@@ -68,6 +69,10 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Coordination surfaces | Passed | Built the broadcaster inbox (accept/decline with neutral declined status), the coordination room (pinned intent header, per-field disclosure release, block and report, read-only when closed, five-second interim poll pending Realtime), and the feed not-relevant action; 29 Jest component assertions pass |
 | 2026-08-25 | Test-runner leak | Fixed | TanStack Query's default five-minute mutation GC timer held the Jest worker open; the shared test client now zeroes gcTime on both caches and the runner exits cleanly |
 | 2026-08-25 | Requirement gap raised | Open | MUST-043's broadcaster Reply action has no schema path before a match exists; recorded in implementation plan 04 for a governing-document decision |
+| 2026-08-25 | Realtime channels | Passed | Messages join the supabase_realtime publication behind an existence guard (a recorded no-op on the plain-PostgreSQL harness); the room subscribes per conversation, refetches from PostgreSQL on every event and on reconnect, unsubscribes on unmount, and keeps a thirty-second poll only as a dead-socket safety net |
+| 2026-08-25 | Resolution and outcomes | Passed | Resolution sheet offers the four factual outcomes plus withdraw with an honest reliability note; the room asks "Did this interaction happen?" once resolved, with a dispute path; 31 Jest component assertions pass |
+| 2026-08-25 | Privacy-safe analytics | Passed | Client module enforces the Doc 09 taxonomy as per-event allowlists with substring prohibited-key rejection and drop-whole-event semantics; 7 Vitest assertions prove prohibited sample data is rejected; transport is a bounded buffer until the PostHog project exists (H-6) |
+| 2026-08-25 | Full verification | Passed | `npm run verify` fully clean (8 Vitest files, 31 Jest assertions, iOS export); clean-database run green at 126 of 126 including the guarded realtime migration |
 
 ## Governance Rules
 
@@ -100,3 +105,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Built explainable delivery generation and the development bypasses that keep testing active while human items are pending |
 | 2026-08-25 | Executed the semantic token cutover by founder direction and added the Phase 1 functional journey suite |
 | 2026-08-25 | Delivered the inbox, coordination room, disclosure release, in-room safety actions, and feed relevance feedback |
+| 2026-08-25 | Delivered Realtime channels, the resolution and outcome flow, and the allowlisted analytics module |

@@ -14,9 +14,20 @@ function queryBuilder(result) {
   return builder;
 }
 
+function channelStub() {
+  const channel = {
+    on: jest.fn(() => channel),
+    subscribe: jest.fn(() => channel),
+    unsubscribe: jest.fn(),
+  };
+  return channel;
+}
+
 const mockSupabase = {
   from: jest.fn(() => queryBuilder(emptyResult)),
   rpc: jest.fn(async () => ({ data: null, error: null })),
+  channel: jest.fn(() => channelStub()),
+  removeChannel: jest.fn(async () => 'ok'),
   auth: {
     getSession: jest.fn(async () => ({ data: { session: null }, error: null })),
     getUser: jest.fn(async () => ({ data: { user: null }, error: null })),

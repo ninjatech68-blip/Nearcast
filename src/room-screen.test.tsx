@@ -15,10 +15,12 @@ jest.mock('@/features/auth/session', () => ({
 const mockFetchRoom = jest.fn<(...a: unknown[]) => Promise<unknown>>();
 const mockSend = jest.fn<(...a: unknown[]) => Promise<unknown>>();
 const mockRelease = jest.fn<(...a: unknown[]) => Promise<unknown>>();
+const mockConfirmOutcome = jest.fn<(...a: unknown[]) => Promise<unknown>>();
 jest.mock('@/features/coordination/queries', () => ({
   fetchRoom: (...a: unknown[]) => mockFetchRoom(...a),
   sendRoomMessage: (...a: unknown[]) => mockSend(...a),
   releaseField: (...a: unknown[]) => mockRelease(...a),
+  confirmOutcome: (...a: unknown[]) => mockConfirmOutcome(...a),
   blockUser: jest.fn(),
   reportUser: jest.fn(),
   RELEASABLE_FIELDS: [
@@ -55,6 +57,7 @@ describe('RoomScreen', () => {
     mockFetchRoom.mockReset();
     mockSend.mockReset();
     mockRelease.mockReset();
+    mockConfirmOutcome.mockReset();
   });
 
   it('pins the governing intent and its status at the top of the room', async () => {
@@ -117,6 +120,31 @@ describe('RoomScreen', () => {
     await waitFor(() => expect(mockSend).toHaveBeenCalled());
     expect(mockSend.mock.calls[0]?.[0]).toBe('conv-1');
     expect(mockSend.mock.calls[0]?.[1]).toBe('On my way');
+  });
+
+  it('asks for factual outcome confirmation once the intent is resolved', async () => {
+    mockFetchRoom.mockResolvedValue({ state: 'ok', data: room({ intentStatus: 'resolved' }) });
+    mockConfirmOutcome.mockResolvedValue({ ok: true });
+    const user = userEvent.setup();
+
+    await renderScreen(<RoomScreen />);
+    await waitFor(() => expect(screen.getByTestId('outcome-panel')).toBeTruthy());
+
+    await user.press(screen.getByRole('button', { name: 'It happened' }));
+
+    await waitFor(() =>
+      expect(mockConfirmOutcome).toHaveBeenCalledWith('match-1', 'intent-1', true, false),
+    );
+    expect(screen.queryByTestId('outcome-panel')).toBeNull();
+  });
+
+  it('never asks for outcome confirmation while the intent is still matched', async () => {
+    mockFetchRoom.mockResolvedValue({ state: 'ok', data: room() });
+
+    await renderScreen(<RoomScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('intent-status-header')).toBeTruthy());
+    expect(screen.queryByTestId('outcome-panel')).toBeNull();
   });
 
   it('renders a closed room read-only', async () => {

@@ -36,7 +36,7 @@
 
 **Files:** `src/infrastructure/analytics/`, `src/infrastructure/observability/`
 
-- [ ] Test the analytics allowlist and Sentry scrubber with prohibited sample data.
+- [x] Test the analytics allowlist with prohibited sample data. The Sentry scrubber remains open pending the H-6 projects.
 - [ ] Implement the funnel and reliability metrics from the analytics plan.
 - [ ] Add alerts for auth failures, function errors, notification backlog, and report backlog.
 
@@ -58,3 +58,5 @@ All Permissions Matrix tests pass, one report can be actioned end to end, accoun
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created trust, safety, analytics, operations, and release implementation plan |
+| 2026-08-25 | Delivered the client analytics module: the Doc 09 taxonomy as an explicit per-event property allowlist, substring-based prohibited-key rejection, drop-whole-event semantics, a bounded buffer behind a swappable transport until PostHog exists (H-6), and emits wired after server success for publish, response, decision, message, feedback, resolution, and outcome |
+| 2026-08-25 | Delivered the resolution and outcome confirmation UI over the existing close_intent and confirm_interaction_outcome functions |

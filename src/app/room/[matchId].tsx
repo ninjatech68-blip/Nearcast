@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -18,6 +18,7 @@ import { tokens } from '@/design-system/tokens';
 import { useSession } from '@/features/auth/session';
 import {
   blockUser,
+  confirmOutcome,
   fetchRoom,
   releaseField,
   reportUser,
@@ -25,6 +26,7 @@ import {
   RELEASABLE_FIELDS,
   type Room,
 } from '@/features/coordination/queries';
+import { useRoomRealtime } from '@/features/coordination/use-room-realtime';
 import { STATUS_LABELS } from '@/features/intents/data/activity-queries';
 
 type RoomState = { kind: 'content'; room: Room } | ScreenState;
@@ -48,17 +50,28 @@ export default function RoomScreen() {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
+  const [outcomeRecorded, setOutcomeRecorded] = useState(false);
 
   const room = useQuery({
     queryKey: ['room', matchId],
     queryFn: () => fetchRoom(matchId ?? '', userId ?? ''),
     enabled: userId !== null,
-    // Realtime channels are a later item (#6); a slow poll keeps the room
-    // usable for testing until then. PostgreSQL remains the source of truth.
-    refetchInterval: 5000,
+    // Realtime is the primary signal; this slow poll is only a safety net for
+    // a silently dead socket. Disabled under test so timers do not hold the
+    // runner open. PostgreSQL remains the source of truth either way.
+    refetchInterval: process.env.NODE_ENV === 'test' ? false : 30_000,
   });
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['room', matchId] });
+  const refresh = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ['room', matchId] }),
+    [matchId, queryClient],
+  );
+
+  const conversationId =
+    room.data?.state === 'ok' && room.data.data && !room.data.data.closed
+      ? room.data.data.conversationId
+      : null;
+  useRoomRealtime(conversationId, refresh);
 
   const send = useMutation({
     mutationFn: (body: string) =>
@@ -66,6 +79,7 @@ export default function RoomScreen() {
         room.data?.state === 'ok' ? (room.data.data?.conversationId ?? '') : '',
         body,
         globalThis.crypto.randomUUID(),
+        matchId,
       ),
     onSuccess: async (result) => {
       if (!result.ok) {
@@ -109,6 +123,16 @@ export default function RoomScreen() {
     (field) => !current.released.some((released) => released.fieldName === field.fieldName),
   );
 
+  async function recordOutcome(completed: boolean, disputed: boolean) {
+    const result = await confirmOutcome(current.matchId, current.intentId, completed, disputed);
+    if (!result.ok) {
+      setNotice(result.message);
+      return;
+    }
+    setOutcomeRecorded(true);
+    setNotice('Recorded. Thank you for keeping outcomes factual.');
+  }
+
   async function protect(action: 'block' | 'report') {
     if (!userId) return;
     const result =
@@ -147,6 +171,33 @@ export default function RoomScreen() {
                 {FIELD_LABELS[field.fieldName] ?? field.fieldName}: {field.fieldValue}
               </Text>
             ))}
+          </View>
+        ) : null}
+
+        {current.intentStatus === 'resolved' && !outcomeRecorded ? (
+          <View style={styles.outcomePanel} testID="outcome-panel">
+            <Text style={styles.outcomeTitle}>Did this interaction happen?</Text>
+            <Text style={styles.outcomeHint}>
+              Only a confirmed completion affects reliability. You can dispute an incorrect
+              status.
+            </Text>
+            <View style={styles.outcomeActions}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => void recordOutcome(true, false)}
+                style={({ pressed }) => [styles.outcomeYes, pressed && styles.outcomeYesPressed]}>
+                <Text style={styles.outcomeYesLabel}>It happened</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => void recordOutcome(false, false)}
+                style={({ pressed }) => [styles.outcomeNo, pressed && styles.outcomeNoPressed]}>
+                <Text style={styles.outcomeNoLabel}>It did not happen</Text>
+              </Pressable>
+            </View>
+            <Pressable accessibilityRole="button" onPress={() => void recordOutcome(false, true)}>
+              <Text style={styles.disputeLabel}>Dispute the recorded status</Text>
+            </Pressable>
           </View>
         ) : null}
 
@@ -267,6 +318,17 @@ const styles = StyleSheet.create({
   bubbleMineText: { color: tokens.semantic.color.onPrimary, fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 22 },
   bubbleTheirsText: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 22 },
   notice: { marginTop: 8, color: tokens.semantic.color.statusWarning, fontFamily: 'Manrope_600SemiBold', fontSize: 13, lineHeight: 18 },
+  outcomePanel: { marginHorizontal: 16, marginTop: 8, padding: 14, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundInfo, gap: 8 },
+  outcomeTitle: { color: tokens.semantic.color.actionSecondary, fontFamily: 'Manrope_700Bold', fontSize: 16 },
+  outcomeHint: { color: tokens.semantic.color.actionSecondary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  outcomeActions: { flexDirection: 'row', gap: 10 },
+  outcomeYes: { flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, backgroundColor: tokens.semantic.color.actionPrimary },
+  outcomeYesPressed: { backgroundColor: tokens.semantic.color.actionPrimaryPressed },
+  outcomeYesLabel: { color: tokens.semantic.color.onPrimary, fontFamily: 'Manrope_700Bold', fontSize: 16 },
+  outcomeNo: { flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: tokens.primitive.radius.button, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface },
+  outcomeNoPressed: { backgroundColor: tokens.semantic.color.backgroundSurfaceMuted },
+  outcomeNoLabel: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
+  disputeLabel: { color: tokens.semantic.color.actionSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 13 },
   safetyRow: { flexDirection: 'row', gap: 20, paddingHorizontal: 20, paddingBottom: 6 },
   safetyLabel: { color: tokens.semantic.color.statusDanger, fontFamily: 'Manrope_600SemiBold', fontSize: 13 },
   footer: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 16, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderSubtle },

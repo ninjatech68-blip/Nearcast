@@ -1,3 +1,4 @@
+import { track } from '@/infrastructure/analytics/analytics';
 import { supabase } from '@/infrastructure/supabase/client';
 import type { Database } from '@/infrastructure/supabase/database.types';
 
@@ -20,6 +21,7 @@ export type FeedCard = {
 };
 
 export type IntentDetail = FeedCard & {
+  status: Database['public']['Enums']['intent_status'];
   startsAt: string | null;
   deadlineAt: string | null;
   broadcasterFirstName: string | null;
@@ -96,7 +98,7 @@ export async function fetchIntentDetail(
   const { data, error } = await supabase
     .from('intents')
     .select(
-      `id, primitive, statement, expires_at, response_action, broadcaster_id,
+      `id, primitive, statement, status, expires_at, response_action, broadcaster_id,
        intent_context ( approximate_place, starts_at, deadline_at ),
        intent_confirmations ( intent_id ),
        intent_deliveries ( reason_text ),
@@ -122,6 +124,7 @@ export async function fetchIntentDetail(
       id: data.id,
       primitiveLabel: PRIMITIVE_LABELS[data.primitive],
       statement: data.statement,
+      status: data.status,
       approximatePlace: context?.approximate_place ?? null,
       startsAt: context?.starts_at ?? null,
       deadlineAt: context?.deadline_at ?? null,
@@ -205,6 +208,15 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
   if (input.reach !== 'origin_only') {
     await supabase.rpc('generate_deliveries', { target_intent_id: published.data.id });
   }
+
+  track('intent_published', {
+    intent_id: published.data.id,
+    primitive: input.primitive,
+    reach_level: input.reach,
+    expiry_hours: Math.round(
+      (new Date(input.expiresAt).getTime() - Date.now()) / 3_600_000,
+    ),
+  });
 
   return {
     state: 'ok',
