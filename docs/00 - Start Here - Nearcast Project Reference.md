@@ -97,6 +97,7 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 | 2026-08-24 | Use an AI-readable repository contract and phase-specific plans | Keeps implementation grounded in approved requirements instead of chat context |
 | 2026-08-24 | Keep production credentials and production MCP access outside AI tooling | Limits blast radius while retaining fast local and staging development |
 | 2026-08-24 | Treat Nearcast as a greenfield build with no legacy codebase dependency | Keeps future implementation from inheriting assumptions or patterns from unrelated projects |
+| 2026-08-25 | Approve Trustworthy Native Clarity as the mobile design-system direction | Establishes a calm, native, trust-first visual system before implementation |
 
 ## Document Change Rule
 
@@ -109,3 +110,4 @@ Every document must include a `Change Log` section. Material decisions require u
 | 2026-08-24 | Created the governing documentation index and source-of-truth rules |
 | 2026-08-24 | Added implementation guide, mobile/API contracts, phase plans, and AI engineering governance |
 | 2026-08-24 | Added explicit greenfield project starting point |
+| 2026-08-25 | Recorded approved mobile design-system direction in design governance |

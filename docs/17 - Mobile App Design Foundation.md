@@ -558,6 +558,8 @@ Nearcast should not optimize primarily for feed depth, session duration, notific
 
 Nearcast is a **mobile trust utility with social capabilities**.
 
+The approved app design direction is **Trustworthy Native Clarity**: warm native surfaces, explicit provenance, controlled reach, and progressive disclosure. The interface should remain minimal and calm while making trust, privacy, and safe next actions self-explanatory.
+
 Every design decision should reinforce the following experience:
 
 ```text
@@ -582,5 +584,6 @@ The defining user feeling is:
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | Recorded approved Trustworthy Native Clarity direction for the mobile app design system |
 | 2026-08-24 | Created the mobile app experience and design foundation |
 | 2026-08-24 | Added documentation governance and formal design-system references |

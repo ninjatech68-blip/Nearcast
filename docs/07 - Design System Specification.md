@@ -9,7 +9,15 @@
 
 ## Design Character
 
-Nearcast is calm, credible, human, and quietly optimistic. It should feel like a trusted utility with social capability, not an entertainment feed, financial dashboard, or high-energy marketplace.
+Nearcast is calm, credible, human, and quietly optimistic. It should feel like a trusted utility with social capability, not an entertainment feed, financial dashboard, web dashboard, chat-first product, or high-energy marketplace.
+
+The approved visual direction is **Trustworthy Native Clarity**. Every screen should answer:
+
+```text
+What is this?
+Why am I seeing it?
+What is safe to do next?
+```
 
 ## Design Principles
 
@@ -81,6 +89,26 @@ Final production colors must pass contrast tests in their actual text/background
 
 Dark appearance is implemented by remapping semantic tokens, not by changing components. Dark primitives must preserve semantic contrast and avoid pure black surfaces.
 
+The approved 2026-08-25 design direction introduces an implementation target for native semantic naming:
+
+| Token | Light | Dark |
+|---|---:|---:|
+| `color.background.app` | `#F7F3EA` | `#0E1714` |
+| `color.background.surface` | `#FFFFFF` | `#15211D` |
+| `color.background.surfaceMuted` | `#F1F4EC` | `#1E2B25` |
+| `color.background.info` | `#EAF2FA` | `#142A3A` |
+| `color.background.success` | `#E8F3EC` | `#143025` |
+| `color.background.warning` | `#FFF5DF` | `#35270F` |
+| `color.background.danger` | `#FFF0EF` | `#381B18` |
+| `color.text.primary` | `#16231F` | `#F3F7F1` |
+| `color.text.secondary` | `#52635D` | `#BAC8C0` |
+| `color.action.primary` | `#0F5E46` | `#65D0A1` |
+| `color.action.primaryPressed` | `#0A4936` | `#0A4936` |
+| `color.action.secondary` | `#17324D` | `#8EB8E5` |
+| `color.border.subtle` | `#DDD6C8` | `#33443C` |
+
+Every colored surface or accent must define a matching foreground token such as `color.onPrimary`, `color.onInfo`, `color.onWarning`, `color.onDanger`, `color.onSurface`, and `color.onSuccess`.
+
 ## Typography
 
 Use **Manrope** for the shared product typeface, with platform fallback only while the font loads.
@@ -98,6 +126,11 @@ Use **Manrope** for the shared product typeface, with platform fallback only whi
 | `caption` | 12/17 | 500 | Supporting information |
 
 Support dynamic type. Do not truncate critical privacy, trust, or safety text solely to preserve layout.
+
+Native implementation should map this hierarchy onto platform typography:
+
+- **iOS:** SF Pro, SF Symbols, native sheets, native switches, and 44pt minimum touch targets.
+- **Android:** Roboto, Material Symbols, Material tonal surfaces, Material sheets and switches, and 48dp minimum touch targets.
 
 ## Spacing And Sizing
 
@@ -160,6 +193,16 @@ Variants: information, trust, warning, danger, and success. Include an icon and 
 
 ## Signature Components
 
+### TrustBadge
+
+The standard trust display is:
+
+```text
+Trust 812 · High trust
+```
+
+Do not mix trust display formats such as `4.7`, percentages, ratings, follower counts, likes, or popularity counters. Trust must not imply guaranteed safety.
+
 ### IntentCard
 
 Anatomy:
@@ -184,6 +227,8 @@ Required on recommended intents. It must contain a human-readable explanation an
 ### TrustDistance
 
 Displays descriptive network context such as `One trusted connection` or `Confirmed by three people at the origin`. Avoid ambiguous numeric scores.
+
+Use approximate area language such as `Riverside area`, `Nearby area`, or `Approximate area`. Do not default to precise distance examples.
 
 ### ReachSelector
 
@@ -212,6 +257,14 @@ Collects resolution outcome and explains whether the outcome affects reliability
 ### PrivacyDisclosure
 
 Lists fields visible now and fields that will become visible after an action. Used before publish, reach expansion, response, and acceptance.
+
+Preferred privacy copy includes:
+
+- "No exact address or contact details shown."
+- "Reach never expands without your action."
+- "Hide contact details."
+
+Avoid "Make anonymous" unless a product requirement defines true anonymity.
 
 ### EmptyIntentState
 
@@ -279,9 +332,13 @@ Every screen page must link in its description to this specification, the App De
 - Does copy follow the Content Design Guide?
 - Is the component already available before creating a new one?
 - Does the design work with dynamic type and reduced motion?
+- Does trust use the single approved display format?
+- Does retry use recovery styling rather than destructive styling?
+- Does the screen avoid precise location/distance examples unless required?
 
 ## Change Log
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | Added approved Trustworthy Native Clarity direction, native semantic token target, adaptive platform mappings, trust display standard, and privacy-safe copy rules |
 | 2026-08-24 | Defined tokens, components, motion, accessibility, and Figma governance |
