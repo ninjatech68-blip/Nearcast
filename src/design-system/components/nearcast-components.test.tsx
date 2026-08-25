@@ -175,7 +175,7 @@ describe('IntentCard', () => {
 
     const button = view.getByRole('button', { name: 'Offer help' });
     expect(button.props.accessibilityState).toMatchObject({ disabled: true });
-    expect(button.props.accessibilityHint).toBe('This intent has expired.');
+    expect(button.props.accessibilityHint).toBe('The response window ended.');
     expect(view.getByText('Expired')).toBeTruthy();
   });
 

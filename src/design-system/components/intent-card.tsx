@@ -13,10 +13,11 @@ export const INTENT_CARD_STATUSES = ['expired', 'withdrawn', 'reported'] as cons
 
 export type IntentCardStatus = (typeof INTENT_CARD_STATUSES)[number];
 
+/** Labels and supporting copy from docs/08 - Writing and Content Guide.md. */
 const STATUS_COPY: Record<IntentCardStatus, { pill: string; reason: string }> = {
-  expired: { pill: 'Expired', reason: 'This intent has expired.' },
-  withdrawn: { pill: 'Withdrawn', reason: 'The broadcaster withdrew this intent.' },
-  reported: { pill: 'Reported', reason: 'This intent is under review.' },
+  expired: { pill: 'Expired', reason: 'The response window ended.' },
+  withdrawn: { pill: 'Withdrawn', reason: 'The broadcaster closed this intent.' },
+  reported: { pill: 'Under review', reason: 'Some actions are temporarily unavailable.' },
 };
 
 type IntentCardProps = {

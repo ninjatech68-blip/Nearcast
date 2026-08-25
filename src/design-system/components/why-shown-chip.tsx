@@ -4,7 +4,7 @@ import { accentFor } from '@/design-system/accents';
 import { useAppearance, useColors } from '@/design-system/appearance';
 import { tokens } from '@/design-system/tokens';
 
-const PROMPT = 'Why shown';
+const PROMPT = "Why you're seeing this";
 
 type WhyShownChipProps = {
   /** The stored, human-readable delivery reason. */

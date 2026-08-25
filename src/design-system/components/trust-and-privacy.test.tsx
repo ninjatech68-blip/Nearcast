@@ -72,7 +72,7 @@ describe('WhyShownChip', () => {
       <WhyShownChip onPress={onPress} reason="approximate area + public link" />,
     );
 
-    const chip = view.getByRole('button', { name: 'Why shown' });
+    const chip = view.getByRole('button', { name: "Why you're seeing this" });
     expect(chip.props.accessibilityHint).toBe('Shown because: approximate area + public link');
 
     await user.press(chip);

@@ -76,3 +76,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded design system reconciliation against the approved static preview |
 | 2026-08-25 | Recorded native typography migration and appearance-aware screen pass |
 | 2026-08-25 | Recorded UX review fixes across contract, components, and preview |
+| 2026-08-25 | Aligned design-system and mockup copy with the content design guide |
