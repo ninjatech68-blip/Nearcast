@@ -189,6 +189,15 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
     return { state: 'error', message: 'Your intent was not published. Try again.' };
   }
 
+  // Origin-only intents travel through the share link alone. Any wider reach
+  // was explicitly chosen on the review screen, so delivery generation here is
+  // an informed user action, never an automatic expansion. A generation
+  // failure must not fail the publish: the intent is live either way, and the
+  // owner can retry from the dashboard.
+  if (input.reach !== 'origin_only') {
+    await supabase.rpc('generate_deliveries', { target_intent_id: published.data.id });
+  }
+
   return {
     state: 'ok',
     intentId: published.data.id,

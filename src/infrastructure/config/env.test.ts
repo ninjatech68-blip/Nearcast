@@ -14,7 +14,28 @@ describe('public environment', () => {
       supabaseUrl: 'http://127.0.0.1:54321',
       supabasePublishableKey: 'local-publishable-key',
       appEnv: 'local',
+      shareBaseUrl: null,
     });
+  });
+
+  it('accepts an optional share base URL and rejects a malformed one', () => {
+    expect(
+      parsePublicEnv({
+        EXPO_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
+        EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'local-publishable-key',
+        EXPO_PUBLIC_APP_ENV: 'local',
+        EXPO_PUBLIC_SHARE_BASE_URL: 'https://nearcast.app',
+      }).shareBaseUrl,
+    ).toBe('https://nearcast.app');
+
+    expect(() =>
+      parsePublicEnv({
+        EXPO_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
+        EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'local-publishable-key',
+        EXPO_PUBLIC_APP_ENV: 'local',
+        EXPO_PUBLIC_SHARE_BASE_URL: 'not-a-url',
+      }),
+    ).toThrow();
   });
 
   it('rejects missing secrets and unknown environments', () => {

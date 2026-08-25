@@ -1161,6 +1161,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      generate_deliveries: {
+        Args: { target_intent_id: string }
+        Returns: number
+      }
       get_match_disclosures: {
         Args: { target_match_id: string }
         Returns: {

@@ -114,6 +114,8 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 | 2026-08-25 | Display trust as contextual evidence with no numeric score | A universal reputation score is a stated non-goal and is prohibited by the safety baseline, which outranks the design system |
 | 2026-08-25 | Admit `PRODUCT.md` and `DESIGN.md` to the precedence order as derived documents | They asserted authority the order did not grant, which let them drift from their parents |
 | 2026-08-25 | Defer dark appearance beyond the first alpha build | The token cutover renames every semantic token; shipping light-only keeps Phase 1 scope honest |
+| 2026-08-25 | Derive trust adjacency from stored confirmations and completed matches until a circles model exists | The schema has no social-graph table yet; deliveries must still trace to real stored evidence, never to an assumed relationship |
+| 2026-08-25 | Allow a development-only password sign-in outside production, and make the share-link base URL configuration-driven | Keeps development, testing, and review active while OAuth credentials and the share domain remain pending human actions; production behavior is unchanged and the email provider is never enabled on production |
 
 ## Document Change Rule
 

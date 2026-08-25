@@ -56,6 +56,10 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Server boundary coverage | Recorded | 14 of the 16 functions in the API contract now exist; `generate-deliveries` and `process-notifications` remain unbuilt and belong to Phases 2 and 3 |
 | 2026-08-25 | Demo fixtures | Removed | `src/features/native-demo/` deleted; every screen now reads real data or renders an honest loading, empty, error, or restricted state |
 | 2026-08-25 | Outstanding work handoff | Recorded | Split into environment-blocked, unbuilt scope, and human-led in `docs/analysis/01 - Codex Handoff and Human Actions.md`; 11 agent-executable and 3 human-led items opened as GitHub issues 1 to 15 |
+| 2026-08-25 | Delivery generation | Passed | Built `generate_deliveries` test-first with 18 pgTAP assertions covering reach tiers, blocks, restriction, hidden deliveries, idempotent reruns, origin-only, lapsed intents, and the audit event; wired into the publish flow |
+| 2026-08-25 | Human-item bypasses | Recorded | Development-only password sign-in (gated from production), configuration-driven share base URL with scheme fallback, and seeded local invitation tokens keep testing active while H-1, H-2, H-4, and H-5 remain pending |
+| 2026-08-25 | App verification | Passed | `npm run verify` completed lint, TypeScript, 21 Vitest assertions, 18 Jest component assertions, and the iOS export |
+| 2026-08-25 | Database verification | Passed | All three migrations plus seed applied to a clean database; 9 foundation, 74 Phase 1, and 18 Phase 2 pgTAP assertions passed (101 of 101) on the substitute harness |
 
 ## Governance Rules
 
@@ -85,3 +89,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Added Google and Apple sign-in, invitation redemption, session handling, and route guards |
 | 2026-08-25 | Adopted TanStack Query for server state and removed all demo fixtures |
 | 2026-08-25 | Added the Codex handoff plan and opened the matching GitHub issues; human-led items remain with the founder |
+| 2026-08-25 | Built explainable delivery generation and the development bypasses that keep testing active while human items are pending |

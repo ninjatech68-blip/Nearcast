@@ -122,7 +122,19 @@ All five are tracked in [#7](https://github.com/ninjatech68-blip/Nearcast/issues
 
 ---
 
-## 4. Class C — Human-Led, Unchanged
+## 3.1 Bypasses In Place — human items no longer block testing
+
+Recorded 2026-08-25. The human items in Class C are monitored separately and are **not** development blockers. Each pending item has a deliberate, clearly-labelled bypass so building, testing, and review continue; the bypass is removed when the human item lands.
+
+| Pending human item | Bypass | Removal trigger |
+|---|---|---|
+| H-1, H-2 OAuth credentials | Development-only password sign-in against the seeded personas (`src/features/auth/dev-sign-in.ts`), gated out of production and rendered as a labelled testing entrance on the sign-in screen | Real providers verified in [#3](https://github.com/ninjatech68-blip/Nearcast/issues/3) |
+| H-4 share domain | `EXPO_PUBLIC_SHARE_BASE_URL` is optional; `buildShareLink` falls back to `nearcast://i/<slug>` scheme links | Set the variable when the domain exists; no code change |
+| H-5 staging project | The local Supabase stack is the test environment, with seeded personas and two seeded invitation tokens (`local-invite-1`, `local-invite-2`) | Staging created in [#13](https://github.com/ninjatech68-blip/Nearcast/issues/13) |
+
+Also delivered on 2026-08-25, ahead of the handoff order: `generate_deliveries` ([#5](https://github.com/ninjatech68-blip/Nearcast/issues/5)) is built with 18 pgTAP assertions and wired into the publish flow, so the For You feed populates end to end locally. Remaining on #5: real-stack verification, PostGIS distance bands, and the full ranking signals.
+
+## 4. Class C — Human-Led, Monitored Separately
 
 No agent should attempt these. They need an identity, a payment method, or a legal judgement. Several Class A and B items are blocked until they land.
 
@@ -188,3 +200,4 @@ Doc 14's Definition of Done applies unchanged. In practice, for each issue:
 | Date | Change |
 |---|---|
 | 2026-08-25 | Created the Codex handoff, splitting outstanding work into environment-blocked, unbuilt scope, and human-led, with a suggested order and matching GitHub issues |
+| 2026-08-25 | Added the bypass register: development sign-in, configurable share base, and local-stack testing keep development active while human items stay a monitoring track |

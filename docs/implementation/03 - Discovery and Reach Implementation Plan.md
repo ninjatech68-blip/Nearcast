@@ -28,8 +28,8 @@
 
 **Files:** `supabase/functions/generate-deliveries/`, `src/features/feed/`
 
-- [ ] Test every delivered row has one approved explanation code and non-empty reason.
-- [ ] Apply eligibility in this order: lifecycle, reach, time, geography, explicit criteria, blocks, restriction, prior action.
+- [x] Test every delivered row has one approved explanation code and non-empty reason.
+- [x] Apply eligibility in this order: lifecycle, reach, geography, blocks, restriction, prior action. Time and explicit-criteria filters remain open alongside the full ranking pass.
 - [ ] Rank the surviving set by trust distance, geography, timing, relevance, recency, and fatigue.
 - [ ] Render a finite Home list with WhyYouSeeThis, hide, save, and not-relevant actions.
 
@@ -49,3 +49,5 @@ Every feed card has a valid explanation, blocked users never receive each other'
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created discovery and controlled reach implementation plan |
+| 2026-08-25 | Delivered `generate_deliveries` with explainable reason codes, tier-ordered selection, a 50-recipient cap per run, and 18 pgTAP assertions; trust adjacency derives from stored confirmations and completed matches per the Doc 00 decision |
+| 2026-08-25 | Outstanding in this plan: PostGIS distance bands (city match is the interim geography), full ranking signals with fatigue limits, feed hide/save/not-relevant UI, and the measurement task |

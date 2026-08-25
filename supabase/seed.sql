@@ -39,3 +39,15 @@ values (
   'adjacent_trust_connection',
   'Shared through one trusted connection'
 ) on conflict do nothing;
+
+-- Local invitation tokens for testing redemption end to end. The plaintext
+-- tokens are `local-invite-1` and `local-invite-2`; open
+-- nearcast://invite/local-invite-1 after signing in with a persona that has
+-- no profile yet. Local only — never seed invitations in a real environment.
+insert into public.invitations (token_hash, issued_by, note, expires_at)
+values
+  (encode(extensions.digest('local-invite-1', 'sha256'), 'hex'),
+   '00000000-0000-0000-0000-000000000101', 'Local testing invitation 1', now() + interval '365 days'),
+  (encode(extensions.digest('local-invite-2', 'sha256'), 'hex'),
+   '00000000-0000-0000-0000-000000000101', 'Local testing invitation 2', now() + interval '365 days')
+on conflict (token_hash) do nothing;
