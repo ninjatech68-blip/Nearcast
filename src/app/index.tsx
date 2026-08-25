@@ -1,5 +1,6 @@
-import { router } from 'expo-router';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { type Href, router } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
@@ -9,6 +10,8 @@ const steps = [
   ['2', 'Start with trust', 'Share privately and collect only genuine confirmations.'],
   ['3', 'Choose the reach', 'You decide if and when the intent travels further.'],
 ] as const;
+
+const createIntentRoute = '/create' as Href;
 
 export default function HomeScreen() {
   return (
@@ -40,7 +43,7 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
       <View style={styles.footer}>
-        <Button label="Create an intent" onPress={() => router.push('/create')} />
+        <Button label="Create an intent" onPress={() => router.push(createIntentRoute)} />
         <Pressable accessibilityRole="button" hitSlop={12}><Text style={styles.signIn}>I already have an invitation</Text></Pressable>
       </View>
     </SafeAreaView>

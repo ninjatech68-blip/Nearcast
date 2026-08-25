@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { type Href, router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -18,7 +18,7 @@ export default function CreateIntentScreen() {
   const trimmed = statement.trim();
 
   function reviewDraft() {
-    router.push({ pathname: '/preview', params: { primitive, statement: trimmed } });
+    router.push({ pathname: '/preview', params: { primitive, statement: trimmed } } as unknown as Href);
   }
 
   return (

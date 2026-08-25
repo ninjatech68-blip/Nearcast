@@ -2,28 +2,45 @@ import {
   Manrope_400Regular,
   Manrope_600SemiBold,
   Manrope_700Bold,
-  useFonts,
 } from '@expo-google-fonts/manrope';
+import { loadAsync } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { tokens } from '@/design-system/tokens';
 
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    Manrope_400Regular,
-    Manrope_600SemiBold,
-    Manrope_700Bold,
-  });
+  const [fontsReady, setFontsReady] = useState(false);
 
   useEffect(() => {
-    if (loaded || error) void SplashScreen.hideAsync();
-  }, [loaded, error]);
+    let isMounted = true;
 
-  if (!loaded && !error) return null;
+    async function prepareAppShell() {
+      try {
+        await loadAsync({
+          Manrope_400Regular,
+          Manrope_600SemiBold,
+          Manrope_700Bold,
+        });
+      } finally {
+        if (isMounted) {
+          setFontsReady(true);
+          await SplashScreen.hideAsync();
+        }
+      }
+    }
+
+    void prepareAppShell();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (!fontsReady) return null;
 
   return (
     <Stack

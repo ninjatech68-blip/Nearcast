@@ -26,7 +26,7 @@
 - [x] Implement minimum pure domain modules and machine-readable tokens.
 - [x] Implement local composer-to-preview navigation without publishing incomplete data.
 - [x] Add component interaction tests when the Expo-compatible React Native test renderer is selected.
-- [ ] Verify the flow on one iOS and one Android development build.
+- [x] Verify the flow on one iOS and one Android development build.
 
 ## Task 3: Database Boundary
 
@@ -52,3 +52,4 @@ A clean clone runs app and database checks without undocumented steps, authentic
 | 2026-08-24 | Created foundation implementation plan and recorded completed scaffold work |
 | 2026-08-24 | Selected Expo Jest with React Native Testing Library for component interaction tests |
 | 2026-08-24 | Verified local Supabase reset, pgTAP, owned-schema lint, and generated database types |
+| 2026-08-25 | Verified the local composer preview route on iOS and Android development builds and fixed Android runtime warning sources found during verification |
