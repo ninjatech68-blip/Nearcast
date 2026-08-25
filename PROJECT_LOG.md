@@ -55,6 +55,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Generated database types | Hand-extended | `npm run db:types` needs the same blocked container, so `database.types.ts` was extended by hand to match the migration; re-run `npm run db:types` on a Docker-capable machine to confirm no drift |
 | 2026-08-25 | Server boundary coverage | Recorded | 14 of the 16 functions in the API contract now exist; `generate-deliveries` and `process-notifications` remain unbuilt and belong to Phases 2 and 3 |
 | 2026-08-25 | Demo fixtures | Removed | `src/features/native-demo/` deleted; every screen now reads real data or renders an honest loading, empty, error, or restricted state |
+| 2026-08-25 | Outstanding work handoff | Recorded | Split into environment-blocked, unbuilt scope, and human-led in `docs/analysis/01 - Codex Handoff and Human Actions.md`; 11 agent-executable and 3 human-led items opened as GitHub issues 1 to 15 |
 
 ## Governance Rules
 
@@ -83,3 +84,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Added the Phase 1 migration, 74 pgTAP assertions, and 14 of the 16 contract functions |
 | 2026-08-25 | Added Google and Apple sign-in, invitation redemption, session handling, and route guards |
 | 2026-08-25 | Adopted TanStack Query for server state and removed all demo fixtures |
+| 2026-08-25 | Added the Codex handoff plan and opened the matching GitHub issues; human-led items remain with the founder |
