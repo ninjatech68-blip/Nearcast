@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { screen, waitFor } from '@testing-library/react-native';
+import { screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { renderScreen } from './test-utils';
 
@@ -20,10 +20,15 @@ jest.mock('@/features/intents/data/intent-queries', () => ({
   PRIMITIVE_LABELS: { request: 'I need', offer: 'I offer', plan: 'I want to' },
 }));
 
+const mockHideDelivery = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+jest.mock('@/features/coordination/queries', () => ({
+  hideDelivery: (...args: unknown[]) => mockHideDelivery(...args),
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const HomeScreen = require('./app/(tabs)/index').default;
 
-const signedIn = { status: 'signed-in', hasProfile: true };
+const signedIn = { status: 'signed-in', hasProfile: true, userId: 'user-1' };
 
 function card(overrides: Record<string, unknown> = {}) {
   return {
@@ -44,6 +49,7 @@ describe('HomeScreen', () => {
     mockPush.mockReset();
     mockUseSession.mockReset();
     mockFetchFeed.mockReset();
+    mockHideDelivery.mockReset();
   });
 
   it('asks an unauthenticated visitor to sign in rather than showing an empty feed', async () => {
@@ -91,6 +97,26 @@ describe('HomeScreen', () => {
       expect(screen.getByText('Something went wrong')).toBeTruthy();
     });
     expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+  });
+
+  it('marks a delivery not relevant through the feedback action', async () => {
+    mockUseSession.mockReturnValue(signedIn);
+    mockFetchFeed.mockResolvedValue({ state: 'ok', data: [card()] });
+    mockHideDelivery.mockResolvedValue({ ok: true });
+    const user = userEvent.setup();
+
+    await renderScreen(<HomeScreen />);
+    await waitFor(() => {
+      expect(screen.getByText('Need one person to help sort books')).toBeTruthy();
+    });
+
+    await user.press(
+      screen.getByRole('button', { name: /Mark not relevant/ }),
+    );
+
+    await waitFor(() => {
+      expect(mockHideDelivery).toHaveBeenCalledWith('intent-1', 'user-1', true);
+    });
   });
 
   it('never shows a confirmation count when there are no confirmations', async () => {

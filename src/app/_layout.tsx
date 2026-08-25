@@ -73,6 +73,8 @@ export default function RootLayout() {
           <Stack.Screen name="sign-in" options={{ title: 'Sign in' }} />
           <Stack.Screen name="invite/[token]" options={{ title: 'Join network' }} />
           <Stack.Screen name="i/[shareSlug]" options={{ title: 'Intent' }} />
+          <Stack.Screen name="inbox/[intentId]" options={{ headerShown: false }} />
+          <Stack.Screen name="room/[matchId]" options={{ headerShown: false }} />
         </Stack>
       </SessionProvider>
     </QueryClientProvider>

@@ -24,6 +24,10 @@ export type IntentDetail = FeedCard & {
   deadlineAt: string | null;
   broadcasterFirstName: string | null;
   isOwn: boolean;
+  /** Present only for the broadcaster and the accepted participant. */
+  matchId: string | null;
+  /** For the owner: all responses. For a respondent: only their own. */
+  responseCount: number;
 };
 
 export const PRIMITIVE_LABELS: Record<IntentPrimitive, string> = {
@@ -96,6 +100,8 @@ export async function fetchIntentDetail(
        intent_context ( approximate_place, starts_at, deadline_at ),
        intent_confirmations ( intent_id ),
        intent_deliveries ( reason_text ),
+       matches ( id ),
+       responses ( id ),
        profiles ( display_name )`,
     )
     .eq('id', intentId)
@@ -125,6 +131,8 @@ export async function fetchIntentDetail(
       confirmationCount: data.intent_confirmations?.length ?? 0,
       broadcasterFirstName: profile?.display_name?.split(' ')[0] ?? null,
       isOwn: data.broadcaster_id === viewerId,
+      matchId: data.matches?.id ?? null,
+      responseCount: data.responses?.length ?? 0,
     },
   };
 }

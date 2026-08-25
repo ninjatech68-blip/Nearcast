@@ -76,7 +76,15 @@ export default function ActivityScreen() {
               accessibilityLabel={`Open your intent: ${intent.statement}`}
               accessibilityRole="button"
               key={intent.id}
-              onPress={() => router.push(`/intent/${intent.id}`)}
+              onPress={() =>
+                router.push(
+                  intent.matchId
+                    ? `/room/${intent.matchId}`
+                    : intent.status === 'live' && intent.responseCount > 0
+                      ? `/inbox/${intent.id}`
+                      : `/intent/${intent.id}`,
+                )
+              }
               style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
               <View style={styles.rowTop}>
                 <Text style={styles.primitive}>{intent.primitiveLabel}</Text>

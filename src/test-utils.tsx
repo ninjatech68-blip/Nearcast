@@ -9,7 +9,12 @@ import type { ReactElement, ReactNode } from 'react';
  */
 export function renderScreen(ui: ReactElement) {
   const client = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    // gcTime 0 on both caches: the default 5-minute mutation GC timer would
+    // otherwise hold the Jest worker open after the tests finish.
+    defaultOptions: {
+      queries: { retry: false, gcTime: 0 },
+      mutations: { retry: false, gcTime: 0 },
+    },
   });
 
   function Wrapper({ children }: { children: ReactNode }) {

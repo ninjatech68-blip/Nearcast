@@ -13,15 +13,15 @@
 **Files:** `src/features/responses/`, `supabase/functions/submit-response/`
 
 - [ ] Test self-response, missing delivery, duplicate response, blocked pair, expiry, retry, and valid submission.
-- [ ] Implement singular ResponseCTA, qualification fields, and disclosure preview.
-- [ ] Queue a generic response notification in the same transaction.
+- [x] Implement singular ResponseCTA, qualification fields, and disclosure preview.
+- [x] Queue a generic response notification in the same transaction.
 
 ## Task 2: Broadcaster Inbox
 
 **Files:** `src/features/responses/inbox/`, `supabase/functions/decide-response/`
 
-- [ ] Test that respondents cannot see competitors and declined users receive only neutral status.
-- [ ] Implement RequestCard and Accept/Reply/Decline actions.
+- [x] Test that respondents cannot see competitors and declined users receive only neutral status.
+- [x] Implement RequestCard with Accept and Decline actions. Reply requires a pre-match channel the schema does not define; raised in the change log.
 - [ ] Use expected status/version for every decision.
 
 ## Task 3: Atomic Acceptance
@@ -30,7 +30,7 @@
 
 - [ ] Run two concurrent acceptance attempts and prove exactly one match and conversation exist.
 - [ ] Return the existing match for an identical accepted-response retry.
-- [ ] Release no private field until a separate disclosure action succeeds.
+- [x] Release no private field until a separate disclosure action succeeds.
 
 ## Task 4: Temporary Messaging
 
@@ -56,3 +56,6 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created response, acceptance, coordination, and notification implementation plan |
+| 2026-08-25 | Delivered the broadcaster inbox (RequestCard, accept, decline), the coordination room with pinned intent status, explicit per-field disclosure release, block and report in-room, and feed hide/not-relevant; 29 component assertions cover them |
+| 2026-08-25 | Open question for the governing docs: MUST-043 gives the broadcaster a Reply action before deciding, but messages require a conversation, which requires a match. Either the API contract gains a pre-match reply channel or the requirement is narrowed; until decided the inbox offers Accept and Decline |
+| 2026-08-25 | Outstanding in this plan: the two-run concurrency test for acceptance, Realtime private channels (the room polls every five seconds as an interim), and the notification worker with the devices write path |

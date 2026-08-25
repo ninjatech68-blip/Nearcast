@@ -20,6 +20,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 0.1.1 | 2026-08-25 | Documentation baseline established | Added derived requirements and gap analysis measuring all approved documents against commit `7820a0a`; no product behavior changed |
 | 0.2.0 | 2026-08-25 | Phase 1 lifecycle delivered | Resolved every documentation conflict, added the Phase 1 database layer and server boundary, added authentication and invitation redemption, and replaced all demo fixtures with real data |
 | 0.3.0 | 2026-08-25 | Design-system cutover and functional journey coverage | App now implements the approved Trustworthy Native Clarity palette, shape, motion, and type scale; added a 25-assertion functional journey test of the complete Phase 1 loop |
+| 0.4.0 | 2026-08-25 | Coordination surfaces delivered | Broadcaster inbox, coordination room with explicit disclosure release and in-room block/report, and feed relevance feedback — the tested server loop is now walkable in the interface |
 
 ## Verification Log
 
@@ -64,6 +65,9 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Semantic token cutover | Passed | Replaced the app token layer with the approved native semantic palette, radius (card 20, button 14), motion (press 120, sheet 240, page 300), and the approved type scale on Manrope; 15 files swept, splash aligned to `#F7F3EA`, Broadcast rendered as the raised tab action; dark palette carried as data with a parity test |
 | 2026-08-25 | Phase 1 functional journey | Passed | New 25-assertion pgTAP journey drives the complete two-user loop exclusively through the public functions: redemption, publish, anonymous link, confirmation, delivery with reason, response, acceptance, progressive disclosure, messaging, notification hygiene, resolution, and reliability |
 | 2026-08-25 | Full verification after cutover | Passed | `npm run verify` green (25 Vitest, 18 Jest, iOS export); clean-database run green with 126 of 126 pgTAP assertions across four suites |
+| 2026-08-25 | Coordination surfaces | Passed | Built the broadcaster inbox (accept/decline with neutral declined status), the coordination room (pinned intent header, per-field disclosure release, block and report, read-only when closed, five-second interim poll pending Realtime), and the feed not-relevant action; 29 Jest component assertions pass |
+| 2026-08-25 | Test-runner leak | Fixed | TanStack Query's default five-minute mutation GC timer held the Jest worker open; the shared test client now zeroes gcTime on both caches and the runner exits cleanly |
+| 2026-08-25 | Requirement gap raised | Open | MUST-043's broadcaster Reply action has no schema path before a match exists; recorded in implementation plan 04 for a governing-document decision |
 
 ## Governance Rules
 
@@ -95,3 +99,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Added the Codex handoff plan and opened the matching GitHub issues; human-led items remain with the founder |
 | 2026-08-25 | Built explainable delivery generation and the development bypasses that keep testing active while human items are pending |
 | 2026-08-25 | Executed the semantic token cutover by founder direction and added the Phase 1 functional journey suite |
+| 2026-08-25 | Delivered the inbox, coordination room, disclosure release, in-room safety actions, and feed relevance feedback |

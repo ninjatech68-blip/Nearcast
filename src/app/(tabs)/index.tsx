@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatePanel, type ScreenState } from '@/design-system/components/state-panel';
 import { tokens } from '@/design-system/tokens';
 import { useSession } from '@/features/auth/session';
+import { hideDelivery } from '@/features/coordination/queries';
 import { formatExpiry } from '@/features/intents/domain/expiry';
 import { fetchFeed, type FeedCard } from '@/features/intents/data/intent-queries';
 
@@ -15,14 +16,20 @@ type FeedState =
   | ScreenState;
 
 export default function HomeScreen() {
-  const { status, hasProfile } = useSession();
+  const { status, hasProfile, userId } = useSession();
   const enabled = status === 'signed-in' && hasProfile;
   const [refreshing, setRefreshing] = useState(false);
+  const queryClient = useQueryClient();
 
   const feed = useQuery({
     queryKey: ['feed'],
     queryFn: () => fetchFeed(),
     enabled,
+  });
+
+  const hide = useMutation({
+    mutationFn: (intentId: string) => hideDelivery(intentId, userId ?? '', true),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['feed'] }),
   });
 
   if (status === 'loading') {
@@ -78,7 +85,7 @@ export default function HomeScreen() {
 
         <View style={styles.cardStack}>
           {state.cards.map((card) => (
-            <IntentFeedCard card={card} key={card.id} />
+            <IntentFeedCard card={card} key={card.id} onHide={() => hide.mutate(card.id)} />
           ))}
         </View>
 
@@ -116,7 +123,7 @@ export function toFeedState(
  * reason is always present because the database refuses to store a delivery
  * without one.
  */
-function IntentFeedCard({ card }: { card: FeedCard }) {
+function IntentFeedCard({ card, onHide }: { card: FeedCard; onHide: () => void }) {
   return (
     <Pressable
       accessibilityLabel={`Open intent: ${card.statement}`}
@@ -139,7 +146,16 @@ function IntentFeedCard({ card }: { card: FeedCard }) {
             : `Confirmed by ${card.confirmationCount} people at the origin`}
         </Text>
       ) : null}
-      <Text style={styles.action}>{card.responseAction}</Text>
+      <View style={styles.cardBottomRow}>
+        <Text style={styles.action}>{card.responseAction}</Text>
+        <Pressable
+          accessibilityLabel={`Mark not relevant: ${card.statement}`}
+          accessibilityRole="button"
+          hitSlop={10}
+          onPress={onHide}>
+          <Text style={styles.hideLabel}>Not relevant</Text>
+        </Pressable>
+      </View>
     </Pressable>
   );
 }
@@ -215,11 +231,21 @@ const styles = StyleSheet.create({
     fontFamily: 'Manrope_600SemiBold',
     fontSize: 13,
   },
-  action: {
+  cardBottomRow: {
     marginTop: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  action: {
     color: tokens.semantic.color.actionPrimary,
     fontFamily: 'Manrope_600SemiBold',
     fontSize: 16,
+  },
+  hideLabel: {
+    color: tokens.semantic.color.textMuted,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: 13,
   },
   privacyNote: {
     marginTop: 20,

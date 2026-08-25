@@ -30,6 +30,7 @@ export type OwnedIntent = {
   statusLabel: string;
   statusSupporting: string;
   responseCount: number;
+  matchId: string | null;
   expiresAt: string;
 };
 
@@ -45,12 +46,12 @@ export async function fetchActivity(viewerId: string): Promise<QueryResult<Activ
   const [ownedResult, respondedResult, matchResult] = await Promise.all([
     supabase
       .from('intents')
-      .select('id, primitive, statement, status, expires_at, responses ( id )')
+      .select('id, primitive, statement, status, expires_at, responses ( id ), matches ( id )')
       .eq('broadcaster_id', viewerId)
       .order('created_at', { ascending: false })
       .limit(50),
     supabase.from('responses').select('id').eq('respondent_id', viewerId),
-    supabase.from('matches').select('id'),
+    supabase.from('matches').select('id, intent_id'),
   ]);
 
   if (ownedResult.error || respondedResult.error || matchResult.error) {
@@ -68,6 +69,7 @@ export async function fetchActivity(viewerId: string): Promise<QueryResult<Activ
         statusLabel: STATUS_LABELS[row.status].label,
         statusSupporting: STATUS_LABELS[row.status].supporting,
         responseCount: row.responses?.length ?? 0,
+        matchId: row.matches?.id ?? null,
         expiresAt: row.expires_at,
       })),
       respondedCount: respondedResult.data?.length ?? 0,

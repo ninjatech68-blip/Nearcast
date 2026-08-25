@@ -85,14 +85,31 @@ export default function IntentDetailScreen() {
         </Text>
       </ScrollView>
 
-      {!intent.isOwn ? (
-        <View style={styles.footer}>
+      <View style={styles.footer}>
+        {intent.matchId ? (
+          <Button
+            label="Open coordination"
+            onPress={() => router.push(`/room/${intent.matchId}`)}
+          />
+        ) : intent.isOwn ? (
+          <Button
+            label={
+              intent.responseCount === 0
+                ? 'No responses yet'
+                : intent.responseCount === 1
+                  ? 'Review 1 response'
+                  : `Review ${intent.responseCount} responses`
+            }
+            disabled={intent.responseCount === 0}
+            onPress={() => router.push(`/inbox/${intent.id}`)}
+          />
+        ) : (
           <Button
             label={intent.responseAction}
             onPress={() => router.push(`/request/${intent.id}`)}
           />
-        </View>
-      ) : null}
+        )}
+      </View>
     </SafeAreaView>
   );
 }
