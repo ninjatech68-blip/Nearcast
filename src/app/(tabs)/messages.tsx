@@ -41,15 +41,15 @@ export default function MessagesScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   roomRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
   emptyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
-  avatar: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.trustSurface },
-  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 18, color: tokens.semantic.color.trustText },
-  emptyIcon: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.backgroundSubtle },
+  avatar: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.success },
+  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 18, color: tokens.color.light.on.success },
+  emptyIcon: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.surfaceMuted },
   roomCopy: { flex: 1 },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
-  body: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.textSecondary },
-  status: { marginTop: 4, fontFamily: 'Manrope_600SemiBold', fontSize: 12, lineHeight: 17, color: tokens.semantic.color.trustText },
+  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.color.light.text.primary },
+  body: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.color.light.text.secondary },
+  status: { marginTop: 4, fontFamily: 'Manrope_600SemiBold', fontSize: 12, lineHeight: 17, color: tokens.color.light.on.success },
 });

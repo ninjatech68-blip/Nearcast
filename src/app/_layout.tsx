@@ -45,11 +45,11 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
+        contentStyle: { backgroundColor: tokens.color.light.background.app },
         headerShadowVisible: false,
-        headerStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
+        headerStyle: { backgroundColor: tokens.color.light.background.app },
         headerTitleStyle: { fontFamily: 'Manrope_700Bold' },
-        headerTintColor: tokens.semantic.color.textPrimary,
+        headerTintColor: tokens.color.light.text.primary,
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="create" options={{ title: 'New intent', presentation: 'modal' }} />

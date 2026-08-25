@@ -45,11 +45,11 @@ export default function BroadcasterProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
   content: { paddingHorizontal: 20, paddingBottom: 26 },
   textBlock: { padding: 16 },
-  body: { fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.semantic.color.textPrimary },
-  muted: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
+  body: { fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.color.light.text.primary },
+  muted: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.color.light.text.secondary },
   hiddenBlock: { padding: 16 },
-  hiddenTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 16, lineHeight: 22, color: tokens.semantic.color.textPrimary },
+  hiddenTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 16, lineHeight: 22, color: tokens.color.light.text.primary },
 });

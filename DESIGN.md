@@ -65,6 +65,7 @@ Components must use semantic tokens. Raw hex values belong only in token definit
 | `color.action.primaryPressed` | `#0A4936` | Pressed primary action |
 | `color.action.secondary` | `#17324D` | Information and provenance action |
 | `color.border.subtle` | `#DDD6C8` | Subtle separators and outlines |
+| `color.border.focus` | `#17324D` | Focus indicator, reusing the provenance action colour |
 | `color.status.info` | `#1E5D8C` | Informational status |
 | `color.status.warning` | `#8A4B00` | Warning status |
 | `color.status.danger` | `#A33124` | Error/destructive status |
@@ -83,8 +84,19 @@ Components must use semantic tokens. Raw hex values belong only in token definit
 | `color.text.primary` | `#F3F7F1` | Primary text on dark surfaces |
 | `color.text.secondary` | `#BAC8C0` | Secondary text on dark surfaces |
 | `color.action.primary` | `#65D0A1` | Dark primary action |
+| `color.action.primaryPressed` | `#4FBA8C` | Pressed dark primary action |
 | `color.action.secondary` | `#8EB8E5` | Dark information/provenance action |
 | `color.border.subtle` | `#33443C` | Dark separators and outlines |
+| `color.border.focus` | `#8EB8E5` | Dark focus indicator, reusing the provenance action colour |
+| `color.status.info` | `#DCEEFF` | Dark informational status |
+| `color.status.warning` | `#FFEBC2` | Dark warning status |
+| `color.status.danger` | `#FFD9D4` | Dark error/destructive status |
+
+The pressed, focus, and status rows complete the dark appearance so that the
+component state contract below can be honoured in both appearances. Light fills
+its info, secondary, and danger accents with a saturated colour and sets type on
+top; dark keeps those accents as tinted surfaces instead, so an on-colour pairs
+with a different token in each appearance.
 
 ### On-Color Tokens
 
@@ -296,11 +308,27 @@ disabled > loading > error > offline > pressed > focused > selected > success > 
 ## Implementation Guardrails
 
 - The approved design board is visual authority for the first formal implementation pass.
-- Existing app tokens may lag this contract until implementation is explicitly requested.
+- App tokens implement this contract in `src/design-system/tokens.ts`; the contract is the authority and the tokens follow it.
 - Prefer semantic tokens over raw values in production code.
 - Use platform-native primitives where possible.
 - Do not implement web-shaped controls, hover-dependent interactions, or custom navigation that fights platform expectations.
 - Do not add a new component if a core component can express the behavior with a documented variant.
+
+## Implementation
+
+| Contract area | Implementation |
+|---|---|
+| Semantic colour, type, shape, spacing, motion, elevation | [`src/design-system/tokens.ts`](src/design-system/tokens.ts), mirrored for tooling in [`src/design-system/tokens.json`](src/design-system/tokens.json) |
+| Light/dark accent recipes | [`src/design-system/accents.ts`](src/design-system/accents.ts) |
+| Component state contract and priority | [`src/design-system/state.ts`](src/design-system/state.ts) |
+| Trust display | [`src/design-system/trust.ts`](src/design-system/trust.ts) |
+| Privacy-safe content rules | [`src/design-system/privacy.ts`](src/design-system/privacy.ts) |
+| Core components | [`src/design-system/components/`](src/design-system/components) |
+
+Typography follows the platform mapping above: components apply the shared
+size and weight hierarchy and inherit the native system face. Screens written
+before this implementation still declare Manrope directly and are not yet
+migrated to the token layer.
 
 ## Visual References
 

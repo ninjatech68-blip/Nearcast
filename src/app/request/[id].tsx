@@ -34,14 +34,14 @@ export default function RequestSheetScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
   keyboard: { flex: 1 },
   content: { flexGrow: 1, justifyContent: 'flex-end', padding: 16 },
-  sheet: { padding: 18, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 24, backgroundColor: tokens.semantic.color.backgroundSurface },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
-  body: { marginTop: 8, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.semantic.color.textSecondary },
-  privacyRow: { marginTop: 14, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSubtle },
-  privacyText: { flex: 1, fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
+  sheet: { padding: 18, borderWidth: 1, borderColor: tokens.color.light.border.subtle, borderRadius: 24, backgroundColor: tokens.color.light.background.surface },
+  title: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.color.light.text.primary },
+  body: { marginTop: 8, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.color.light.text.secondary },
+  privacyRow: { marginTop: 14, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 12, backgroundColor: tokens.color.light.background.surfaceMuted },
+  privacyText: { flex: 1, fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.color.light.text.secondary },
   actions: { marginTop: 18, gap: 12 },
-  cancel: { textAlign: 'center', fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: tokens.semantic.color.textSecondary },
+  cancel: { textAlign: 'center', fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: tokens.color.light.text.secondary },
 });

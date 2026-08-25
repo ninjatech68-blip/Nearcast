@@ -38,6 +38,9 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Android runtime warnings | Resolved | Replaced render-time font hook usage with effect-scoped font loading and moved home safe-area handling to `react-native-safe-area-context`; final Android preview screenshot showed no warning overlay and logcat had no React state-update warning |
 | 2026-08-25 | Physical iOS signing setup | In progress | Wired the iOS project to the logged-in personal team `Q2234855S8` and changed the development bundle identifier to `com.piyushsharma.nearcast.dev` so the app can be installed on a physical iPhone |
 | 2026-08-25 | Composer keyboard UX | Resolved | Added keyboard dismissal and scroll-friendly handling to the intent composer so the review action remains reachable while typing |
+| 2026-08-25 | Design contract completion | Recorded | Added the pressed, focus, and status rows the component state contract needs to `DESIGN.md`, so both appearances can express every documented state |
+| 2026-08-25 | Design system implementation | Passed | Reconciled `src/design-system` with the approved `DESIGN.md` contract (light and dark appearances, type scale, shape, spacing, motion, elevation) and built the remaining core components |
+| 2026-08-25 | App verification | Passed | `npm run verify` completed lint, TypeScript, 57 Vitest tests across 8 files, 51 Jest component tests across 8 suites, and the iOS export |
 | 2026-08-25 | Home feed UX | Resolved | Replaced the explainer-style home page with an honest `For You` empty-feed shell and bottom navigation for `For You`, `Broadcast`, `Activity`, and `You` |
 | 2026-08-25 | Native homepage UX pass | Resolved | Reworked the homepage as a native-style `For You` tab with grouped feed sections and moved primary navigation to Expo Router tabs |
 | 2026-08-25 | Native minimal design direction | Approved for exploration | Captured product truth in `PRODUCT.md` and generated a cohesive native minimal screen board for homepage, detail, profile, request, composer, review/reach, activity, and messages |
@@ -63,3 +66,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded native homepage UX pass |
 | 2026-08-25 | Recorded native minimal design-system exploration checkpoint |
 | 2026-08-25 | Recorded native minimal page implementation checkpoint |
+| 2026-08-25 | Recorded design system token reconciliation and core component implementation |

@@ -27,12 +27,12 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: tokens.semantic.color.actionPrimary,
-        tabBarInactiveTintColor: tokens.semantic.color.textMuted,
+        tabBarActiveTintColor: tokens.color.light.action.primary,
+        tabBarInactiveTintColor: tokens.color.light.text.secondary,
         tabBarLabelStyle: { fontFamily: 'Manrope_600SemiBold', fontSize: 11 },
         tabBarStyle: {
-          backgroundColor: tokens.semantic.color.backgroundSurface,
-          borderTopColor: tokens.semantic.color.borderDefault,
+          backgroundColor: tokens.color.light.background.surface,
+          borderTopColor: tokens.color.light.border.subtle,
         },
         tabBarIcon: ({ color, size }) => (
           <SymbolView

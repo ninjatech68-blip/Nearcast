@@ -40,13 +40,13 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  filterIcon: { fontFamily: 'Manrope_700Bold', fontSize: 20, color: tokens.semantic.color.textSecondary },
+  filterIcon: { fontFamily: 'Manrope_700Bold', fontSize: 20, color: tokens.color.light.text.secondary },
   filterRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
-  filterPill: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSurface },
-  filterText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
+  filterPill: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 1, borderColor: tokens.color.light.border.subtle, borderRadius: 12, backgroundColor: tokens.color.light.background.surface },
+  filterText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.color.light.text.secondary },
   cardStack: { gap: 12 },
   privacyRow: { paddingHorizontal: 16, paddingBottom: 14 },
 });

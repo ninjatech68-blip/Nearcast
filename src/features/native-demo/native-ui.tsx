@@ -63,7 +63,7 @@ export function IntentCard({ intent, onOpen }: { intent: IntentSummary; onOpen: 
     <Pressable accessibilityLabel={`Open intent: ${intent.title}`} accessibilityRole="button" onPress={onOpen} style={styles.intentCard}>
       <View style={styles.cardTopRow}>
         <PrimitiveChip label={intent.primitive} />
-        <SymbolIcon color={tokens.semantic.color.textMuted} fallback="S" name="bookmark" />
+        <SymbolIcon color={tokens.color.light.text.secondary} fallback="S" name="bookmark" />
       </View>
       <Text style={styles.intentTitle}>{intent.title}</Text>
       <Text style={styles.intentMeta}>{intent.metadata}</Text>
@@ -163,57 +163,57 @@ export function NoteInput({ placeholder }: { placeholder: string }) {
       accessibilityLabel={placeholder}
       multiline
       placeholder={placeholder}
-      placeholderTextColor={tokens.semantic.color.textMuted}
+      placeholderTextColor={tokens.color.light.text.secondary}
       style={styles.noteInput}
       textAlignVertical="top"
     />
   );
 }
 
-export function SymbolIcon({ color = tokens.semantic.color.actionPrimary, fallback, name, size = 20 }: { color?: string; fallback: string; name: SymbolName; size?: number }) {
+export function SymbolIcon({ color = tokens.color.light.action.primary, fallback, name, size = 20 }: { color?: string; fallback: string; name: SymbolName; size?: number }) {
   return <SymbolView fallback={<Text style={[styles.symbolFallback, { color }]}>{fallback}</Text>} name={name} size={size} tintColor={color} />;
 }
 
 const styles = StyleSheet.create({
-  actionTray: { gap: 10, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 10, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface },
-  avatar: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.backgroundSubtle },
-  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 30, color: tokens.semantic.color.trustText },
+  actionTray: { gap: 10, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 10, borderTopWidth: 1, borderTopColor: tokens.color.light.border.subtle, backgroundColor: tokens.color.light.background.surface },
+  avatar: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.surfaceMuted },
+  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 30, color: tokens.color.light.on.success },
   cardBottomRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   cardTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  group: { overflow: 'hidden', borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 16, backgroundColor: tokens.semantic.color.backgroundSurface },
+  group: { overflow: 'hidden', borderWidth: 1, borderColor: tokens.color.light.border.subtle, borderRadius: 16, backgroundColor: tokens.color.light.background.surface },
   groupCompact: { borderRadius: 14 },
   iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   iconLine: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 },
-  iconLineText: { flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textSecondary },
-  intentCard: { gap: 10, padding: 14, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 16, backgroundColor: tokens.semantic.color.backgroundSurface },
-  intentGlyph: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.trustSurface },
-  intentGlyphMuted: { backgroundColor: tokens.semantic.color.backgroundSubtle },
-  intentMeta: { fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.textMuted },
-  intentTitle: { fontFamily: 'Manrope_700Bold', fontSize: 18, lineHeight: 23, color: tokens.semantic.color.textPrimary },
-  intentTrust: { fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.textSecondary },
+  iconLineText: { flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.color.light.text.secondary },
+  intentCard: { gap: 10, padding: 14, borderWidth: 1, borderColor: tokens.color.light.border.subtle, borderRadius: 16, backgroundColor: tokens.color.light.background.surface },
+  intentGlyph: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.success },
+  intentGlyphMuted: { backgroundColor: tokens.color.light.background.surfaceMuted },
+  intentMeta: { fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.color.light.text.secondary },
+  intentTitle: { fontFamily: 'Manrope_700Bold', fontSize: 18, lineHeight: 23, color: tokens.color.light.text.primary },
+  intentTrust: { fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.color.light.text.secondary },
   miniIntentRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
-  noteInput: { minHeight: 116, padding: 14, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 12, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.semantic.color.textPrimary, backgroundColor: tokens.semantic.color.backgroundSurface },
-  primitiveChip: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 9, backgroundColor: tokens.semantic.color.trustSurface },
-  primitiveText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.trustText },
+  noteInput: { minHeight: 116, padding: 14, borderWidth: 1, borderColor: tokens.color.light.border.subtle, borderRadius: 12, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 22, color: tokens.color.light.text.primary, backgroundColor: tokens.color.light.background.surface },
+  primitiveChip: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 9, backgroundColor: tokens.color.light.background.success },
+  primitiveText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.color.light.on.success },
   privacyItem: { flex: 1, alignItems: 'center', gap: 6 },
-  privacyLabel: { textAlign: 'center', fontFamily: 'Manrope_400Regular', fontSize: 12, lineHeight: 16, color: tokens.semantic.color.textSecondary },
+  privacyLabel: { textAlign: 'center', fontFamily: 'Manrope_400Regular', fontSize: 12, lineHeight: 16, color: tokens.color.light.text.secondary },
   privacyStrip: { flexDirection: 'row', paddingVertical: 14, paddingHorizontal: 10 },
   profileBlock: { flexDirection: 'row', gap: 16, padding: 16 },
   profileCopy: { flex: 1 },
-  profileName: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
-  reasonPill: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', padding: 12, borderRadius: 12, backgroundColor: tokens.semantic.color.trustSurface },
-  reasonText: { flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.trustText },
+  profileName: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.color.light.text.primary },
+  reasonPill: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', padding: 12, borderRadius: 12, backgroundColor: tokens.color.light.background.success },
+  reasonText: { flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.color.light.on.success },
   rowCopy: { flex: 1 },
-  rowMeta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
-  rowTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
-  screenTitle: { fontFamily: 'Manrope_700Bold', fontSize: 34, lineHeight: 41, color: tokens.semantic.color.textPrimary },
-  secondaryAction: { textAlign: 'center', fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.actionPrimary },
+  rowMeta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.color.light.text.secondary },
+  rowTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.color.light.text.primary },
+  screenTitle: { fontFamily: 'Manrope_700Bold', fontSize: 34, lineHeight: 41, color: tokens.color.light.text.primary },
+  secondaryAction: { textAlign: 'center', fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, color: tokens.color.light.action.primary },
   section: { marginTop: 22 },
-  sectionTitle: { marginBottom: 8, paddingHorizontal: 2, fontFamily: 'Manrope_600SemiBold', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.textSecondary },
-  statusText: { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 9, overflow: 'hidden', fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: tokens.semantic.color.trustText, backgroundColor: tokens.semantic.color.trustSurface },
+  sectionTitle: { marginBottom: 8, paddingHorizontal: 2, fontFamily: 'Manrope_600SemiBold', fontSize: 13, lineHeight: 18, color: tokens.color.light.text.secondary },
+  statusText: { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 9, overflow: 'hidden', fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: tokens.color.light.on.success, backgroundColor: tokens.color.light.background.success },
   symbolFallback: { fontFamily: 'Manrope_700Bold', fontSize: 12 },
-  textAction: { fontFamily: 'Manrope_700Bold', fontSize: 13, color: tokens.semantic.color.actionPrimary },
+  textAction: { fontFamily: 'Manrope_700Bold', fontSize: 13, color: tokens.color.light.action.primary },
   topActions: { flexDirection: 'row', width: 88, justifyContent: 'space-around' },
   topBar: { minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12 },
-  topBarTitle: { fontFamily: 'Manrope_700Bold', fontSize: 17, color: tokens.semantic.color.textPrimary },
+  topBarTitle: { fontFamily: 'Manrope_700Bold', fontSize: 17, color: tokens.color.light.text.primary },
 });

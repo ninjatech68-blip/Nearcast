@@ -28,12 +28,12 @@ export default function YouScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   profileRow: { flexDirection: 'row', gap: 16, padding: 16 },
-  avatar: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.trustSurface },
-  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 24, color: tokens.semantic.color.trustText },
+  avatar: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.success },
+  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 24, color: tokens.color.light.on.success },
   copy: { flex: 1 },
-  name: { fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28, color: tokens.semantic.color.textPrimary },
-  meta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
+  name: { fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28, color: tokens.color.light.text.primary },
+  meta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.color.light.text.secondary },
 });

@@ -36,12 +36,12 @@ export default function ActivityScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  safeArea: { flex: 1, backgroundColor: tokens.color.light.background.app },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   emptyRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
-  emptyIcon: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.backgroundSubtle },
+  emptyIcon: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.light.background.surfaceMuted },
   emptyCopy: { flex: 1 },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
-  body: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.textSecondary },
-  divider: { height: 1, marginLeft: 78, backgroundColor: tokens.semantic.color.borderDefault },
+  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.color.light.text.primary },
+  body: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.color.light.text.secondary },
+  divider: { height: 1, marginLeft: 78, backgroundColor: tokens.color.light.border.subtle },
 });
