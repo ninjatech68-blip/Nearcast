@@ -191,13 +191,21 @@ Rules:
 
 ## Trust Display
 
-Trust display is standardized as:
+Trust display is standardized as a factual trust-context line:
 
 ```text
-Trust 812 · High trust
+One trusted connection from your network
+8 of 9 confirmed interactions were completed
 ```
 
-Do not mix trust displays such as `4.7`, percentages, ratings, followers, likes, or popularity counters. Trust must not imply guaranteed safety, and it must never be based on fake engagement.
+A single universal trust number or band (`Trust 812 · High trust`) is
+forbidden: `docs/04 - Trust Privacy and Safety.md` rules out a single
+universal social-credit score and trust badges that resemble guarantees, and
+`docs/08 - Writing and Content Guide.md` requires trust context — evidence
+relevant to the decision — over a trust score. Do not mix trust displays such
+as `4.7`, percentages, ratings, followers, likes, or popularity counters.
+Trust must not imply guaranteed safety, and it must never be based on fake
+engagement.
 
 ## Core Components
 
@@ -222,7 +230,12 @@ States: default, pressed, focused, saved, loading, empty, restricted, offline, e
 
 ### TrustBadge
 
-Displays `Trust 812 · High trust` and may include verified signals. It is a trust-context component, not a popularity badge. It renders on the muted neutral surface so it reads as context; the success tint is reserved for confirmations (posted, verified, resolved).
+Displays a factual trust-context line, such as `8 of 9 confirmed interactions
+were completed`, and may include verified signals phrased with the
+non-guarantee caveat (`Phone verified. Verification does not guarantee
+safety.`). It is a trust-context component, not a score or popularity badge.
+It renders on the muted neutral surface so it reads as context; the success
+tint is reserved for confirmations (posted, verified, resolved).
 
 ### WhyShownChip
 

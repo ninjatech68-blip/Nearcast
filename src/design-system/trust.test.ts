@@ -1,24 +1,36 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatTrustDisplay } from './trust';
+import { assertTrustContext } from './trust';
 
-describe('trust display', () => {
-  it('renders the standardised trust string from DESIGN.md', () => {
-    expect(formatTrustDisplay({ score: 812, band: 'High trust' })).toBe('Trust 812 · High trust');
+describe('trust context', () => {
+  it.each([
+    'One trusted connection from your network',
+    '8 of 9 confirmed interactions were completed',
+    'Confirmed by 3 people at the origin',
+    'Phone verified. Verification does not guarantee safety.',
+    'No completed interactions yet',
+  ])('accepts the factual line %s', (line) => {
+    expect(assertTrustContext(line)).toBe(line);
   });
 
-  it('rejects scores that are not whole, non-negative counts', () => {
-    expect(() => formatTrustDisplay({ score: 4.7, band: 'High trust' })).toThrow(/whole/i);
-    expect(() => formatTrustDisplay({ score: -1, band: 'High trust' })).toThrow(/whole/i);
+  it('rejects the banned universal-score shape', () => {
+    expect(() => assertTrustContext('Trust 812 · High trust')).toThrow(/score/i);
+    expect(() => assertTrustContext('Trust: 640')).toThrow(/score/i);
   });
 
-  it('rejects popularity-shaped bands so trust never reads as a rating', () => {
-    for (const band of ['92%', '4.7 stars', '1.2k followers', '340 likes']) {
-      expect(() => formatTrustDisplay({ score: 812, band }), band).toThrow(/band/i);
-    }
+  it.each(['92%', '4.7 stars', '1.2k followers', '340 likes', '812'])(
+    'rejects the popularity-shaped value %s',
+    (line) => {
+      expect(() => assertTrustContext(line)).toThrow(/rating|percentage|popularity/i);
+    },
+  );
+
+  it('rejects guarantee language', () => {
+    expect(() => assertTrustContext('100% safe to meet')).toThrow(/guarantee/i);
+    expect(() => assertTrustContext('Trusted user')).toThrow(/guarantee/i);
   });
 
-  it('requires a human-readable band', () => {
-    expect(() => formatTrustDisplay({ score: 812, band: '   ' })).toThrow(/band/i);
+  it('requires a human-readable line', () => {
+    expect(() => assertTrustContext('   ')).toThrow(/human-readable/i);
   });
-})
+});

@@ -3,30 +3,27 @@ import { StyleSheet, Text, View } from 'react-native';
 import { accentFor } from '@/design-system/accents';
 import { useAppearance } from '@/design-system/appearance';
 import { tokens } from '@/design-system/tokens';
-import { formatTrustDisplay } from '@/design-system/trust';
+import { assertTrustContext } from '@/design-system/trust';
 
 type TrustBadgeProps = {
-  /** A whole, non-negative trust count. */
-  score: number;
-  /** A human-readable band such as `High trust`. */
-  band: string;
-  /** Optional verified signal, for example `ID verified`. */
+  /** A factual trust-context line, e.g. `8 of 9 confirmed interactions were completed`. */
+  context: string;
+  /** Optional verified signal, e.g. `Phone verified. Verification does not guarantee safety.` */
   verifiedSignal?: string;
 };
 
 /**
- * Trust context for a broadcaster, standardised by DESIGN.md as
- * `Trust 812 · High trust`. It is not a popularity badge and must never be
- * read as a guarantee of safety, so it sits on the muted neutral surface —
- * the success tint stays reserved for confirmations.
+ * Trust context for a broadcaster: evidence relevant to the decision, never a
+ * score, band, or guarantee (docs/04, docs/08). It sits on the muted neutral
+ * surface — the success tint stays reserved for confirmations.
  */
-export function TrustBadge({ score, band, verifiedSignal }: TrustBadgeProps) {
+export function TrustBadge({ context, verifiedSignal }: TrustBadgeProps) {
   const accent = accentFor(useAppearance(), 'neutral');
-  const display = formatTrustDisplay({ score, band });
+  const display = assertTrustContext(context);
 
   return (
     <View
-      accessibilityLabel={[`Trust ${score}, ${band.trim()}`, verifiedSignal].filter(Boolean).join('. ')}
+      accessibilityLabel={[display, verifiedSignal].filter(Boolean).join('. ')}
       accessibilityRole="text"
       style={[styles.badge, { backgroundColor: accent.background, borderColor: accent.border }]}>
       <Text style={[styles.display, { color: accent.foreground }]}>{display}</Text>

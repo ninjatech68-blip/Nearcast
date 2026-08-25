@@ -16,7 +16,7 @@ const flatten = (style: unknown): Record<string, unknown> =>
 
 const intent = {
   broadcaster: { name: 'Aarav', context: 'One trusted connection' },
-  trust: { score: 812, band: 'High trust' },
+  trust: { context: '8 of 9 confirmed interactions were completed' },
   area: 'Indiranagar area',
   category: 'Sport',
   summary: 'Two people for badminton tonight',
@@ -147,7 +147,7 @@ describe('IntentCard', () => {
     const view = await render(<IntentCard {...intent} />);
 
     expect(view.getByText('Aarav')).toBeTruthy();
-    expect(view.getByText('Trust 812 · High trust')).toBeTruthy();
+    expect(view.getByText('8 of 9 confirmed interactions were completed')).toBeTruthy();
     expect(view.getByText('Indiranagar area')).toBeTruthy();
     expect(view.getByText('Sport')).toBeTruthy();
     expect(view.getByText('Two people for badminton tonight')).toBeTruthy();

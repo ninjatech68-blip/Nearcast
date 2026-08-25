@@ -22,7 +22,7 @@ const STATUS_COPY: Record<IntentCardStatus, { pill: string; reason: string }> = 
 
 type IntentCardProps = {
   broadcaster: { name: string; context?: string };
-  trust: { score: number; band: string; verifiedSignal?: string };
+  trust: { context: string; verifiedSignal?: string };
   /** Approximate area only, for example `Indiranagar area`. */
   area: string;
   category: string;
@@ -119,11 +119,7 @@ export function IntentCard({
         ) : null}
       </View>
 
-      <TrustBadge
-        band={trust.band}
-        score={trust.score}
-        verifiedSignal={trust.verifiedSignal}
-      />
+      <TrustBadge context={trust.context} verifiedSignal={trust.verifiedSignal} />
 
       <View style={styles.meta}>
         <Pill label={category} tone="warning" />

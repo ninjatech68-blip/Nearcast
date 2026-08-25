@@ -197,13 +197,21 @@ Variants: information, trust, warning, danger, and success. Include an icon and 
 
 ### TrustBadge
 
-The standard trust display is:
+The standard trust display is a factual trust-context line, for example:
 
 ```text
-Trust 812 · High trust
+One trusted connection from your network
+8 of 9 confirmed interactions were completed
+Phone verified. Verification does not guarantee safety.
 ```
 
-Do not mix trust display formats such as `4.7`, percentages, ratings, follower counts, likes, or popularity counters. Trust must not imply guaranteed safety.
+Do not display a single universal trust number, band, or score (`Trust 812`,
+`High trust`), and do not mix trust display formats such as `4.7`, percentages,
+ratings, follower counts, likes, or popularity counters.
+`docs/04 - Trust Privacy and Safety.md` forbids a single universal
+social-credit score and trust badges that resemble guarantees; trust is shown
+as evidence relevant to the decision, never as a judgment. Trust must not
+imply guaranteed safety.
 
 ### IntentCard
 
@@ -342,5 +350,6 @@ Every screen page must link in its description to this specification, the App De
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | Replaced the numeric trust display with factual trust-context lines to comply with the trust model's ban on universal scores |
 | 2026-08-25 | Added approved Trustworthy Native Clarity direction, native semantic token target, adaptive platform mappings, trust display standard, and privacy-safe copy rules |
 | 2026-08-24 | Defined tokens, components, motion, accessibility, and Figma governance |

@@ -10,34 +10,37 @@ import { TrustBadge } from './trust-badge';
 import { WhyShownChip } from './why-shown-chip';
 
 describe('TrustBadge', () => {
-  it('renders the standardised trust display', async () => {
-    const view = await render(<TrustBadge band="High trust" score={812} />);
+  it('renders a factual trust-context line', async () => {
+    const view = await render(
+      <TrustBadge context="8 of 9 confirmed interactions were completed" />,
+    );
 
-    expect(view.getByText('Trust 812 · High trust')).toBeTruthy();
-  });
-
-  it('reads the separator as punctuation for assistive technology', async () => {
-    const view = await render(<TrustBadge band="High trust" score={812} />);
-
-    expect(view.getByLabelText('Trust 812, High trust')).toBeTruthy();
+    expect(view.getByText('8 of 9 confirmed interactions were completed')).toBeTruthy();
   });
 
   it('includes a verified signal when one is supplied', async () => {
     const view = await render(
-      <TrustBadge band="High trust" score={812} verifiedSignal="ID verified" />,
+      <TrustBadge
+        context="One trusted connection from your network"
+        verifiedSignal="Phone verified. Verification does not guarantee safety."
+      />,
     );
 
-    expect(view.getByLabelText('Trust 812, High trust. ID verified')).toBeTruthy();
+    expect(
+      view.getByLabelText(
+        'One trusted connection from your network. Phone verified. Verification does not guarantee safety.',
+      ),
+    ).toBeTruthy();
   });
 
   it('renders as neutral context, not a green confirmation', async () => {
     const view = await render(
       <AppearanceProvider appearance="light">
-        <TrustBadge band="High trust" score={812} />
+        <TrustBadge context="One trusted connection from your network" />
       </AppearanceProvider>,
     );
 
-    const badge = view.getByLabelText('Trust 812, High trust');
+    const badge = view.getByLabelText('One trusted connection from your network');
     const style = Object.assign(
       {},
       ...[badge.parent?.props.style ?? badge.props.style]
@@ -47,8 +50,16 @@ describe('TrustBadge', () => {
     expect(style.backgroundColor).toBe(colorsFor('light').background.surfaceMuted);
   });
 
+  it('refuses the banned universal-score shape', async () => {
+    await expect(render(<TrustBadge context="Trust 812 · High trust" />)).rejects.toThrow(
+      /score/i,
+    );
+  });
+
   it('refuses popularity-shaped trust values', async () => {
-    await expect(render(<TrustBadge band="4.7 stars" score={812} />)).rejects.toThrow(/band/i);
+    await expect(render(<TrustBadge context="4.7 stars" />)).rejects.toThrow(
+      /rating|percentage|popularity/i,
+    );
   });
 });
 
@@ -116,10 +127,10 @@ describe('appearance', () => {
   it('renders trust context on the dark palette without changing its copy', async () => {
     const view = await render(
       <AppearanceProvider appearance="dark">
-        <TrustBadge band="High trust" score={812} />
+        <TrustBadge context="One trusted connection from your network" />
       </AppearanceProvider>,
     );
 
-    expect(view.getByText('Trust 812 · High trust')).toBeTruthy();
+    expect(view.getByText('One trusted connection from your network')).toBeTruthy();
   });
 });
