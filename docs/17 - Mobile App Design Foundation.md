@@ -483,6 +483,7 @@ The design system should prioritize the following Nearcast-specific components:
 - `IntentMetrics`
 - `ResolutionSheet`
 - `TrustProfile`
+- `TrustContext`
 - `PrivacyDisclosure`
 - `SafetyActionSheet`
 - `EmptyIntentState`
@@ -584,6 +585,7 @@ The defining user feeling is:
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | Resolved C-03: added `TrustContext` to the signature component list; no component may render a numeric trust score |
 | 2026-08-25 | Recorded approved Trustworthy Native Clarity direction for the mobile app design system |
 | 2026-08-24 | Created the mobile app experience and design foundation |
 | 2026-08-24 | Added documentation governance and formal design-system references |

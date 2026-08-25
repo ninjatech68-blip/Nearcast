@@ -52,6 +52,17 @@ When documents conflict, use this order:
 9. The API and screen contracts govern executable boundaries within the scope allowed by all documents above them.
 10. Implementation plans govern task order only and may not override product, safety, permission, architecture, or design sources.
 
+### Derived Repository Documents
+
+Two root documents restate governed material for day-to-day use. They are **derived, not governing**, and are inserted into the order as follows:
+
+| Document | Rank | Subordinate to |
+|---|---|---|
+| `PRODUCT.md` | 2.1 | Product Requirements (01), MVP Requirements (02) |
+| `DESIGN.md` | 6.1 | Design System Specification (07), App Design Foundation (17) |
+
+A derived document may not introduce product behavior, relax a safety or permission rule, or contradict its parent. When a parent changes, the derived document must be reconciled in the same change. `docs/analysis/` sits below implementation plans and is measurement only.
+
 Conflicts must be resolved by editing the relevant source document and recording the decision in its change log. Downstream artifacts must not silently override an upstream source.
 
 ## Design Governance
@@ -98,6 +109,11 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 | 2026-08-24 | Keep production credentials and production MCP access outside AI tooling | Limits blast radius while retaining fast local and staging development |
 | 2026-08-24 | Treat Nearcast as a greenfield build with no legacy codebase dependency | Keeps future implementation from inheriting assumptions or patterns from unrelated projects |
 | 2026-08-25 | Approve Trustworthy Native Clarity as the mobile design-system direction | Establishes a calm, native, trust-first visual system before implementation |
+| 2026-08-25 | Authenticate with Google and Apple, not email/phone OTP | MVP Requirement MUST-001 outranks the screen contract and implementation plan that specified OTP |
+| 2026-08-25 | Keep four primary destinations: For You, Broadcast, Activity, You | Two governing design documents specify four; Activity already owns coordination, so a separate chat destination duplicates it |
+| 2026-08-25 | Display trust as contextual evidence with no numeric score | A universal reputation score is a stated non-goal and is prohibited by the safety baseline, which outranks the design system |
+| 2026-08-25 | Admit `PRODUCT.md` and `DESIGN.md` to the precedence order as derived documents | They asserted authority the order did not grant, which let them drift from their parents |
+| 2026-08-25 | Defer dark appearance beyond the first alpha build | The token cutover renames every semantic token; shipping light-only keeps Phase 1 scope honest |
 
 ## Document Change Rule
 
@@ -111,3 +127,4 @@ Every document must include a `Change Log` section. Material decisions require u
 | 2026-08-24 | Added implementation guide, mobile/API contracts, phase plans, and AI engineering governance |
 | 2026-08-24 | Added explicit greenfield project starting point |
 | 2026-08-25 | Recorded approved mobile design-system direction in design governance |
+| 2026-08-25 | Added derived-document ranks for `PRODUCT.md` and `DESIGN.md` and recorded the C-01, C-02, C-03, and C-08 resolutions in the decision log |

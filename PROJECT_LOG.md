@@ -5,7 +5,7 @@ This log records important packaging, setup, and version-control decisions for t
 ## Current Project
 
 - Project name: Nearcast App Project
-- Project folder: `/Users/piyushsharma/Downloads/Nearcast-App-Project-2026-08-24`
+- Repository: `ninjatech68-blip/Nearcast`
 - Product: Trust-aware intent broadcasting mobile app
 - Build type: Greenfield project with no old app or legacy codebase dependency
 - Initial stack: Expo, React Native, TypeScript, Supabase, PostgreSQL/PostGIS

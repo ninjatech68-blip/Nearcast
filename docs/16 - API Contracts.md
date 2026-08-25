@@ -24,6 +24,13 @@ Authenticated functions derive the actor from the verified JWT and never accept 
 | `send-message` | conversation ID, body, idempotency key | message ID, created time | Persist before Realtime; reject closed/blocked room |
 | `create-report` | subject type/ID, reason, optional details | report ID, `open` | Rate limit; preserve evidence; avoid subject existence leakage |
 | `delete-account` | confirmation and re-auth proof | deletion job ID | Revoke sessions, hide content, apply retention policy |
+| `redeem-invite` | invitation token | profile ID | Single-use; reject expired, consumed, or rate-limited tokens without revealing which |
+| `confirm-intent` | intent ID or share slug | confirmation count | One active confirmation per user; reject self-confirmation; rate limit |
+| `update-intent` | intent ID, expected version, changed fields | version | Append a material-edit event visible to existing respondents |
+| `close-intent` | intent ID, expected state, reason | terminal state, version | Covers withdraw and expiry; stops new responses immediately |
+| `decide-response` | response ID, decision, expected intent state | response state | Decline path returns neutral status with no private reasoning |
+| `generate-deliveries` | intent ID, reach level | delivery count | Every row carries an approved explanation code and non-empty reason |
+| `process-notifications` | queue batch | processed count | Honour preferences; generic payloads only; capped retry |
 
 ## Public Link Query
 
@@ -35,7 +42,7 @@ Shared Zod schemas live with each feature and are mirrored by database constrain
 
 ## Idempotency
 
-Client-generated UUID idempotency keys are scoped to actor and operation. The server stores request fingerprint and result. A repeated key with the same fingerprint returns the original result; a repeated key with a different fingerprint returns `conflict`. Keys are retained at least as long as offline retries can occur.
+Idempotency is backed by the `idempotency_keys` entity in [System Architecture](./05 - System Architecture.md). Client-generated UUID idempotency keys are scoped to actor and operation. The server stores request fingerprint and result. A repeated key with the same fingerprint returns the original result; a repeated key with a different fingerprint returns `conflict`. Keys are retained at least as long as offline retries can occur.
 
 ## Observability And Privacy
 
@@ -46,3 +53,5 @@ Logs contain request ID, actor hash, operation, object ID, result code, duration
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined server mutation inventory, public projection, errors, idempotency, and logging boundaries |
+| 2026-08-25 | Reconciled the function inventory with the implementation plans by adding the seven functions the plans already required |
+| 2026-08-25 | Named `idempotency_keys` as the storage backing the idempotency rule |

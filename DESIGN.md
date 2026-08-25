@@ -4,13 +4,12 @@
 
 ## Status
 
-- **Status:** Approved visual design contract
-- **Approved:** 2026-08-25
-- **Mode:** Operate
-- **Source boards:** Approved Nearcast native screen boards and polished design-system board generated on 2026-08-25
-- **Governing docs:** [`docs/17 - Mobile App Design Foundation.md`](docs/17%20-%20Mobile%20App%20Design%20Foundation.md), [`docs/07 - Design System Specification.md`](docs/07%20-%20Design%20System%20Specification.md)
+- **Status:** Derived implementation reference. **Not a governing document.**
+- **Precedence:** Rank 6.1 — subordinate to [`docs/07 - Design System Specification.md`](docs/07%20-%20Design%20System%20Specification.md) and [`docs/17 - Mobile App Design Foundation.md`](docs/17%20-%20Mobile%20App%20Design%20Foundation.md), which jointly govern all visual and interaction design. Where this file disagrees with either, they win and this file must be corrected in the same change.
+- **Last reconciled:** 2026-08-25 against commit `7820a0a`
+- **Source boards:** Polished design-system board at [`docs/design/nearcast-design-system-board.png`](docs/design/nearcast-design-system-board.png)
 
-This file captures the approved visual world for Nearcast. It does not replace product, privacy, permission, or engineering rules in `docs/`; it translates the approved visual boards into a durable implementation contract.
+This file translates the governed design documents into a concrete native implementation reference. It does not replace product, privacy, permission, or engineering rules in `docs/`, and it may not introduce product behavior that those documents do not already permit.
 
 ## Design Thesis
 
@@ -99,7 +98,7 @@ Components must use semantic tokens. Raw hex values belong only in token definit
 
 ## Typography
 
-Use native platform typography while preserving one shared hierarchy.
+**The governing type scale is the Manrope scale in `docs/07`.** The table below is the native-platform mapping target for a future implementation pass; it does not supersede `docs/07`, and production code currently implements the `docs/07` scale.
 
 | Style | Size / line | Weight | Use |
 |---|---:|---|---|
@@ -117,6 +116,8 @@ Platform mapping:
 - **Android:** Roboto, Material Symbols, Material tonal surfaces, Material bottom sheets and switches, minimum 48dp touch target.
 
 ## Shape, Spacing, Elevation, Motion
+
+**The governing shape and motion values are those in `docs/07`** (`radius.card` 16, motion 150/220/320ms), which production code implements. The values below are the native-platform target for a future implementation pass and do not supersede `docs/07`.
 
 | Token | Value | Role |
 |---|---:|---|
@@ -147,13 +148,14 @@ Motion:
 
 ## Navigation
 
-Primary tab bar has five destinations:
+Primary tab bar has four destinations, matching the governed information architecture in `docs/17` and `docs/03`:
 
-1. `Home`
-2. `Explore`
-3. `Broadcast`
-4. `Chat`
-5. `Profile`
+1. `For You`
+2. `Broadcast`
+3. `Activity`
+4. `You`
+
+`Activity` is the operational centre for owned broadcasts, responses, requests, matches, and temporary coordination. Coordination conversations live inside `Activity`; there is no separate chat destination. Search and filtering live inside `For You`.
 
 Rules:
 
@@ -165,34 +167,37 @@ Rules:
 
 ## Trust Display
 
-Trust display is standardized as:
+Trust is displayed as factual, contextual evidence. **There is no numeric trust score.**
 
 ```text
-Trust 812 · High trust
+8 of 9 confirmed interactions were completed
+One trusted connection from your network
+Confirmed by 3 people at the origin
 ```
 
-Do not mix trust displays such as `4.7`, percentages, ratings, followers, likes, or popularity counters. Trust must not imply guaranteed safety, and it must never be based on fake engagement.
+Never render a composite score, `4.7`, `Trust 812`, percentages, ratings, followers, likes, or popularity counters. A universal reputation score is a stated non-goal in `docs/01` and is prohibited by `docs/04`. Trust evidence must trace to a countable fact, must never imply guaranteed safety, and must never be based on fabricated engagement.
 
 ## Core Components
 
 ### IntentCard
 
-Anatomy:
+Anatomy, ordered intent-first per Experience Principle 1 in `docs/17`:
 
-1. Broadcaster mini-profile.
-2. `TrustBadge`.
-3. Approximate area only.
-4. Category pill.
-5. One-line intent summary.
-6. `WhyShownChip`.
-7. Primary contextual action, such as `Offer help`.
-8. Optional save/bookmark action.
+1. Primitive label and `ExpiryIndicator`.
+2. Intent statement.
+3. Essential contextual metadata, approximate area only.
+4. `WhyShownChip` or `ProvenanceStrip`.
+5. `TrustContext` evidence and genuine confirmation count.
+6. One primary contextual action, such as `Offer help`.
+7. Optional save action.
+
+Identity appears after the intent, never before it. There is no category pill: `docs/01` is category-agnostic and `docs/07` requires colour to encode state and action rather than content category.
 
 States: default, pressed, focused, saved, loading, empty, restricted, offline, expired, withdrawn, reported.
 
-### TrustBadge
+### TrustContext
 
-Displays `Trust 812 · High trust` and may include verified signals. It is a trust-context component, not a popularity badge.
+Displays factual trust evidence and verification state as text. It is a trust-context component, not a score or popularity badge. It renders only counts that correspond to stored, confirmed records.
 
 ### WhyShownChip
 
@@ -306,4 +311,16 @@ disabled > loading > error > offline > pressed > focused > selected > success > 
 
 - Polished DS board: [`docs/design/nearcast-design-system-board.png`](docs/design/nearcast-design-system-board.png)
 - Static DS preview: [`docs/design-system-preview/index.html`](docs/design-system-preview/index.html)
-- Approved screen board set: `/Users/piyushsharma/.codex/generated_images/01a034a8-69dc-7092-83f5-957e6fab1b03/`
+- Approved screen board set: generated locally on 2026-08-25 and **not committed**. It therefore carries no authority for anyone but its author. Any board that must inform implementation has to be committed under `docs/design/` first.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-25 | Created the native minimal design contract from the approved 2026-08-25 boards |
+| 2026-08-25 | Reclassified as a derived, non-governing reference subordinate to `docs/07` and `docs/17` (resolves G-01) and added this change log (resolves G-03) |
+| 2026-08-25 | Resolved C-02: replaced the five-destination Home/Explore/Broadcast/Chat/Profile tab bar with the governed four-destination For You/Broadcast/Activity/You architecture |
+| 2026-08-25 | Resolved C-03: removed the numeric `Trust 812` display and renamed `TrustBadge` to `TrustContext` |
+| 2026-08-25 | Resolved C-04: reordered `IntentCard` intent-first and removed the category pill |
+| 2026-08-25 | Resolved C-05 and C-06: marked the native typography, shape, and motion tables as future implementation targets subordinate to `docs/07` |
+| 2026-08-25 | Resolved G-06: removed the uncommitted local path previously cited as visual authority |

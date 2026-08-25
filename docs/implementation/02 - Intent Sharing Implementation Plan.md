@@ -13,7 +13,7 @@
 **Files:** `src/features/auth/`, `src/app/invite/[token].tsx`, `src/app/sign-in.tsx`, `supabase/functions/redeem-invite/`
 
 - [ ] Test expired, used, valid, and rate-limited invitation tokens.
-- [ ] Implement OTP sign-in and create a minimal profile only after invite redemption.
+- [ ] Implement Google and Apple sign-in and create a minimal profile only after invite redemption.
 - [ ] Use generic authentication errors and secure session persistence.
 - [ ] Verify sign-out removes local session and protected routes redirect.
 
@@ -61,3 +61,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created intent creation and sharing implementation plan |
+| 2026-08-25 | Resolved C-01: replaced OTP sign-in with Google and Apple sign-in to match MVP Requirement MUST-001 |

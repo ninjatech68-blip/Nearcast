@@ -133,7 +133,7 @@ Closed alpha minimum:
 - Current and previous major iOS versions on one small and one large iPhone size.
 - Current and previous major Android versions on one mid-range physical device and one emulator.
 - Slow network, intermittent network, and offline modes.
-- Light and dark appearance.
+- Light appearance. Dark appearance is deferred beyond the first alpha build and is not a closed-alpha gate; see the C-08 resolution in the decision log of Doc 00.
 - English locale with 24-hour and 12-hour time formats.
 
 Expand coverage based on actual alpha device analytics.
@@ -181,3 +181,4 @@ Release branches additionally run mobile E2E smoke tests and production build va
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined test pyramid, security scenarios, device coverage, CI gates, and release criteria |
+| 2026-08-25 | Resolved C-08: removed dark appearance from the closed-alpha device matrix because the token cutover is deferred |

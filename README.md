@@ -57,3 +57,10 @@ npm run db:test
 ```
 
 Read [Start Here - Nearcast Project Reference](./docs/00%20-%20Start%20Here%20-%20Nearcast%20Project%20Reference.md) before changing behavior.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-24 | Created the repository readme for the packaged Nearcast project |
+| 2026-08-25 | Added a change log to satisfy the documentation governance rule (resolves G-05) |

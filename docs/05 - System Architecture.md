@@ -69,6 +69,7 @@ Functions must be idempotent and validate both authentication and current lifecy
 
 | Entity | Purpose |
 |---|---|
+| `invitations` | Single-use invitation tokens gating account creation during the invitation-only alpha |
 | `profiles` | Public and contextual identity separate from auth records |
 | `profile_private` | Private contact and sensitive account data |
 | `verifications` | Verification type, state, provider reference, and expiry |
@@ -107,6 +108,7 @@ Functions must be idempotent and validate both authentication and current lifecy
 | `moderation_actions` | Immutable enforcement audit log |
 | `notification_jobs` | Idempotent notification queue |
 | `analytics_outbox` | Privacy-filtered product event delivery |
+| `idempotency_keys` | Actor-scoped request fingerprint and stored result for mutation replay |
 
 ## Key Relationships
 
@@ -271,3 +273,5 @@ Evaluate a dedicated TypeScript API, specialized notification workers, feed mate
 | Date | Change |
 |---|---|
 | 2026-08-24 | Established modular-monolith architecture, data model, matching, and deployment baseline |
+| 2026-08-25 | Added the `invitations` entity, which the invitation-only launch assumption and implementation plan 02 already required but this document omitted |
+| 2026-08-25 | Added the `idempotency_keys` entity required by the idempotency rule in the API contracts |

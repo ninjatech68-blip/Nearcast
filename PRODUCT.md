@@ -2,6 +2,12 @@
 
 <!-- impeccable:product-schema 1 -->
 
+## Status
+
+- **Status:** Derived product summary. **Not a governing document.**
+- **Precedence:** Rank 2.1 — subordinate to [`docs/01 - Product Requirements.md`](docs/01%20-%20Product%20Requirements.md) and [`docs/02 - First Version Requirements.md`](docs/02%20-%20First%20Version%20Requirements.md). Where this file disagrees with either, they win and this file must be corrected in the same change.
+- **Last reconciled:** 2026-08-25 against commit `7820a0a`
+
 ## Platform
 
 adaptive
@@ -28,7 +34,7 @@ Users may broadcast `I need`, `I offer`, or `I want to` intents. Every delivered
 
 ## Brand Commitments
 
-Nearcast should feel calm, credible, human, quietly optimistic, and native. The interface should be minimal, trust-aware, and useful rather than promotional, viral, or social-media-like. Current product terminology uses Intent, Broadcast, Reach, Origin, Confirmation, Response, Match, Resolve, Trust context, and Reliability.
+Nearcast should feel calm, credible, human, quietly optimistic, and native. The interface should be minimal, trust-aware, and useful rather than promotional, viral, or social-media-like. Current product terminology uses Intent, Broadcast, Reach, Origin, Confirmation, Response, Match, Resolve, Trust context, and Reliability. Trust is never displayed as a numeric score.
 
 ## Evidence on Hand
 
@@ -44,4 +50,12 @@ Approved product and design source documents live in `docs/`. The current app us
 
 ## Accessibility & Inclusion
 
-The mobile app must support dynamic type, screen readers, reduced motion, minimum contrast, 44-48 point touch targets, honest loading/empty/error/offline states, and privacy/safety copy that can wrap without truncation.
+The mobile app must support dynamic type, screen readers, reduced motion, minimum contrast, 44pt iOS and 48dp Android touch targets, honest loading/empty/error/offline states, and privacy/safety copy that can wrap without truncation.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-25 | Captured product truth for the native minimal design direction |
+| 2026-08-25 | Reclassified as a derived, non-governing summary subordinate to `docs/01` and `docs/02` (resolves G-02) and added this change log (resolves G-04) |
+| 2026-08-25 | Aligned touch-target and trust-display wording with the resolutions to C-09 and C-03 |

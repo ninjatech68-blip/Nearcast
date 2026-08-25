@@ -15,3 +15,9 @@ Review goals:
 - Review component states before React Native implementation.
 - Check responsive behavior across phone, tablet, and desktop widths.
 
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-25 | Created the static design-system review artifact |
+| 2026-08-25 | Applied the C-03 and C-04 resolutions: removed the numeric trust display and reordered the intent card intent-first without a category pill |

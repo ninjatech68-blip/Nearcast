@@ -23,30 +23,47 @@ This is a measurement, not a plan. `docs/implementation/` remains the execution 
 |---|---:|---|
 | Governing set (`docs/`) | 18 | Complete and internally cross-referenced |
 | Implementation plans (`docs/implementation/`) | 6 | Complete, ordered, with checkboxes |
-| Root documents | 4 | Two are ungoverned (see 1.2) |
+| Root documents | 4 | Two admitted as derived documents on 2026-08-25 (see 1.2) |
 | Derived artifacts | 2 | Design preview, design board image |
 
 The governing set is genuinely complete. Every subsystem an MVP needs — product, UX, safety, architecture, permissions, design, content, analytics, QA, operations, legal — has an approved document with a change log. This is the project's strongest asset and should not be treated as overhead.
 
 ### 1.2 Governance Defects
 
+**Status as of 2026-08-25: all seven defects are RESOLVED.** `PRODUCT.md` and `DESIGN.md` now carry explicit derived-document ranks in Doc 00's precedence order (2.1 and 6.1), all four missing change logs were added, the uncommitted design-board path was removed, and the local project path was replaced with the repository name.
+
+
 | ID | Defect | Rule violated | Severity |
 |---|---|---|---|
-| G-01 | `DESIGN.md` is titled "Approved visual design contract" but is not referenced by any governing document and does not appear in the precedence order | Doc 00, Source-of-Truth Precedence | **High** |
-| G-02 | `PRODUCT.md` restates product truth but is not referenced by any governing document and is not in the precedence order | Doc 00, Source-of-Truth Precedence | **High** |
-| G-03 | `DESIGN.md` has no `Change Log` section | Doc 00 Document Change Rule; `PROJECT_LOG.md` Governance Rules | Medium |
-| G-04 | `PRODUCT.md` has no `Change Log` section | Doc 00 Document Change Rule; `PROJECT_LOG.md` Governance Rules | Medium |
-| G-05 | `README.md` and `AGENTS.md` have no `Change Log` sections | `PROJECT_LOG.md` ("Every document must keep a Change Log") | Low |
-| G-06 | `DESIGN.md` names its visual authority as `/Users/piyushsharma/.codex/generated_images/...`, a path outside the repository | Doc 14 Repository Contract; reproducibility | Medium |
-| G-07 | `PROJECT_LOG.md` records the project folder as a local `Downloads` path | Portability | Low |
+| ~~G-01~~ | Resolved 2026-08-25. `DESIGN.md` is titled "Approved visual design contract" but is not referenced by any governing document and does not appear in the precedence order | Doc 00, Source-of-Truth Precedence | **High** |
+| ~~G-02~~ | Resolved 2026-08-25. `PRODUCT.md` restates product truth but is not referenced by any governing document and is not in the precedence order | Doc 00, Source-of-Truth Precedence | **High** |
+| ~~G-03~~ | Resolved 2026-08-25. `DESIGN.md` has no `Change Log` section | Doc 00 Document Change Rule; `PROJECT_LOG.md` Governance Rules | Medium |
+| ~~G-04~~ | Resolved 2026-08-25. `PRODUCT.md` has no `Change Log` section | Doc 00 Document Change Rule; `PROJECT_LOG.md` Governance Rules | Medium |
+| ~~G-05~~ | Resolved 2026-08-25. `README.md` and `AGENTS.md` have no `Change Log` sections | `PROJECT_LOG.md` ("Every document must keep a Change Log") | Low |
+| ~~G-06~~ | Resolved 2026-08-25. `DESIGN.md` names its visual authority as `/Users/piyushsharma/.codex/generated_images/...`, a path outside the repository | Doc 14 Repository Contract; reproducibility | Medium |
+| ~~G-07~~ | Resolved 2026-08-25. `PROJECT_LOG.md` records the project folder as a local `Downloads` path | Portability | Low |
 
-G-01 and G-02 are the material ones. Two documents currently assert authority that the governing index does not grant them, and `DESIGN.md` actively contradicts the design documents that *are* governed (see section 2). Until this is resolved, an agent following `AGENTS.md` and an agent following `DESIGN.md` will build different products.
+G-01 and G-02 were the material ones: two documents asserted authority the governing index did not grant them, and `DESIGN.md` contradicted the design documents that *are* governed (see section 2). Left unresolved, an agent following `AGENTS.md` and an agent following `DESIGN.md` would have built different products. Both are now ranked derived documents subordinate to their parents, and `DESIGN.md`'s contradictions have been corrected.
 
 ---
 
 ## 2. Conflict Register
 
-Every conflict below is between approved documents, not between a document and an opinion. The recommended resolution applies the precedence order in Doc 00 mechanically. **None of these are resolved. Each needs a decision recorded in the governing document.**
+Every conflict below is between approved documents, not between a document and an opinion. The recommended resolution applies the precedence order in Doc 00 mechanically.
+
+**Status as of 2026-08-25: all nine conflicts are RESOLVED.** Each resolution was written into the governing document and recorded in its change log, and the decisions are logged in Doc 00's decision log. The original conflict text is retained below as the record of what was decided and why.
+
+| ID | Subject | Resolution | Written into |
+|---|---|---|---|
+| C-01 | Authentication method | Google and Apple sign-in | Doc 15, impl 02 |
+| C-02 | Primary navigation | Four destinations: For You, Broadcast, Activity, You | Doc 03, Doc 15, `DESIGN.md` |
+| C-03 | Numeric trust score | Removed; contextual evidence only, component renamed `TrustContext` | Doc 07, Doc 17, `DESIGN.md`, `AGENTS.md`, design preview |
+| C-04 | IntentCard anatomy | Intent-first ordering; category pill removed | `DESIGN.md`, design preview |
+| C-05 | Typography | Doc 07 Manrope scale governs; native mapping is a future target | `DESIGN.md` |
+| C-06 | Shape and motion tokens | Doc 07 values govern; native values are a future target | `DESIGN.md` |
+| C-07 | Two token systems | Cutover deferred to after Phase 1 | Doc 07 |
+| C-08 | Dark appearance | Deferred beyond first alpha; removed from the QA device matrix | Doc 07, Doc 10 |
+| C-09 | Minimum touch target | 44pt iOS, 48dp Android | Doc 07, `PRODUCT.md` |
 
 ### C-01 — Authentication method (blocking)
 
@@ -179,6 +196,8 @@ Worth stating plainly, because it should not be re-litigated:
 
 Doc 05 names 23 entities. 19 exist.
 
+**Doc 05 amended 2026-08-25** to add `invitations` and `idempotency_keys`. The entities below remain absent from the schema.
+
 | Missing entity | Required by | Blocks |
 |---|---|---|
 | `verifications` | Doc 05; MUST-003; Doc 04 risk-adaptive verification | Verification state on profiles, medium/elevated-risk gating |
@@ -187,7 +206,7 @@ Doc 05 names 23 entities. 19 exist.
 | `moderation_actions` | Doc 05; MUST-074 | Immutable enforcement audit; pre-alpha safety gate |
 | `invitations` | Impl plan 02 Task 1 (`redeem-invite`); Doc 01 invitation-only alpha | Every account creation path |
 
-`invitations` is not in Doc 05's entity list even though invitation-only access is a core product assumption in Doc 00 and Doc 01, and an implementation plan already references `redeem-invite`. **Doc 05 needs amending to add it.**
+`invitations` was not in Doc 05's entity list even though invitation-only access is a core product assumption in Doc 00 and Doc 01, and implementation plan 02 already references `redeem-invite`. **Doc 05 was amended on 2026-08-25** to add both `invitations` and `idempotency_keys`.
 
 ### 4.1 Schema observations, not defects
 
@@ -216,7 +235,7 @@ Doc 16 defines a mandatory server boundary of **9 functions**. One exists.
 | `delete-account` | Missing |
 | `get_public_intent` (query) | **Built**, matches contract projection |
 
-Implementation plans name seven more not in Doc 16: `redeem-invite`, `confirm-intent`, `update-intent`, `close-intent`, `generate-deliveries`, `decide-response`, `process-notifications`. **Doc 16's inventory should be reconciled with the plans** — right now the "mandatory server boundary" is incomplete relative to the work already planned.
+Implementation plans named seven more that Doc 16 omitted: `redeem-invite`, `confirm-intent`, `update-intent`, `close-intent`, `generate-deliveries`, `decide-response`, `process-notifications`. **Doc 16 was reconciled on 2026-08-25** and now specifies all sixteen. The server boundary is therefore 1 of 16 built.
 
 ### 5.1 The immediate blocker
 
@@ -273,14 +292,9 @@ No task in impl plans 02–05 is checked.
 
 This follows the approved plan order. It adds nothing the documents do not already require.
 
-### 8.0 Governance (do first — cheap, and it unblocks decisions)
+### 8.0 Governance — **complete as of 2026-08-25**
 
-1. Resolve C-01 (auth method) and record in Doc 15 + impl 02.
-2. Resolve C-02 (navigation) and record in Doc 17 + Doc 03, or change the code.
-3. Resolve C-03 (trust score) and record in Doc 07 + `DESIGN.md`.
-4. Decide `DESIGN.md` / `PRODUCT.md` status (G-01, G-02): either admit them to the precedence order in Doc 00, or demote them to derived artifacts. Add change logs (G-03, G-04, G-05).
-5. Amend Doc 05 to add `invitations`; reconcile Doc 16's function inventory with the implementation plans.
-6. Tick impl 01 Task 1's CI box; record the CI result in `PROJECT_LOG.md`.
+All nine conflicts and seven governance defects are resolved, Doc 05 and Doc 16 are amended, and the Foundation CI checkbox is ticked and logged. Documentation is internally consistent and no longer blocks implementation.
 
 ### 8.1 Phase 1 critical path (impl plan 02)
 
@@ -306,15 +320,19 @@ Doc 14 already flags these as human-owned and they gate Phase 1's exit:
 
 ## 9. Open Decisions
 
-| # | Decision | Options | Recommendation |
-|---:|---|---|---|
-| 1 | Authentication method | Google/Apple · Email-phone OTP | Google/Apple (Doc 02 outranks) |
-| 2 | Navigation destinations | 4 per Doc 03/17 · 5 as shipped | Amend docs or fold Messages into Activity — do not leave both |
-| 3 | Trust display | Numeric `Trust 812` · Contextual evidence | Contextual (Docs 01/04/08 outrank) |
-| 4 | `DESIGN.md` and `PRODUCT.md` status | Admit to precedence order · Demote to derived | Decide explicitly; either is fine, ambiguity is not |
-| 5 | Token system cutover | Before Phase 1 · After Phase 1 | After — the rename touches every component |
-| 6 | Dark mode | Phase 1 scope · Defer | Defer and amend Doc 10's device matrix |
-| 7 | Demo fixtures | Gate behind dev flag now · Accept until Phase 1 | Gate if anyone outside the founder will open a build |
+All seven decisions were taken on 2026-08-25 and recorded in Doc 00's decision log:
+
+| # | Decision | Taken |
+|---:|---|---|
+| 1 | Authentication method | Google and Apple |
+| 2 | Navigation destinations | Four; Messages folded into Activity |
+| 3 | Trust display | Contextual evidence, no numeric score |
+| 4 | `DESIGN.md` / `PRODUCT.md` status | Admitted as derived documents at ranks 6.1 and 2.1 |
+| 5 | Token system cutover | Deferred to after Phase 1 |
+| 6 | Dark mode | Deferred; removed from the alpha device matrix |
+| 7 | Demo fixtures | Deleted, replaced by real queries |
+
+Decisions 2 and 4 had no single recommendation in the original analysis and were taken by applying the precedence order. Both are reversible: reverting 2 means restoring a fifth destination and amending Docs 03, 15, and 17 first; reverting 4 means removing the derived ranks from Doc 00.
 
 ---
 
@@ -323,3 +341,4 @@ Doc 14 already flags these as human-owned and they gate Phase 1's exit:
 | Date | Change |
 |---|---|
 | 2026-08-25 | Created requirements and gap analysis against commit `7820a0a`; registered 9 documentation conflicts and 7 governance defects; scored 64 MVP MUST requirements |
+| 2026-08-25 | Recorded resolution of all 9 conflicts and all 7 governance defects; updated the schema and server-boundary sections for the Doc 05 and Doc 16 amendments |

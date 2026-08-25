@@ -20,7 +20,7 @@ The same user may switch roles multiple times in one week. Navigation and termin
 
 - **For You:** Finite, relevant intent feed.
 - **Broadcast:** Central creation action.
-- **Activity:** Broadcasts, responses, matches, and temporary coordination.
+- **Activity:** Broadcasts, responses, matches, and temporary coordination. Coordination conversations live here; there is no separate chat destination.
 - **You:** Trust history, privacy, notification settings, verification, blocks, and account controls.
 
 ## Flow 1: First Entry From A Shared Link
@@ -39,7 +39,7 @@ WhatsApp link
 ### Screens
 
 1. **Public Intent Preview:** Shows intent statement, approximate context, expiry, genuine confirmation count, and allowed provenance.
-2. **Authentication Sheet:** Google or Apple sign-in with a clear explanation of why identity is needed.
+2. **Authentication Sheet:** Google or Apple sign-in with a clear explanation of why identity is needed. This is the single approved authentication method for the closed alpha.
 3. **Response Preview:** Shows information that will be shared with the broadcaster.
 4. **Response Submitted:** Shows pending, accepted-immediately, or confirmation-complete status.
 
@@ -295,3 +295,4 @@ Every applicable screen must define:
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined complete MVP mobile flows and screen inventory |
+| 2026-08-25 | Recorded the C-02 resolution: four primary destinations, with coordination conversations inside Activity |

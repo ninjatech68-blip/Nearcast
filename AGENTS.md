@@ -23,6 +23,7 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 - Never expose private-group identity or membership.
 - Never store exact location or contact details in discoverable intent rows.
 - Every recommendation needs a stored, human-readable delivery reason.
+- Never display a numeric trust score; trust is contextual evidence traceable to stored records.
 - Realtime accelerates delivery; PostgreSQL remains the source of truth.
 - Push and analytics payloads must not contain intent text, messages, exact coordinates, contact details, or private-group names.
 
@@ -53,3 +54,10 @@ npm run db:types
 ## Definition Of Done
 
 A change is complete only when its acceptance criteria pass, negative permission paths are tested, documentation remains consistent, and verification output is recorded. A UI state is incomplete without loading, empty, error, offline/queued, disabled, and restricted handling where applicable.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-08-24 | Created the mandatory agent reference from the governing documentation set |
+| 2026-08-25 | Added the no-numeric-trust-score rule from the C-03 resolution and added this change log (resolves G-05) |

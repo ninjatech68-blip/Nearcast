@@ -13,14 +13,14 @@ Every data screen must define loading, empty, error with retry, offline or queue
 
 ## Navigation
 
-Unauthenticated routes are invitation, sign-in, public intent, and policy pages. Authenticated primary destinations are Home, My Intents, Activity, and Profile. Creation is a full-screen modal. Response, reach, privacy, resolution, report, and disclosure decisions use sheets. Match coordination is a dedicated screen.
+Unauthenticated routes are invitation, sign-in, public intent, and policy pages. Authenticated primary destinations are For You, Broadcast, Activity, and You, matching the information architecture in [App Design Foundation](./17 - Mobile App Design Foundation.md) and [User Flows](./03 - User Journeys and Flows.md). Owned-intent management lives inside Activity rather than a separate destination. Creation is a full-screen modal. Response, reach, privacy, resolution, report, and disclosure decisions use sheets. Match coordination is a dedicated screen.
 
 ## MVP Screens
 
 | Screen | Primary decision | Required content | Sensitive constraints |
 |---|---|---|---|
 | Invitation | Join this network? | Inviter context, product promise, policy links | Do not expose group membership |
-| Sign in | Verify access? | Email/phone OTP, recovery | Generic errors prevent account enumeration |
+| Sign in | Verify access? | Google and Apple sign-in, explanation of why identity is needed, recovery route | Generic errors prevent account enumeration |
 | Home | Inspect or create? | Finite intent list, WhyYouSeeThis, create action | No infinite-feed mechanics or fabricated activity |
 | Intent composer | What is the intent? | Primitive, statement, suggestions, draft state | Draft remains local/private |
 | Intent review | Publish with these terms? | Structured context, expiry, reach, PrivacyDisclosure | Exact details never enter public context |
@@ -53,3 +53,5 @@ Core flows support dynamic type, screen-reader order, 48x48 minimum targets, tex
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined mobile navigation, complete state coverage, screen responsibilities, and component boundaries |
+| 2026-08-25 | Resolved C-01: replaced email/phone OTP sign-in with Google and Apple sign-in to match MVP Requirement MUST-001, which outranks this contract |
+| 2026-08-25 | Resolved C-02: replaced the Home/My Intents/Activity/Profile destinations with the governed For You/Broadcast/Activity/You information architecture |

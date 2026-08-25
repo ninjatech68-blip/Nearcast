@@ -89,7 +89,9 @@ Final production colors must pass contrast tests in their actual text/background
 
 Dark appearance is implemented by remapping semantic tokens, not by changing components. Dark primitives must preserve semantic contrast and avoid pure black surfaces.
 
-The approved 2026-08-25 design direction introduces an implementation target for native semantic naming:
+Dark appearance is **deferred beyond the first alpha build** (C-08). The dark values below remain the approved target; `app.json` pins the light appearance until the cutover.
+
+The approved 2026-08-25 design direction introduces an implementation target for native semantic naming. This is a **post-Phase-1 cutover** (C-07): the two systems use different token names, so every component changes at once and the migration must not be interleaved with feature work.
 
 | Token | Light | Dark |
 |---|---:|---:|
@@ -145,7 +147,7 @@ Use a 4px primitive grid:
 - Related content gap: 12px.
 - Component gap: 16px.
 - Section gap: 24-32px.
-- Minimum interactive target: 48x48px.
+- Minimum interactive target: 44pt on iOS and 48dp on Android.
 
 ## Radius, Border, And Elevation
 
@@ -175,7 +177,7 @@ Reduced-motion mode removes ripple, scale, and travel metaphors while retaining 
 
 ### Button
 
-Variants: primary, secondary, outline, ghost, destructive. Standard height is 48px. Loading preserves label width. Destructive actions require explicit language and confirmation when irreversible.
+Variants: primary, secondary, outline, ghost, destructive. Standard height is 48px, which satisfies both platform minimums. Loading preserves label width. Destructive actions require explicit language and confirmation when irreversible.
 
 ### Text Input And Composer
 
@@ -195,15 +197,20 @@ Variants: information, trust, warning, danger, and success. Include an icon and 
 
 ## Signature Components
 
-### TrustBadge
+### TrustContext
 
-The standard trust display is:
+Trust is displayed as factual, contextual evidence. There is no numeric trust score, and no component may compute or render one.
+
+Approved formats:
 
 ```text
-Trust 812 · High trust
+8 of 9 confirmed interactions were completed
+One trusted connection from your network
+Confirmed by 3 people at the origin
+Phone verified. Verification does not guarantee safety.
 ```
 
-Do not mix trust display formats such as `4.7`, percentages, ratings, follower counts, likes, or popularity counters. Trust must not imply guaranteed safety.
+Never render a composite score, `4.7`, `Trust 812`, percentages, ratings, follower counts, likes, popularity counters, or any single number that summarizes a person. [Product Requirements](./01 - Product Requirements.md) lists a universal public reputation score as a non-goal and [Trust, Privacy, and Safety](./04 - Trust Privacy and Safety.md) prohibits a single universal social-credit score; both outrank this document. Trust evidence must always be attributable to a countable fact, and it must not imply guaranteed safety.
 
 ### IntentCard
 
@@ -303,7 +310,7 @@ State priority is: disabled, loading, active/pressed, focus, selected, default.
 - Visible focus indicator with at least 3:1 contrast.
 - Screen-reader labels explain status and action, not visual shape.
 - Reading and focus order follows the decision hierarchy.
-- Touch targets are at least 48x48px.
+- Touch targets are at least 44pt on iOS and 48dp on Android.
 - Dynamic type must work through the largest supported accessibility size for core flows.
 
 ## Figma Organization
@@ -342,5 +349,7 @@ Every screen page must link in its description to this specification, the App De
 
 | Date | Change |
 |---|---|
+| 2026-08-25 | Resolved C-03: replaced the numeric `Trust 812` TrustBadge with the contextual-evidence TrustContext component, because Product Requirements and Trust, Privacy, and Safety both prohibit a universal score and outrank this document |
+| 2026-08-25 | Resolved C-09: minimum touch target stated as 44pt on iOS and 48dp on Android, matching the App Design Foundation and platform guidance |
 | 2026-08-25 | Added approved Trustworthy Native Clarity direction, native semantic token target, adaptive platform mappings, trust display standard, and privacy-safe copy rules |
 | 2026-08-24 | Defined tokens, components, motion, accessibility, and Figma governance |
