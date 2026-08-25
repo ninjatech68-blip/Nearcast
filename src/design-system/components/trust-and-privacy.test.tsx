@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from '@jest/globals';
 import { render, userEvent } from '@testing-library/react-native';
 
 import { AppearanceProvider } from '@/design-system/appearance';
+import { colorsFor } from '@/design-system/tokens';
 
 import { DeliveryReasonRow, MISSING_REASON_COPY } from './delivery-reason-row';
 import { PRIVACY_HINT_LINES, PrivacyHint } from './privacy-hint';
@@ -29,16 +30,38 @@ describe('TrustBadge', () => {
     expect(view.getByLabelText('Trust 812, High trust. ID verified')).toBeTruthy();
   });
 
+  it('renders as neutral context, not a green confirmation', async () => {
+    const view = await render(
+      <AppearanceProvider appearance="light">
+        <TrustBadge band="High trust" score={812} />
+      </AppearanceProvider>,
+    );
+
+    const badge = view.getByLabelText('Trust 812, High trust');
+    const style = Object.assign(
+      {},
+      ...[badge.parent?.props.style ?? badge.props.style]
+        .flat(Number.POSITIVE_INFINITY)
+        .filter(Boolean),
+    );
+    expect(style.backgroundColor).toBe(colorsFor('light').background.surfaceMuted);
+  });
+
   it('refuses popularity-shaped trust values', async () => {
     await expect(render(<TrustBadge band="4.7 stars" score={812} />)).rejects.toThrow(/band/i);
   });
 });
 
 describe('WhyShownChip', () => {
-  it('renders the reason inline when there is nothing to open', async () => {
+  it('renders the reason inline, at caption size, when there is nothing to open', async () => {
     const view = await render(<WhyShownChip reason="approximate area + public link" />);
 
-    expect(view.getByText('Shown because: approximate area + public link')).toBeTruthy();
+    const reason = view.getByText('Shown because: approximate area + public link');
+    const style = Object.assign(
+      {},
+      ...[reason.props.style].flat(Number.POSITIVE_INFINITY).filter(Boolean),
+    );
+    expect(style.fontSize).toBeGreaterThanOrEqual(13);
   });
 
   it('keeps the reason reachable as a hint when it opens an explanation', async () => {

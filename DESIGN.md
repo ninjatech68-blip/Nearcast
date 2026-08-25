@@ -183,6 +183,7 @@ Primary tab bar has five destinations:
 Rules:
 
 - `Broadcast` is the raised center action.
+- The `Home` tab's screen title is `For You` (the finite, relevant intent feed named in `docs/03 - User Journeys and Flows.md`); the tab label stays `Home`.
 - Main tab screens show the tab bar.
 - Pushed detail and chat screens may hide the tab bar and use native back navigation.
 - Headers must be native: large title for top-level screens, compact back header for pushed screens.
@@ -210,22 +211,34 @@ Anatomy:
 4. Category pill.
 5. One-line intent summary.
 6. `WhyShownChip`.
-7. Primary contextual action, such as `Offer help`.
-8. Optional save/bookmark action.
+
+The whole card is one tap target that opens intent detail. Feed cards carry no
+commitment action: committing (offer help, request to join) happens on the
+detail screen, where the full context is visible. Detail contexts may render a
+primary contextual action and a save/bookmark affordance — exactly one save
+affordance per screen.
 
 States: default, pressed, focused, saved, loading, empty, restricted, offline, expired, withdrawn, reported.
 
 ### TrustBadge
 
-Displays `Trust 812 · High trust` and may include verified signals. It is a trust-context component, not a popularity badge.
+Displays `Trust 812 · High trust` and may include verified signals. It is a trust-context component, not a popularity badge. It renders on the muted neutral surface so it reads as context; the success tint is reserved for confirmations (posted, verified, resolved).
 
 ### WhyShownChip
 
-Required on delivered or recommended intents. It opens a concise explanation such as:
+Required on delivered or recommended intents. Rendered inline, the reason is a
+caption-size line — never micro type, because the delivery reason is
+trust-critical copy and must survive font scaling. The pill treatment is
+reserved for the tappable `Why shown` affordance, which opens a concise
+explanation such as:
 
 ```text
 Shown because: approximate area + public link
 ```
+
+The opened explanation must include a feedback action (per
+`docs/15 - Mobile Screen Contracts.md`, `WhyYouSeeThis` requires both the
+rendered explanation and a way to say the reason is wrong).
 
 ### PrivacyHint
 
@@ -241,6 +254,13 @@ Reach never expands without your action.
 ### ReachOptionCard
 
 Shows reach choice, who can see the intent, and the privacy consequence. Increasing reach requires explicit consent.
+
+Reach selection is a sheet decision (see `NativeSheet`), never an inline block
+on the review screen: the sheet presents all four ordered reach levels, the
+newly included audience for each step, and the disclosure delta — what becomes
+visible that is not visible now (per `docs/15 - Mobile Screen Contracts.md`).
+The review screen shows the current choice as a single row that opens the
+sheet.
 
 ### DeliveryReasonRow
 

@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { accentFor } from '@/design-system/accents';
-import { useAppearance } from '@/design-system/appearance';
+import { useAppearance, useColors } from '@/design-system/appearance';
 import { tokens } from '@/design-system/tokens';
 
 const PROMPT = 'Why shown';
@@ -18,18 +18,19 @@ type WhyShownChipProps = {
  *
  * With `onPress` the chip opens the explanation; without it the reason is
  * shown inline, so a recommendation can never be displayed without a reachable
- * reason.
+ * reason. The inline reason is caption-size text, never micro type: the
+ * delivery reason is trust-critical copy and must survive font scaling.
  */
 export function WhyShownChip({ reason, onPress }: WhyShownChipProps) {
   const accent = accentFor(useAppearance(), 'info');
+  const color = useColors();
   const explanation = `Shown because: ${reason}`;
 
   if (!onPress) {
     return (
-      <View
-        style={[styles.chip, { backgroundColor: accent.background, borderColor: accent.border }]}>
-        <Text style={[styles.label, { color: accent.foreground }]}>{explanation}</Text>
-      </View>
+      <Text accessibilityRole="text" style={[styles.reason, { color: color.text.secondary }]}>
+        {explanation}
+      </Text>
     );
   }
 
@@ -61,6 +62,7 @@ const styles = StyleSheet.create({
     paddingVertical: tokens.component.pill.paddingVertical,
   },
   label: { ...tokens.type.micro },
+  reason: { ...tokens.type.caption },
   pressable: { minHeight: tokens.touchTarget.ios },
   pressed: { opacity: 0.88 },
 });

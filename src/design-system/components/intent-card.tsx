@@ -30,6 +30,9 @@ type IntentCardProps = {
   /** The stored, human-readable delivery reason. */
   reason: string;
   onWhyShown?: () => void;
+  /** Opens intent detail; the whole card is the tap target. */
+  onPress?: () => void;
+  /** Detail contexts only — feed cards carry no commitment action. */
   action?: { label: string; onPress: () => void };
   onSave?: () => void;
   saved?: boolean;
@@ -53,6 +56,7 @@ export function IntentCard({
   summary,
   reason,
   onWhyShown,
+  onPress,
   action,
   onSave,
   saved = false,
@@ -73,8 +77,18 @@ export function IntentCard({
         ? 'You are offline. This will send when you reconnect.'
         : undefined;
 
+  const Container = onPress ? Pressable : View;
+  const containerProps = onPress
+    ? ({
+        accessibilityLabel: summary,
+        accessibilityRole: 'button',
+        onPress,
+      } as const)
+    : {};
+
   return (
-    <View
+    <Container
+      {...containerProps}
       style={[
         styles.card,
         { backgroundColor: color.background.surface, borderColor: color.border.subtle },
@@ -128,7 +142,7 @@ export function IntentCard({
           unavailableReason={blockedReason}
         />
       ) : null}
-    </View>
+    </Container>
   );
 }
 

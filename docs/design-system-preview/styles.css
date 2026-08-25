@@ -385,10 +385,14 @@ dd,
 }
 
 .on-chip--success,
-.trust-badge,
 .verification-badge {
   background: var(--background-success);
   color: var(--action-primary);
+}
+
+.trust-badge {
+  background: var(--background-muted);
+  color: var(--text-primary);
 }
 
 .type-panel {

@@ -17,10 +17,11 @@ type TrustBadgeProps = {
 /**
  * Trust context for a broadcaster, standardised by DESIGN.md as
  * `Trust 812 · High trust`. It is not a popularity badge and must never be
- * read as a guarantee of safety.
+ * read as a guarantee of safety, so it sits on the muted neutral surface —
+ * the success tint stays reserved for confirmations.
  */
 export function TrustBadge({ score, band, verifiedSignal }: TrustBadgeProps) {
-  const accent = accentFor(useAppearance(), 'success');
+  const accent = accentFor(useAppearance(), 'neutral');
   const display = formatTrustDisplay({ score, band });
 
   return (

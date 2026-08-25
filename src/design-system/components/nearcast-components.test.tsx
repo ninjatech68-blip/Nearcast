@@ -131,6 +131,18 @@ describe('ReachOptionCard', () => {
 });
 
 describe('IntentCard', () => {
+  it('opens intent detail from the whole card', async () => {
+    const onPress = jest.fn();
+    const user = userEvent.setup();
+
+    const view = await render(<IntentCard {...intent} onPress={onPress} />);
+
+    await user.press(view.getByRole('button', { name: 'Two people for badminton tonight' }));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+
   it('renders the approved anatomy', async () => {
     const view = await render(<IntentCard {...intent} />);
 
