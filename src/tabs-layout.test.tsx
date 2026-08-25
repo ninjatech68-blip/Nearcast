@@ -38,8 +38,9 @@ describe('TabsLayout', () => {
     expect(view.getByTestId('native-tabs')).toBeTruthy();
     expect(tabScreens).toEqual([
       { name: 'index', title: 'For You' },
-      { name: 'broadcast', title: 'Broadcast' },
       { name: 'activity', title: 'Activity' },
+      { name: 'broadcast', title: 'Broadcast' },
+      { name: 'messages', title: 'Messages' },
       { name: 'you', title: 'You' },
     ]);
   });

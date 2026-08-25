@@ -1,59 +1,39 @@
-import { type Href, router } from 'expo-router';
+import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
-
-const createIntentRoute = '/create' as Href;
-
-const feedPrinciples = [
-  ['Why you see it', "Every intent will show Why you're seeing this before you respond."],
-  ['Finite feed', 'Active intents appear here when they are relevant, then the list ends.'],
-  ['Private context', 'Origin circles, exact places, and contact details stay hidden until permission changes.'],
-] as const;
+import { featuredIntent, secondIntent } from '@/features/native-demo/nearcast-fixtures';
+import { Group, IconLine, IntentCard, ScreenTitle, Section } from '@/features/native-demo/native-ui';
 
 export default function HomeScreen() {
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text accessibilityRole="header" style={styles.largeTitle}>For You</Text>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Around you</Text>
-          <View style={styles.group}>
-            <View style={styles.emptyRow}>
-              <View style={styles.signalMark}>
-                <View style={styles.signalDot} />
-              </View>
-              <View style={styles.emptyCopy}>
-                <Text style={styles.emptyTitle}>Nothing relevant is active right now. Adjust your preferences or broadcast an intent.</Text>
-                <Text style={styles.emptyBody}>Nearcast will stay quiet until there is a real need, offer, or plan worth showing.</Text>
-              </View>
-            </View>
-            <View style={styles.groupDivider} />
-            <View style={styles.actionRow}>
-              <Button label="Broadcast an intent" onPress={() => router.push(createIntentRoute)} />
-            </View>
-          </View>
+        <View style={styles.titleRow}>
+          <ScreenTitle>For You</ScreenTitle>
+          <Text style={styles.filterIcon}>...</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>How this feed works</Text>
-          <View style={styles.group}>
-            {feedPrinciples.map(([title, body], index) => (
-              <View key={title}>
-                <View style={styles.infoRow}>
-                  <View style={styles.infoCopy}>
-                    <Text style={styles.infoTitle}>{title}</Text>
-                    <Text style={styles.infoBody}>{body}</Text>
-                  </View>
-                </View>
-                {index < feedPrinciples.length - 1 ? <View style={styles.groupDivider} /> : null}
-              </View>
-            ))}
-          </View>
+        <View style={styles.filterRow}>
+          <View style={styles.filterPill}><Text style={styles.filterText}>Nearby</Text></View>
+          <View style={styles.filterPill}><Text style={styles.filterText}>All intents</Text></View>
         </View>
+
+        <Section title="Around you">
+          <View style={styles.cardStack}>
+            <IntentCard intent={featuredIntent} onOpen={() => router.push('/intent/badminton-tonight')} />
+            <IntentCard intent={secondIntent} onOpen={() => router.push('/intent/walk-and-talk')} />
+          </View>
+        </Section>
+
+        <Section>
+          <Group compact>
+            <View style={styles.privacyRow}>
+              <IconLine fallback="P" icon="lock" text="Private by design. Origins, exact places, and contact details stay hidden until permission changes." />
+            </View>
+          </Group>
+        </Section>
       </ScrollView>
     </SafeAreaView>
   );
@@ -62,20 +42,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
-  largeTitle: { fontFamily: 'Manrope_700Bold', fontSize: 34, lineHeight: 41, color: tokens.semantic.color.textPrimary },
-  section: { marginTop: 24 },
-  sectionTitle: { marginBottom: 8, paddingHorizontal: 2, fontFamily: 'Manrope_600SemiBold', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.textMuted },
-  group: { overflow: 'hidden', borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 14, backgroundColor: tokens.semantic.color.backgroundSurface },
-  emptyRow: { flexDirection: 'row', gap: 14, padding: 16, minHeight: 112 },
-  signalMark: { width: 44, height: 44, borderRadius: 22, backgroundColor: tokens.semantic.color.trustSurface, alignItems: 'center', justifyContent: 'center' },
-  signalDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: tokens.semantic.color.actionPrimary },
-  emptyCopy: { flex: 1 },
-  emptyTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 17, lineHeight: 23, color: tokens.semantic.color.textPrimary },
-  emptyBody: { marginTop: 6, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textSecondary },
-  actionRow: { padding: 12 },
-  infoRow: { minHeight: 68, justifyContent: 'center', paddingHorizontal: 16, paddingVertical: 12 },
-  infoCopy: { flex: 1 },
-  infoTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 16, lineHeight: 22, color: tokens.semantic.color.textPrimary },
-  infoBody: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textSecondary },
-  groupDivider: { height: 1, marginLeft: 16, backgroundColor: tokens.semantic.color.borderDefault },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  filterIcon: { fontFamily: 'Manrope_700Bold', fontSize: 20, color: tokens.semantic.color.textSecondary },
+  filterRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
+  filterPill: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSurface },
+  filterText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
+  cardStack: { gap: 12 },
+  privacyRow: { paddingHorizontal: 16, paddingBottom: 14 },
 });

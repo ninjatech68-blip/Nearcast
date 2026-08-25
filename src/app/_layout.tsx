@@ -54,6 +54,9 @@ export default function RootLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="create" options={{ title: 'New intent', presentation: 'modal' }} />
       <Stack.Screen name="preview" options={{ title: 'Review intent' }} />
+      <Stack.Screen name="intent/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="profile/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="request/[id]" options={{ headerShown: false, presentation: 'modal' }} />
     </Stack>
   );
 }

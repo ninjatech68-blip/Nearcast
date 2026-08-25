@@ -7,9 +7,10 @@ import { tokens } from '@/design-system/tokens';
 type TabIconName = Parameters<typeof SymbolView>[0]['name'];
 
 const tabIconByRoute: Record<string, TabIconName> = {
-  activity: 'bubble.left.and.bubble.right',
+  activity: 'bell',
   broadcast: 'plus.circle.fill',
-  index: 'sparkles',
+  index: 'house.fill',
+  messages: 'message',
   you: 'person.crop.circle',
 };
 
@@ -17,6 +18,7 @@ const fallbackByRoute: Record<string, string> = {
   activity: 'A',
   broadcast: '+',
   index: 'FY',
+  messages: 'M',
   you: 'Y',
 };
 
@@ -42,8 +44,9 @@ export default function TabsLayout() {
         ),
       })}>
       <Tabs.Screen name="index" options={{ title: 'For You' }} />
-      <Tabs.Screen name="broadcast" options={{ title: 'Broadcast' }} />
       <Tabs.Screen name="activity" options={{ title: 'Activity' }} />
+      <Tabs.Screen name="broadcast" options={{ title: 'Broadcast' }} />
+      <Tabs.Screen name="messages" options={{ title: 'Messages' }} />
       <Tabs.Screen name="you" options={{ title: 'You' }} />
     </Tabs>
   );

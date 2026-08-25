@@ -8,8 +8,8 @@ import { IntentPrimitive } from '@/features/intents/domain/intent';
 
 const primitives: { value: IntentPrimitive; label: string }[] = [
   { value: 'request', label: 'I need' },
-  { value: 'offer', label: 'I can offer' },
-  { value: 'plan', label: "I'm planning" },
+  { value: 'offer', label: 'I offer' },
+  { value: 'plan', label: 'I want to' },
 ];
 
 export default function CreateIntentScreen() {
@@ -27,7 +27,8 @@ export default function CreateIntentScreen() {
       <TouchableWithoutFeedback accessible={false} onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
           <View style={styles.content}>
-            <Text style={styles.eyebrow}>WHAT IS YOUR INTENT?</Text>
+            <Text accessibilityRole="header" style={styles.title}>Broadcast</Text>
+            <Text style={styles.prompt}>What do you need, offer, or want to do?</Text>
             <View style={styles.chips}>
               {primitives.map((item) => {
                 const selected = primitive === item.value;
@@ -44,7 +45,7 @@ export default function CreateIntentScreen() {
               multiline
               maxLength={500}
               onChangeText={setStatement}
-              placeholder="For example: Looking for two people to help sort donated books tomorrow morning."
+              placeholder="Share a clear and specific intent..."
               placeholderTextColor={tokens.semantic.color.textMuted}
               style={styles.composer}
               textAlignVertical="top"
@@ -52,8 +53,8 @@ export default function CreateIntentScreen() {
             />
             <Text style={styles.counter}>{statement.length}/500</Text>
             <View style={styles.privacyNote}>
-              <Text style={styles.privacyTitle}>Starts private</Text>
-              <Text style={styles.privacyBody}>This is only a draft. You will review reach, expiry, and what others can see before publishing.</Text>
+              <Text style={styles.privacyTitle}>You choose who can see this.</Text>
+              <Text style={styles.privacyBody}>Contact details stay hidden. You will review reach and expiry before publishing.</Text>
             </View>
           </View>
           <View style={styles.footer}><Button label="Review intent" onPress={reviewDraft} disabled={trimmed.length === 0} /></View>
@@ -67,16 +68,17 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
   scrollContent: { flexGrow: 1 },
   content: { flex: 1, padding: 20 },
-  eyebrow: { fontFamily: 'Manrope_700Bold', fontSize: 12, letterSpacing: 1.2, color: tokens.semantic.color.textMuted },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
-  chip: { minHeight: 48, paddingHorizontal: 14, borderRadius: 24, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.backgroundSurface },
+  title: { fontFamily: 'Manrope_700Bold', fontSize: 17, lineHeight: 23, textAlign: 'center', color: tokens.semantic.color.textPrimary },
+  prompt: { marginTop: 34, fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
+  chips: { flexDirection: 'row', gap: 0, marginTop: 18, overflow: 'hidden', borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSurface },
+  chip: { flex: 1, minHeight: 42, paddingHorizontal: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.backgroundSurface },
   chipSelected: { borderColor: tokens.semantic.color.actionPrimary, backgroundColor: tokens.semantic.color.trustSurface },
-  chipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 14, color: tokens.semantic.color.textSecondary },
+  chipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
   chipTextSelected: { color: tokens.semantic.color.trustText },
-  composer: { minHeight: 180, marginTop: 24, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, fontFamily: 'Manrope_400Regular', fontSize: 18, lineHeight: 27, color: tokens.semantic.color.textPrimary },
+  composer: { minHeight: 180, marginTop: 18, padding: 16, borderRadius: 14, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, fontFamily: 'Manrope_400Regular', fontSize: 17, lineHeight: 25, color: tokens.semantic.color.textPrimary },
   counter: { marginTop: 6, textAlign: 'right', fontFamily: 'Manrope_400Regular', fontSize: 12, color: tokens.semantic.color.textMuted },
-  privacyNote: { marginTop: 24, padding: 16, borderRadius: 16, backgroundColor: tokens.semantic.color.infoSurface },
-  privacyTitle: { fontFamily: 'Manrope_600SemiBold', color: tokens.semantic.color.infoText },
-  privacyBody: { marginTop: 4, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.infoText },
+  privacyNote: { marginTop: 22, padding: 16, borderRadius: 14, backgroundColor: tokens.semantic.color.trustSurface },
+  privacyTitle: { fontFamily: 'Manrope_600SemiBold', color: tokens.semantic.color.trustText },
+  privacyBody: { marginTop: 4, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.trustText },
   footer: { marginTop: 'auto', padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
 });

@@ -1,27 +1,39 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { tokens } from '@/design-system/tokens';
+import { Group, IconLine, ScreenTitle, Section } from '@/features/native-demo/native-ui';
 
 export default function YouScreen() {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.content}>
-        <Text accessibilityRole="header" style={styles.largeTitle}>You</Text>
-        <View style={styles.group}>
-          <Text style={styles.title}>Profile is not set up yet</Text>
-          <Text style={styles.body}>Your profile, preferences, privacy controls, and safety settings will appear here as we build the account flow.</Text>
-        </View>
-      </View>
+    <SafeAreaView edges={['top']} style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <ScreenTitle>You</ScreenTitle>
+
+        <Section>
+          <Group>
+            <View style={styles.profileRow}>
+              <View style={styles.avatar}><Text style={styles.avatarText}>PS</Text></View>
+              <View style={styles.copy}>
+                <Text style={styles.name}>Your profile</Text>
+                <Text style={styles.meta}>Private alpha</Text>
+                <IconLine fallback="P" icon="lock" text="Privacy controls and preferences will appear here as account setup is built." />
+              </View>
+            </View>
+          </Group>
+        </Section>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  content: { paddingHorizontal: 20, paddingTop: 12 },
-  largeTitle: { fontFamily: 'Manrope_700Bold', fontSize: 34, lineHeight: 41, color: tokens.semantic.color.textPrimary },
-  group: { marginTop: 24, padding: 16, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 14, backgroundColor: tokens.semantic.color.backgroundSurface },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 17, lineHeight: 23, color: tokens.semantic.color.textPrimary },
-  body: { marginTop: 6, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textSecondary },
+  content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
+  profileRow: { flexDirection: 'row', gap: 16, padding: 16 },
+  avatar: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.trustSurface },
+  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 24, color: tokens.semantic.color.trustText },
+  copy: { flex: 1 },
+  name: { fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28, color: tokens.semantic.color.textPrimary },
+  meta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
 });

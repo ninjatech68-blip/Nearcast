@@ -27,16 +27,16 @@ describe('HomeScreen', () => {
 
     expect(view.getByText('For You')).toBeTruthy();
     expect(view.getByText('Around you')).toBeTruthy();
-    expect(view.getByText('Nothing relevant is active right now. Adjust your preferences or broadcast an intent.')).toBeTruthy();
-    expect(view.getByText("Every intent will show Why you're seeing this before you respond.")).toBeTruthy();
+    expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
+    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
   });
 
-  it('opens the composer from the in-feed broadcast action', async () => {
+  it('opens intent detail from the primary feed card', async () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Broadcast an intent' }));
+    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
 
-    expect(mockPush).toHaveBeenCalledWith('/create');
+    expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
   });
 });
