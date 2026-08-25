@@ -8,6 +8,7 @@
     "scheme": "nearcast",
     "userInterfaceStyle": "light",
     "ios": {
+      "bundleIdentifier": "com.piyushsharma.nearcast.dev",
       "icon": "./assets/expo.icon"
     },
     "android": {
