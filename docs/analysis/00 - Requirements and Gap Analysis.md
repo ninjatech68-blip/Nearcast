@@ -373,4 +373,5 @@ Decisions 2 and 4 had no single recommendation in the original analysis and were
 | 2026-08-26 | `update-intent` built with material-edit history, satisfying MUST-017 and taking the server boundary to 15 of 16 |
 | 2026-08-26 | Offline draft persistence delivered, satisfying MUST-015 |
 | 2026-08-26 | Server half of account deletion and the two scheduled maintenance jobs delivered; `process-notifications` is the only contract function with no implementation |
+| 2026-08-26 | MUST-074 moderation queue delivered at the database layer, with the report states aligned to Doc 04 |
 | 2026-08-26 | MUST-075 prohibited content, MUST-076 minors gate and MUST-077 rate-limit coverage delivered; of the seven not-started requirements, four remain (push delivery, moderation queue operation, analytics emission, universal links) |
