@@ -10,7 +10,7 @@
 
 ## How To Use This Document
 
-Every item below has a matching GitHub issue. The issue carries the executable detail; this document carries the reasoning and the ordering. Work the issues in the sequence in section 5 — several later items are unsafe or wasteful before their prerequisites land.
+Every item below has a matching GitHub issue. The issue carries the executable detail; this document carries the reasoning and the ordering. **Execution now starts from the [Codex Execution Runbook](./02%20-%20Codex%20Execution%20Runbook.md)** (mirrored in GitHub issue 17), which sequences the currently actionable steps with exact expected outputs.
 
 Two rules apply to every `codex` item, from `AGENTS.md` and Doc 14:
 
@@ -205,3 +205,4 @@ Doc 14's Definition of Done applies unchanged. In practice, for each issue:
 |---|---|
 | 2026-08-25 | Created the Codex handoff, splitting outstanding work into environment-blocked, unbuilt scope, and human-led, with a suggested order and matching GitHub issues |
 | 2026-08-25 | Added the bypass register: development sign-in, configurable share base, and local-stack testing keep development active while human items stay a monitoring track |
+| 2026-08-25 | Pointed execution at the new runbook, which sequences the actionable steps with exact expected outputs |

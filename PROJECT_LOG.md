@@ -113,3 +113,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Delivered Realtime channels, the resolution and outcome flow, and the allowlisted analytics module |
 | 2026-08-25 | Delivered the database half of account deletion, the first retention jobs, and the in-product deletion flow |
 | 2026-08-25 | Widened CI to enforce type-drift and database lint on the real Supabase stack |
+| 2026-08-25 | Added the Codex execution runbook (`docs/analysis/02`) and opened it as GitHub issue 17, the single entry point for local execution |

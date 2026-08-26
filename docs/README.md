@@ -23,7 +23,7 @@ Read these documents first, in this order:
 - Trust and safety: Trust Privacy and Safety, Permissions and Access Rules, Community Policy Outline.
 - Engineering: System Architecture, API Contracts, Implementation Guide, implementation plans.
 - Operations: Metrics and Analytics Plan, Quality and Testing Plan, Release and Operations Plan.
-- Derived analysis (non-governing): [Requirements and Gap Analysis](./analysis/00%20-%20Requirements%20and%20Gap%20Analysis.md), which measures the approved requirements against the current repository, and [Codex Handoff and Human Actions](./analysis/01%20-%20Codex%20Handoff%20and%20Human%20Actions.md), which records outstanding work split into agent-executable and human-led, each tracked as a GitHub issue.
+- Derived analysis (non-governing): [Requirements and Gap Analysis](./analysis/00%20-%20Requirements%20and%20Gap%20Analysis.md), which measures the approved requirements against the current repository, [Codex Handoff and Human Actions](./analysis/01%20-%20Codex%20Handoff%20and%20Human%20Actions.md), which records outstanding work split into agent-executable and human-led, and the [Codex Execution Runbook](./analysis/02%20-%20Codex%20Execution%20Runbook.md), the ordered step-by-step instructions mirrored in GitHub issue 17.
 
 ## Naming Rule
 
@@ -36,3 +36,4 @@ Document names should be readable by a non-technical stakeholder. Prefer names l
 | 2026-08-24 | Added a human-readable documentation map for the packaged Nearcast project |
 | 2026-08-25 | Added the derived requirements and gap analysis to the documentation map |
 | 2026-08-25 | Added the Codex handoff and human actions plan to the documentation map |
+| 2026-08-25 | Added the Codex execution runbook to the documentation map |
