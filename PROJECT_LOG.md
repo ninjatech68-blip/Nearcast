@@ -78,6 +78,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Retention jobs | Passed | `apply_retention_policy` deletes messages 90 days after a room closes and clears exact location and contact fields 30 days after an intent closes; remaining Doc 04 rows join as their windows become reachable |
 | 2026-08-25 | Full verification | Passed | `npm run verify` fully clean (8 Vitest files, 35 Jest assertions including the two-step deletion flow, iOS export); clean-database run green at 152 of 152 across five suites |
 | 2026-08-25 | CI gates widened | Added | The Verify database job now also runs `supabase db lint` and regenerates `database.types.ts` on the real stack, failing on any drift — turning the two open real-stack verification items into pull-request gates |
+| 2026-08-26 | Codex runbook Step 1 baseline | Blocked on Docker | In `codex/issue-17-runbook`, `npm ci` completed and `npm run verify` passed (8 Vitest files, 35 Jest assertions, iOS export). `npm run db:start` hung for more than 2 minutes; `docker ps`, `npx supabase status`, and `docker info` also hung at the Docker server response even after restarting Docker Desktop, so real-stack database reset/test/lint/types could not run. Filed #18 with the exact blocker output. |
 
 ## Governance Rules
 
@@ -114,3 +115,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Delivered the database half of account deletion, the first retention jobs, and the in-product deletion flow |
 | 2026-08-25 | Widened CI to enforce type-drift and database lint on the real Supabase stack |
 | 2026-08-25 | Added the Codex execution runbook (`docs/analysis/02`) and opened it as GitHub issue 17, the single entry point for local execution |
+| 2026-08-26 | Recorded the Codex runbook Step 1 baseline attempt and Docker daemon blocker |
