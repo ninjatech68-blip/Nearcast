@@ -9,7 +9,7 @@
 - **Audience:** Codex, running on a machine with Docker, simulators, and the toolchain already recorded in `PROJECT_LOG.md`.
 - **Mirror:** This runbook is mirrored in a GitHub issue so it can be read without a checkout. The repository copy is authoritative.
 
-## Standing Rules — read before step 1
+## Standing Rules — read before anything else
 
 1. `AGENTS.md` binds every step: test-first, no fabricated users or activity, no numeric trust score, reach never expands without informed action, exact location and contact details never in discoverable rows or payloads.
 2. Work on `claude/repo-overview-vxx5d3` (or a branch cut from it). Never push to `main`. Do not open a pull request unless the founder asks.
@@ -17,6 +17,48 @@
 4. A failing check is a finding, not an obstacle: fix it if it is small and in scope, otherwise file it as a GitHub issue with the exact output. Never adjust a test to make it pass; never skip, disable, or quarantine one.
 5. Do not touch the human-led items (issues #12, #13, #14) or the deferred token/dark-mode remainder (#11). The bypass register in issue #16 says what covers each pending human item.
 6. If a GitHub issue update returns `403`, that is the known permission gap H-10, not a failure of the step. Record the result in `PROJECT_LOG.md` in the same commit as the work and continue; the issue is updated from the Claude session afterwards.
+
+## Round 2 — start here (2026-08-26)
+
+Step 1 is complete and merged. Two further pieces of work landed after it, and **neither has ever run on real Supabase or on a device**. Do these in order; the numbered steps below are unchanged and still authoritative for the detail.
+
+**Pull first:** `git checkout claude/repo-overview-vxx5d3 && git pull`. Head is `53048e7` or later; version `0.7.0`.
+
+### R-1. Re-run the four baseline checks (highest priority)
+
+The baseline table below has moved: **182 pgTAP assertions across six suites**, and 65 Jest tests. Two specific risks are new, and the checks exist to catch them:
+
+- **`database.types.ts` was hand-edited again.** The `update_intent` entry was written by hand in the same file the generator owns, because this environment still cannot run `supabase gen types`. If `npm run db:types` produces a diff, **the hand-written entry is the defect** — commit the generated file and fix whatever the compiler then flags in `src/features/intents/data/intent-queries.ts`. This is the single most likely thing to be wrong in the branch.
+- **A new migration and a new policy.** `supabase/migrations/20260826120000_nearcast_intent_edits.sql` adds `public.update_intent` and the `events_read_material_edits` policy. Run `supabase db lint` over it specifically — the last migration's only real finding was a lint warning the substitute harness could not see.
+
+**Done when:** all four checks green on the real stack, results in `PROJECT_LOG.md`. If the type gate fires, fix and push before starting R-2.
+
+### R-2. Device smoke — now covering two paths that have never executed
+
+Run **Step 2** below in full. It has been extended, and two of its checks exercise code that has never run outside a test:
+
+1. **The local draft store** (`src/features/intents/data/draft-store.ts`) has never touched a real SQLite database. Every unit test ran against a fake. On device:
+   - Type a few words in the composer, force-quit the app, reopen it. The words must come back with "Restored from this device."
+   - Change the reach on the review screen, go back, return. The reach choice must survive.
+   - Publish successfully, then reopen the composer. It must be **empty** — the draft is cleared on publish.
+   - Delete a throwaway account with an unfinished draft, sign in as someone else, open the composer. It must be **empty**.
+   - If `openDatabaseSync` fails on either platform, the app must still compose and publish normally — every storage call is wrapped, and a broken database must degrade to "no draft", never to a crash. Verify this rather than assuming it.
+2. **The offline publish path.** Kill the network mid-publish. Expected: no navigation, no success claim, and exactly this copy — "Your draft is saved on this device. It will not be published until you are online." Then restore the network and press publish again: **exactly one intent must exist**, because the retry reuses the same idempotency key. Check the row count, not just the screen.
+3. **The owner edit screen** (`edit/[intentId]`, reachable from intent detail while the intent is draft or live) has never rendered. Walk it: edit the price on an intent that has a pending response, confirm the respondent's detail screen then shows "The price changed after you responded.", and confirm an account with no relationship to the intent sees no history block at all.
+
+**File findings as issues. Do not fix them silently.**
+
+### R-3. Then continue with Step 3 and Step 4
+
+Unchanged. Step 3 (Edge half of account deletion plus `pg_cron`) is the next real build; Step 4 (Maestro) follows. The Maestro flow list in #9 should gain two cases from R-2: draft survives a restart, and an offline publish does not duplicate.
+
+### What is deliberately *not* yours right now
+
+- The structured composer fields (start time, deadline, quantity, requirements). The columns and `update_intent` accept them; the composer does not collect them yet. Leave it — it is queued behind the device pass.
+- `process-notifications`. It is the last unbuilt function in the Doc 16 boundary and needs push tokens from a physical device, so it belongs after R-2.
+- Anything in the blocked queue in Step 5.
+
+---
 
 ## What is needed, exactly
 
@@ -59,7 +101,7 @@ These same checks run in CI on every pull request; running them locally first ke
 
 ## Step 1 — Real-stack verification (issues #1, #2)
 
-Run the four baseline checks above on the real Supabase stack. This is the first time the migrations, RLS policies, and 152 assertions execute on genuine Supabase rather than the substitute PostgreSQL harness, so treat any divergence as a real finding.
+Run the four baseline checks above on the real Supabase stack. This was the first time the migrations, RLS policies, and the pgTAP suites executed on genuine Supabase rather than the substitute PostgreSQL harness, so any divergence is a real finding. **R-1 above repeats this for the work that landed after it.**
 
 **Watch specifically for** (the harness could have hidden these):
 
@@ -123,3 +165,4 @@ Author under `.maestro/`, run against the local stack with the dev sign-in. Cove
 | 2026-08-26 | Marked step 1 complete after the real-stack run, recorded its two findings, and pointed execution at step 2 |
 | 2026-08-26 | Added the standing rule for the H-10 issue-write gap so a `403` never stalls a step |
 | 2026-08-26 | Refreshed the baseline table for the material-edit and offline-draft work: 182 pgTAP assertions across six suites, 65 Jest tests |
+| 2026-08-26 | Added the round 2 instruction set: re-verify the hand-edited types and the new migration, then smoke the draft store, the offline publish path, and the owner edit screen on device |
