@@ -1,62 +1,98 @@
-# Nearcast Codex Execution Runbook
+# Nearcast Codex Blocker Runbook
 
 ## Document Control
 
 - **Status:** Derived execution instructions. **Not a governing document.**
 - **Precedence:** Below implementation plans. `AGENTS.md` and the documents it names govern every step here; where this runbook and a governing document disagree, the governing document wins.
-- **Created:** 2026-08-25
-- **Baseline commit:** `4aa78a8` on `claude/repo-overview-vxx5d3`, moved forward on 2026-08-26 after step 1 merged and the material-edit work landed. Always pull the branch head; the baseline table below is kept current.
-- **Audience:** Codex, running on a machine with Docker, simulators, and the toolchain already recorded in `PROJECT_LOG.md`.
-- **Mirror:** This runbook is mirrored in a GitHub issue so it can be read without a checkout. The repository copy is authoritative.
+- **Created:** 2026-08-25. **Rescoped 2026-08-26** from a development runbook to a blocker runbook.
+- **Audience:** Codex, running on a machine with Docker, simulators, and the toolchain recorded in `PROJECT_LOG.md`.
+- **Mirror:** Mirrored in GitHub issue 17 so it can be read without a checkout. The repository copy is authoritative.
 
-## Standing Rules — read before anything else
+## Ownership — read this first
+
+**Claude owns regular development. Codex clears blockers only.** Founder direction, 2026-08-26, recorded in the Doc 00 decision log.
+
+A blocker is work that cannot be done in Claude's sandbox at all:
+
+| Blocker class | Why Claude cannot do it | Typical request |
+|---|---|---|
+| Real Supabase stack | The sandbox blocks the Docker image registry | Run the real-stack baseline; regenerate `database.types.ts` |
+| Device and simulator | No simulator, emulator, or physical device | Device smoke; anything about layout, keyboards, Realtime delivery, or native storage |
+| Signing and store tooling | No signing identity | Development or preview builds, once the founder delivers the credentials |
+
+Everything else — features, schema design, tests, documentation, refactors, CI configuration — is Claude's, including work that a blocker later verifies. **Codex does not pick up feature work, does not extend scope beyond the request it was given, and does not refactor code it was asked to verify.**
+
+Two consequences worth stating plainly:
+
+1. **A failing check is a finding to report, not a task to take on.** Fix it only if the fix is inside the request and smaller than reporting it — a typo, an obviously wrong constant. Anything else: file a GitHub issue with the exact output and stop. Never adjust, skip, or quarantine a test to get green.
+2. **Do not develop on top of a blocker fix.** Clear the blocker, record the result, hand it back.
+
+## Standing rules
 
 1. `AGENTS.md` binds every step: test-first, no fabricated users or activity, no numeric trust score, reach never expands without informed action, exact location and contact details never in discoverable rows or payloads.
-2. Work on `claude/repo-overview-vxx5d3` (or a branch cut from it). Never push to `main`. Do not open a pull request unless the founder asks.
+2. Work on `claude/repo-overview-vxx5d3` or a branch cut from it. Never push to `main`. Do not open a pull request unless the founder asks.
 3. Record every verification result in `PROJECT_LOG.md` — pass or fail — in the same commit as the work.
-4. A failing check is a finding, not an obstacle: fix it if it is small and in scope, otherwise file it as a GitHub issue with the exact output. Never adjust a test to make it pass; never skip, disable, or quarantine one.
-5. Do not touch the human-led items (issues #12, #13, #14) or the deferred token/dark-mode remainder (#11). The bypass register in issue #16 says what covers each pending human item.
-6. If a GitHub issue update returns `403`, that is the known permission gap H-10, not a failure of the step. Record the result in `PROJECT_LOG.md` in the same commit as the work and continue; the issue is updated from the Claude session afterwards.
+4. A `403` on a GitHub issue update is the known permission gap H-10, not a failure. Record it in `PROJECT_LOG.md` and continue; the issue is updated from the Claude session afterwards.
+5. Do not touch the human-led items (issues #12, #13, #14) or the deferred dark-appearance work (#11).
+6. Leave the working tree clean. `expo prebuild` writes to `app.json` and `package.json`; both now declare everything prebuild needs, so a prebuild against a clean tree is a no-op. If either file still comes back modified, that is a finding — report it, do not commit it.
 
-## Round 2 — start here (2026-08-26)
+## Open blocker queue
 
-Step 1 is complete and merged. Two further pieces of work landed after it, and **neither has ever run on real Supabase or on a device**. Do these in order; the numbered steps below are unchanged and still authoritative for the detail.
+Work these in order. Nothing else is yours right now.
 
-**Pull first:** `git checkout claude/repo-overview-vxx5d3 && git pull`. Head is `53048e7` or later; version `0.7.0`.
+### B-1. Device smoke of the full loop (issue #4) — **the only open blocker**
 
-### R-1. Re-run the four baseline checks (highest priority)
+Everything else in the product is verified by CI or by the substitute harness. This is not, and three paths in it have never executed outside a test.
 
-The baseline table below has moved: **182 pgTAP assertions across six suites**, and 65 Jest tests. Two specific risks are new, and the checks exist to catch them:
+**Setup:** `npm run db:start && npm run db:reset`, `.env` filled from the printed URL and publishable key, `npm run start`. iOS Simulator and the `Nearcast_API_36` AVD side by side; use the `adb reverse` Metro tunnel recorded in `PROJECT_LOG.md` for Android.
 
-- **`database.types.ts` was hand-edited again.** The `update_intent` entry was written by hand in the same file the generator owns, because this environment still cannot run `supabase gen types`. If `npm run db:types` produces a diff, **the hand-written entry is the defect** — commit the generated file and fix whatever the compiler then flags in `src/features/intents/data/intent-queries.ts`. This is the single most likely thing to be wrong in the branch.
-- **A new migration and a new policy.** `supabase/migrations/20260826120000_nearcast_intent_edits.sql` adds `public.update_intent` and the `events_read_material_edits` policy. Run `supabase db lint` over it specifically — the last migration's only real finding was a lint warning the substitute harness could not see.
+**1. The two-persona loop.**
 
-**Done when:** all four checks green on the real stack, results in `PROJECT_LOG.md`. If the type gate fires, fix and push before starting R-2.
+- Device A: development sign-in as `asha@nearcast.local` (password `nearcast-local`). Compose, review, pick `adjacent_network`, publish.
+- Device B: development sign-in as `dev@nearcast.local`. Dev confirmed Asha's seeded intent, so a trust connection exists — the intent must appear in For You **with its delivery reason**. Open detail, respond.
+- Device A: Activity → inbox → accept. Release the exact address. Send a message.
+- **Realtime, the one thing CI cannot verify:** with both rooms open, a message from A must appear on B **without pulling to refresh**. If it only arrives on the 30-second poll, the publication or the channel is broken — file it with logs.
+- Device A: resolve through Nearcast. Device B: confirm the interaction happened. Asha's profile must then read `1 of 1 confirmed interactions were completed`.
 
-### R-2. Device smoke — now covering two paths that have never executed
+**2. The local draft store** — `src/features/intents/data/draft-store.ts` has never touched a real SQLite database.
 
-Run **Step 2** below in full. It has been extended, and two of its checks exercise code that has never run outside a test:
+- Type a few words, force-quit, reopen. The words must return, with "Restored from this device."
+- Change the reach on review, go back, return. The choice must survive.
+- Publish successfully, reopen the composer. It must be empty.
+- Delete a throwaway account that has an unfinished draft, sign in as someone else, open the composer. It must be empty.
+- If `openDatabaseSync` fails on either platform, the app must still compose and publish. Every storage call is wrapped so a broken database degrades to "no draft" rather than a crash — **verify that, do not assume it**.
 
-1. **The local draft store** (`src/features/intents/data/draft-store.ts`) has never touched a real SQLite database. Every unit test ran against a fake. On device:
-   - Type a few words in the composer, force-quit the app, reopen it. The words must come back with "Restored from this device."
-   - Change the reach on the review screen, go back, return. The reach choice must survive.
-   - Publish successfully, then reopen the composer. It must be **empty** — the draft is cleared on publish.
-   - Delete a throwaway account with an unfinished draft, sign in as someone else, open the composer. It must be **empty**.
-   - If `openDatabaseSync` fails on either platform, the app must still compose and publish normally — every storage call is wrapped, and a broken database must degrade to "no draft", never to a crash. Verify this rather than assuming it.
-2. **The offline publish path.** Kill the network mid-publish. Expected: no navigation, no success claim, and exactly this copy — "Your draft is saved on this device. It will not be published until you are online." Then restore the network and press publish again: **exactly one intent must exist**, because the retry reuses the same idempotency key. Check the row count, not just the screen.
-3. **The owner edit screen** (`edit/[intentId]`, reachable from intent detail while the intent is draft or live) has never rendered. Walk it: edit the price on an intent that has a pending response, confirm the respondent's detail screen then shows "The price changed after you responded.", and confirm an account with no relationship to the intent sees no history block at all.
+**3. The offline publish path.** Kill the network mid-publish. Expected: no navigation, no success claim, and exactly this copy — "Your draft is saved on this device. It will not be published until you are online." Restore the network, publish again: **exactly one intent must exist**, because the retry reuses the same idempotency key. Check the row count in the database, not the screen.
 
-**File findings as issues. Do not fix them silently.**
+**4. The owner edit screen** (`edit/[intentId]`, from intent detail while draft or live) has never rendered.
 
-### R-3. Then continue with Step 3 and Step 4
+- Edit the price on an intent with a pending response. The screen must say how many people have responded and that they will be told.
+- The respondent's detail screen must then show "The price changed after you responded."
+- An unrelated account must see no history block at all.
+- A `matched` intent must refuse editing.
 
-Unchanged. Step 3 (Edge half of account deletion plus `pg_cron`) is the next real build; Step 4 (Maestro) follows. The Maestro flow list in #9 should gain two cases from R-2: draft survives a restart, and an offline publish does not duplicate.
+**5. The privacy warning at review.** Compose a statement containing a street address. The review screen must warn before publishing — and must still let the publish through. The words are the broadcaster's own.
 
-### What is deliberately *not* yours right now
+**6. Deliberate failure states.** A bogus `nearcast://i/<uuid>` link must say "not available" without revealing whether anything exists. Check the empty feed copy, and check that dynamic type at the largest accessibility size does not truncate privacy or safety copy.
 
-- The structured composer fields (start time, deadline, quantity, requirements). The columns and `update_intent` accept them; the composer does not collect them yet. Leave it — it is queued behind the device pass.
-- `process-notifications`. It is the last unbuilt function in the Doc 16 boundary and needs push tokens from a physical device, so it belongs after R-2.
-- Anything in the blocked queue in Step 5.
+**Known and expected, do not file:** account deletion does not revoke the session on device. The Edge half is unbuilt and is Claude's to write. The local draft still clears, and that part is in scope.
+
+**Done when:** the loop completes on both platforms, findings are filed as separate issues with screenshots on #4, and the result is recorded in `PROJECT_LOG.md`. Do not fix findings silently.
+
+### B-2. Real-stack baseline — on request only
+
+Run when Claude asks, typically after a schema change. Last run 2026-08-26: green, no drift.
+
+```bash
+npm run db:start && npm run db:reset && npm run db:test
+npx supabase db lint --level warning --schema public,private
+npm run db:types && git diff --exit-code -- src/infrastructure/supabase/database.types.ts
+npm run verify
+```
+
+`database.types.ts` is hand-maintained in Claude's sandbox because the generator needs Docker. **A diff means the hand-written entry is wrong:** commit the generated file, fix whatever the compiler then flags, and say what changed.
+
+CI now runs both jobs on every push to `claude/**` and `codex/**`, so this is a fallback for when a CI answer is not enough, not a routine step.
 
 ---
 
@@ -93,60 +129,25 @@ cp .env.example .env
 | Database suites | `npm run db:start && npm run db:reset && npm run db:test` | 182 pgTAP assertions across 6 files: foundation 9, phase1 74, journey 25, phase2 18, phase4 26, intent edits 30 |
 | Database lint | `npx supabase db lint --level warning --schema public,private` | No errors in `public` or `private` |
 | Type drift | `npm run db:types && git diff --exit-code -- src/infrastructure/supabase/database.types.ts` | Empty diff. A diff means the hand-written types were wrong: commit the regenerated file and fix any call site the compiler then flags |
-| App suite | `npm run verify` | Lint 0 problems, all Vitest and Jest suites pass (9 Vitest files with 53 tests, 14 Jest suites with 65 tests), iOS export completes |
+| App suite | `npm run verify` | Lint 0 problems, all Vitest and Jest suites pass (13 Vitest files with 93 tests, 14 Jest suites with 69 tests), iOS export completes |
 
 These same checks run in CI on every pull request; running them locally first keeps CI green.
 
 ---
 
-## Step 1 — Real-stack verification (issues #1, #2)
+## Work that is no longer Codex's
 
-Run the four baseline checks above on the real Supabase stack. This was the first time the migrations, RLS policies, and the pgTAP suites executed on genuine Supabase rather than the substitute PostgreSQL harness, so any divergence is a real finding. **R-1 above repeats this for the work that landed after it.**
+Kept for history. These were runbook steps before the 2026-08-26 rescope; they are now Claude's, and Codex should not start them.
 
-**Watch specifically for** (the harness could have hidden these):
+| Was | Now |
+|---|---|
+| Step 1 — real-stack verification (#1, #2) | Complete. Both issues closed 2026-08-26 |
+| Step 3 — Edge half of account deletion and `pg_cron` (#7) | Claude's to write; Codex may be asked to run it against the local stack |
+| Step 4 — Maestro flows (#9) | Claude's to author; Codex runs them on devices |
 
-- The `42501` grant-denial assertions on `invitations`, `idempotency_keys`, `moderation_actions`, and `notification_jobs` — they depend on Supabase's default grants not silently re-granting.
-- `security definer` functions resolving `extensions.digest` and `extensions.st_astext` under `search_path = ''`.
-- `private.is_moderator()` reading `request.jwt.claims -> app_metadata`, shaped by real Supabase Auth.
+The `auth.users` warning from the old step 3 still stands wherever deletion is touched: `profiles.id` cascades from it, so deleting the row would destroy the anonymized profile, the redactions and the suppression trail the tests guarantee. **Ban or disable, never delete.**
 
-**Done when:** all four checks green, results recorded in `PROJECT_LOG.md`, issues #1 and #2 closed with the outputs.
-
-**Status: complete (2026-08-26).** Executed on the real stack from `codex/issue-17-runbook` and merged into `claude/repo-overview-vxx5d3`. Two real findings, both fixed in that branch: a Supabase lint warning on the enum assignment in `public.close_intent` (fixed with an explicit `public.intent_status` cast) and genuine generated-type drift (fixed by committing the generator output for `database.types.ts`; no call site broke). The 152 assertions, the `42501` grant denials, the `search_path = ''` resolution of `extensions.digest`, and `private.is_moderator()` under real Supabase Auth all behaved as the substitute harness predicted. Issues #1, #2, and #18 are closed; start at step 2.
-
-## Step 2 — Device smoke of the full loop (issue #4)
-
-No screen in this branch has ever rendered on a device. Everything is testable today through the development bypasses — no OAuth credentials, no domain, no staging project needed.
-
-1. `npm run db:start && npm run db:reset`, `.env` filled, `npm run start`.
-2. iOS Simulator and the `Nearcast_API_36` AVD side by side (use the `adb reverse` Metro tunnel recorded in `PROJECT_LOG.md` for Android).
-3. **Two-persona walk:**
-   - Device A: development sign-in as `asha@nearcast.local`. Compose an intent, review, pick `adjacent_network` reach, publish.
-   - Device B: development sign-in as `dev@nearcast.local`. Dev confirmed Asha's seeded intent, so a trust connection exists — the new intent should appear in For You **with its delivery reason**. Open detail, respond.
-   - Device A: Activity → inbox → accept. Release the exact address. Send a message.
-   - **Realtime check (the one thing CI cannot verify):** with both rooms open, a message sent from A must appear on B **without pulling to refresh**. If it only arrives via the 30-second poll, the Realtime publication or channel is broken — file it with logs.
-   - Device A: resolve through Nearcast. Device B: the room shows "Did this interaction happen?" — confirm it.
-   - Device B: verify Asha's reliability line reads `1 of 1 confirmed interactions were completed` on her profile.
-4. **Deliberate failure states:** kill the network mid-publish — it must not claim success, and it must show "Your draft is saved on this device. It will not be published until you are online." Then restore the network and publish again: the same idempotency key is reused, so exactly one intent must exist. Force-quit the app mid-compose and reopen: the draft must come back with "Restored from this device"; open a bogus `nearcast://i/<uuid>` link (must say "not available" without revealing anything); check the empty feed copy; check dynamic type at a large accessibility size does not truncate privacy copy.
-5. Also walk: invitation redemption with `local-invite-2` using `mira@nearcast.local` (has a profile — expect "already a member"), sign-out, feed "Not relevant", and account deletion on a throwaway persona.
-
-**Done when:** loop completes on both platforms, findings filed as issues (do not fix silently), screenshots attached to #4, recorded in `PROJECT_LOG.md`.
-
-## Step 3 — Edge half of account deletion, and job scheduling (issue #7, B-8)
-
-The database half is built and tested (`delete_account`, `apply_retention_policy`). Add the server half:
-
-1. **`supabase/functions/delete-account/`** — verify the caller's JWT; call `delete_account('DELETE')` with a client scoped to that JWT (the function derives the actor from `auth.uid()`); then with the service role revoke all of the user's sessions and permanently disable sign-in via the Auth admin API.
-   **Critical:** do **not** delete the `auth.users` row. `profiles.id` references it `ON DELETE CASCADE`, and deleting it would destroy the anonymized profile, the redactions, and the suppression trail the tests guarantee. Ban/disable, never delete.
-2. **Scheduling** — on the local stack, `pg_cron`: `expire_intents()` every 15 minutes; `apply_retention_policy()` daily. Commit as a migration guarded on the extension's availability, same pattern as the Realtime migration.
-3. Test-first where the runtime allows; at minimum, an integration script that exercises the function against the local stack, plus pgTAP for the cron registrations.
-
-**Done when:** deletion from the You screen ends with the session actually revoked, jobs registered, `npm run db:test` still 100%, recorded and commented on #7.
-
-## Step 4 — Maestro flows (issue #9)
-
-Author under `.maestro/`, run against the local stack with the dev sign-in. Cover the ten flows listed in #9; the two-persona walk from step 2 is the template for the core loop. Wire into the release-branch job only — not every PR.
-
-## Step 5 — Blocked queue: check before starting
+## Blocked on the founder — not Codex's, and not Claude's
 
 | Item | Blocked on |
 |---|---|

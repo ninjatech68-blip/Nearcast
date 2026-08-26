@@ -148,3 +148,9 @@ export const tokens = {
 } as const;
 
 export type NearcastTokens = typeof tokens;
+
+/**
+ * One appearance's colour set. Light and dark carry identical keys, so a
+ * component typed against this works in either the day the switch lands.
+ */
+export type SemanticColors = { readonly [K in keyof typeof semantic.color]: string };

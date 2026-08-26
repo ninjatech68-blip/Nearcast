@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor, within } from '@testing-library/react-native';
 
 const mockReplace = jest.fn();
+const mockParams = { primitive: 'request', statement: 'Need a projector on Saturday' };
 jest.mock('expo-router', () => ({
   router: { replace: (...a: unknown[]) => mockReplace(...a), push: jest.fn(), back: jest.fn() },
-  useLocalSearchParams: () => ({ primitive: 'request', statement: 'Need a projector on Saturday' }),
+  useLocalSearchParams: () => mockParams,
 }));
 
 const mockPublish = jest.fn<(...a: unknown[]) => Promise<unknown>>();
@@ -33,6 +34,7 @@ describe('PreviewScreen', () => {
     mockSaveDraft.mockReset();
     mockClearDraft.mockReset();
     mockLoadDraft.mockReturnValue(null);
+    mockParams.statement = 'Need a projector on Saturday';
   });
 
   it('clears the local draft once the server confirms the intent is live', async () => {
@@ -143,5 +145,40 @@ describe('PreviewScreen', () => {
     const last = mockSaveDraft.mock.calls.at(-1)?.[0] as { reach: string };
     expect(last.reach).toBe('adjacent_network');
     expect(mockPublish).not.toHaveBeenCalled();
+  });
+
+  it('warns before publishing when the statement carries an exact address', async () => {
+    mockParams.statement = 'Drop it at 221 Baker Street any time on Saturday';
+
+    await render(<PreviewScreen />);
+
+    const warning = within(screen.getByTestId('privacy-warning'));
+    expect(warning.getByText(/looks like it includes an exact address/)).toBeTruthy();
+  });
+
+  it('warns when the statement carries contact details', async () => {
+    mockParams.statement = 'Call me on +91 99000 00000 if you can help';
+
+    await render(<PreviewScreen />);
+
+    const warning = within(screen.getByTestId('privacy-warning'));
+    expect(warning.getByText(/looks like it includes contact details/)).toBeTruthy();
+  });
+
+  it('warns without blocking, because the words are the broadcaster\'s own', async () => {
+    mockParams.statement = 'Drop it at 221 Baker Street any time on Saturday';
+    mockPublish.mockResolvedValue({ state: 'ok', intentId: 'intent-9', shareSlug: 'slug-9' });
+    const user = userEvent.setup();
+
+    await render(<PreviewScreen />);
+    await user.press(screen.getByRole('button', { name: 'Broadcast intent' }));
+
+    await waitFor(() => expect(mockPublish).toHaveBeenCalledTimes(1));
+  });
+
+  it('says nothing when the statement is already privacy-safe', async () => {
+    await render(<PreviewScreen />);
+
+    expect(screen.queryByTestId('privacy-warning')).toBeNull();
   });
 });

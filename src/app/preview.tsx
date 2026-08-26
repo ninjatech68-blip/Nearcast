@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
+import { findPrivacyViolations, type PrivacyViolation } from '@/design-system/privacy';
 import { clearDraft, loadDraft, saveDraft } from '@/features/intents/data/draft-store';
 import { INTENT_REACH_LEVELS, type IntentPrimitive, type IntentReachLevel } from '@/features/intents/domain/intent';
 import { publishIntent, PRIMITIVE_LABELS } from '@/features/intents/data/intent-queries';
@@ -30,11 +31,25 @@ const REACH_COPY: Record<IntentReachLevel, { title: string; exposes: string }> =
 
 const DEFAULT_EXPIRY_HOURS = 48;
 
+/**
+ * Said once, before publishing, and never as a block: the words are the
+ * broadcaster's own. The database and the disclosure rules are what actually
+ * keep exact location and contact details out of discoverable rows; this is
+ * the moment to point out that everyone this reaches will read the text.
+ */
+const PRIVACY_WARNINGS: Record<PrivacyViolation, string> = {
+  exactLocation:
+    'This looks like it includes an exact address. Everyone this reaches will see it — an approximate area is usually enough, and you can share the exact place with one person after you accept them.',
+  contactDetails:
+    'This looks like it includes contact details. Everyone this reaches will see them — you can share them privately once you accept someone.',
+};
+
 export default function PreviewScreen() {
   const params = useLocalSearchParams<{ primitive: string; statement: string }>();
   const primitive = (params.primitive ?? 'request') as IntentPrimitive;
   const statement = params.statement ?? '';
 
+  const privacyWarnings = findPrivacyViolations(statement);
   const [stored] = useState(() => loadDraft());
   const [reach, setReach] = useState<IntentReachLevel>(stored?.reach ?? 'origin_only');
   const [publicLink, setPublicLink] = useState(stored?.publicLinkEnabled ?? true);
@@ -118,6 +133,16 @@ export default function PreviewScreen() {
           <Text style={styles.previewNote}>This is what recipients will see.</Text>
         </View>
 
+        {privacyWarnings.length > 0 ? (
+          <View style={styles.privacyWarning} testID="privacy-warning">
+            {privacyWarnings.map((violation) => (
+              <Text key={violation} style={styles.privacyWarningBody}>
+                {PRIVACY_WARNINGS[violation]}
+              </Text>
+            ))}
+          </View>
+        ) : null}
+
         <Text style={styles.sectionTitle}>How far should this intent travel?</Text>
         {INTENT_REACH_LEVELS.map((level) => {
           const selected = reach === level;
@@ -184,6 +209,8 @@ const styles = StyleSheet.create({
   primitive: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 11, textTransform: 'uppercase' },
   statement: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 16, lineHeight: 24 },
   previewNote: { color: tokens.semantic.color.textMuted, fontFamily: 'Manrope_400Regular', fontSize: 11 },
+  privacyWarning: { padding: 14, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundWarning, gap: 6 },
+  privacyWarningBody: { color: tokens.semantic.color.onWarning, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
   sectionTitle: { marginTop: 14, color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 16 },
   reachOption: { padding: 14, borderRadius: tokens.primitive.radius.button, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface, gap: 4 },
   reachSelected: { borderColor: tokens.semantic.color.actionPrimary, backgroundColor: tokens.semantic.color.backgroundSuccess },
