@@ -2,7 +2,7 @@
   "expo": {
     "name": "Nearcast",
     "slug": "nearcast",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "nearcast",
@@ -12,6 +12,7 @@
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.piyushsharma.nearcast.dev",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
