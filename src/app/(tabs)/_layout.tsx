@@ -1,8 +1,9 @@
 import { SymbolView } from 'expo-symbols';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { tokens } from '@/design-system/tokens';
+import { useSession } from '@/features/auth/session';
 
 type TabIconName = Parameters<typeof SymbolView>[0]['name'];
 
@@ -23,6 +24,14 @@ const fallbackByRoute: Record<string, string> = {
 };
 
 export default function TabsLayout() {
+  // Cold-boot guard. Without this a signed-out user lands here — the only
+  // top-level route — and every tab renders a "sign in with your invitation"
+  // panel with no route to /sign-in. The splash screen stays visible while the
+  // persisted session is being restored so signed-in users never flash sign-in.
+  const { status } = useSession();
+  if (status === 'loading') return null;
+  if (status === 'signed-out') return <Redirect href="/sign-in" />;
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
