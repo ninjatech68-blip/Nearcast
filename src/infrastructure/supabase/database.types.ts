@@ -321,6 +321,7 @@ export type Database = {
           hidden_at: string | null
           id: string
           intent_id: string
+          rank_position: number | null
           reason_code: string
           reason_text: string
           recipient_id: string
@@ -331,6 +332,7 @@ export type Database = {
           hidden_at?: string | null
           id?: string
           intent_id: string
+          rank_position?: number | null
           reason_code: string
           reason_text: string
           recipient_id: string
@@ -341,6 +343,7 @@ export type Database = {
           hidden_at?: string | null
           id?: string
           intent_id?: string
+          rank_position?: number | null
           reason_code?: string
           reason_text?: string
           recipient_id?: string
@@ -866,18 +869,24 @@ export type Database = {
       }
       profile_private: {
         Row: {
+          adult_affirmed_at: string | null
+          approximate_geography: unknown | null
           contact_preferences: Json
           phone_e164: string | null
           profile_id: string
           updated_at: string
         }
         Insert: {
+          adult_affirmed_at?: string | null
+          approximate_geography?: unknown | null
           contact_preferences?: Json
           phone_e164?: string | null
           profile_id: string
           updated_at?: string
         }
         Update: {
+          adult_affirmed_at?: string | null
+          approximate_geography?: unknown | null
           contact_preferences?: Json
           phone_e164?: string | null
           profile_id?: string

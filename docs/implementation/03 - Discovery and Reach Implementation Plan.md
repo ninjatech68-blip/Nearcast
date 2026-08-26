@@ -12,9 +12,9 @@
 
 **Files:** new PostGIS migration, `src/features/location/`, pgTAP tests
 
-- [ ] Test distance bands and prove exact coordinates never appear in discovery responses.
-- [ ] Store approximate geography with GIST index and convert results to coarse distance labels.
-- [ ] Verify blocked, expired, restricted, and out-of-range candidates return no rows.
+- [x] Test distance bands and prove exact coordinates never appear in discovery responses.
+- [x] Store approximate geography with GIST index and convert results to coarse distance labels.
+- [x] Verify blocked, expired, restricted, and out-of-range candidates return no rows.
 
 ## Task 2: Reach Expansion
 
@@ -30,7 +30,7 @@
 
 - [x] Test every delivered row has one approved explanation code and non-empty reason.
 - [x] Apply eligibility in this order: lifecycle, reach, geography, blocks, restriction, prior action. Time and explicit-criteria filters remain open alongside the full ranking pass.
-- [ ] Rank the surviving set by trust distance, geography, timing, relevance, recency, and fatigue.
+- [x] Rank the surviving set by trust distance, geography, timing, relevance, recency, and fatigue.
 - [ ] Render a finite Home list with WhyYouSeeThis, hide, save, and not-relevant actions.
 
 ## Task 4: Measurement
@@ -51,3 +51,4 @@ Every feed card has a valid explanation, blocked users never receive each other'
 | 2026-08-24 | Created discovery and controlled reach implementation plan |
 | 2026-08-25 | Delivered `generate_deliveries` with explainable reason codes, tier-ordered selection, a 50-recipient cap per run, and 18 pgTAP assertions; trust adjacency derives from stored confirmations and completed matches per the Doc 00 decision |
 | 2026-08-25 | Outstanding in this plan: PostGIS distance bands (city match is the interim geography), full ranking signals with fatigue limits, feed hide/save/not-relevant UI, and the measurement task |
+| 2026-08-26 | Replaced the city-string interim geography with real PostGIS bands: a coarse home area on `profile_private`, `private.distance_band` returning the four Doc 05 bands, and the intent's own area taking precedence over the broadcaster's. Ranking now orders by trust tier, band, prior interaction and fatigue, and each delivery stores its `rank_position` so an ordering can be explained after the fact. Fatigue is a limit rather than a preference: past ten deliveries in a day a person is skipped, not ranked last and delivered anyway. The feed reads that stored rank. 18 pgTAP assertions, including that a delivery row carries no geography column at all and no explanation leaks a coordinate. Per-recipient signals rank recipients; expiry proximity and recency describe the intent and so order the feed instead. Outstanding: interest relevance, which needs an interest model that does not exist yet, and the measurement task |

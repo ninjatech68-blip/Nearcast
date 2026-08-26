@@ -72,7 +72,11 @@ export async function fetchFeed(limit = 25): Promise<QueryResult<FeedCard[]>> {
     .is('hidden_at', null)
     .eq('intents.status', 'live')
     .gt('intents.expires_at', new Date().toISOString())
-    .order('delivered_at', { ascending: false })
+    // Most relevant to this person first, then soonest to expire. The rank
+    // was decided when the delivery was generated and is stored with it, so
+    // the order can be explained rather than guessed at.
+    .order('rank_position', { ascending: true, nullsFirst: false })
+    .order('expires_at', { ascending: true, referencedTable: 'intents' })
     .limit(limit);
 
   if (error) return { state: 'error', message: READ_ERROR };

@@ -71,7 +71,7 @@ Functions must be idempotent and validate both authentication and current lifecy
 |---|---|
 | `invitations` | Single-use invitation tokens gating account creation during the invitation-only alpha |
 | `profiles` | Public and contextual identity separate from auth records |
-| `profile_private` | Private contact and sensitive account data |
+| `profile_private` | Private contact, sensitive account data, and the coarse home area used for geographic ranking — never returned to a client |
 | `verifications` | Verification type, state, provider reference, and expiry |
 | `devices` | Push token, platform, locale, and notification preferences |
 | `blocks` | Directional global block relationship |
@@ -179,7 +179,7 @@ Every delivery stores a privacy-safe explanation code and rendered explanation, 
 - Store discovery geography as PostGIS `geography` with precision appropriate to an area, not an address.
 - Store exact coordination geography in `intent_private` with stricter RLS.
 - Use GIST indexes for radius and boundary queries.
-- Return distance bands or rounded distance where exact distance could reveal location.
+- Return distance bands or rounded distance where exact distance could reveal location. The bands are `walking` (under 2 km), `nearby` (under 8 km), `across_town` (under 25 km) and `far`; a band is the finest geographic fact any ranking or explanation may expose.
 - Avoid sending raw coordinates to clients unless the accepted disclosure explicitly requires navigation.
 
 ## Realtime And Messaging
@@ -278,3 +278,4 @@ Evaluate a dedicated TypeScript API, specialized notification workers, feed mate
 | 2026-08-25 | Added the `idempotency_keys` entity required by the idempotency rule in the API contracts |
 | 2026-08-25 | Recorded TanStack Query as the adopted server-state layer for all data screens |
 | 2026-08-25 | Added the `account_deletions` suppression entity and the deletion model: anonymize the profile, withdraw open intents, clear exact fields, redact sent content, preserve safety evidence and the other party's history |
+| 2026-08-26 | Recorded the coarse home area on `profile_private` and named the four distance bands, so geographic ranking has a documented source and a documented resolution |
