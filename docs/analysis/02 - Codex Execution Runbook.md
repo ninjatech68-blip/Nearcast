@@ -16,6 +16,7 @@
 3. Record every verification result in `PROJECT_LOG.md` — pass or fail — in the same commit as the work.
 4. A failing check is a finding, not an obstacle: fix it if it is small and in scope, otherwise file it as a GitHub issue with the exact output. Never adjust a test to make it pass; never skip, disable, or quarantine one.
 5. Do not touch the human-led items (issues #12, #13, #14) or the deferred token/dark-mode remainder (#11). The bypass register in issue #16 says what covers each pending human item.
+6. If a GitHub issue update returns `403`, that is the known permission gap H-10, not a failure of the step. Record the result in `PROJECT_LOG.md` in the same commit as the work and continue; the issue is updated from the Claude session afterwards.
 
 ## What is needed, exactly
 
@@ -120,3 +121,4 @@ Author under `.maestro/`, run against the local stack with the dev sign-in. Cove
 |---|---|
 | 2026-08-25 | Created the Codex execution runbook: prerequisites, baseline expectations, and five ordered steps with exact done-criteria |
 | 2026-08-26 | Marked step 1 complete after the real-stack run, recorded its two findings, and pointed execution at step 2 |
+| 2026-08-26 | Added the standing rule for the H-10 issue-write gap so a `403` never stalls a step |

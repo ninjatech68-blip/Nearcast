@@ -139,6 +139,7 @@ Recorded 2026-08-25. The human items in Class C are monitored separately and are
 | H-1, H-2 OAuth credentials | Development-only password sign-in against the seeded personas (`src/features/auth/dev-sign-in.ts`), gated out of production and rendered as a labelled testing entrance on the sign-in screen | Real providers verified in [#3](https://github.com/ninjatech68-blip/Nearcast/issues/3) |
 | H-4 share domain | `EXPO_PUBLIC_SHARE_BASE_URL` is optional; `buildShareLink` falls back to `nearcast://i/<slug>` scheme links | Set the variable when the domain exists; no code change |
 | H-5 staging project | The local Supabase stack is the test environment, with seeded personas and two seeded invitation tokens (`local-invite-1`, `local-invite-2`) | Staging created in [#13](https://github.com/ninjatech68-blip/Nearcast/issues/13) |
+| H-10 Codex issue-write permission | Codex records every result in `PROJECT_LOG.md` in the same commit as the work, and the Claude session mirrors it onto the issue | Issue read/write granted to the Codex integration; tracked in [#16](https://github.com/ninjatech68-blip/Nearcast/issues/16) |
 
 Also delivered on 2026-08-25, ahead of the handoff order: `generate_deliveries` ([#5](https://github.com/ninjatech68-blip/Nearcast/issues/5)) is built with 18 pgTAP assertions and wired into the publish flow, so the For You feed populates end to end locally. Remaining on #5: real-stack verification, PostGIS distance bands, and the full ranking signals.
 
@@ -157,6 +158,7 @@ No agent should attempt these. They need an identity, a payment method, or a leg
 | H-7 | Legal review of Terms and Privacy Policy against Doc 12, including India-specific obligations | [#14](https://github.com/ninjatech68-blip/Nearcast/issues/14) | Public beta |
 | H-8 | Moderation rota, support contact, and store privacy declarations | [#14](https://github.com/ninjatech68-blip/Nearcast/issues/14) | Pre-alpha safety gate |
 | H-9 | Selecting and inviting the 30 to 50 person Bengaluru alpha cohort | [#14](https://github.com/ninjatech68-blip/Nearcast/issues/14) | Phase 5 |
+| H-10 | Issue read/write on this repository for the integration Codex authenticates as — a permissions grant only, needing no credentials, keys, or repository write beyond issues | [#16](https://github.com/ninjatech68-blip/Nearcast/issues/16) | Nothing; it makes Codex able to close its own work instead of relying on a manual relay |
 
 Doc 14 already lists most of these as human-owned. This document does not change their status; it records what they block.
 
@@ -211,3 +213,4 @@ Doc 14's Definition of Done applies unchanged. In practice, for each issue:
 | 2026-08-25 | Added the bypass register: development sign-in, configurable share base, and local-stack testing keep development active while human items stay a monitoring track |
 | 2026-08-25 | Pointed execution at the new runbook, which sequences the actionable steps with exact expected outputs |
 | 2026-08-26 | Closed A-1 and A-2 with the real-stack results and recorded the two defects the run found |
+| 2026-08-26 | Added H-10, the Codex issue-write permission gap, with the reporting relay that covers it meanwhile |
