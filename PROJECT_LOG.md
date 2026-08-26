@@ -23,6 +23,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 0.4.0 | 2026-08-25 | Coordination surfaces delivered | Broadcaster inbox, coordination room with explicit disclosure release and in-room block/report, and feed relevance feedback — the tested server loop is now walkable in the interface |
 | 0.5.0 | 2026-08-25 | Realtime, resolution, and privacy-safe analytics | Private message channels with reconnect refetch, the resolution sheet and outcome confirmation, and the allowlisted analytics module with events wired after server success |
 | 0.6.0 | 2026-08-25 | Account deletion and retention | In-product deletion that anonymizes, withdraws, clears, and redacts while preserving safety evidence; retention jobs for aged messages and exact locations |
+| 0.7.0 | 2026-08-26 | Owner edits and offline drafts | Material-edit history visible to existing respondents, Zod at the publish boundary, and a local draft that survives restarts and lost connections — cleared on publish and on account deletion |
 
 ## Verification Log
 
@@ -82,6 +83,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-26 | Step 1 integration | Passed | Merged `codex/issue-17-runbook` into `claude/repo-overview-vxx5d3` without rewriting its history. Reviewed both real findings: the `public.intent_status` cast in `close_intent` is behaviour-preserving, and the regenerated `database.types.ts` adds the six tables and the function signatures the hand-written copy had missed. `npx tsc --noEmit` clean against the generated types, so no call site depended on the drifted shapes. Substitute-harness rebuild from empty database green at 152 of 152 (foundation 9, phase1 74, journey 25, phase2 18, phase4 26) with the cast applied; `npm run verify` clean end to end including the iOS export. Issue updates Codex could not post were completed from this session: #1, #2, and #18 closed with the outputs, #17 commented with Step 1 complete |
 
 | 2026-08-26 | Material-edit history | Passed | New suite `nearcast_intent_edits.test.sql` at 30 of 30, taking the substitute-harness total to 182 across six suites. The suite caught one mis-specified assertion of mine — a price sent without a currency is legitimate when the intent already has one — which was corrected by pointing that check at the draft, where neither exists. `npm run verify` clean: lint, typecheck, 8 Vitest files with 47 tests, 12 Jest suites with 47 tests, iOS export |
+| 2026-08-26 | Offline drafts | Passed | Local SQLite draft store with 5 Jest assertions over a fake database, 6 Vitest assertions over the pure parse and network-failure logic, and screen tests covering restore, continuous save, clear-on-publish, clear-on-deletion, the honest offline message, and idempotency-key reuse across a retry. `npm run verify` clean: 9 Vitest files with 53 tests, 14 Jest suites with 65 tests, iOS export |
 
 ## Governance Rules
 
@@ -121,3 +123,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-26 | Recorded the Codex runbook Step 1 real-stack baseline, lint fix, generated-type drift correction, and final verification |
 | 2026-08-26 | Integrated the Codex Step 1 branch, re-verified the merged tree, and closed the real-stack verification items |
 | 2026-08-26 | Delivered MUST-017: Zod at the publish boundary, `update_intent`, respondent-visible material-edit history, and the owner edit screen |
+| 2026-08-26 | Delivered MUST-015: offline draft persistence, cleared on publish and on account deletion, with honest offline publish copy |

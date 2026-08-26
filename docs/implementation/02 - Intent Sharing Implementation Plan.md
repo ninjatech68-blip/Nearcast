@@ -21,10 +21,10 @@
 
 **Files:** `src/features/intents/create/`, `src/app/create.tsx`, `src/app/preview.tsx`
 
-- [ ] Test local draft recovery, 500-character limit, expiry default, and required primitive.
+- [x] Test local draft recovery, 500-character limit, expiry default, and required primitive.
 - [ ] Add structured time, approximate place, quantity, price, requirements, and private details.
 - [ ] Render `PrivacyDisclosure` from separate public/private draft models.
-- [ ] Test offline draft storage and explicit draft clearing on account deletion.
+- [x] Test offline draft storage and explicit draft clearing on account deletion.
 
 ## Task 3: Publish Transaction
 
@@ -66,3 +66,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | 2026-08-25 | Delivered invitation redemption, Google and Apple sign-in, the publish transaction with idempotency, origin confirmation, close and expiry, and the anonymous share projection; 74 Phase 1 pgTAP assertions pass |
 | 2026-08-25 | Outstanding in this plan: Zod validation at the publish boundary, structured draft fields beyond primitive and statement, offline draft persistence, universal-link routing and the WhatsApp share action, material-edit history, and the `intent_published` analytics event |
 | 2026-08-26 | Delivered Zod validation at the publish boundary and material-edit history: `update_intent`, the respondent-visible history policy, the owner edit screen, and 30 pgTAP assertions. Editing stops at `matched`, a rewritten statement counts as material, and the event records categories rather than values — all three recorded in the Doc 00 decision log. No analytics event is emitted for edits, because the Doc 09 taxonomy names none and inventing one would widen telemetry no metric asks for. Outstanding in this plan: structured draft fields beyond statement and area in the composer, offline draft persistence, and universal-link routing with the WhatsApp share action |
+| 2026-08-26 | Delivered offline draft persistence (MUST-015): a local SQLite draft written on every change, restored as initial composer state, cleared on publish and on account deletion. Publishing now distinguishes an unreachable server from a refusal and never reports success it did not receive; a retry reuses the same idempotency key. Outstanding in this plan: the structured composer fields, and universal-link routing with the WhatsApp share action |

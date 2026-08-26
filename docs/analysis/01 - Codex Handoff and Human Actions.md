@@ -121,7 +121,7 @@ All five are tracked in [#7](https://github.com/ninjatech68-blip/Nearcast/issues
 
 | ID | Item | Issue | Note |
 |---|---|---|---|
-| B-12 | Offline draft persistence | [#8](https://github.com/ninjatech68-blip/Nearcast/issues/8) | MUST-015. `expo-sqlite` is already a dependency and unused. |
+| B-12 | Offline draft persistence | [#8](https://github.com/ninjatech68-blip/Nearcast/issues/8) | **Delivered 2026-08-26.** A local SQLite draft written on every change, restored as initial composer state, cleared on publish and on account deletion. Publishing distinguishes an unreachable server from a refusal and never claims success it did not receive. |
 | B-13 | Universal links and the share action | [#8](https://github.com/ninjatech68-blip/Nearcast/issues/8) | MUST-020, MUST-021. Depends on **H-4** for a domain. |
 | B-14 | Zod validation at the publish boundary and material-edit history | [#8](https://github.com/ninjatech68-blip/Nearcast/issues/8) | **Delivered 2026-08-26.** `intentPublishSchema` guards publish, `update_intent` records material edits by category, respondents read the history through a dedicated policy, and the owner edit screen states plainly who will be told. Remaining in this row: the structured composer fields beyond statement and area. |
 | B-15 | Missing CI gates | [#9](https://github.com/ninjatech68-blip/Nearcast/issues/9) | Doc 10 requires eight; `verify.yml` runs five. Missing: integration tests, analytics schema validation, secret scanning. |
@@ -215,3 +215,4 @@ Doc 14's Definition of Done applies unchanged. In practice, for each issue:
 | 2026-08-26 | Closed A-1 and A-2 with the real-stack results and recorded the two defects the run found |
 | 2026-08-26 | Added H-10, the Codex issue-write permission gap, with the reporting relay that covers it meanwhile |
 | 2026-08-26 | Marked B-14 delivered apart from the structured composer fields |
+| 2026-08-26 | Marked B-12 delivered |

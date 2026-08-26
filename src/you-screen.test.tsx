@@ -28,6 +28,11 @@ jest.mock('@/features/coordination/queries', () => ({
   deleteAccount: () => mockDeleteAccount(),
 }));
 
+const mockClearDraft = jest.fn();
+jest.mock('@/features/intents/data/draft-store', () => ({
+  clearDraft: () => mockClearDraft(),
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const YouScreen = require('./app/(tabs)/you').default;
 
@@ -44,6 +49,7 @@ describe('YouScreen account deletion', () => {
     mockFetchProfile.mockReset();
     mockDeleteAccount.mockReset();
     mockSignOut.mockReset();
+    mockClearDraft.mockReset();
     mockFetchProfile.mockResolvedValue({ state: 'ok', data: profile });
   });
 
@@ -86,6 +92,7 @@ describe('YouScreen account deletion', () => {
 
     await waitFor(() => expect(mockDeleteAccount).toHaveBeenCalledTimes(1));
     expect(mockSignOut).toHaveBeenCalledTimes(1);
+    expect(mockClearDraft).toHaveBeenCalledTimes(1);
   });
 
   it('keeps the account and shows the error when deletion fails', async () => {
@@ -107,5 +114,6 @@ describe('YouScreen account deletion', () => {
       ).toBeTruthy(),
     );
     expect(mockSignOut).not.toHaveBeenCalled();
+    expect(mockClearDraft).not.toHaveBeenCalled();
   });
 });

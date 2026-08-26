@@ -174,6 +174,8 @@ Doc 02 defines **64 MUST** requirements (plus 4 SHOULD, 2 MAY). Assessed against
 
 The nine still not started are the ones Phases 2 to 4 own: delivery generation and ranking (MUST-030 to MUST-036 depend on `generate-deliveries`), push notification delivery (MUST-080 to MUST-083 depend on `process-notifications` and a `devices` write path), moderation queue operation (MUST-074), prohibited-content controls (MUST-075), minors controls (MUST-076), account deletion (MUST-004), analytics emission (MUST-100, MUST-102, MUST-103), offline draft persistence (MUST-015), and universal-link routing (MUST-021).
 
+**Updated 2026-08-26.** Two of those nine are now met: MUST-004 account deletion (2026-08-25) and MUST-015 offline draft persistence. MUST-017 moved from partial to met with `update_intent`. Seven remain not started, all of them push delivery, moderation, prohibited content, minors, analytics emission, delivery ranking depth, or universal links — the last blocked on the H-4 domain.
+
 ### 3.1 By requirement group
 
 | Group | MUSTs | Met | Partial | Not started | Notes |
@@ -369,3 +371,4 @@ Decisions 2 and 4 had no single recommendation in the original analysis and were
 | 2026-08-25 | Recorded resolution of all 9 conflicts and all 7 governance defects; updated the schema and server-boundary sections for the Doc 05 and Doc 16 amendments |
 | 2026-08-25 | Re-measured after Phase 1 delivery: 34 of 64 MUST requirements met, 21 partial, 9 not started; server boundary 14 of 16; no Doc 05 entity outstanding |
 | 2026-08-26 | `update-intent` built with material-edit history, satisfying MUST-017 and taking the server boundary to 15 of 16 |
+| 2026-08-26 | Offline draft persistence delivered, satisfying MUST-015 |

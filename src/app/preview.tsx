@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
+import { clearDraft, loadDraft, saveDraft } from '@/features/intents/data/draft-store';
 import { INTENT_REACH_LEVELS, type IntentPrimitive, type IntentReachLevel } from '@/features/intents/domain/intent';
 import { publishIntent, PRIMITIVE_LABELS } from '@/features/intents/data/intent-queries';
 
@@ -34,16 +35,51 @@ export default function PreviewScreen() {
   const primitive = (params.primitive ?? 'request') as IntentPrimitive;
   const statement = params.statement ?? '';
 
-  const [reach, setReach] = useState<IntentReachLevel>('origin_only');
-  const [publicLink, setPublicLink] = useState(true);
-  const [showFirstName, setShowFirstName] = useState(true);
+  const [stored] = useState(() => loadDraft());
+  const [reach, setReach] = useState<IntentReachLevel>(stored?.reach ?? 'origin_only');
+  const [publicLink, setPublicLink] = useState(stored?.publicLinkEnabled ?? true);
+  const [showFirstName, setShowFirstName] = useState(stored?.showFirstName ?? true);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [offline, setOffline] = useState(false);
   const [idempotencyKey] = useState(() => globalThis.crypto.randomUUID());
+
+  // The reach and disclosure choices belong to the same local draft, so backing
+  // out of review and returning does not silently reset them.
+  function persistChoices(next: {
+    reach?: IntentReachLevel;
+    publicLinkEnabled?: boolean;
+    showFirstName?: boolean;
+  }) {
+    saveDraft({
+      primitive,
+      statement,
+      reach: next.reach ?? reach,
+      publicLinkEnabled: next.publicLinkEnabled ?? publicLink,
+      showFirstName: next.showFirstName ?? showFirstName,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  function changeReach(level: IntentReachLevel) {
+    setReach(level);
+    persistChoices({ reach: level });
+  }
+
+  function changePublicLink(value: boolean) {
+    setPublicLink(value);
+    persistChoices({ publicLinkEnabled: value });
+  }
+
+  function changeShowFirstName(value: boolean) {
+    setShowFirstName(value);
+    persistChoices({ showFirstName: value });
+  }
 
   async function publish() {
     setPublishing(true);
     setError(null);
+    setOffline(false);
     const expiresAt = new Date(Date.now() + DEFAULT_EXPIRY_HOURS * 3_600_000).toISOString();
     const result = await publishIntent({
       primitive,
@@ -58,9 +94,14 @@ export default function PreviewScreen() {
     });
     setPublishing(false);
     if (result.state === 'error') {
+      // The draft stays on the device. Publishing never reports success it did
+      // not get from the server.
       setError(result.message);
+      setOffline(result.offline);
       return;
     }
+    // Published: the intent now lives on the server, so the local copy goes.
+    clearDraft();
     router.replace(`/intent/${result.intentId}`);
   }
 
@@ -85,7 +126,7 @@ export default function PreviewScreen() {
               accessibilityRole="radio"
               accessibilityState={{ selected }}
               key={level}
-              onPress={() => setReach(level)}
+              onPress={() => changeReach(level)}
               style={[styles.reachOption, selected && styles.reachSelected]}>
               <Text style={[styles.reachTitle, selected && styles.reachTitleSelected]}>
                 {REACH_COPY[level].title}
@@ -97,11 +138,11 @@ export default function PreviewScreen() {
 
         <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Allow a shareable link</Text>
-          <Switch onValueChange={setPublicLink} value={publicLink} />
+          <Switch onValueChange={changePublicLink} value={publicLink} />
         </View>
         <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Show my first name</Text>
-          <Switch onValueChange={setShowFirstName} value={showFirstName} />
+          <Switch onValueChange={changeShowFirstName} value={showFirstName} />
         </View>
 
         <View style={styles.privacyBox}>
@@ -114,7 +155,10 @@ export default function PreviewScreen() {
         </View>
 
         {error ? (
-          <Text accessibilityRole="alert" style={styles.error}>
+          <Text
+            accessibilityRole="alert"
+            style={offline ? styles.offline : styles.error}
+            testID={offline ? 'publish-offline' : 'publish-error'}>
             {error}
           </Text>
         ) : null}
@@ -151,6 +195,7 @@ const styles = StyleSheet.create({
   privacyBox: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundSuccess, gap: 5 },
   privacyTitle: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 16 },
   privacyBody: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
+  offline: { padding: 14, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundWarning, color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 13, lineHeight: 18 },
   error: { color: tokens.semantic.color.statusDanger, fontFamily: 'Manrope_600SemiBold', fontSize: 13, lineHeight: 18 },
   footer: { padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderSubtle },
 });

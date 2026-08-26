@@ -2,6 +2,7 @@ import { track } from '@/infrastructure/analytics/analytics';
 import { supabase } from '@/infrastructure/supabase/client';
 import type { Database } from '@/infrastructure/supabase/database.types';
 
+import { isNetworkFailure } from '@/features/intents/domain/draft';
 import {
   type IntentEdit,
   describeMaterialEdit,
@@ -162,7 +163,18 @@ export type PublishInput = {
 
 export type PublishResult =
   | { state: 'ok'; intentId: string; shareSlug: string }
-  | { state: 'error'; message: string };
+  /** `offline` means the request never reached the server, so retrying is worthwhile. */
+  | { state: 'error'; message: string; offline: boolean };
+
+const PUBLISH_FAILED = 'Your intent was not published. Try again.';
+const PUBLISH_OFFLINE =
+  'Your draft is saved on this device. It will not be published until you are online.';
+
+function publishFailure(message: string | null | undefined): PublishResult {
+  return isNetworkFailure(message)
+    ? { state: 'error', message: PUBLISH_OFFLINE, offline: true }
+    : { state: 'error', message: PUBLISH_FAILED, offline: false };
+}
 
 /**
  * Creates the draft and publishes it through the server transaction. The draft
@@ -177,6 +189,7 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
     return {
       state: 'error',
       message: 'Some details need fixing before this can be published.',
+      offline: false,
     };
   }
 
@@ -193,7 +206,7 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
     .single();
 
   if (draft.error || !draft.data) {
-    return { state: 'error', message: 'Your intent was not published. Try again.' };
+    return publishFailure(draft.error?.message);
   }
 
   if (input.approximatePlace) {
@@ -201,7 +214,7 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
       .from('intent_context')
       .upsert({ intent_id: draft.data.id, approximate_place: input.approximatePlace });
     if (context.error) {
-      return { state: 'error', message: 'Your intent was not published. Try again.' };
+      return publishFailure(context.error.message);
     }
   }
 
@@ -215,7 +228,7 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
   });
 
   if (published.error || !published.data) {
-    return { state: 'error', message: 'Your intent was not published. Try again.' };
+    return publishFailure(published.error?.message);
   }
 
   // Origin-only intents travel through the share link alone. Any wider reach

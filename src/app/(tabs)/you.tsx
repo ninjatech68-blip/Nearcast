@@ -7,6 +7,7 @@ import { StatePanel, type ScreenState } from '@/design-system/components/state-p
 import { tokens } from '@/design-system/tokens';
 import { useSession } from '@/features/auth/session';
 import { deleteAccount } from '@/features/coordination/queries';
+import { clearDraft } from '@/features/intents/data/draft-store';
 import {
   describeReliability,
   fetchProfileSummary,
@@ -118,6 +119,9 @@ function DeleteAccountSection({ onDeleted }: { onDeleted: () => void }) {
       setError(result.message);
       return;
     }
+    // Deletion covers what is on this device too: an unpublished draft is the
+    // person's own text and must not outlive their account.
+    clearDraft();
     onDeleted();
   }
 

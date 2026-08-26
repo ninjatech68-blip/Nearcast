@@ -51,7 +51,7 @@ cp .env.example .env
 | Database suites | `npm run db:start && npm run db:reset && npm run db:test` | 182 pgTAP assertions across 6 files: foundation 9, phase1 74, journey 25, phase2 18, phase4 26, intent edits 30 |
 | Database lint | `npx supabase db lint --level warning --schema public,private` | No errors in `public` or `private` |
 | Type drift | `npm run db:types && git diff --exit-code -- src/infrastructure/supabase/database.types.ts` | Empty diff. A diff means the hand-written types were wrong: commit the regenerated file and fix any call site the compiler then flags |
-| App suite | `npm run verify` | Lint 0 problems, all Vitest and Jest suites pass (8 Vitest files with 47 tests, 12 Jest suites with 47 tests), iOS export completes |
+| App suite | `npm run verify` | Lint 0 problems, all Vitest and Jest suites pass (9 Vitest files with 53 tests, 14 Jest suites with 65 tests), iOS export completes |
 
 These same checks run in CI on every pull request; running them locally first keeps CI green.
 
@@ -122,4 +122,4 @@ Author under `.maestro/`, run against the local stack with the dev sign-in. Cove
 | 2026-08-25 | Created the Codex execution runbook: prerequisites, baseline expectations, and five ordered steps with exact done-criteria |
 | 2026-08-26 | Marked step 1 complete after the real-stack run, recorded its two findings, and pointed execution at step 2 |
 | 2026-08-26 | Added the standing rule for the H-10 issue-write gap so a `403` never stalls a step |
-| 2026-08-26 | Refreshed the baseline table for the material-edit work: 182 pgTAP assertions across six suites, 47 Jest tests |
+| 2026-08-26 | Refreshed the baseline table for the material-edit and offline-draft work: 182 pgTAP assertions across six suites, 65 Jest tests |

@@ -4,6 +4,8 @@ import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleS
 
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
+import { loadDraft, saveDraft } from '@/features/intents/data/draft-store';
+import { isEmptyDraft } from '@/features/intents/domain/draft';
 import { IntentPrimitive } from '@/features/intents/domain/intent';
 
 const primitives: { value: IntentPrimitive; label: string }[] = [
@@ -13,9 +15,38 @@ const primitives: { value: IntentPrimitive; label: string }[] = [
 ];
 
 export default function CreateIntentScreen() {
-  const [primitive, setPrimitive] = useState<IntentPrimitive>('request');
-  const [statement, setStatement] = useState('');
+  // Read once, synchronously, while the first render is being built: a restored
+  // draft is initial state, not an effect that overwrites what someone typed.
+  const [restored] = useState(() => {
+    const stored = loadDraft();
+    return stored && !isEmptyDraft(stored) ? stored : null;
+  });
+  const [primitive, setPrimitive] = useState<IntentPrimitive>(restored?.primitive ?? 'request');
+  const [statement, setStatement] = useState(restored?.statement ?? '');
   const trimmed = statement.trim();
+
+  // MUST-015: the draft is written on every change, so an app restart or a lost
+  // connection cannot cost someone their words.
+  function persist(next: { primitive: IntentPrimitive; statement: string }) {
+    saveDraft({
+      primitive: next.primitive,
+      statement: next.statement,
+      reach: restored?.reach ?? 'origin_only',
+      publicLinkEnabled: restored?.publicLinkEnabled ?? true,
+      showFirstName: restored?.showFirstName ?? true,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  function changePrimitive(value: IntentPrimitive) {
+    setPrimitive(value);
+    persist({ primitive: value, statement });
+  }
+
+  function changeStatement(value: string) {
+    setStatement(value);
+    persist({ primitive, statement: value });
+  }
 
   function reviewDraft() {
     Keyboard.dismiss();
@@ -33,7 +64,7 @@ export default function CreateIntentScreen() {
               {primitives.map((item) => {
                 const selected = primitive === item.value;
                 return (
-                  <Pressable key={item.value} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => setPrimitive(item.value)} style={[styles.chip, selected && styles.chipSelected]}>
+                  <Pressable key={item.value} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => changePrimitive(item.value)} style={[styles.chip, selected && styles.chipSelected]}>
                     <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{item.label}</Text>
                   </Pressable>
                 );
@@ -44,7 +75,7 @@ export default function CreateIntentScreen() {
               autoFocus
               multiline
               maxLength={500}
-              onChangeText={setStatement}
+              onChangeText={changeStatement}
               placeholder="Share a clear and specific intent..."
               placeholderTextColor={tokens.semantic.color.textMuted}
               style={styles.composer}
@@ -52,6 +83,11 @@ export default function CreateIntentScreen() {
               value={statement}
             />
             <Text style={styles.counter}>{statement.length}/500</Text>
+            {restored ? (
+              <Text style={styles.restored} testID="draft-restored">
+                Restored from this device. Drafts stay here until you publish.
+              </Text>
+            ) : null}
             <View style={styles.privacyNote}>
               <Text style={styles.privacyTitle}>You choose who can see this.</Text>
               <Text style={styles.privacyBody}>Contact details stay hidden. You will review reach and expiry before publishing.</Text>
@@ -76,6 +112,7 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
   chipTextSelected: { color: tokens.semantic.color.actionPrimary },
   composer: { minHeight: 180, marginTop: 18, padding: 16, borderRadius: 14, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface, fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 24, color: tokens.semantic.color.textPrimary },
+  restored: { marginTop: 6, fontFamily: 'Manrope_400Regular', fontSize: 11, lineHeight: 16, color: tokens.semantic.color.textMuted },
   counter: { marginTop: 6, textAlign: 'right', fontFamily: 'Manrope_400Regular', fontSize: 11, color: tokens.semantic.color.textMuted },
   privacyNote: { marginTop: 22, padding: 16, borderRadius: 14, backgroundColor: tokens.semantic.color.backgroundSuccess },
   privacyTitle: { fontFamily: 'Manrope_600SemiBold', color: tokens.semantic.color.actionPrimary },
