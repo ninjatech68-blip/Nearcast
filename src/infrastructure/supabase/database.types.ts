@@ -870,7 +870,7 @@ export type Database = {
       profile_private: {
         Row: {
           adult_affirmed_at: string | null
-          approximate_geography: unknown | null
+          approximate_geography: unknown
           contact_preferences: Json
           phone_e164: string | null
           profile_id: string
@@ -878,7 +878,7 @@ export type Database = {
         }
         Insert: {
           adult_affirmed_at?: string | null
-          approximate_geography?: unknown | null
+          approximate_geography?: unknown
           contact_preferences?: Json
           phone_e164?: string | null
           profile_id: string
@@ -886,7 +886,7 @@ export type Database = {
         }
         Update: {
           adult_affirmed_at?: string | null
-          approximate_geography?: unknown | null
+          approximate_geography?: unknown
           contact_preferences?: Json
           phone_e164?: string | null
           profile_id?: string
@@ -1279,6 +1279,37 @@ export type Database = {
           statement: string
         }[]
       }
+      moderate_report: {
+        Args: { action: string; reason_code: string; target_report_id: string }
+        Returns: {
+          created_at: string
+          details: string | null
+          id: string
+          reason_code: string
+          reporter_id: string
+          status: Database["public"]["Enums"]["report_status"]
+          subject_id: string
+          subject_type: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "reports"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      moderation_queue: {
+        Args: never
+        Returns: {
+          created_at: string
+          detail: string
+          item_id: string
+          kind: string
+          reason_code: string
+          subject_id: string
+          subject_type: string
+        }[]
+      }
       publish_intent: {
         Args: {
           draft_intent_id: string
@@ -1337,6 +1368,31 @@ export type Database = {
       release_disclosure: {
         Args: { field_names: string[]; target_match_id: string }
         Returns: number
+      }
+      restore_intent: {
+        Args: { reason_code: string; target_intent_id: string }
+        Returns: {
+          broadcaster_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          primitive: Database["public"]["Enums"]["intent_primitive"]
+          published_at: string | null
+          resolved_at: string | null
+          response_action: string
+          restricted_from: Database["public"]["Enums"]["intent_status"] | null
+          share_slug: string
+          statement: string
+          status: Database["public"]["Enums"]["intent_status"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "intents"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       send_message: {
         Args: {
@@ -1408,7 +1464,12 @@ export type Database = {
         | "adjacent_network"
         | "nearby_relevant"
         | "broader_approved"
-      report_status: "open" | "reviewing" | "actioned" | "dismissed"
+      report_status:
+        | "open"
+        | "restricted"
+        | "actioned"
+        | "dismissed"
+        | "escalated"
       resolution_outcome:
         | "resolved_through_nearcast"
         | "resolved_elsewhere"
@@ -1565,7 +1626,13 @@ export const Constants = {
         "nearby_relevant",
         "broader_approved",
       ],
-      report_status: ["open", "reviewing", "actioned", "dismissed"],
+      report_status: [
+        "open",
+        "restricted",
+        "actioned",
+        "dismissed",
+        "escalated",
+      ],
       resolution_outcome: [
         "resolved_through_nearcast",
         "resolved_elsewhere",
