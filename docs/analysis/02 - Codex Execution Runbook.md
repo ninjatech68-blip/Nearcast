@@ -62,6 +62,15 @@ ls node_modules/.bin/supabase && npx supabase --version
 
 **If a container is unhealthy, check whether we use it at all.** Supabase starts a stack; Nearcast uses a fraction of it. Storage was disabled on 2026-08-26 after its health check blocked `db reset` — nothing in the app touches it. If another container fails the same way, say which one: the fix may be to stop starting it rather than to make it healthy.
 
+**If the machine is small, exclude services per run rather than editing the config.** Docker's VM memory is the constraint, not the host's. Three unused containers were removed from `config.toml` on 2026-08-26 because nothing used them; Studio and the mail catcher are different — they are useful, and turning them off for everyone to suit one machine is the wrong trade. Exclude them for a single run instead:
+
+```bash
+supabase start -x studio,mailpit          # B-2 needs postgres, auth, rest, edge-runtime
+supabase start -x studio,mailpit,realtime # B-2 only; B-1 needs realtime
+```
+
+Run `supabase start --help` for the exact service names this CLI version accepts rather than guessing. **The real fix is Docker Desktop → Settings → Resources → Memory at 6 GB or more**; 3.8 GiB was measured on a developer machine on 2026-08-26 and is not enough for the stack plus Metro plus a simulator. Excluding services is how to make progress before that setting changes, not a substitute for it.
+
 **The database work does not need `node_modules`.** The `db:*` scripts are thin wrappers around the Supabase CLI, and the CLI reads `supabase/config.toml`, the migrations and the seed — all repository files. With a broken install, use the standalone CLI and call it directly:
 
 ```bash
