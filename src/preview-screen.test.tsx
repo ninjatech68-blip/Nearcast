@@ -181,4 +181,22 @@ describe('PreviewScreen', () => {
 
     expect(screen.queryByTestId('privacy-warning')).toBeNull();
   });
+
+  it('does not claim an intent is published when the server held it for review', async () => {
+    mockPublish.mockResolvedValue({
+      state: 'ok',
+      intentId: 'intent-9',
+      shareSlug: 'slug-9',
+      status: 'restricted',
+    });
+    const user = userEvent.setup();
+
+    await render(<PreviewScreen />);
+    await user.press(screen.getByRole('button', { name: 'Broadcast intent' }));
+
+    await waitFor(() => expect(screen.getByTestId('publish-held')).toBeTruthy());
+    expect(screen.getByText(/being reviewed/)).toBeTruthy();
+    expect(mockReplace).not.toHaveBeenCalled();
+    expect(mockClearDraft).not.toHaveBeenCalled();
+  });
 });

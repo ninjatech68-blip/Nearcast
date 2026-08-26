@@ -1303,7 +1303,11 @@ export type Database = {
         }
       }
       redeem_invite: {
-        Args: { chosen_display_name: string; invite_token: string }
+        Args: {
+          adult_affirmed: boolean
+          chosen_display_name: string
+          invite_token: string
+        }
         Returns: {
           avatar_path: string | null
           city: string | null

@@ -13,7 +13,7 @@ select has_table('public', 'reliability_aggregates', 'reliability aggregates tab
 select has_table('public', 'moderation_actions', 'moderation actions table exists');
 select has_table('public', 'idempotency_keys', 'idempotency key store exists');
 
-select has_function('public', 'redeem_invite', array['text', 'text'], 'invite redemption exists');
+select has_function('public', 'redeem_invite', array['text', 'text', 'boolean'], 'invite redemption exists, and requires the adult affirmation');
 select has_function('public', 'publish_intent', array['uuid', 'integer', 'reach_level', 'boolean', 'boolean', 'uuid'], 'publish transaction exists');
 select has_function('public', 'change_intent_reach', array['uuid', 'integer', 'reach_level', 'boolean'], 'reach change exists');
 select has_function('public', 'close_intent', array['uuid', 'intent_status', 'resolution_outcome'], 'close transaction exists');
@@ -53,17 +53,17 @@ set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000000a4","role":"authenticated"}';
 
 select throws_ok(
-  $$ select public.redeem_invite('expired-token', 'Late Arrival') $$,
+  $$ select public.redeem_invite('expired-token', 'Late Arrival', true) $$,
   'invalid_invitation',
   'an expired invitation is rejected'
 );
 select throws_ok(
-  $$ select public.redeem_invite('never-issued', 'Ghost') $$,
+  $$ select public.redeem_invite('never-issued', 'Ghost', true) $$,
   'invalid_invitation',
   'an unknown invitation is rejected with the same generic error'
 );
 select lives_ok(
-  $$ select public.redeem_invite('valid-token', 'Nikhil Rao') $$,
+  $$ select public.redeem_invite('valid-token', 'Nikhil Rao', true) $$,
   'a valid invitation creates a profile'
 );
 select results_eq(
@@ -72,7 +72,7 @@ select results_eq(
   'redemption stores the chosen display name'
 );
 select throws_ok(
-  $$ select public.redeem_invite('valid-token', 'Nikhil Again') $$,
+  $$ select public.redeem_invite('valid-token', 'Nikhil Again', true) $$,
   'conflict',
   'a user who already has a profile cannot redeem again'
 );
@@ -81,7 +81,7 @@ reset role;
 set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000000a6","role":"authenticated"}';
 select throws_ok(
-  $$ select public.redeem_invite('valid-token', 'Second Claimant') $$,
+  $$ select public.redeem_invite('valid-token', 'Second Claimant', true) $$,
   'invalid_invitation',
   'a consumed invitation cannot be redeemed by anyone else'
 );

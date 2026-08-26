@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/design-system/components/button';
@@ -13,6 +13,7 @@ export default function RedeemInviteScreen() {
   const { token } = useLocalSearchParams<{ token: string }>();
   const { status, hasProfile, refreshProfile } = useSession();
   const [displayName, setDisplayName] = useState('');
+  const [adultAffirmed, setAdultAffirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +54,7 @@ export default function RedeemInviteScreen() {
   async function submit() {
     setSubmitting(true);
     setError(null);
-    const result = await redeemInvitation(token ?? '', displayName);
+    const result = await redeemInvitation(token ?? '', displayName, adultAffirmed);
     if (!result.ok) {
       setSubmitting(false);
       setError(result.message);
@@ -86,6 +87,22 @@ export default function RedeemInviteScreen() {
           value={displayName}
         />
 
+        <Pressable
+          accessibilityLabel="I confirm that I am 18 or over"
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: adultAffirmed }}
+          onPress={() => setAdultAffirmed((affirmed) => !affirmed)}
+          style={styles.affirmRow}
+          testID="adult-affirmation">
+          <View style={[styles.checkbox, adultAffirmed && styles.checkboxChecked]}>
+            {adultAffirmed ? <Text style={styles.checkmark}>✓</Text> : null}
+          </View>
+          <Text style={styles.affirmLabel}>
+            I confirm that I am 18 or over. Nearcast is for adults, and accounts for people under
+            18 are not permitted.
+          </Text>
+        </Pressable>
+
         {error ? (
           <Text accessibilityRole="alert" style={styles.error}>
             {error}
@@ -99,7 +116,7 @@ export default function RedeemInviteScreen() {
       </ScrollView>
       <View style={styles.footer}>
         <Button
-          disabled={displayName.trim().length === 0}
+          disabled={displayName.trim().length === 0 || !adultAffirmed}
           label="Join network"
           loading={submitting}
           onPress={() => void submit()}
@@ -111,6 +128,11 @@ export default function RedeemInviteScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundApp },
+  affirmRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, minHeight: 48, paddingVertical: 4 },
+  checkbox: { width: 24, height: 24, borderRadius: 6, borderWidth: 1, borderColor: tokens.semantic.color.borderSubtle, backgroundColor: tokens.semantic.color.backgroundSurface, alignItems: 'center', justifyContent: 'center' },
+  checkboxChecked: { borderColor: tokens.semantic.color.actionPrimary, backgroundColor: tokens.semantic.color.actionPrimary },
+  checkmark: { color: tokens.semantic.color.onPrimary, fontFamily: 'Manrope_700Bold', fontSize: 14, lineHeight: 18 },
+  affirmLabel: { flex: 1, color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
   content: { padding: 20, gap: 14 },
   title: {
     color: tokens.semantic.color.textPrimary,

@@ -28,7 +28,7 @@ values (encode(extensions.digest('journey-invite', 'sha256'), 'hex'),
 set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000000d2","role":"authenticated"}';
 select lives_ok(
-  $$ select public.redeem_invite('journey-invite', 'Vikram Iyer') $$,
+  $$ select public.redeem_invite('journey-invite', 'Vikram Iyer', true) $$,
   'stage 1: an invited user joins through redemption'
 );
 

@@ -57,15 +57,23 @@ export const GENERIC_INVITE_ERROR =
 export async function redeemInvitation(
   inviteToken: string,
   displayName: string,
+  adultAffirmed: boolean,
 ): Promise<RedeemResult> {
   const trimmedName = displayName.trim();
   if (trimmedName.length === 0 || trimmedName.length > 60) {
     return { ok: false, message: 'Enter the name you want other people to see.' };
   }
 
+  // MUST-076. The server refuses without this too; checking here means the
+  // request is never made rather than made and rejected.
+  if (!adultAffirmed) {
+    return { ok: false, message: 'Confirm that you are 18 or over to join.' };
+  }
+
   const { error } = await supabase.rpc('redeem_invite', {
     invite_token: inviteToken.trim(),
     chosen_display_name: trimmedName,
+    adult_affirmed: adultAffirmed,
   });
 
   // The server returns one error for unknown, expired and consumed tokens.

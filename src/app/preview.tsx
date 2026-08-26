@@ -57,6 +57,7 @@ export default function PreviewScreen() {
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [offline, setOffline] = useState(false);
+  const [heldForReview, setHeldForReview] = useState(false);
   const [idempotencyKey] = useState(() => globalThis.crypto.randomUUID());
 
   // The reach and disclosure choices belong to the same local draft, so backing
@@ -95,6 +96,7 @@ export default function PreviewScreen() {
     setPublishing(true);
     setError(null);
     setOffline(false);
+    setHeldForReview(false);
     const expiresAt = new Date(Date.now() + DEFAULT_EXPIRY_HOURS * 3_600_000).toISOString();
     const result = await publishIntent({
       primitive,
@@ -115,6 +117,13 @@ export default function PreviewScreen() {
       setOffline(result.offline);
       return;
     }
+    // Held for review by the content check. Nothing reached anyone, and the
+    // draft stays on the device: saying "published" here would be false.
+    if (result.status === 'restricted') {
+      setHeldForReview(true);
+      return;
+    }
+
     // Published: the intent now lives on the server, so the local copy goes.
     clearDraft();
     router.replace(`/intent/${result.intentId}`);
@@ -178,6 +187,16 @@ export default function PreviewScreen() {
             This intent expires in {DEFAULT_EXPIRY_HOURS} hours unless you resolve it sooner.
           </Text>
         </View>
+
+        {heldForReview ? (
+          <View style={styles.privacyWarning} testID="publish-held">
+            <Text style={styles.privacyWarningBody}>
+              This intent is being reviewed before it goes anywhere. Nothing has been shared yet.
+              We will not publish it without a decision, and you can edit or withdraw it in the
+              meantime.
+            </Text>
+          </View>
+        ) : null}
 
         {error ? (
           <Text

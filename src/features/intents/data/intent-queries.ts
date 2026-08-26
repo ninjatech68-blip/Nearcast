@@ -162,7 +162,9 @@ export type PublishInput = {
 };
 
 export type PublishResult =
-  | { state: 'ok'; intentId: string; shareSlug: string }
+  /** `status` is what the server actually did: `live`, or `restricted` when the
+   *  content check held it for review. Publishing never claims more than that. */
+  | { state: 'ok'; intentId: string; shareSlug: string; status: Database['public']['Enums']['intent_status'] }
   /** `offline` means the request never reached the server, so retrying is worthwhile. */
   | { state: 'error'; message: string; offline: boolean };
 
@@ -236,7 +238,7 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
   // an informed user action, never an automatic expansion. A generation
   // failure must not fail the publish: the intent is live either way, and the
   // owner can retry from the dashboard.
-  if (input.reach !== 'origin_only') {
+  if (input.reach !== 'origin_only' && published.data.status === 'live') {
     await supabase.rpc('generate_deliveries', { target_intent_id: published.data.id });
   }
 
@@ -253,6 +255,7 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
     state: 'ok',
     intentId: published.data.id,
     shareSlug: published.data.share_slug,
+    status: published.data.status,
   };
 }
 
