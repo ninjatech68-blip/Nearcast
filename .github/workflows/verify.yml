@@ -33,3 +33,12 @@ jobs:
       - run: npx supabase start
       - run: npx supabase db reset
       - run: npx supabase test db
+      - name: Database lint
+        run: npx supabase db lint --level warning --schema public,private
+      - name: Generated types must match the schema
+        # database.types.ts was hand-extended in an environment that could not
+        # run the generator. This gate regenerates it on the real stack and
+        # fails on any drift, with the diff as the fix.
+        run: |
+          npm run db:types
+          git diff --exit-code -- src/infrastructure/supabase/database.types.ts

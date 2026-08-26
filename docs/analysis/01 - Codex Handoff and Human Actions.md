@@ -45,11 +45,15 @@ This is the single least-trustworthy artefact in the repository. Everything the 
 
 **Plan:** run `npm run db:start && npm run db:reset && npm run db:types`, diff the result against the committed file, and treat any difference as a defect in the hand-written version. Fix call sites if argument names or nullability differ. Re-run `npm run verify`.
 
+**Update 2026-08-25: now CI-enforced.** The Verify workflow's database job regenerates the types on the real stack and fails on any drift, so the first pull-request run executes this check without a local machine. A local run remains useful only for fixing whatever the gate finds.
+
 ### A-2. Re-run the database suites on the real Supabase stack · [#2](https://github.com/ninjatech68-blip/Nearcast/issues/2)
 
 Confirm the 9 foundation and 74 Phase 1 assertions pass under `supabase test db` rather than the substitute harness, and run `npx supabase db lint --level warning --schema public,private` to catch anything the local cluster's defaults hid.
 
 **Plan:** `npm run db:start && npm run db:reset && npm run db:test`, then the lint. Any divergence from the 83/83 recorded on 2026-08-25 is a real finding and should be fixed before Class B work begins.
+
+**Update 2026-08-25: now CI-enforced.** The database job runs every migration, the seed, all pgTAP suites (152 assertions at this writing), and `supabase db lint` on genuine Supabase for every pull request. The Realtime *subscription delivery* is the one part CI cannot exercise; that stays with the device pass (#4).
 
 ### A-3. Configure the Google and Apple auth providers and verify sign-in end to end · [#3](https://github.com/ninjatech68-blip/Nearcast/issues/3)
 

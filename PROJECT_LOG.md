@@ -77,6 +77,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Account deletion | Passed | `delete_account` anonymizes the profile, withdraws open intents, deletes drafts, clears exact fields, redacts sent responses and messages, removes confirmations and deliveries, and records a suppression row — while preserving filed reports and the other party's messages; idempotent on repeat, and a deleted account is barred from every mutation function; 26 pgTAP assertions |
 | 2026-08-25 | Retention jobs | Passed | `apply_retention_policy` deletes messages 90 days after a room closes and clears exact location and contact fields 30 days after an intent closes; remaining Doc 04 rows join as their windows become reachable |
 | 2026-08-25 | Full verification | Passed | `npm run verify` fully clean (8 Vitest files, 35 Jest assertions including the two-step deletion flow, iOS export); clean-database run green at 152 of 152 across five suites |
+| 2026-08-25 | CI gates widened | Added | The Verify database job now also runs `supabase db lint` and regenerates `database.types.ts` on the real stack, failing on any drift — turning the two open real-stack verification items into pull-request gates |
 
 ## Governance Rules
 
@@ -111,3 +112,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Delivered the inbox, coordination room, disclosure release, in-room safety actions, and feed relevance feedback |
 | 2026-08-25 | Delivered Realtime channels, the resolution and outcome flow, and the allowlisted analytics module |
 | 2026-08-25 | Delivered the database half of account deletion, the first retention jobs, and the in-product deletion flow |
+| 2026-08-25 | Widened CI to enforce type-drift and database lint on the real Supabase stack |
