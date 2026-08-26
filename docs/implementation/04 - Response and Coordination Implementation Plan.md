@@ -44,8 +44,8 @@
 
 **Files:** `supabase/functions/process-notifications/`, `src/infrastructure/notifications/`
 
-- [ ] Test preference, generic payload, retry cap, invalid token, and deep-link reauthorization.
-- [ ] Send object IDs and generic copy only through Expo Push Service.
+- [~] Test preference, generic payload, retry cap, invalid token, and deep-link reauthorization. Preference routing and the generic payload are built and tested in `src/features/notifications/push-payload.ts`; retry cap, invalid token and deep-link reauthorization belong to the worker and are not built.
+- [~] Send object IDs and generic copy only through Expo Push Service. What may be sent is decided and tested; the sending itself waits on push tokens from a physical device.
 
 ## Exit Gate
 
@@ -61,3 +61,4 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 | 2026-08-25 | Delivered Realtime private channels: messages join the supabase_realtime publication behind a guard, the room subscribes per conversation with RLS scoping visibility, refetches from PostgreSQL on every event and on reconnect, and unsubscribes on unmount; the poll drops to a thirty-second dead-socket safety net |
 | 2026-08-25 | Delivered the resolution sheet with the four factual outcomes plus withdraw, and the in-room outcome confirmation panel with a dispute path; only a confirmed completion moves reliability |
 | 2026-08-25 | Outstanding in this plan: the two-run concurrency test for acceptance, and the notification worker with the devices write path |
+| 2026-08-26 | Built the notification payload and preference boundary: generic copy plus three ids for the five queued events, an unknown event producing silence rather than an invented notification, and preference routing with `intent_material_edit` following the decisions preference — there is no separate column and adding one is a schema change no requirement asks for. Outstanding: the `devices` write path, token acquisition, and the sending worker, all of which need a physical device |
