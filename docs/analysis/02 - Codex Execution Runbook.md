@@ -68,6 +68,8 @@ Run the four baseline checks above on the real Supabase stack. This is the first
 
 **Done when:** all four checks green, results recorded in `PROJECT_LOG.md`, issues #1 and #2 closed with the outputs.
 
+**Status: complete (2026-08-26).** Executed on the real stack from `codex/issue-17-runbook` and merged into `claude/repo-overview-vxx5d3`. Two real findings, both fixed in that branch: a Supabase lint warning on the enum assignment in `public.close_intent` (fixed with an explicit `public.intent_status` cast) and genuine generated-type drift (fixed by committing the generator output for `database.types.ts`; no call site broke). The 152 assertions, the `42501` grant denials, the `search_path = ''` resolution of `extensions.digest`, and `private.is_moderator()` under real Supabase Auth all behaved as the substitute harness predicted. Issues #1, #2, and #18 are closed; start at step 2.
+
 ## Step 2 — Device smoke of the full loop (issue #4)
 
 No screen in this branch has ever rendered on a device. Everything is testable today through the development bypasses — no OAuth credentials, no domain, no staging project needed.
@@ -117,3 +119,4 @@ Author under `.maestro/`, run against the local stack with the dev sign-in. Cove
 | Date | Change |
 |---|---|
 | 2026-08-25 | Created the Codex execution runbook: prerequisites, baseline expectations, and five ordered steps with exact done-criteria |
+| 2026-08-26 | Marked step 1 complete after the real-stack run, recorded its two findings, and pointed execution at step 2 |

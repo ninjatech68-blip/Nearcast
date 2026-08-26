@@ -47,6 +47,8 @@ This is the single least-trustworthy artefact in the repository. Everything the 
 
 **Update 2026-08-25: now CI-enforced.** The Verify workflow's database job regenerates the types on the real stack and fails on any drift, so the first pull-request run executes this check without a local machine. A local run remains useful only for fixing whatever the gate finds.
 
+**Closed 2026-08-26.** Executed on the real stack in `codex/issue-17-runbook` and merged. The generator did find drift — the hand-written file was missing `account_deletions`, `devices`, `idempotency_keys`, `invitations`, `moderation_actions`, and `notification_jobs`, among other differences — and the generated file replaced it. No call site broke: `tsc --noEmit` is clean against the generated types.
+
 ### A-2. Re-run the database suites on the real Supabase stack · [#2](https://github.com/ninjatech68-blip/Nearcast/issues/2)
 
 Confirm the 9 foundation and 74 Phase 1 assertions pass under `supabase test db` rather than the substitute harness, and run `npx supabase db lint --level warning --schema public,private` to catch anything the local cluster's defaults hid.
@@ -54,6 +56,8 @@ Confirm the 9 foundation and 74 Phase 1 assertions pass under `supabase test db`
 **Plan:** `npm run db:start && npm run db:reset && npm run db:test`, then the lint. Any divergence from the 83/83 recorded on 2026-08-25 is a real finding and should be fixed before Class B work begins.
 
 **Update 2026-08-25: now CI-enforced.** The database job runs every migration, the seed, all pgTAP suites (152 assertions at this writing), and `supabase db lint` on genuine Supabase for every pull request. The Realtime *subscription delivery* is the one part CI cannot exercise; that stays with the device pass (#4).
+
+**Closed 2026-08-26.** All 152 assertions passed on genuine Supabase, matching the substitute harness exactly. The lint found one real warning — an untyped enum assignment in `public.close_intent` — fixed with an explicit `public.intent_status` cast. Realtime subscription delivery remains open in #4.
 
 ### A-3. Configure the Google and Apple auth providers and verify sign-in end to end · [#3](https://github.com/ninjatech68-blip/Nearcast/issues/3)
 
@@ -206,3 +210,4 @@ Doc 14's Definition of Done applies unchanged. In practice, for each issue:
 | 2026-08-25 | Created the Codex handoff, splitting outstanding work into environment-blocked, unbuilt scope, and human-led, with a suggested order and matching GitHub issues |
 | 2026-08-25 | Added the bypass register: development sign-in, configurable share base, and local-stack testing keep development active while human items stay a monitoring track |
 | 2026-08-25 | Pointed execution at the new runbook, which sequences the actionable steps with exact expected outputs |
+| 2026-08-26 | Closed A-1 and A-2 with the real-stack results and recorded the two defects the run found |
