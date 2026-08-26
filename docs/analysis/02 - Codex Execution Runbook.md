@@ -36,6 +36,39 @@ Two consequences worth stating plainly:
 5. Do not touch the human-led items (issues #12, #13, #14) or the deferred dark-appearance work (#11).
 6. Leave the working tree clean. `expo prebuild` writes to `app.json` and `package.json`; both now declare everything prebuild needs, so a prebuild against a clean tree is a no-op. If either file still comes back modified, that is a finding — report it, do not commit it.
 
+## When the local environment is the blocker
+
+An environment failure is a finding like any other: record it in `PROJECT_LOG.md` and report it. It is not a Nearcast defect, and it must not be logged as a verification result — but a silent stall is worse than a recorded blocker.
+
+**Recovery sequence**, in order. Stop as soon as `npm ci` completes and the CLI is present.
+
+```bash
+# 1. Nothing may be holding files open — ENOTEMPTY on rmdir usually means a
+#    watcher or bundler still has the tree.
+pkill -f "expo start"; pkill -f metro; watchman shutdown-server 2>/dev/null
+
+# 2. Disk. Tarball corruption during install is often a full volume.
+df -h /
+
+# 3. Clean install from the lockfile. Never delete package-lock.json:
+#    `npm ci` needs it, and regenerating it is a repository change.
+rm -rf node_modules
+npm cache clean --force
+npm ci
+
+# 4. Prove the CLI actually landed rather than assuming it did.
+ls node_modules/.bin/supabase && npx supabase --version
+```
+
+**The database work does not need `node_modules`.** The `db:*` scripts are thin wrappers around the Supabase CLI, and the CLI reads `supabase/config.toml`, the migrations and the seed — all repository files. With a broken install, use the standalone CLI and call it directly:
+
+```bash
+brew install supabase/tap/supabase
+supabase start && supabase db reset && supabase test db
+```
+
+So when npm is broken, **B-2 is still fully doable and B-1 is not** — Metro needs the install, the database does not. Do B-2 rather than stalling on both.
+
 ## Open blocker queue
 
 Work these in order. Nothing else is yours right now.
