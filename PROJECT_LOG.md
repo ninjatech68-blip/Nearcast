@@ -90,6 +90,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-26 | Privacy warning at review | Passed | `findPrivacyViolations` now runs over the statement on the review screen and warns — never blocks — before publishing. The words are the broadcaster's own; the database and disclosure rules are what actually keep exact location and contact details out of discoverable rows. 4 new screen assertions, including one proving publishing still proceeds |
 | 2026-08-26 | Continuous integration | Widened | `verify.yml` now also runs on pushes to `claude/**` and `codex/**`. The type-drift and `supabase db lint` gates added in `4aa78a8` had never executed in CI, because the workflow only triggered on pull requests and pushes to `main`, and no pull request has been opened |
 | 2026-08-26 | Full verification | Passed | Substitute harness 182 of 182 across six suites; `npm run verify` clean with 13 Vitest files (93 tests), 14 Jest suites (69 tests), and the iOS export |
+| 2026-08-26 | Continuous integration | Passed | Verify run 2 on `feee6ff` — the first run ever on a working branch — completed with both jobs green. The database job started real Supabase, applied every migration and the seed, ran `supabase test db`, ran `supabase db lint`, and regenerated `database.types.ts` with no diff. The two gates added in `4aa78a8` have now executed for the first time, and the real-stack baseline no longer depends on someone running it by hand. Run: https://github.com/ninjatech68-blip/Nearcast/actions/runs/32950564763 |
 
 ## Governance Rules
 

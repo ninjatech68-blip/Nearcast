@@ -79,9 +79,11 @@ Everything else in the product is verified by CI or by the substitute harness. T
 
 **Done when:** the loop completes on both platforms, findings are filed as separate issues with screenshots on #4, and the result is recorded in `PROJECT_LOG.md`. Do not fix findings silently.
 
-### B-2. Real-stack baseline — on request only
+### B-2. Real-stack baseline — CI does this now
 
-Run when Claude asks, typically after a schema change. Last run 2026-08-26: green, no drift.
+**Verify run 2 on `feee6ff` proved CI can do the whole thing itself:** real Supabase started, every migration and the seed applied, `supabase test db`, `supabase db lint`, and `database.types.ts` regenerated with no diff — both jobs green. This is no longer a standing request.
+
+Run it locally only when CI cannot answer the question: a failure you need to reproduce interactively, or a change CI has not seen yet.
 
 ```bash
 npm run db:start && npm run db:reset && npm run db:test
