@@ -251,7 +251,7 @@ Doc 16 defines a mandatory server boundary of **9 functions**. One exists.
 | `release-disclosure` | **Built**, with `get_match_disclosures` for the per-column projection |
 | `send-message` | **Built**, idempotent, membership and block checked |
 | `create-report` | **Built**, rate limited |
-| `delete-account` | **Missing.** Phase 4 |
+| `delete-account` | **Built.** Database half tested; the Edge half exists but has not yet run against a stack |
 | `redeem-invite` | **Built**, single generic error for unknown, expired and consumed |
 | `confirm-intent` | **Built**, rate limited, self-confirmation rejected |
 | `update-intent` | **Built 2026-08-26**, version-guarded, records a material edit by category and notifies existing respondents |
@@ -372,3 +372,4 @@ Decisions 2 and 4 had no single recommendation in the original analysis and were
 | 2026-08-25 | Re-measured after Phase 1 delivery: 34 of 64 MUST requirements met, 21 partial, 9 not started; server boundary 14 of 16; no Doc 05 entity outstanding |
 | 2026-08-26 | `update-intent` built with material-edit history, satisfying MUST-017 and taking the server boundary to 15 of 16 |
 | 2026-08-26 | Offline draft persistence delivered, satisfying MUST-015 |
+| 2026-08-26 | Server half of account deletion and the two scheduled maintenance jobs delivered; `process-notifications` is the only contract function with no implementation |

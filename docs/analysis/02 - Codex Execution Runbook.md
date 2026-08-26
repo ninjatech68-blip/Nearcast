@@ -40,7 +40,7 @@ Two consequences worth stating plainly:
 
 Work these in order. Nothing else is yours right now.
 
-### B-1. Device smoke of the full loop (issue #4) — **the only open blocker**
+### B-1. Device smoke of the full loop (issue #4) — **highest priority**
 
 Everything else in the product is verified by CI or by the substitute harness. This is not, and three paths in it have never executed outside a test.
 
@@ -75,11 +75,32 @@ Everything else in the product is verified by CI or by the substitute harness. T
 
 **6. Deliberate failure states.** A bogus `nearcast://i/<uuid>` link must say "not available" without revealing whether anything exists. Check the empty feed copy, and check that dynamic type at the largest accessibility size does not truncate privacy or safety copy.
 
-**Known and expected, do not file:** account deletion does not revoke the session on device. The Edge half is unbuilt and is Claude's to write. The local draft still clears, and that part is in scope.
+**Known and expected, do not file:** account deletion now calls the `delete-account` Edge Function, which is **not served by `npm run db:start`**. Unless you are also running `npx supabase functions serve delete-account`, deleting an account will fail with a transport error and show "Your account could not be deleted right now." That is the expected result during B-1, not a bug — proving the function works is B-2. The local draft clearing does not happen in that case either, because it only runs after the server confirms; check draft clearing through the publish path instead.
 
 **Done when:** the loop completes on both platforms, findings are filed as separate issues with screenshots on #4, and the result is recorded in `PROJECT_LOG.md`. Do not fix findings silently.
 
-### B-2. Real-stack baseline — CI does this now
+### B-2. Run the delete-account Edge Function against the local stack (issue #7)
+
+Written 2026-08-26 and **never executed** — authoring a Deno function needs no Docker, running one does. This is the second-highest blocker after the device smoke.
+
+```bash
+npm run db:start && npm run db:reset
+npx supabase functions serve delete-account
+```
+
+Sign in as a throwaway persona, delete the account from the You screen, then check all of these:
+
+- The response is `{ ok: true }`.
+- The session is dead: the same access token is refused afterwards.
+- Sign-in with that account is refused — the user is banned, **not deleted**.
+- The `auth.users` row still exists, and so do the anonymized profile ("Deleted member"), the redacted responses and messages, and the `account_deletions` suppression row. If any of those are gone, the function deleted the user row and that is a serious finding: `profiles.id` cascades from it.
+- Reports filed by the deleted account survive, and blocks still apply.
+
+Also confirm the two `pg_cron` jobs registered: `select jobname, schedule from cron.job where jobname like 'nearcast_%'` must return `nearcast_expire_intents` at `*/15 * * * *` and `nearcast_apply_retention_policy` at `17 3 * * *`.
+
+**Done when:** the checks above pass or are filed as findings, and the result is recorded in `PROJECT_LOG.md` and commented on #7.
+
+### B-3. Real-stack baseline — CI does this now
 
 **Verify run 2 on `feee6ff` proved CI can do the whole thing itself:** real Supabase started, every migration and the seed applied, `supabase test db`, `supabase db lint`, and `database.types.ts` regenerated with no diff — both jobs green. This is no longer a standing request.
 

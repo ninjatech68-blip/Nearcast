@@ -345,8 +345,27 @@ export async function confirmOutcome(
  * revocation itself is the Edge half of this contract.
  */
 export async function deleteAccount(): Promise<DecisionResult> {
-  const { error } = await supabase.rpc('delete_account', { confirmation: 'DELETE' });
-  return error
-    ? { ok: false, message: 'Your account could not be deleted right now. Try again.' }
-    : { ok: true };
+  // Through the Edge Function, not the RPC directly: the database half cannot
+  // end the session, and deletion that leaves someone signed in has not
+  // finished. The function calls `delete_account` with this caller's own
+  // token, so the actor is still derived from `auth.uid()`.
+  const { data, error } = await supabase.functions.invoke('delete-account', {
+    body: { confirmation: 'DELETE' },
+  });
+
+  if (error) {
+    return { ok: false, message: 'Your account could not be deleted right now. Try again.' };
+  }
+
+  // The data is gone but the session survived. Say so rather than reporting a
+  // clean success the person could disprove by staying signed in.
+  if ((data as { error?: string } | null)?.error === 'partially_completed') {
+    return {
+      ok: false,
+      message:
+        'Your data was deleted, but we could not end the session on this device. Sign out, and contact support if you can still sign in.',
+    };
+  }
+
+  return { ok: true };
 }

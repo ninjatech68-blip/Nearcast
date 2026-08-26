@@ -25,6 +25,7 @@ function channelStub() {
 
 const mockSupabase = {
   from: jest.fn(() => queryBuilder(emptyResult)),
+  functions: { invoke: jest.fn(async () => ({ data: null, error: null })) },
   rpc: jest.fn(async () => ({ data: null, error: null })),
   channel: jest.fn(() => channelStub()),
   removeChannel: jest.fn(async () => 'ok'),
