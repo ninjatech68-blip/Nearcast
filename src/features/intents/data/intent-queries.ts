@@ -2,6 +2,14 @@ import { track } from '@/infrastructure/analytics/analytics';
 import { supabase } from '@/infrastructure/supabase/client';
 import type { Database } from '@/infrastructure/supabase/database.types';
 
+import {
+  type IntentEdit,
+  describeMaterialEdit,
+  intentEditSchema,
+  intentPublishSchema,
+  toChangePayload,
+} from '@/features/intents/domain/intent';
+
 type IntentPrimitive = Database['public']['Enums']['intent_primitive'];
 type ReachLevel = Database['public']['Enums']['reach_level'];
 
@@ -162,6 +170,16 @@ export type PublishResult =
  * is a draft; every transition after that is server-owned.
  */
 export async function publishIntent(input: PublishInput): Promise<PublishResult> {
+  // Doc 05 requires validation at the trust boundary as well as in the
+  // database. Rejecting here means an invalid draft never becomes a row.
+  const validated = intentPublishSchema.safeParse(input);
+  if (!validated.success) {
+    return {
+      state: 'error',
+      message: 'Some details need fixing before this can be published.',
+    };
+  }
+
   const draft = await supabase
     .from('intents')
     .insert({
@@ -222,6 +240,131 @@ export async function publishIntent(input: PublishInput): Promise<PublishResult>
     state: 'ok',
     intentId: published.data.id,
     shareSlug: published.data.share_slug,
+  };
+}
+
+export type EditableIntent = {
+  id: string;
+  version: number;
+  status: Database['public']['Enums']['intent_status'];
+  statement: string;
+  expiresAt: string;
+  approximatePlace: string | null;
+  priceMinor: number | null;
+  currency: string | null;
+  responseCount: number;
+};
+
+/** The owner's current values, with the version an edit must be based on. */
+export async function fetchEditableIntent(
+  intentId: string,
+): Promise<QueryResult<EditableIntent | null>> {
+  const { data, error } = await supabase
+    .from('intents')
+    .select(
+      `id, version, status, statement, expires_at,
+       intent_context ( approximate_place, price_minor, currency ),
+       responses ( id )`,
+    )
+    .eq('id', intentId)
+    .maybeSingle();
+
+  if (error) return { state: 'error', message: READ_ERROR };
+  if (!data) return { state: 'ok', data: null };
+
+  const context = Array.isArray(data.intent_context)
+    ? data.intent_context[0]
+    : data.intent_context;
+
+  return {
+    state: 'ok',
+    data: {
+      id: data.id,
+      version: data.version,
+      status: data.status,
+      statement: data.statement,
+      expiresAt: data.expires_at,
+      approximatePlace: context?.approximate_place ?? null,
+      priceMinor: context?.price_minor ?? null,
+      currency: context?.currency ?? null,
+      responseCount: data.responses?.length ?? 0,
+    },
+  };
+}
+
+export type EditResult =
+  | { ok: true; version: number; changed: string[] }
+  | { ok: false; message: string };
+
+/**
+ * Applies an owner edit through the server function, which decides whether the
+ * change was material and records it where existing respondents can see it
+ * (MUST-017). The expected version makes a concurrent edit fail loudly rather
+ * than overwrite silently.
+ */
+export async function updateIntent(
+  intentId: string,
+  expectedVersion: number,
+  edit: IntentEdit,
+): Promise<EditResult> {
+  const validated = intentEditSchema.safeParse(edit);
+  if (!validated.success) {
+    return { ok: false, message: 'Change something before saving.' };
+  }
+
+  const { data, error } = await supabase.rpc('update_intent', {
+    target_intent_id: intentId,
+    expected_version: expectedVersion,
+    changes: toChangePayload(validated.data) as Database['public']['Tables']['intent_events']['Row']['metadata'],
+  });
+
+  if (error || !data) {
+    return {
+      ok: false,
+      message: 'Your changes were not saved. This intent may have changed — reload and try again.',
+    };
+  }
+
+  const result = data as { version: number; changed?: string[] };
+  return { ok: true, version: result.version, changed: result.changed ?? [] };
+}
+
+export type MaterialEdit = {
+  id: number;
+  description: string;
+  changedAt: string;
+};
+
+/**
+ * The material-edit history a respondent is entitled to see. Policy limits the
+ * rows to material edits on intents the reader can already read; the values
+ * themselves are read from the intent, never copied into the log.
+ */
+export async function fetchMaterialEdits(
+  intentId: string,
+): Promise<QueryResult<MaterialEdit[]>> {
+  const { data, error } = await supabase
+    .from('intent_events')
+    .select('id, metadata, created_at')
+    .eq('intent_id', intentId)
+    .eq('event_type', 'material_edit')
+    .order('created_at', { ascending: false });
+
+  if (error) return { state: 'error', message: READ_ERROR };
+
+  return {
+    state: 'ok',
+    data: (data ?? []).map((row) => {
+      const metadata = (row.metadata ?? {}) as { fields?: unknown };
+      const fields = Array.isArray(metadata.fields)
+        ? metadata.fields.filter((field): field is string => typeof field === 'string')
+        : [];
+      return {
+        id: row.id,
+        description: describeMaterialEdit(fields),
+        changedAt: row.created_at,
+      };
+    }),
   };
 }
 

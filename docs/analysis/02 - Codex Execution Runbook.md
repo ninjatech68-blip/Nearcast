@@ -5,7 +5,7 @@
 - **Status:** Derived execution instructions. **Not a governing document.**
 - **Precedence:** Below implementation plans. `AGENTS.md` and the documents it names govern every step here; where this runbook and a governing document disagree, the governing document wins.
 - **Created:** 2026-08-25
-- **Baseline commit:** `4aa78a8` on `claude/repo-overview-vxx5d3`
+- **Baseline commit:** `4aa78a8` on `claude/repo-overview-vxx5d3`, moved forward on 2026-08-26 after step 1 merged and the material-edit work landed. Always pull the branch head; the baseline table below is kept current.
 - **Audience:** Codex, running on a machine with Docker, simulators, and the toolchain already recorded in `PROJECT_LOG.md`.
 - **Mirror:** This runbook is mirrored in a GitHub issue so it can be read without a checkout. The repository copy is authoritative.
 
@@ -48,10 +48,10 @@ cp .env.example .env
 
 | Check | Command | Expected |
 |---|---|---|
-| Database suites | `npm run db:start && npm run db:reset && npm run db:test` | 152 pgTAP assertions across 5 files: foundation 9, phase1 74, journey 25, phase2 18, phase4 26 |
+| Database suites | `npm run db:start && npm run db:reset && npm run db:test` | 182 pgTAP assertions across 6 files: foundation 9, phase1 74, journey 25, phase2 18, phase4 26, intent edits 30 |
 | Database lint | `npx supabase db lint --level warning --schema public,private` | No errors in `public` or `private` |
 | Type drift | `npm run db:types && git diff --exit-code -- src/infrastructure/supabase/database.types.ts` | Empty diff. A diff means the hand-written types were wrong: commit the regenerated file and fix any call site the compiler then flags |
-| App suite | `npm run verify` | Lint 0 problems, all Vitest and Jest suites pass (35 Jest assertions), iOS export completes |
+| App suite | `npm run verify` | Lint 0 problems, all Vitest and Jest suites pass (8 Vitest files with 47 tests, 12 Jest suites with 47 tests), iOS export completes |
 
 These same checks run in CI on every pull request; running them locally first keeps CI green.
 
@@ -122,3 +122,4 @@ Author under `.maestro/`, run against the local stack with the dev sign-in. Cove
 | 2026-08-25 | Created the Codex execution runbook: prerequisites, baseline expectations, and five ordered steps with exact done-criteria |
 | 2026-08-26 | Marked step 1 complete after the real-stack run, recorded its two findings, and pointed execution at step 2 |
 | 2026-08-26 | Added the standing rule for the H-10 issue-write gap so a `403` never stalls a step |
+| 2026-08-26 | Refreshed the baseline table for the material-edit work: 182 pgTAP assertions across six suites, 47 Jest tests |

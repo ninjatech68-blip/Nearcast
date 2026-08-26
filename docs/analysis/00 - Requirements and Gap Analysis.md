@@ -237,7 +237,7 @@ Doc 05 names 23 entities. 19 exist.
 
 Doc 16 defines a mandatory server boundary of **9 functions**. One exists.
 
-**Updated 2026-08-25: 14 of 16 built.**
+**Updated 2026-08-25: 14 of 16 built. Updated 2026-08-26: 15 of 16 built** — `update-intent` landed with material-edit history. Only `process-notifications` remains, and it waits on push tokens from a physical device.
 
 | Contract function | State |
 |---|---|
@@ -252,7 +252,7 @@ Doc 16 defines a mandatory server boundary of **9 functions**. One exists.
 | `delete-account` | **Missing.** Phase 4 |
 | `redeem-invite` | **Built**, single generic error for unknown, expired and consumed |
 | `confirm-intent` | **Built**, rate limited, self-confirmation rejected |
-| `update-intent` | Folded into `close_intent` and the draft policy; material-edit history still outstanding |
+| `update-intent` | **Built 2026-08-26**, version-guarded, records a material edit by category and notifies existing respondents |
 | `close-intent` | **Built** |
 | `decide-response` | **Built**, neutral decline status |
 | `generate-deliveries` | **Missing.** Phase 2 |
@@ -368,3 +368,4 @@ Decisions 2 and 4 had no single recommendation in the original analysis and were
 | 2026-08-25 | Created requirements and gap analysis against commit `7820a0a`; registered 9 documentation conflicts and 7 governance defects; scored 64 MVP MUST requirements |
 | 2026-08-25 | Recorded resolution of all 9 conflicts and all 7 governance defects; updated the schema and server-boundary sections for the Doc 05 and Doc 16 amendments |
 | 2026-08-25 | Re-measured after Phase 1 delivery: 34 of 64 MUST requirements met, 21 partial, 9 not started; server boundary 14 of 16; no Doc 05 entity outstanding |
+| 2026-08-26 | `update-intent` built with material-edit history, satisfying MUST-017 and taking the server boundary to 15 of 16 |

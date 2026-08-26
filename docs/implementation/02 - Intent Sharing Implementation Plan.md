@@ -51,6 +51,7 @@
 - [x] Test withdrawal, resolution, expiry, stale state, and duplicate retries.
 - [ ] Add My Intents and IntentStatusHeader with next valid owner actions.
 - [x] Stop new responses immediately for non-live states.
+- [x] Add `update_intent` with material-edit history visible to existing respondents (MUST-017).
 
 ## Exit Gate
 
@@ -64,3 +65,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | 2026-08-25 | Resolved C-01: replaced OTP sign-in with Google and Apple sign-in to match MVP Requirement MUST-001 |
 | 2026-08-25 | Delivered invitation redemption, Google and Apple sign-in, the publish transaction with idempotency, origin confirmation, close and expiry, and the anonymous share projection; 74 Phase 1 pgTAP assertions pass |
 | 2026-08-25 | Outstanding in this plan: Zod validation at the publish boundary, structured draft fields beyond primitive and statement, offline draft persistence, universal-link routing and the WhatsApp share action, material-edit history, and the `intent_published` analytics event |
+| 2026-08-26 | Delivered Zod validation at the publish boundary and material-edit history: `update_intent`, the respondent-visible history policy, the owner edit screen, and 30 pgTAP assertions. Editing stops at `matched`, a rewritten statement counts as material, and the event records categories rather than values — all three recorded in the Doc 00 decision log. No analytics event is emitted for edits, because the Doc 09 taxonomy names none and inventing one would widen telemetry no metric asks for. Outstanding in this plan: structured draft fields beyond statement and area in the composer, offline draft persistence, and universal-link routing with the WhatsApp share action |

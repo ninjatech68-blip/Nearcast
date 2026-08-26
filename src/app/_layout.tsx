@@ -79,6 +79,10 @@ export default function RootLayout() {
             name="resolve/[intentId]"
             options={{ title: 'Resolve intent', presentation: 'modal' }}
           />
+          <Stack.Screen
+            name="edit/[intentId]"
+            options={{ title: 'Edit intent', presentation: 'modal' }}
+          />
         </Stack>
       </SessionProvider>
     </QueryClientProvider>

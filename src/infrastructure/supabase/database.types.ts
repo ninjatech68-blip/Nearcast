@@ -1370,6 +1370,14 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      update_intent: {
+        Args: {
+          changes: Json
+          expected_version: number
+          target_intent_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       device_platform: "ios" | "android"

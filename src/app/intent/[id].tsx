@@ -7,7 +7,11 @@ import { Button } from '@/design-system/components/button';
 import { StatePanel, type ScreenState } from '@/design-system/components/state-panel';
 import { tokens } from '@/design-system/tokens';
 import { useSession } from '@/features/auth/session';
-import { fetchIntentDetail, type IntentDetail } from '@/features/intents/data/intent-queries';
+import {
+  fetchIntentDetail,
+  fetchMaterialEdits,
+  type IntentDetail,
+} from '@/features/intents/data/intent-queries';
 
 type DetailState = { kind: 'content'; intent: IntentDetail } | ScreenState;
 
@@ -23,6 +27,14 @@ export default function IntentDetailScreen() {
     queryKey: ['intent', id, userId],
     queryFn: () => fetchIntentDetail(id ?? '', userId),
   });
+
+  // Policy returns rows only to people entitled to the history, so an empty
+  // result is the honest answer for everyone else.
+  const edits = useQuery({
+    queryKey: ['intent-edits', id],
+    queryFn: () => fetchMaterialEdits(id ?? ''),
+  });
+  const materialEdits = edits.data?.state === 'ok' ? edits.data.data : [];
 
   const state: DetailState = detail.isPending
     ? { kind: 'loading' }
@@ -55,6 +67,17 @@ export default function IntentDetailScreen() {
           <Text style={styles.meta}>{intent.approximatePlace} area</Text>
         ) : null}
 
+        {materialEdits.length > 0 ? (
+          <View style={styles.editBox} testID="material-edits">
+            <Text style={styles.editTitle}>Changed since it was published</Text>
+            {materialEdits.map((edit) => (
+              <Text key={edit.id} style={styles.editBody}>
+                {edit.description}
+              </Text>
+            ))}
+          </View>
+        ) : null}
+
         {intent.reasonText ? (
           <View style={styles.reasonBox}>
             <Text style={styles.reasonTitle}>Why you are seeing this</Text>
@@ -83,6 +106,15 @@ export default function IntentDetailScreen() {
         <Text style={styles.privacy}>
           No exact address or contact details are shown. The originating group stays private.
         </Text>
+
+        {intent.isOwn && (intent.status === 'live' || intent.status === 'draft') ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push(`/edit/${intent.id}`)}
+            style={({ pressed }) => [styles.resolveLink, pressed && styles.resolveLinkPressed]}>
+            <Text style={styles.resolveLabel}>Edit intent</Text>
+          </Pressable>
+        ) : null}
 
         {intent.isOwn && (intent.status === 'live' || intent.status === 'matched') ? (
           <Pressable
@@ -146,6 +178,9 @@ const styles = StyleSheet.create({
   primitive: { color: tokens.semantic.color.actionPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 11, textTransform: 'uppercase' },
   statement: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_700Bold', fontSize: 20, lineHeight: 26 },
   meta: { color: tokens.semantic.color.textSecondary, fontFamily: 'Manrope_400Regular', fontSize: 16 },
+  editBox: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundWarning, gap: 4 },
+  editTitle: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_600SemiBold', fontSize: 13 },
+  editBody: { color: tokens.semantic.color.textPrimary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },
   reasonBox: { marginTop: 8, padding: 16, borderRadius: tokens.primitive.radius.card, backgroundColor: tokens.semantic.color.backgroundInfo, gap: 4 },
   reasonTitle: { color: tokens.semantic.color.actionSecondary, fontFamily: 'Manrope_600SemiBold', fontSize: 13 },
   reasonBody: { color: tokens.semantic.color.actionSecondary, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18 },

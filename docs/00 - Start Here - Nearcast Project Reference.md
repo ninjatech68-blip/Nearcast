@@ -119,6 +119,9 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 | 2026-08-25 | Pull the semantic token cutover forward into the current build, revising the earlier C-07 timing | Founder direction: the app must match the approved Trustworthy Native Clarity palette now; deferring created a visible mismatch between the approved boards and the running app |
 | 2026-08-25 | Keep Manrope as the product typeface through the cutover, adopting the approved native type scale onto Manrope weights | The C-05 resolution stands; the SF Pro and Roboto mapping activates in a later platform-styling pass |
 | 2026-08-25 | Ship the dark palette as machine-readable token data while the app remains light-pinned | Dark appearance stays deferred per C-08; carrying the values in the tokens makes the future remap a data change rather than a redesign |
+| 2026-08-26 | Count a rewritten statement as a material edit alongside the four categories MUST-017 names | A respondent agreed to the text as much as to the price; the requirement's purpose is that nobody is surprised by a change they did not see |
+| 2026-08-26 | Stop owner editing once an intent is matched | After acceptance the terms are being coordinated in a room between two named people, where a change is a conversation rather than a silent revision |
+| 2026-08-26 | Record material edits by category and never copy the new values into the event log | `intent_events` is append-only, so values written there would sit outside the reach of the Doc 04 retention policy; respondents read current values from the intent itself |
 
 ## Document Change Rule
 
@@ -133,3 +136,4 @@ Every document must include a `Change Log` section. Material decisions require u
 | 2026-08-24 | Added explicit greenfield project starting point |
 | 2026-08-25 | Recorded approved mobile design-system direction in design governance |
 | 2026-08-25 | Added derived-document ranks for `PRODUCT.md` and `DESIGN.md` and recorded the C-01, C-02, C-03, and C-08 resolutions in the decision log |
+| 2026-08-26 | Recorded the three material-edit decisions taken while implementing MUST-017 |
