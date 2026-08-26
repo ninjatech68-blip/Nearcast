@@ -78,6 +78,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Retention jobs | Passed | `apply_retention_policy` deletes messages 90 days after a room closes and clears exact location and contact fields 30 days after an intent closes; remaining Doc 04 rows join as their windows become reachable |
 | 2026-08-25 | Full verification | Passed | `npm run verify` fully clean (8 Vitest files, 35 Jest assertions including the two-step deletion flow, iOS export); clean-database run green at 152 of 152 across five suites |
 | 2026-08-25 | CI gates widened | Added | The Verify database job now also runs `supabase db lint` and regenerates `database.types.ts` on the real stack, failing on any drift — turning the two open real-stack verification items into pull-request gates |
+| 2026-08-26 | Codex runbook Step 1 baseline | Passed after Docker recovery | In `codex/issue-17-runbook`, Docker Desktop initially hung at the server response and #18 was filed; terminating the stale Docker backend and relaunching Docker restored the daemon. `npm run db:start && npm run db:reset && npm run db:test` passed with 152 of 152 pgTAP assertions. `npx supabase db lint --level warning --schema public,private` first found an enum assignment warning in `public.close_intent`; adding an explicit `public.intent_status` cast made lint return no schema errors. `npm run db:types` found real generated-type drift, so `database.types.ts` was regenerated and committed. Final `npm run verify` passed lint, typecheck, 8 Vitest files with 32 tests, 10 Jest suites with 35 tests, and iOS export. GitHub issue comments and issue-closing updates for #1, #2, #17, and #18 returned `403` with the available MCP integration/token, so the branch commit is the recorded treatment trail until repo issue-write permissions are restored. |
 
 ## Governance Rules
 
@@ -114,3 +115,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Delivered the database half of account deletion, the first retention jobs, and the in-product deletion flow |
 | 2026-08-25 | Widened CI to enforce type-drift and database lint on the real Supabase stack |
 | 2026-08-25 | Added the Codex execution runbook (`docs/analysis/02`) and opened it as GitHub issue 17, the single entry point for local execution |
+| 2026-08-26 | Recorded the Codex runbook Step 1 real-stack baseline, lint fix, generated-type drift correction, and final verification |

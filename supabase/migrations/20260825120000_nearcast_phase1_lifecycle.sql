@@ -388,7 +388,7 @@ begin
     raise exception 'stale_state' using errcode = '40001';
   end if;
 
-  next_status := case when outcome = 'withdrawn' then 'withdrawn' else 'resolved' end;
+  next_status := (case when outcome = 'withdrawn' then 'withdrawn' else 'resolved' end)::public.intent_status;
 
   update public.intents
   set status = next_status,
