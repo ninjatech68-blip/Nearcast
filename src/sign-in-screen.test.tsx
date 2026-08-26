@@ -45,6 +45,19 @@ describe('SignInScreen', () => {
     expect(screen.getByText(/never\s+available in production/)).toBeTruthy();
   });
 
+  it('prints the seeded personas so the founder does not open seed.sql on first boot', async () => {
+    mockAvailable.mockReturnValue(true);
+
+    await renderScreen(<SignInScreen />);
+
+    const hint = screen.getByTestId('dev-personas-hint');
+    expect(hint).toBeTruthy();
+    expect(hint.props.children).toMatch(/asha@nearcast\.local/);
+    expect(hint.props.children).toMatch(/dev@nearcast\.local/);
+    expect(hint.props.children).toMatch(/mira@nearcast\.local/);
+    expect(hint.props.children).toMatch(/nearcast-local/);
+  });
+
   it('hides the development entrance entirely in production', async () => {
     mockAvailable.mockReturnValue(false);
 

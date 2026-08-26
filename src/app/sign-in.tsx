@@ -76,6 +76,10 @@ export default function SignInScreen() {
               Local testing only. Uses the seeded personas in supabase/seed.sql and is never
               available in production.
             </Text>
+            <Text style={styles.devHint} testID="dev-personas-hint">
+              Seeded personas (password: nearcast-local): asha@nearcast.local,
+              dev@nearcast.local, mira@nearcast.local.
+            </Text>
             <TextInput
               accessibilityLabel="Development email"
               autoCapitalize="none"
@@ -158,6 +162,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Manrope_400Regular',
     fontSize: 13,
     lineHeight: 18,
+  },
+  devHint: {
+    color: tokens.semantic.color.statusWarning,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: 12,
+    lineHeight: 16,
   },
   devInput: {
     minHeight: 48,
