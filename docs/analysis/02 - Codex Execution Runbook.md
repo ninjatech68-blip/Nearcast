@@ -60,6 +60,8 @@ npm ci
 ls node_modules/.bin/supabase && npx supabase --version
 ```
 
+**If a container is unhealthy, check whether we use it at all.** Supabase starts a stack; Nearcast uses a fraction of it. Storage was disabled on 2026-08-26 after its health check blocked `db reset` — nothing in the app touches it. If another container fails the same way, say which one: the fix may be to stop starting it rather than to make it healthy.
+
 **The database work does not need `node_modules`.** The `db:*` scripts are thin wrappers around the Supabase CLI, and the CLI reads `supabase/config.toml`, the migrations and the seed — all repository files. With a broken install, use the standalone CLI and call it directly:
 
 ```bash

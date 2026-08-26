@@ -113,7 +113,12 @@ port = 54324
 # sender_name = "Admin"
 
 [storage]
-enabled = true
+# Nearcast does not use Supabase Storage. `profiles.avatar_path` is a column
+# with no upload or download path anywhere in the app, so the storage
+# container is pure overhead — and on 2026-08-26 it was a hard blocker: its
+# health check failed and took `supabase db reset` down with it. Re-enable
+# this the day avatars are actually implemented, not before.
+enabled = false
 # The maximum file size allowed (e.g. "5MB", "500KB").
 file_size_limit = "50MiB"
 
@@ -143,9 +148,10 @@ max_catalogs = 2
 # Analytics Buckets is available to Supabase Pro plan.
 # [storage.analytics.buckets.my-warehouse]
 
-# Store vector embeddings in S3 for large and durable datasets
+# Store vector embeddings in S3 for large and durable datasets. Unused, and a
+# Pro-plan feature besides.
 [storage.vector]
-enabled = true
+enabled = false
 max_buckets = 10
 max_indexes = 5
 
