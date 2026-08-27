@@ -1,6 +1,7 @@
 import * as Location from 'expo-location';
 
 import { makeSessionToken, placeDetails, placesAutocomplete, placesEnabled } from './places-api';
+import * as NativePlaces from './native-places';
 
 /**
  * area helpers for compose. everything here resolves to NAMES at
@@ -30,6 +31,8 @@ export type AreaSuggestion = {
   placeId?: string;
   /** shared session token for cheaper Places billing */
   sessionToken?: string;
+  /** which backend produced this — decides how resolve() looks up the coord */
+  source?: 'native' | 'places' | 'geocode';
 };
 
 function namesFrom(address: Location.LocationGeocodedAddress): string[] {
@@ -103,11 +106,26 @@ export type AreaLookupResult =
 export async function suggestAreas(
   query: string,
   sessionToken?: string,
+  bias?: { latitude: number; longitude: number; span?: number },
 ): Promise<readonly AreaSuggestion[]> {
   const trimmed = query.trim();
   if (trimmed.length < 2) return [];
 
-  // Preferred: Google Places Autocomplete (POI + street level).
+  // Preferred (iOS): MKLocalSearchCompleter via the local
+  // nearcast-places native module. No API key, no billing.
+  if (NativePlaces.isAvailable()) {
+    const results = await NativePlaces.search(trimmed, bias);
+    if (results.length > 0) {
+      return results.map((r) => ({
+        name: r.primary,
+        full: r.secondary ? `${r.primary}, ${r.secondary}` : r.primary,
+        placeId: r.id,
+        source: 'native' as const,
+      }));
+    }
+  }
+
+  // Second choice: Google Places Autocomplete (POI + street level).
   if (placesEnabled() && sessionToken) {
     const predictions = await placesAutocomplete(trimmed, sessionToken, { countryCode: 'in' });
     if (predictions !== null && predictions.length > 0) {
@@ -116,6 +134,7 @@ export async function suggestAreas(
         full: p.secondary ? `${p.primary}, ${p.secondary}` : p.primary,
         placeId: p.placeId,
         sessionToken,
+        source: 'places' as const,
       }));
     }
   }
@@ -167,7 +186,11 @@ export async function resolveSuggestion(
   suggestion: AreaSuggestion,
 ): Promise<{ latitude: number; longitude: number } | null> {
   if (suggestion.coord) return suggestion.coord;
-  if (suggestion.placeId && suggestion.sessionToken) {
+  if (suggestion.source === 'native' && suggestion.placeId) {
+    const detail = await NativePlaces.resolve(suggestion.placeId);
+    if (detail) return { latitude: detail.latitude, longitude: detail.longitude };
+  }
+  if (suggestion.source === 'places' && suggestion.placeId && suggestion.sessionToken) {
     const detail = await placeDetails(suggestion.placeId, suggestion.sessionToken);
     if (detail) return { latitude: detail.latitude, longitude: detail.longitude };
   }

@@ -229,24 +229,32 @@ export default function ComposeScreen() {
                   </View>
                 ) : null}
 
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="how many joiners"
-                  onPress={() => {
-                    // cycles 1 → 2 → 3 → 4 → 5 → 1, so tap increments visibly
-                    haptic('selection');
-                    setSlots((s) => (s >= 5 ? 1 : s + 1));
-                  }}
-                  style={styles.detailRow}
-                >
-                  <View style={styles.flex}>
-                    <Text style={styles.detailTitle}>how many joiners</Text>
-                    <Text style={styles.detailSub}>
-                      {slots} {slots === 1 ? 'slot' : 'slots'} · tap to change · you can extend later
-                    </Text>
+                <View style={styles.slotsBlock}>
+                  <Text style={styles.detailTitle}>how many joiners</Text>
+                  <Text style={styles.detailSub}>
+                    {slots} {slots === 1 ? 'slot' : 'slots'} · you can extend later
+                  </Text>
+                  <View accessibilityRole="radiogroup" style={styles.slotsRow}>
+                    {[1, 2, 3, 4, 5].map((n) => {
+                      const selected = slots === n;
+                      return (
+                        <Pressable
+                          key={n}
+                          accessibilityRole="radio"
+                          accessibilityLabel={`${n} ${n === 1 ? 'slot' : 'slots'}`}
+                          accessibilityState={{ selected }}
+                          onPress={() => {
+                            haptic('selection');
+                            setSlots(n);
+                          }}
+                          style={[styles.slotPill, selected && styles.slotPillOn]}
+                        >
+                          <Text style={[styles.slotPillText, selected && styles.slotPillTextOn]}>{n}</Text>
+                        </Pressable>
+                      );
+                    })}
                   </View>
-                  <Text style={styles.detailAction}>{slots}</Text>
-                </Pressable>
+                </View>
 
                 <Pressable
                   accessibilityRole="button"
@@ -391,6 +399,26 @@ const styles = StyleSheet.create({
   detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expand: { paddingBottom: 18, gap: 12 },
   expandNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
+  slotsBlock: {
+    minHeight: 64,
+    paddingTop: 16,
+    paddingBottom: 12,
+    borderTopWidth: 1,
+    borderTopColor: tokens.semantic.color.hairlineOnCream,
+  },
+  slotsRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
+  slotPill: {
+    flex: 1,
+    minHeight: 52,
+    borderRadius: tokens.primitive.radius.control,
+    borderWidth: 1.5,
+    borderColor: tokens.semantic.color.hairlineOnCream,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  slotPillOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
+  slotPillText: { fontFamily: fontFamily.display, fontSize: 24, color: tokens.semantic.color.ink },
+  slotPillTextOn: { color: tokens.semantic.color.cream },
   preview: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
   swatch: { width: 18, height: 18, borderRadius: 4, borderWidth: 1 },
   previewText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, flex: 1 },

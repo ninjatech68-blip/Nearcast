@@ -76,11 +76,16 @@ export default function AreaScreen() {
     }
     const handle = setTimeout(async () => {
       setStatus('searching');
-      const next = await suggestAreas(query, sessionToken);
+      const next = await suggestAreas(query, sessionToken, {
+        latitude: region.latitude,
+        longitude: region.longitude,
+        span: Math.max(region.latitudeDelta, region.longitudeDelta),
+      });
       setSuggestions(next);
       setStatus('idle');
     }, 250);
     return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, sessionToken]);
 
   async function locate() {

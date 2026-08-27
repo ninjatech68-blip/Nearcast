@@ -1,0 +1,10 @@
+{
+  "name": "nearcast-places",
+  "version": "0.0.1",
+  "description": "MKLocalSearchCompleter + MKLocalSearch bridge for the area picker",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "keywords": ["nearcast", "mapkit", "autocomplete"],
+  "license": "UNLICENSED"
+}
