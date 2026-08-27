@@ -90,7 +90,14 @@ Work in order. Nothing else is yours right now.
 
 Everything else in the product is verified by CI or by the substitute harness. This is not, and three paths in it have never executed outside a test.
 
-**Setup:** `npm run db:start && npm run db:reset`, `.env` filled from the printed URL and publishable key, `npm run start`. iOS Simulator and the `Nearcast_API_36` AVD side by side; use the `adb reverse` Metro tunnel recorded in `PROJECT_LOG.md` for Android.
+**Founder direction 2026-08-27: B-1 must run on a real iPhone, not on the simulator.** Xcode and an attached device are available. The simulator can prove a Metro/JS problem exists but cannot prove signing, entitlements, native modules, or push work on hardware.
+
+**Setup:**
+- `npm run db:start && npm run db:reset`.
+- **`.env` must use the Mac's LAN IP for the Supabase URL**, not `127.0.0.1` (which on the phone points at the phone). `ipconfig getifaddr en0` prints the IP; drop it into `EXPO_PUBLIC_SUPABASE_URL=http://<lan-ip>:54321`. `bash scripts/check-env.sh` will refuse to proceed on a stale key or wrong port; it does not fail on a non-loopback host — that is expected here.
+- `npm run start:lan` — binds Metro on the LAN IP and forces IPv4 DNS resolution (the fix for Codex's 2026-08-27 finding, where Metro was IPv6-only and Expo Go could not reach it).
+- Signed dev build on device: `npx expo run:ios --device` and pick the attached iPhone. Signing team is `Q2234855S8`, bundle id `com.piyushsharma.nearcast.dev` (already wired 2026-08-25). Expo Go on the phone is an acceptable fallback only if native modules are not exercised; the delete-account path in particular wants the dev client.
+- The Android side is not required for B-1 now — a green iOS device pass gates iOS TestFlight, which is what the founder needs first.
 
 **1. The two-persona loop.**
 

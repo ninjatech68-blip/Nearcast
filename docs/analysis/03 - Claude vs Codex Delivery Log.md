@@ -64,10 +64,10 @@ much of the app is blocked behind it.
    `rm -rf node_modules package-lock.json && npm install` when the earlier
    ENOTEMPTY signature returns. This is the only path Claude cannot run.
 
-2. **B-1 device smoke.** Once install is clean, follow
-   `docs/analysis/02 - Codex Execution Runbook.md` verbatim. Sign in with a
-   seeded persona (they render on the sign-in screen now), walk the loop,
-   file every finding as its own issue.
+2. **B-1 device smoke on a real iPhone.** Founder direction 2026-08-27:
+   no simulator. `.env` uses the Mac's LAN IP, `npm run start:lan`,
+   `npx expo run:ios --device` for a signed dev build, walk the loop,
+   file each finding as its own issue.
 
 3. **iOS build + TestFlight.** Only after B-1's findings are closed. Uses
    the founder's Apple Developer account; Claude cannot sign.
