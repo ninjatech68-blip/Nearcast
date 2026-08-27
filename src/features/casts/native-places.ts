@@ -20,6 +20,12 @@ const stub: NativeApi = {
   resolve: async () => null,
 };
 
+/**
+ * The wrapper — `nearcast-places` — is a locally-linked Expo module.
+ * On a dev tree that hasn't run prebuild yet the require will fail
+ * and we stay on the stub, so JS tests + typecheck still work.
+ */
+
 // Metro resolves this at runtime after `npm install` links the local
 // module. Wrapping in try/catch means an unbuilt dev tree still runs.
 let api: NativeApi = stub;

@@ -26,6 +26,8 @@ import {
   suggestAreas,
   type AreaSuggestion,
 } from '@/features/casts/area-lookup';
+import * as NativePlaces from '@/features/casts/native-places';
+import { placesEnabled } from '@/features/casts/places-api';
 import { setDraftArea } from '@/features/casts/store';
 
 type Status = 'idle' | 'locating' | 'searching' | 'no-permission' | 'not-found';
@@ -150,6 +152,15 @@ export default function AreaScreen() {
     void highlight(area);
   }
 
+  function backendLabel(): string {
+    // one-line hint of which suggestion backend is providing rows.
+    // tap-through to confirm: MapKit = native module linked; Places
+    // = google key set; geocode = neither, using expo-location.
+    if (NativePlaces.isAvailable()) return 'via Apple Maps';
+    if (placesEnabled()) return 'via Google Places';
+    return 'via geocode (limited)';
+  }
+
   async function tapSuggestion(s: AreaSuggestion) {
     haptic('selection');
     setSelected(s.full || s.name);
@@ -245,6 +256,7 @@ export default function AreaScreen() {
           <Text style={styles.section}>
             {suggestions.length > 0 ? 'SUGGESTIONS' : status === 'searching' ? 'MATCHES' : 'NEARBY'}
           </Text>
+          <Text style={styles.backend}>{backendLabel()}</Text>
           {busy ? <ActivityIndicator color={tokens.semantic.color.accent} size="small" /> : null}
         </View>
 
@@ -342,6 +354,7 @@ const styles = StyleSheet.create({
   locateText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
   resultsHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6, marginBottom: 2 },
   section: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  backend: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, flex: 1, textAlign: 'right' },
   note: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 18 },
   useBtn: {
     minHeight: 52,

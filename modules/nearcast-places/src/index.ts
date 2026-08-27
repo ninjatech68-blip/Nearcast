@@ -5,6 +5,11 @@ import { Platform } from 'react-native';
  * TypeScript facade around the NearcastPlaces native module. Only
  * available on iOS — the module ships iOS-only, so callers should
  * `if (isAvailable())` before using it and fall back on Android.
+ *
+ * isAvailable() is a synchronous call into native code that returns
+ * true only when the module is actually linked. If the app hasn't
+ * been prebuilt with the module yet, requireOptionalNativeModule
+ * returns null and this reports false.
  */
 
 export type NativePlaceSuggestion = {
@@ -20,6 +25,7 @@ export type NativePlaceCoord = {
 };
 
 type NativeApi = {
+  isAvailable(): boolean;
   search(
     query: string,
     biasLatitude: number | null,
@@ -32,7 +38,13 @@ type NativeApi = {
 const native = requireOptionalNativeModule<NativeApi>('NearcastPlaces');
 
 export function isAvailable(): boolean {
-  return Platform.OS === 'ios' && native !== null;
+  if (Platform.OS !== 'ios') return false;
+  if (native === null) return false;
+  try {
+    return native.isAvailable();
+  } catch {
+    return false;
+  }
 }
 
 export async function search(

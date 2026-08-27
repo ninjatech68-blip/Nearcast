@@ -5,14 +5,18 @@ import MapKit
  * NearcastPlacesModule — a thin wrapper around MKLocalSearchCompleter
  * and MKLocalSearch, exposed to JS as async functions.
  *
- * search(query, region?)   → [{ id, primary, secondary }]
- * resolve(id)              → { latitude, longitude, formatted } | null
+ *   isAvailable()             → true (module is linked)
+ *   search(query, bias?)      → [{ id, primary, secondary }]
+ *   resolve(id)               → { latitude, longitude, formatted } | null
  *
- * Search completions are transient (MKLocalSearchCompleter reuses
- * MKLocalSearchCompletion objects), so we cache each result under a
- * generated id and resolve it later against MKLocalSearch. IDs are
- * scoped to a search session; a fresh call to search() drops the old
- * cache.
+ * MKLocalSearchCompleter fires its delegate callback MULTIPLE TIMES
+ * for one queryFragment as results refine. The first callback is
+ * often 0–2 items; the useful set arrives a few hundred ms later.
+ *
+ * We solve this by delivering results with a short debounce after
+ * the LATEST delegate update. Cancelled if a new query lands. Also
+ * clamped by a hard timeout so a network-slow completer eventually
+ * fires whatever it had.
  */
 public final class NearcastPlacesModule: Module {
   private let coordinator = SearchCoordinator()
@@ -20,10 +24,19 @@ public final class NearcastPlacesModule: Module {
   public func definition() -> ModuleDefinition {
     Name("NearcastPlaces")
 
+    // synchronous marker so JS can confirm the module is really
+    // linked (not a stub) without invoking a search.
+    Function("isAvailable") { () -> Bool in
+      return true
+    }
+
     AsyncFunction("search") { (query: String, biasLatitude: Double?, biasLongitude: Double?, biasSpan: Double?, promise: Promise) in
       let region: MKCoordinateRegion? = {
         guard let lat = biasLatitude, let lon = biasLongitude else { return nil }
-        let span = biasSpan ?? 0.5
+        // Widen every span the caller sends. A tight span throttles
+        // the completer — Apple's own Maps app uses a much wider
+        // bias than any tap-zoom-level suggests.
+        let span = max(biasSpan ?? 0.5, 3.0)
         return MKCoordinateRegion(
           center: CLLocationCoordinate2D(latitude: lat, longitude: lon),
           span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
@@ -62,35 +75,54 @@ private struct CachedCompletion {
   let completion: MKLocalSearchCompletion
 }
 
-/**
- * MKLocalSearchCompleter uses a delegate callback. We serialize
- * queries on the main queue and hold the latest completion callback
- * so we don't reply to a stale search after a fresh query landed.
- */
 private final class SearchCoordinator: NSObject, MKLocalSearchCompleterDelegate {
   private let completer = MKLocalSearchCompleter()
   private var cache: [String: MKLocalSearchCompletion] = [:]
-  private var currentToken: UUID?
   private var callback: (([CachedCompletion]) -> Void)?
+  private var callbackToken: UUID?
+  private var deliverWorkItem: DispatchWorkItem?
+  private var hardTimeout: DispatchWorkItem?
+
+  // Debounce refinement updates and hard-cap total wait.
+  private let refineDelayMs = 350
+  private let hardTimeoutMs = 1600
 
   override init() {
     super.init()
-    if #available(iOS 15.0, *) {
-      completer.resultTypes = [.address, .pointOfInterest]
-    }
+    completer.resultTypes = [.address, .pointOfInterest]
     completer.delegate = self
   }
 
   func search(query: String, region: MKCoordinateRegion?, completion: @escaping ([CachedCompletion]) -> Void) {
     let token = UUID()
     DispatchQueue.main.async {
-      self.currentToken = token
+      // Cancel any pending deliver from the previous query.
+      self.deliverWorkItem?.cancel()
+      self.hardTimeout?.cancel()
+
       self.callback = completion
+      self.callbackToken = token
       self.cache.removeAll()
       if let region = region {
         self.completer.region = region
       }
       self.completer.queryFragment = query
+
+      // Hard cap so a completer that never converges still fires.
+      let timeout = DispatchWorkItem { [weak self] in
+        guard let self = self else { return }
+        guard self.callbackToken == token, let cb = self.callback else { return }
+        self.callback = nil
+        self.callbackToken = nil
+        let results = self.completer.results.map { result -> CachedCompletion in
+          let id = UUID().uuidString
+          self.cache[id] = result
+          return CachedCompletion(id: id, completion: result)
+        }
+        cb(results)
+      }
+      self.hardTimeout = timeout
+      DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(self.hardTimeoutMs), execute: timeout)
     }
   }
 
@@ -115,17 +147,35 @@ private final class SearchCoordinator: NSObject, MKLocalSearchCompleterDelegate 
   // MARK: - MKLocalSearchCompleterDelegate
 
   func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-    let results = completer.results.map { result -> CachedCompletion in
-      let id = UUID().uuidString
-      self.cache[id] = result
-      return CachedCompletion(id: id, completion: result)
+    guard callback != nil else { return }
+
+    // Debounce: reset a short deliver timer on each update. When
+    // updates stop for refineDelayMs, we fire with what we have.
+    let token = callbackToken
+    deliverWorkItem?.cancel()
+    let work = DispatchWorkItem { [weak self] in
+      guard let self = self else { return }
+      guard self.callbackToken == token, let cb = self.callback else { return }
+      self.callback = nil
+      self.callbackToken = nil
+      self.hardTimeout?.cancel()
+      let results = completer.results.map { result -> CachedCompletion in
+        let id = UUID().uuidString
+        self.cache[id] = result
+        return CachedCompletion(id: id, completion: result)
+      }
+      cb(results)
     }
-    self.callback?(results)
-    self.callback = nil
+    deliverWorkItem = work
+    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(refineDelayMs), execute: work)
   }
 
   func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
-    self.callback?([])
-    self.callback = nil
+    guard let cb = callback else { return }
+    callback = nil
+    callbackToken = nil
+    deliverWorkItem?.cancel()
+    hardTimeout?.cancel()
+    cb([])
   }
 }
