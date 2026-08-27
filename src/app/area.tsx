@@ -18,7 +18,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Row } from '@/design-system/components/row';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { areasNearMe, searchAreas, suggestAreas, type AreaSuggestion } from '@/features/casts/area-lookup';
+import {
+  areasNearMe,
+  makeSessionToken,
+  resolveSuggestion,
+  searchAreas,
+  suggestAreas,
+  type AreaSuggestion,
+} from '@/features/casts/area-lookup';
 import { setDraftArea } from '@/features/casts/store';
 
 type Status = 'idle' | 'locating' | 'searching' | 'no-permission' | 'not-found';
@@ -42,6 +49,9 @@ export default function AreaScreen() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<readonly string[]>([]);
   const [suggestions, setSuggestions] = useState<readonly AreaSuggestion[]>([]);
+  // one session token across a typing session — costs less with the
+  // Google Places billing model. regenerated after a pick.
+  const [sessionToken, setSessionToken] = useState<string>(() => makeSessionToken());
   const [status, setStatus] = useState<Status>('idle');
   const [region, setRegion] = useState<Region>(DEFAULT_REGION);
   const [pin, setPin] = useState<LatLng | null>(null);
@@ -66,12 +76,12 @@ export default function AreaScreen() {
     }
     const handle = setTimeout(async () => {
       setStatus('searching');
-      const next = await suggestAreas(query);
+      const next = await suggestAreas(query, sessionToken);
       setSuggestions(next);
       setStatus('idle');
     }, 250);
     return () => clearTimeout(handle);
-  }, [query]);
+  }, [query, sessionToken]);
 
   async function locate() {
     setStatus('locating');
@@ -135,17 +145,20 @@ export default function AreaScreen() {
     void highlight(area);
   }
 
-  function tapSuggestion(s: AreaSuggestion) {
+  async function tapSuggestion(s: AreaSuggestion) {
     haptic('selection');
-    setSelected(s.name);
-    if (s.coord) {
-      const next: Region = { ...s.coord, latitudeDelta: 0.03, longitudeDelta: 0.03 };
+    setSelected(s.full || s.name);
+    const coord = await resolveSuggestion(s);
+    if (coord) {
+      const next: Region = { ...coord, latitudeDelta: 0.03, longitudeDelta: 0.03 };
       setRegion(next);
-      setPin(s.coord);
+      setPin(coord);
       mapRef.current?.animateToRegion(next, 350);
-    } else {
-      void highlight(s.name);
     }
+    // fresh session token for the next autocomplete run — Places
+    // bills per (autocomplete+details) session, so rotating after a
+    // pick starts a new billable session.
+    setSessionToken(makeSessionToken());
   }
 
   function choose(area: string) {

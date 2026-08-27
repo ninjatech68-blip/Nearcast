@@ -1,5 +1,7 @@
 import * as Location from 'expo-location';
 
+import { makeSessionToken, placeDetails, placesAutocomplete, placesEnabled } from './places-api';
+
 /**
  * area helpers for compose. everything here resolves to NAMES at
  * neighborhood granularity — coordinates never leave this module and
@@ -8,15 +10,26 @@ import * as Location from 'expo-location';
  * suggestions carry a richer address for tap-in-the-list clarity
  * (a la Google Maps autocomplete), while the stored value on the cast
  * remains just the neighborhood name.
+ *
+ * Two suggestion backends:
+ *   1. Google Places Autocomplete — POI + street level ("Social,
+ *      Elante Mall", "Gulmohar Trends, Dhakoli"). Preferred when the
+ *      EXPO_PUBLIC_GOOGLE_PLACES_API_KEY is configured.
+ *   2. expo-location geocode/reverse-geocode — neighborhood level
+ *      only. Fallback when the Places key is absent.
  */
 
 export type AreaSuggestion = {
-  /** what the cast will store (short neighborhood name) */
+  /** what the cast will store (short neighborhood name / POI name) */
   name: string;
-  /** full address for the list row: "koramangala · bengaluru · karnataka" */
+  /** full address for the list row: "Elante Mall, Sector 26, Chandigarh" */
   full: string;
   /** the coordinate used only to pin the map — never persisted */
   coord?: { latitude: number; longitude: number };
+  /** google places id, if the suggestion came from that backend */
+  placeId?: string;
+  /** shared session token for cheaper Places billing */
+  sessionToken?: string;
 };
 
 function namesFrom(address: Location.LocationGeocodedAddress): string[] {
@@ -75,13 +88,39 @@ export type AreaLookupResult =
 
 /**
  * richer geocoded suggestions for the search field — a Maps-style
- * autocomplete list. each entry carries the short neighborhood name
- * (what the cast stores), the full address (what the list row shows),
- * and a coord (only for pinning the map — never persisted).
+ * autocomplete list. each entry carries a place name, the full
+ * address (what the list row shows), and a coord (only for pinning
+ * the map — never persisted).
+ *
+ * When Google Places is enabled, this returns POI-level results like
+ * "Social, Elante Mall, Sector 26, Chandigarh". Otherwise it falls
+ * back to expo-location's neighborhood-only geocode.
+ *
+ * Pass a stable sessionToken across a typing session — the caller
+ * should keep the same token across calls until a pick is made, then
+ * regenerate one.
  */
-export async function suggestAreas(query: string): Promise<readonly AreaSuggestion[]> {
+export async function suggestAreas(
+  query: string,
+  sessionToken?: string,
+): Promise<readonly AreaSuggestion[]> {
   const trimmed = query.trim();
   if (trimmed.length < 2) return [];
+
+  // Preferred: Google Places Autocomplete (POI + street level).
+  if (placesEnabled() && sessionToken) {
+    const predictions = await placesAutocomplete(trimmed, sessionToken, { countryCode: 'in' });
+    if (predictions !== null && predictions.length > 0) {
+      return predictions.map((p) => ({
+        name: p.primary.toLowerCase(),
+        full: p.secondary ? `${p.primary}, ${p.secondary}` : p.primary,
+        placeId: p.placeId,
+        sessionToken,
+      }));
+    }
+  }
+
+  // Fallback: expo-location geocode + reverse-geocode.
   try {
     const matches = await Location.geocodeAsync(trimmed);
     const suggestions: AreaSuggestion[] = [];
@@ -110,7 +149,6 @@ export async function suggestAreas(query: string): Promise<readonly AreaSuggesti
         // ignore one bad reverse-geocode
       }
     }
-    // if geocoding returned nothing readable, at least offer the typed name.
     if (suggestions.length === 0) {
       suggestions.push({ name: trimmed.toLowerCase(), full: trimmed.toLowerCase() });
     }
@@ -119,6 +157,30 @@ export async function suggestAreas(query: string): Promise<readonly AreaSuggesti
     return [];
   }
 }
+
+/**
+ * resolve a picked suggestion to a coord (for the map pin). When the
+ * suggestion has a placeId we call Places Details; otherwise the
+ * coord is already on the suggestion.
+ */
+export async function resolveSuggestion(
+  suggestion: AreaSuggestion,
+): Promise<{ latitude: number; longitude: number } | null> {
+  if (suggestion.coord) return suggestion.coord;
+  if (suggestion.placeId && suggestion.sessionToken) {
+    const detail = await placeDetails(suggestion.placeId, suggestion.sessionToken);
+    if (detail) return { latitude: detail.latitude, longitude: detail.longitude };
+  }
+  try {
+    const matches = await Location.geocodeAsync(suggestion.name);
+    if (matches[0]) return { latitude: matches[0].latitude, longitude: matches[0].longitude };
+  } catch {
+    // no geocode either — nothing to pin
+  }
+  return null;
+}
+
+export { makeSessionToken };
 
 /** where am I → the neighborhoods around me, nearest first. */
 export async function areasNearMe(): Promise<AreaLookupResult> {
