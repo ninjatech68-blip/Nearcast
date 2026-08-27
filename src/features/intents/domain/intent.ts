@@ -34,6 +34,22 @@ export type IntentPrimitive = (typeof INTENT_PRIMITIVES)[number];
 export type IntentReachLevel = (typeof INTENT_REACH_LEVELS)[number];
 
 /**
+ * The call-to-action label recipients see on a delivered card. It must vary by
+ * primitive — a plan asking "Offer help" makes no sense, and an offer whose
+ * button says "Offer help" reads as the recipient offering, not requesting.
+ * These defaults apply when the broadcaster does not override.
+ */
+const RESPONSE_ACTION_BY_PRIMITIVE: Record<IntentPrimitive, string> = {
+  request: 'Offer help',
+  offer: 'I am interested',
+  plan: 'Count me in',
+};
+
+export function defaultResponseAction(primitive: IntentPrimitive): string {
+  return RESPONSE_ACTION_BY_PRIMITIVE[primitive];
+}
+
+/**
  * What a published intent's owner may still change. Every field here can move
  * the terms someone already responded to, which is why the server records the
  * change (MUST-017).

@@ -7,7 +7,7 @@ import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
 import { findPrivacyViolations, type PrivacyViolation } from '@/design-system/privacy';
 import { clearDraft, loadDraft, saveDraft } from '@/features/intents/data/draft-store';
-import { INTENT_REACH_LEVELS, type IntentPrimitive, type IntentReachLevel } from '@/features/intents/domain/intent';
+import { INTENT_REACH_LEVELS, defaultResponseAction, type IntentPrimitive, type IntentReachLevel } from '@/features/intents/domain/intent';
 import { publishIntent, PRIMITIVE_LABELS } from '@/features/intents/data/intent-queries';
 
 const REACH_COPY: Record<IntentReachLevel, { title: string; exposes: string }> = {
@@ -101,7 +101,10 @@ export default function PreviewScreen() {
     const result = await publishIntent({
       primitive,
       statement,
-      responseAction: 'Offer help',
+      // Match the call-to-action to the primitive: "Offer help" on an "I offer"
+      // intent reads as the recipient offering, and on an "I want to" intent
+      // it makes no sense at all. Broadcasters can still override at edit time.
+      responseAction: defaultResponseAction(primitive),
       expiresAt,
       approximatePlace: null,
       reach,

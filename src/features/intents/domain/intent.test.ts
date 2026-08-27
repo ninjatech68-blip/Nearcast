@@ -3,12 +3,31 @@ import { describe, expect, it } from 'vitest';
 import {
   INTENT_PRIMITIVES,
   INTENT_REACH_LEVELS,
+  defaultResponseAction,
   describeMaterialEdit,
   intentDraftSchema,
   intentEditSchema,
   intentPublishSchema,
   toChangePayload,
 } from './intent';
+
+describe('defaultResponseAction', () => {
+  it('matches the call to action to the primitive so the button reads correctly', () => {
+    // "Offer help" on an "I offer" intent would read as the recipient
+    // offering, and on a plan ("I want to") it makes no sense at all.
+    expect(defaultResponseAction('request')).toBe('Offer help');
+    expect(defaultResponseAction('offer')).toBe('I am interested');
+    expect(defaultResponseAction('plan')).toBe('Count me in');
+  });
+
+  it('has a default for every primitive so the publish flow never picks null', () => {
+    for (const primitive of INTENT_PRIMITIVES) {
+      const label = defaultResponseAction(primitive);
+      expect(label.trim().length).toBeGreaterThan(0);
+      expect(label.length).toBeLessThanOrEqual(40);
+    }
+  });
+});
 
 describe('intent draft', () => {
   it('accepts a resolvable request with an explicit future expiry', () => {
