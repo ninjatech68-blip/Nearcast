@@ -92,6 +92,7 @@ export default function RootLayout() {
       <Stack.Screen name="onboarding" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
       <Stack.Screen name="report/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/terms" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/privacy" options={{ presentation: 'modal' }} />

@@ -6,7 +6,7 @@ import { Face } from '@/design-system/components/face';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { facePhotos } from '@/features/casts/faces';
+import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { acceptJoin, declineJoin, getCast, getPendingJoin, slotsFor } from '@/features/casts/store';
 import { people } from '@/features/trust/circles';
@@ -78,6 +78,7 @@ export default function InviteScreen() {
           initials={person.name.slice(0, 2).toUpperCase()}
           size={64}
           label={`photo of ${person.name}`}
+          verified={isVerified(personId)}
         />
       }
     >

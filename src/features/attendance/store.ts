@@ -129,6 +129,29 @@ export function usePlan(planId: string): StoredPlan | undefined {
 }
 
 /**
+ * every past plan i was in, with my computed outcome. sorted newest
+ * first for the receipts screen. this is what the you-sheet's
+ * "receipts" row lands on.
+ */
+export function useMyPastPlans(
+  viewerId: string = 'me',
+  now: Date = new Date(),
+): readonly { plan: StoredPlan; outcome: Outcome; others: readonly string[] }[] {
+  const plans = usePlans();
+  return useMemo(() => {
+    return plans
+      .filter((p) => p.participants.some((x) => x.userId === viewerId))
+      .slice()
+      .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
+      .map((plan) => ({
+        plan,
+        outcome: outcomeFor(toRecord(plan), viewerId, now),
+        others: plan.participants.filter((p) => p.userId !== viewerId).map((p) => p.userId),
+      }));
+  }, [plans, viewerId, now]);
+}
+
+/**
  * record a presence report on one participant of a plan. the domain
  * decides the outcome; the store just captures the fact.
  */

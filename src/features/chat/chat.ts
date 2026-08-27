@@ -7,11 +7,15 @@ import { useSyncExternalStore } from 'react';
  * message text (product law) — only ids.
  */
 
+export type MessageStatus = 'pending' | 'sent' | 'delivered' | 'read';
+
 export type Message = {
   id: string;
   from: 'me' | 'them' | 'system';
   text: string;
   time: string;
+  /** only meaningful for from: 'me'. system messages carry it as 'sent'. */
+  status?: MessageStatus;
 };
 
 /**
@@ -61,9 +65,9 @@ let state: State = {
           time: '5:01 pm',
         },
         { id: 'm1', from: 'them', text: 'saw your cast — i’m in', time: '5:02 pm' },
-        { id: 'm2', from: 'me', text: 'nice. court’s booked 7–8', time: '5:04 pm' },
+        { id: 'm2', from: 'me', text: 'nice. court’s booked 7–8', time: '5:04 pm', status: 'read' },
         { id: 'm3', from: 'them', text: 'can do 7:00 pm', time: '5:05 pm' },
-        { id: 'm4', from: 'me', text: 'perfect, bring water. it’s ₹80 split', time: '5:06 pm' },
+        { id: 'm4', from: 'me', text: 'perfect, bring water. it’s ₹80 split', time: '5:06 pm', status: 'read' },
         { id: 'm5', from: 'them', text: 'done. see you at the gate', time: '5:07 pm' },
       ],
     },
@@ -87,15 +91,37 @@ export function sendMessage(threadId: string, text: string): void {
   // ended chats are read-only. drop silently rather than raise —
   // the composer is disabled in the UI so this should not fire.
   if (thread.mode === 'ended') return;
+  const id = `m${thread.messages.length + 1}-${text.length}`;
   const message: Message = {
-    id: `m${thread.messages.length + 1}-${text.length}`,
+    id,
     from: 'me',
     text: text.trim(),
     // fixed label: fixtures never call Date.now (keeps the build deterministic)
     time: 'now',
+    status: 'pending',
   };
   state = {
     threads: { ...state.threads, [threadId]: { ...thread, messages: [...thread.messages, message] } },
+  };
+  emit();
+  // fixture proxy for network → server ack → other-side read.
+  // production wires these to supabase realtime events and rr callbacks.
+  setTimeout(() => promoteStatus(threadId, id, 'sent'), 200);
+  setTimeout(() => promoteStatus(threadId, id, 'delivered'), 800);
+  setTimeout(() => promoteStatus(threadId, id, 'read'), 2600);
+}
+
+function promoteStatus(threadId: string, messageId: string, status: MessageStatus): void {
+  const thread = state.threads[threadId];
+  if (!thread) return;
+  state = {
+    threads: {
+      ...state.threads,
+      [threadId]: {
+        ...thread,
+        messages: thread.messages.map((m) => (m.id === messageId ? { ...m, status } : m)),
+      },
+    },
   };
   emit();
 }

@@ -7,36 +7,62 @@ import { fontFamily, tokens } from '@/design-system/tokens';
  * production they are camera-verified selfies captured in-app (no
  * gallery uploads), shown at decision moments. falls back to initials
  * when no photo exists yet.
+ *
+ * verified = the photo was captured live in-app and passed the
+ * liveness check. shows a small orange dot on the face; absent when
+ * the person hasn't verified yet (mostly a fixture concern today).
  */
 export function Face({
   photo,
   initials,
   size = 44,
   label,
+  verified = false,
 }: {
   photo?: ImageSourcePropType;
   initials: string;
   size?: number;
   label?: string;
+  verified?: boolean;
 }) {
   const radius = size / 2;
+  const dotSize = Math.max(Math.round(size * 0.22), 10);
 
-  if (photo) {
-    return (
-      <Image
-        accessibilityLabel={label ?? 'profile photo'}
-        source={photo}
-        style={{ width: size, height: size, borderRadius: radius }}
-      />
-    );
-  }
-
-  return (
+  const inner = photo ? (
+    <Image
+      accessibilityLabel={label ?? 'profile photo'}
+      source={photo}
+      style={{ width: size, height: size, borderRadius: radius }}
+    />
+  ) : (
     <View
       accessibilityLabel={label ?? initials}
       style={[styles.fallback, { width: size, height: size, borderRadius: radius }]}
     >
       <Text style={[styles.initials, size >= 64 && styles.initialsLarge]}>{initials}</Text>
+    </View>
+  );
+
+  if (!verified) return inner;
+
+  return (
+    <View style={{ width: size, height: size }}>
+      {inner}
+      <View
+        accessibilityLabel="verified in-app selfie"
+        style={[
+          styles.badge,
+          {
+            width: dotSize,
+            height: dotSize,
+            borderRadius: dotSize / 2,
+            right: -1,
+            bottom: -1,
+          },
+        ]}
+      >
+        <Text style={[styles.badgeMark, { fontSize: Math.round(dotSize * 0.6) }]}>✓</Text>
+      </View>
     </View>
   );
 }
@@ -49,4 +75,13 @@ const styles = StyleSheet.create({
   },
   initials: { fontFamily: fontFamily.monoSemi, fontSize: 12, color: tokens.semantic.color.cream },
   initialsLarge: { fontSize: 20 },
+  badge: {
+    position: 'absolute',
+    backgroundColor: tokens.semantic.color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: tokens.semantic.color.cream,
+  },
+  badgeMark: { fontFamily: fontFamily.displaySemi, color: tokens.semantic.color.ink, lineHeight: undefined },
 });

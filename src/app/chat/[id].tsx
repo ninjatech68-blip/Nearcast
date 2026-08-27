@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Face } from '@/design-system/components/face';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { facePhotos } from '@/features/casts/faces';
+import { facePhotos, isVerified } from '@/features/casts/faces';
 import { endChat, extendChat, sendMessage, useThread, type Message } from '@/features/chat/chat';
 
 /**
@@ -97,7 +97,7 @@ export default function ChatScreen() {
             onPress={() => router.push(`/caster/${thread.withId}`)}
             style={styles.who}
           >
-            <Face photo={facePhotos[thread.withId]} initials={thread.withName.slice(0, 2).toUpperCase()} size={32} label="" />
+            <Face photo={facePhotos[thread.withId]} initials={thread.withName.slice(0, 2).toUpperCase()} size={32} label="" verified={isVerified(thread.withId)} />
             <View>
               <Text style={styles.name}>{thread.withName}</Text>
               <Text style={styles.sub}>{thread.castTitle}</Text>
@@ -176,9 +176,16 @@ function Bubble({ message }: { message: Message }) {
       <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
         <Text style={[styles.bubbleText, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
       </View>
-      <Text style={styles.time}>{message.time}</Text>
+      <View style={styles.metaRow}>
+        <Text style={styles.time}>{message.time}</Text>
+        {mine && message.status ? <Text style={[styles.tick, message.status === 'read' && styles.tickRead]}>{tickFor(message.status)}</Text> : null}
+      </View>
     </View>
   );
+}
+
+function tickFor(status: NonNullable<Message['status']>): string {
+  return { pending: '…', sent: '✓', delivered: '✓✓', read: '✓✓' }[status];
 }
 
 const styles = StyleSheet.create({
@@ -230,6 +237,9 @@ const styles = StyleSheet.create({
   mineText: { color: tokens.semantic.color.cream },
   theirsText: { color: tokens.semantic.color.ink },
   time: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3, marginHorizontal: 4 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  tick: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3, marginRight: 4 },
+  tickRead: { color: tokens.semantic.color.accent },
   composer: {
     flexDirection: 'row',
     alignItems: 'flex-end',

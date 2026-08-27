@@ -9,7 +9,7 @@ import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { facePhotos } from '@/features/casts/faces';
+import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { useFeedCasts } from '@/features/casts/store';
 import { addToCircle, getCircles, hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
@@ -101,7 +101,7 @@ export default function CasterProfileScreen() {
   return (
     <SheetShell
       title={caster.name}
-      accessory={<Face photo={facePhotos[caster.id]} initials={caster.name.slice(0, 2).toUpperCase()} size={64} label={`photo of ${caster.name}`} />}
+      accessory={<Face photo={facePhotos[caster.id]} initials={caster.name.slice(0, 2).toUpperCase()} size={64} label={`photo of ${caster.name}`} verified={isVerified(caster.id)} />}
     >
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
         <Text style={styles.meta}>

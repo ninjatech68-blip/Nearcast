@@ -8,7 +8,7 @@ import { Poster } from '@/design-system/components/poster';
 import { haptic } from '@/design-system/haptics';
 import { category as categoryTokens, fontFamily, tokens } from '@/design-system/tokens';
 import { NEVER_USED } from '@/features/casts/domain/delivery';
-import { facePhotos } from '@/features/casts/faces';
+import { facePhotos, isVerified } from '@/features/casts/faces';
 import { type CastDetail } from '@/features/casts/fixtures';
 import { setFilter, skipCast, useFeedCasts, useFilter } from '@/features/casts/store';
 
@@ -119,6 +119,7 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
           line: `${cast.by.toLowerCase()} · ${cast.receipts.line.split(' · ')[0]}`,
           photo: facePhotos[cast.byId],
           initials: cast.by.slice(0, 2).toUpperCase(),
+          verified: isVerified(cast.byId),
         }}
         onOpenCaster={() => router.push(`/caster/${cast.byId}`)}
         onWhyPress={() => explainDelivery(cast)}

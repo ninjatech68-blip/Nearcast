@@ -9,7 +9,7 @@ import { Row } from '@/design-system/components/row';
 import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { facePhotos } from '@/features/casts/faces';
+import { facePhotos, isVerified } from '@/features/casts/faces';
 import { type ActivityItem } from '@/features/casts/fixtures';
 import {
   cancelCast,
@@ -131,7 +131,7 @@ export function ActivityPage() {
               key={item.id}
               title={item.title}
               sub={item.sub}
-              left={item.personId ? <Face photo={facePhotos[item.personId]} initials={item.title.slice(0, 2).toUpperCase()} size={44} label={`photo of ${item.title}`} /> : undefined}
+              left={item.personId ? <Face photo={facePhotos[item.personId]} initials={item.title.slice(0, 2).toUpperCase()} size={44} label={`photo of ${item.title}`} verified={isVerified(item.personId)} /> : undefined}
               right={item.tag ? <Tag label={item.tag.label} tone={item.tag.tone} /> : undefined}
               onPress={
                 // pending join → invite sheet; matched → chat; cast → detail

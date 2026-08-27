@@ -48,7 +48,7 @@ export function Poster({
   reserveRail?: boolean;
   badge?: ReactNode;
   tagLabel?: string;
-  caster?: { line: string; photo?: ImageSourcePropType; initials: string };
+  caster?: { line: string; photo?: ImageSourcePropType; initials: string; verified?: boolean };
   onOpenCaster?: () => void;
   onWhyPress?: () => void;
   onWordmarkPress?: () => void;
@@ -108,7 +108,7 @@ export function Poster({
             onPress={onOpenCaster}
             style={[styles.casterPill, { backgroundColor: poles.pillBg }]}
           >
-            <Face photo={caster.photo} initials={caster.initials} size={22} label="" />
+            <Face photo={caster.photo} initials={caster.initials} size={22} label="" verified={caster.verified} />
             <Text style={[styles.casterText, { color: poles.pillFg }]}>{caster.line} ›</Text>
           </Pressable>
         ) : null}

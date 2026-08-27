@@ -61,6 +61,36 @@ function subscribe(listener: () => void): () => void {
   return () => listeners.delete(listener);
 }
 
+/**
+ * a cast whose plan has already passed no longer appears in the feed.
+ * fixture rule: the expiry string carries the day word ("gone thu",
+ * "gone friday", "gone sat"); if today is past that day, drop the
+ * cast. non-day expiries ("gone 10pm", "gone thu 9pm") stay in the
+ * feed because we don't have a real timestamp to compare against.
+ * production reads plan.startsAt + 2h from the row.
+ */
+function isStale(expiry: string, now: Date = new Date()): boolean {
+  const cleaned = expiry.trim().toLowerCase().replace(/^gone\s+/, '').trim();
+  const first = cleaned.split(/\s+/)[0];
+  const dayMap: Record<string, number> = {
+    sun: 0, sunday: 0,
+    mon: 1, monday: 1,
+    tue: 2, tues: 2, tuesday: 2,
+    wed: 3, wednesday: 3,
+    thu: 4, thur: 4, thurs: 4, thursday: 4,
+    fri: 5, friday: 5,
+    sat: 6, saturday: 6,
+  };
+  const day = dayMap[first];
+  if (day === undefined) return false; // non-day expiries stay
+  const today = now.getDay();
+  // a cast for a day that has passed this week is stale. same-day is fine.
+  // "past" means (day - today + 7) % 7 > 3 — over half the week away is
+  // yesterday-or-earlier, since we assume casts don't schedule 7+ days out.
+  const diff = (day - today + 7) % 7;
+  return diff > 3;
+}
+
 export function useFeedCasts(): readonly CastDetail[] {
   // re-derive delivery when the viewer context changes (interests,
   // areas, blocked). the mutated base feed (pendingJoins, matched)
@@ -71,6 +101,7 @@ export function useFeedCasts(): readonly CastDetail[] {
     const out: CastDetail[] = [];
     for (const c of base) {
       if (ctx.blockedCasterIds.includes(c.delivery.casterId)) continue;
+      if (isStale(c.expiry)) continue;
       const result = deliveryFor(ctx, c.delivery);
       if (!result.deliver) continue;
       out.push({ ...c, why: result.reason, signals: result.signals });

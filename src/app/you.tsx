@@ -81,7 +81,12 @@ export default function YouScreen() {
         <Text style={styles.range}>{meFixture.range}</Text>
 
         <View style={styles.rows}>
-          <Row title="receipts" sub={`${receipts} plans made real · last: badminton, tuesday`} right={<Tag label="→" tone="line" />} />
+          <Row
+            title="receipts"
+            sub={`${receipts} plans made real · last: badminton, tuesday`}
+            right={<Tag label="→" tone="line" />}
+            onPress={() => router.push('/receipts')}
+          />
           <Row
             title="circles"
             sub={meFixture.circles}
