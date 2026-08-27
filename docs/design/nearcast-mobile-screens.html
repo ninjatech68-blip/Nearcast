@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Nearcast · Mobile Screens</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #EFEEE8; font-family: Manrope, system-ui, sans-serif; color: #16231F; }
+.page { padding: 40px 32px 80px; }
+.page-head { max-width: 900px; margin: 0 auto 24px; }
+.page-head h1 { margin: 0 0 8px; font-size: 34px; font-weight: 800; letter-spacing: -0.04em; }
+.page-head p { margin: 0; font-size: 15px; line-height: 22px; color: #52635D; max-width: 720px; }
+.legend { margin: 22px auto 0; max-width: 900px; display: flex; flex-wrap: wrap; gap: 8px; }
+.legend b { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: #FFF; border: 1px solid #DED8CD; font-size: 11px; font-weight: 700; color: #52635D; }
+.legend b i { width: 8px; height: 8px; border-radius: 50%; background: #0F5E46; }
+.legend b.warn i { background: #8A4B00; }
+.legend b.info i { background: #17324D; }
+.legend b.err i { background: #B8432F; }
+
+.section-title { max-width: 1400px; margin: 46px auto 4px; padding: 0 8px; font-size: 15px; font-weight: 800; letter-spacing: -0.01em; color: #16231F; }
+.section-sub { max-width: 1400px; margin: 2px auto 12px; padding: 0 8px; font-size: 13px; color: #66716B; }
+
+.board { display: flex; gap: 40px; align-items: flex-start; overflow-x: auto; padding: 20px 8px 40px; }
+.wrap { flex: 0 0 auto; }
+.cap { margin: 0 0 12px 9px; font: 700 14px Manrope; color: #16231F; }
+.cap span { margin-left: 8px; color: #7A817C; font-weight: 500; }
+
+.device { width: 390px; height: 844px; padding: 7px; border-radius: 52px; background: #0C1311; box-shadow: 0 28px 64px rgba(20, 34, 28, .2); position: relative; }
+.screen { height: 100%; border-radius: 45px; background: #F7F3EA; overflow: hidden; position: relative; color: #16231F; font-family: Manrope, system-ui, sans-serif; }
+.island { position: absolute; z-index: 9; top: 12px; left: 50%; transform: translateX(-50%); width: 126px; height: 35px; background: #050706; border-radius: 22px; }
+.status { height: 55px; padding: 18px 25px 0; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 800; }
+.sys { display: flex; gap: 6px; align-items: center; }
+.sys svg { width: 15px; height: 15px; }
+.sys .bat { width: 25px; }
+.icon { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Top bar (screen titles or nav) */
+.bar { height: 65px; padding: 5px 18px 8px; display: flex; align-items: center; justify-content: space-between; }
+.bar h3 { margin: 0; font-size: 28px; line-height: 34px; letter-spacing: -.035em; font-weight: 750; }
+.bar-nav { height: 60px; padding: 0 8px; display: flex; align-items: center; justify-content: space-between; }
+.bar-nav b { font-size: 14px; font-weight: 750; }
+.circle-btn { width: 48px; height: 48px; border: 0; background: transparent; color: #16231F; display: grid; place-items: center; }
+.circle-btn svg { width: 23px; height: 23px; }
+
+.body { height: calc(100% - 204px); padding: 7px 18px 24px; overflow: hidden; }
+.body-scrolled { height: calc(100% - 60px); padding: 6px 18px 100px; overflow: hidden; }
+.body-modal { height: calc(100% - 76px); padding: 7px 18px 24px; overflow: hidden; }
+
+.lead { font-size: 16px; line-height: 23px; color: #52635D; margin: 1px 0 18px; max-width: 320px; }
+
+/* Intent card */
+.intent { background: #FFF; border-radius: 16px; padding: 17px; box-shadow: 0 8px 24px rgba(30, 47, 39, .07); margin-bottom: 14px; }
+.intent-head { display: flex; align-items: center; justify-content: space-between; }
+.kind { font-size: 12px; color: #0F5E46; font-weight: 800; }
+.time { font-size: 11px; color: #8A4B00; font-weight: 700; display: flex; gap: 5px; align-items: center; }
+.time svg { width: 14px; height: 14px; }
+.time.ended { color: #7A817C; }
+.intent h4 { margin: 13px 0 10px; font-size: 19px; line-height: 25px; letter-spacing: -.02em; font-weight: 750; }
+.meta { display: flex; gap: 13px; flex-wrap: wrap; font-size: 12px; line-height: 18px; color: #52635D; }
+.meta span { display: flex; align-items: center; gap: 5px; }
+.meta svg { width: 15px; height: 15px; }
+.reason { display: flex; gap: 9px; align-items: flex-start; margin: 15px 0 16px; padding-top: 14px; border-top: 1px solid #ECE7DE; color: #17324D; font-size: 12px; line-height: 17px; }
+.reason svg { width: 18px; height: 18px; flex: 0 0 auto; }
+.reason b { display: block; }
+.primary { width: 100%; height: 48px; border: 0; border-radius: 14px; background: #0F5E46; color: #FFF; display: flex; align-items: center; justify-content: center; gap: 8px; font: 800 14px Manrope; }
+.primary svg { width: 18px; height: 18px; }
+.primary.ghost { background: transparent; color: #0F5E46; }
+.primary.subtle { background: #ECE8E0; color: #16231F; }
+
+/* Tabs */
+.tabs { height: 84px; position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 11px 22px; background: #FFF; border-top: 1px solid #E5DFD5; display: grid; grid-template-columns: repeat(5, 1fr); }
+.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 9px; font-weight: 700; color: #78827D; }
+.tab svg { width: 23px; height: 23px; }
+.tab.on { color: #0F5E46; }
+.add { width: 44px; height: 44px; margin-top: -16px; border-radius: 15px; background: #0F5E46; color: #fff; display: grid; place-items: center; box-shadow: 0 9px 20px rgba(15, 94, 70, .22); }
+.add svg { width: 24px; height: 24px; }
+
+/* Broadcast composer */
+.compose-body { height: calc(100% - 196px); padding: 6px 18px 20px; overflow: hidden; }
+.progress { display: flex; gap: 6px; margin: 5px 0 20px; }
+.progress i { height: 3px; border-radius: 4px; flex: 1; background: #DED8CD; }
+.progress i.on { background: #0F5E46; }
+.question { font-size: 26px; line-height: 33px; letter-spacing: -.035em; font-weight: 750; margin-bottom: 19px; }
+.seg { height: 48px; border-radius: 14px; background: #ECE8E0; padding: 4px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.seg span { display: grid; place-items: center; border-radius: 10px; font-size: 12px; font-weight: 700; color: #66716B; }
+.seg .on { background: #FFF; color: #0F5E46; box-shadow: 0 2px 7px rgba(30, 47, 39, .07); }
+.field-label { font-size: 12px; font-weight: 700; margin: 19px 0 8px; }
+.text-area { height: 144px; background: #FFF; border: 1.5px solid #0F5E46; border-radius: 14px; padding: 14px; font-size: 15px; line-height: 22px; box-shadow: 0 0 0 3px rgba(15, 94, 70, .07); }
+.text-area.placeholder { color: #7A817C; }
+.counter { text-align: right; color: #7B847F; font-size: 10px; margin-top: 5px; }
+.detail-row { height: 48px; border-bottom: 1px solid #DED8CD; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 650; color: #31433C; }
+.detail-row svg { width: 19px; height: 19px; color: #0F5E46; }
+.detail-row .chev { margin-left: auto; color: #78827D; width: 17px; }
+.detail-row .val { margin-left: auto; margin-right: 6px; font-size: 12px; color: #7A817C; font-weight: 500; }
+.saved { margin-top: 14px; display: flex; align-items: center; gap: 8px; color: #52635D; font-size: 11px; }
+.saved svg { width: 16px; height: 16px; color: #0F5E46; }
+.cta { height: 76px; position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 18px 18px; background: #FFF; border-top: 1px solid #E5DFD5; }
+
+/* Activity */
+.activity-body { height: calc(100% - 204px); padding: 3px 18px 22px; overflow: hidden; }
+.filters { display: flex; gap: 8px; margin: 4px 0 18px; }
+.filter { height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid #DAD4C9; background: transparent; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #52635D; }
+.filter.on { background: #16231F; border-color: #16231F; color: #FFF; }
+.section { font-size: 12px; font-weight: 750; color: #66716B; margin: 17px 2px 8px; display: flex; align-items: center; justify-content: space-between; }
+.section .action { color: #0F5E46; font-size: 11px; font-weight: 800; }
+.list { background: #FFF; border-radius: 16px; overflow: hidden; }
+.row { min-height: 82px; padding: 13px 14px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #ECE7DE; }
+.row:last-child { border: 0; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; background: #E8F3EC; color: #0F5E46; display: grid; place-items: center; font-size: 11px; font-weight: 800; flex: 0 0 auto; }
+.avatar.lg { width: 72px; height: 72px; font-size: 22px; }
+.avatar.muted { background: #ECE8E0; color: #52635D; }
+.rowcopy { flex: 1; min-width: 0; }
+.rowcopy b { display: block; font-size: 13px; margin-bottom: 3px; }
+.rowcopy p { margin: 0; font-size: 11px; color: #52635D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowcopy time { display: block; font-size: 10px; color: #838B87; margin-top: 3px; }
+.badge { width: 22px; height: 22px; border-radius: 50%; background: #0F5E46; color: #fff; display: grid; place-items: center; font-size: 9px; font-weight: 800; }
+.quiet-status { font-size: 10px; font-weight: 750; color: #8A4B00; }
+.quiet-status.trust { color: #0F5E46; }
+.quiet-status.muted { color: #7A817C; }
+.intent-row { height: 66px; border-bottom: 1px solid #DED8CD; display: flex; gap: 11px; align-items: center; padding: 0 2px; }
+.intent-row:last-child { border: 0; }
+.broadcast-icon { width: 40px; height: 40px; border-radius: 14px; background: #E8F3EC; color: #0F5E46; display: grid; place-items: center; }
+.broadcast-icon svg { width: 20px; height: 20px; }
+.intent-row .rowcopy b { font-size: 12px; }
+.intent-row > .icon { margin-left: auto; color: #7B847F; width: 18px; height: 18px; }
+
+/* Empty / Loading / Error */
+.empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 26px 22px; }
+.empty .glyph { width: 60px; height: 60px; border-radius: 30px; background: #E8F3EC; display: grid; place-items: center; margin-bottom: 4px; }
+.empty .glyph svg { width: 26px; height: 26px; color: #0F5E46; }
+.empty h5 { font-size: 16px; font-weight: 800; margin: 4px 0 0; text-align: center; }
+.empty p { margin: 4px 0 0; font-size: 13px; line-height: 19px; color: #52635D; text-align: center; max-width: 260px; }
+.empty .primary { width: auto; margin-top: 10px; padding: 0 18px; background: #ECE8E0; color: #16231F; }
+
+.skeleton { background: #FFF; border-radius: 16px; padding: 17px; margin-bottom: 14px; }
+.sk { background: #ECE8E0; border-radius: 6px; }
+
+/* Banner */
+.banner { display: flex; gap: 10px; padding: 14px; border-radius: 14px; align-items: flex-start; margin-top: 16px; }
+.banner svg { width: 20px; height: 20px; flex: 0 0 auto; }
+.banner .btitle { font-size: 13px; font-weight: 800; }
+.banner .bbody { margin-top: 3px; font-size: 12px; line-height: 17px; }
+.banner.info { background: #EAF1F8; color: #17324D; }
+.banner.warn { background: #FBEBD0; color: #8A4B00; }
+.banner.danger { background: #FFECE6; color: #B8432F; }
+.banner.trust { background: #E8F3EC; color: #0F5E46; }
+
+/* Intent detail */
+.summary { padding: 12px 2px; }
+.summary h2 { margin: 12px 0 8px; font-size: 24px; line-height: 30px; letter-spacing: -0.02em; font-weight: 750; }
+.summary .head { display: flex; align-items: center; justify-content: space-between; }
+.chip { align-self: flex-start; padding: 6px 10px; border-radius: 9px; font-size: 12px; font-weight: 800; }
+.chip.trust { background: #E8F3EC; color: #0F5E46; }
+.info-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.info-chip { padding: 7px 10px; border-radius: 10px; background: #ECE8E0; color: #52635D; font-size: 12px; font-weight: 800; }
+.group { background: #FFF; border-radius: 16px; overflow: hidden; }
+.group .pad { padding: 16px; }
+.profile-block { display: flex; gap: 16px; padding: 16px; align-items: flex-start; }
+.profile-block .copy { flex: 1; }
+.profile-block h3 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 750; }
+.profile-block .meta-line { margin-top: 2px; font-size: 13px; color: #7A817C; }
+.icon-line { display: flex; align-items: center; gap: 8px; margin-top: 8px; color: #52635D; font-size: 13px; line-height: 19px; }
+.icon-line svg { width: 16px; height: 16px; color: #0F5E46; }
+.privacy-strip { display: flex; padding: 14px 10px; }
+.privacy-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.privacy-item svg { width: 18px; height: 18px; color: #0F5E46; }
+.privacy-item span { text-align: center; font-size: 11px; line-height: 15px; color: #52635D; }
+.hair { height: 1px; background: #ECE7DE; margin: 0 16px; }
+.action-tray { height: 100px; position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 18px 22px; background: #FFF; border-top: 1px solid #E5DFD5; display: flex; flex-direction: column; gap: 6px; }
+.action-tray .secondary { text-align: center; font-size: 13px; font-weight: 700; color: #52635D; padding: 8px 0; }
+
+/* You / Settings */
+.identity { display: flex; gap: 16px; padding: 16px; align-items: center; }
+.identity .copy { flex: 1; }
+.identity h3 { margin: 0; font-size: 24px; font-weight: 750; }
+.identity .h-meta { font-size: 13px; color: #7A817C; margin-top: 2px; }
+.pill-trust { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 9px; background: #E8F3EC; color: #0F5E46; font-size: 11px; font-weight: 800; margin-top: 10px; }
+.pill-trust svg { width: 14px; height: 14px; }
+.setting { min-height: 66px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #ECE7DE; }
+.setting:last-child { border: 0; }
+.setting .glyph { color: #0F5E46; }
+.setting .glyph svg { width: 20px; height: 20px; }
+.setting .copy { flex: 1; }
+.setting .copy b { display: block; font-size: 14px; font-weight: 800; }
+.setting .copy p { margin: 2px 0 0; font-size: 12px; line-height: 17px; color: #7A817C; }
+.switch { width: 44px; height: 26px; border-radius: 999px; background: #DED8CD; position: relative; }
+.switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #FFF; box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.switch.on { background: #0F5E46; }
+.switch.on::after { left: auto; right: 3px; }
+
+/* Request sheet */
+.sheet-scrim { position: absolute; inset: 0; background: rgba(12, 19, 17, 0.35); }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #FFF; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 12px 20px 26px; }
+.sheet .grabber { width: 44px; height: 5px; border-radius: 999px; background: #DED8CD; margin: 0 auto 12px; }
+.sheet h2 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 750; }
+.sheet .body { height: auto; padding: 0; }
+.sheet p.sub { font-size: 14px; line-height: 20px; color: #52635D; margin: 6px 0 12px; }
+.note { background: #FFF; border: 1.5px solid #0F5E46; border-radius: 14px; padding: 14px; min-height: 120px; font-size: 15px; line-height: 22px; box-shadow: 0 0 0 3px rgba(15, 94, 70, .07); }
+.privacy-row { margin-top: 12px; display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; background: #ECE8E0; font-weight: 700; font-size: 13px; color: #52635D; }
+.privacy-row svg { width: 18px; height: 18px; color: #0F5E46; }
+.actions { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+.actions .cancel { text-align: center; font-weight: 700; color: #52635D; font-size: 14px; padding: 8px 0; }
+
+/* Reach picker */
+.reach-row { min-height: 66px; padding: 14px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid #ECE7DE; }
+.reach-row:last-child { border: 0; }
+.reach-copy { flex: 1; }
+.reach-copy b { display: block; font-size: 14px; font-weight: 800; }
+.reach-copy p { margin: 3px 0 0; font-size: 12px; line-height: 17px; color: #7A817C; }
+.radio { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #DED8CD; display: grid; place-items: center; }
+.radio.on { border-color: #0F5E46; }
+.radio.on::after { content: ''; width: 10px; height: 10px; border-radius: 5px; background: #0F5E46; }
+
+</style>
+</head>
+
+<h1 class="page-head" style="max-width:900px;margin:40px auto 0;">Nearcast · mobile screen set</h1>
+<div class="page-head" style="max-width:900px;">
+  <p>Every page in the app rendered to the same guideline as the distilled Soft Signal design. Each row groups a flow — the primary state first, then every edge case a real user hits: empty, loading, offline, error, filter-empty, sending, sent, and not-found.</p>
+  <div class="legend">
+    <b><i></i>Primary · #0F5E46</b>
+    <b class="info"><i></i>Reason panel · #17324D</b>
+    <b class="warn"><i></i>Time / warn · #8A4B00</b>
+    <b class="err"><i></i>Danger · #B8432F</b>
+  </div>
+</div>
+
+<h2 class="section-title">1 · For you (feed)</h2>
+<p class="section-sub">Home tab. Lead line + intent cards with reason panel. All fetch states covered.</p>
+<div class="board">
+
+  <!-- FOR YOU: primary -->
+  <div class="wrap"><div class="cap">For you · primary <span>390 × 844</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><svg class="icon" viewBox="0 0 24 24"><path d="M3 20v-2M8 20v-6M13 20v-10M18 20V6M23 20V2"/></svg><svg class="icon bat" viewBox="0 0 28 14"><rect x="1" y="1" width="22" height="12" rx="3"/><path d="M25 5v4"/><path d="M4 4h16v6H4z" fill="currentColor" stroke="none"/></svg></span></div>
+    <div class="bar"><h3>For you</h3><button class="circle-btn" aria-label="Profile"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button></div>
+    <main class="body">
+      <p class="lead">Relevant intents from nearby trusted networks.</p>
+      <article class="intent">
+        <div class="intent-head"><span class="kind">I want to</span><span class="time"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ends tonight</span></div>
+        <h4>Two more players for badminton after work</h4>
+        <div class="meta"><span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>Indiranagar area</span><span><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>3 origin confirmations</span></div>
+        <div class="reason"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16h.01M9.2 9a3 3 0 1 1 5.6 1.5c-.7.9-2.3 1.3-2.3 2.8"/></svg><div><b>Why you’re seeing this</b>Nearby and relevant to your preferences.</div></div>
+        <button class="primary"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Request to join</button>
+      </article>
+      <article class="intent">
+        <div class="intent-head"><span class="kind">I need</span><span class="time"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ends Friday</span></div>
+        <h4>Studio partner for weekend ceramics</h4>
+        <div class="meta"><span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>HSR area</span><span><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>1 origin confirmation</span></div>
+      </article>
+    </main>
+    <nav class="tabs">
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+  <!-- FOR YOU: empty -->
+  <div class="wrap"><div class="cap">For you · empty <span>no matches nearby</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>For you</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button></div>
+    <main class="body">
+      <p class="lead">Relevant intents from nearby trusted networks.</p>
+      <div class="empty" style="background:#FFF; border-radius:16px; padding:30px 22px;">
+        <div class="glyph"><svg class="icon" viewBox="0 0 24 24"><path d="M4 8h16l-2 12H6z"/><path d="M8 8V6a4 4 0 1 1 8 0v2"/></svg></div>
+        <h5>Nothing to show yet</h5>
+        <p>Trusted intents nearby will appear here. Broadcast one to get things going.</p>
+        <button class="primary" style="margin-top:14px; background:#ECE8E0; color:#16231F;">Broadcast intent</button>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+  <!-- FOR YOU: loading -->
+  <div class="wrap"><div class="cap">For you · loading <span>skeleton state</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>For you</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button></div>
+    <main class="body">
+      <p class="lead">Relevant intents from nearby trusted networks.</p>
+      <div class="skeleton">
+        <div class="sk" style="width:90px; height:12px;"></div>
+        <div class="sk" style="width:80%; height:22px; margin-top:12px;"></div>
+        <div class="sk" style="width:60%; height:14px; margin-top:10px;"></div>
+        <div class="sk" style="width:100%; height:48px; margin-top:18px; border-radius:14px;"></div>
+      </div>
+      <div class="skeleton">
+        <div class="sk" style="width:70px; height:12px;"></div>
+        <div class="sk" style="width:75%; height:22px; margin-top:12px;"></div>
+        <div class="sk" style="width:55%; height:14px; margin-top:10px;"></div>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+  <!-- FOR YOU: offline + error -->
+  <div class="wrap"><div class="cap">For you · offline &amp; error <span>banner + fallback</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>For you</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button></div>
+    <main class="body">
+      <p class="lead">Relevant intents from nearby trusted networks.</p>
+      <div class="banner warn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 16 0M9 15a4 4 0 0 1 6 0M12 18h.01M3 3l18 18"/></svg>
+        <div><div class="btitle">You are offline</div><div class="bbody">You will see the latest intents once you reconnect.</div></div>
+      </div>
+      <div class="empty" style="margin-top:14px;">
+        <div class="glyph" style="background:#FFECE6;"><svg class="icon" viewBox="0 0 24 24" style="color:#B8432F;"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></div>
+        <h5>Something went wrong</h5>
+        <p>We couldn’t load your feed. Pull down to try again.</p>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+</div>
+
+<h2 class="section-title">2 · My intents</h2>
+<p class="section-sub">The user’s broadcasts. Live / Drafts / Ended filter. Every filter has its own empty copy.</p>
+<div class="board">
+
+  <!-- MY INTENTS: live -->
+  <div class="wrap"><div class="cap">My intents · live <span>live filter</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>My intents</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></button></div>
+    <main class="body">
+      <p class="lead">What you have broadcast, and everything still in draft.</p>
+      <div class="filters">
+        <span class="filter on">Live · 2</span>
+        <span class="filter">Drafts · 1</span>
+        <span class="filter">Ended · 0</span>
+      </div>
+      <div style="padding: 0 2px;">
+        <div class="intent-row">
+          <div class="broadcast-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0M12 12h.01"/></svg></div>
+          <div class="rowcopy"><b>Badminton after work</b><p>Live · 2 responses · Ends tonight</p></div>
+          <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+        <div class="intent-row">
+          <div class="broadcast-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0M12 12h.01"/></svg></div>
+          <div class="rowcopy"><b>Weekend ceramics partner</b><p>Open · 0 responses · Ends Friday</p></div>
+          <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+      </div>
+      <button class="primary" style="margin-top:20px;"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Broadcast intent</button>
+    </main>
+    <nav class="tabs">
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+  <!-- MY INTENTS: drafts -->
+  <div class="wrap"><div class="cap">My intents · drafts <span>drafts filter</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>My intents</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></button></div>
+    <main class="body">
+      <p class="lead">What you have broadcast, and everything still in draft.</p>
+      <div class="filters">
+        <span class="filter">Live · 2</span>
+        <span class="filter on">Drafts · 1</span>
+        <span class="filter">Ended · 0</span>
+      </div>
+      <div style="padding: 0 2px;">
+        <div class="intent-row">
+          <div class="broadcast-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+          <div class="rowcopy"><b>Coffee this weekend</b><p>Draft · Only you can see this</p></div>
+          <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+  <!-- MY INTENTS: ended empty -->
+  <div class="wrap"><div class="cap">My intents · ended empty <span>ended filter</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>My intents</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></button></div>
+    <main class="body">
+      <p class="lead">What you have broadcast, and everything still in draft.</p>
+      <div class="filters">
+        <span class="filter">Live · 2</span>
+        <span class="filter">Drafts · 1</span>
+        <span class="filter on">Ended · 0</span>
+      </div>
+      <div class="empty" style="background:#FFF; border-radius:16px; padding:30px 22px; margin-top:12px;">
+        <div class="glyph"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 4v16M16 4v16"/></svg></div>
+        <h5>Nothing ended yet</h5>
+        <p>Past intents will archive here once they end.</p>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+</div>
+
+<h2 class="section-title">3 · Broadcast — step 1 &amp; 2</h2>
+<p class="section-sub">Compose an intent, then choose reach. Progress bar carries the flow.</p>
+<div class="board">
+
+  <!-- BROADCAST STEP 1 -->
+  <div class="wrap"><div class="cap">Broadcast · compose <span>step 1 / 2</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button><b>New intent</b><span style="width:48px"></span></div>
+    <main class="compose-body">
+      <div class="progress"><i class="on"></i><i></i></div>
+      <div class="question">What do you need, offer, or want to do?</div>
+      <div class="seg"><span>I need</span><span>I offer</span><span class="on">I want to</span></div>
+      <div class="field-label">Your intent</div>
+      <div class="text-area">Looking for two people to play badminton near Indiranagar after work today.</div>
+      <div class="counter">76 / 280</div>
+      <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>Add approximate area<svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Add time<svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="saved"><svg class="icon" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>Draft saved privately</div>
+    </main>
+    <div class="cta"><button class="primary">Review intent<svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+  </div></div></div>
+
+  <!-- BROADCAST STEP 1 · filled details -->
+  <div class="wrap"><div class="cap">Broadcast · details set <span>step 1 / 2</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button><b>New intent</b><span style="width:48px"></span></div>
+    <main class="compose-body">
+      <div class="progress"><i class="on"></i><i></i></div>
+      <div class="question">What do you need, offer, or want to do?</div>
+      <div class="seg"><span>I need</span><span>I offer</span><span class="on">I want to</span></div>
+      <div class="field-label">Your intent</div>
+      <div class="text-area">Looking for two people to play badminton near Indiranagar after work today.</div>
+      <div class="counter">76 / 280</div>
+      <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>Approximate area<span class="val">Indiranagar area</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time<span class="val">Tonight, 8:00 PM</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+      <div class="saved"><svg class="icon" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>Draft saved privately</div>
+    </main>
+    <div class="cta"><button class="primary">Review intent<svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+  </div></div></div>
+
+  <!-- BROADCAST STEP 2 -->
+  <div class="wrap"><div class="cap">Broadcast · review <span>step 2 / 2</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn" aria-label="Back"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><b>Review intent</b><span style="width:48px"></span></div>
+    <main class="compose-body">
+      <div class="progress"><i class="on"></i><i class="on"></i></div>
+      <div class="group" style="margin-bottom:8px;">
+        <div class="pad">
+          <span class="chip trust">I want to</span>
+          <h4 style="margin:10px 0 8px; font-size:18px; line-height:24px; letter-spacing:-0.01em; font-weight:750;">Looking for two people to play badminton near Indiranagar after work today.</h4>
+          <div class="meta"><span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>Indiranagar area</span><span><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Tonight, 8:00 PM</span></div>
+        </div>
+      </div>
+      <div class="section" style="margin-top:14px;">Who can see this?</div>
+      <div class="group">
+        <div class="reach-row"><div class="reach-copy"><b>Trusted circles</b><p>People you are connected to</p></div><div class="radio"></div></div>
+        <div class="reach-row"><div class="reach-copy"><b>Adjacent network</b><p>People connected to your network</p></div><div class="radio on"></div></div>
+        <div class="reach-row"><div class="reach-copy"><b>Relevant nearby</b><p>People near you with shared context</p></div><div class="radio"></div></div>
+        <div class="reach-row"><div class="reach-copy"><b>Broader approved</b><p>People in approved neighborhoods</p></div><div class="radio"></div></div>
+      </div>
+      <div class="banner trust">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        <div><div class="btitle">Contact stays hidden</div><div class="bbody">People will see your first name and area. Exact place and contact appear only after mutual acceptance.</div></div>
+      </div>
+    </main>
+    <div class="cta"><button class="primary">Broadcast intent</button></div>
+  </div></div></div>
+
+  <!-- BROADCAST STEP 2 · sending -->
+  <div class="wrap"><div class="cap">Broadcast · sending <span>step 2 / 2</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><b>Review intent</b><span style="width:48px"></span></div>
+    <main class="compose-body">
+      <div class="progress"><i class="on"></i><i class="on"></i></div>
+      <div class="group" style="margin-bottom:8px;">
+        <div class="pad">
+          <span class="chip trust">I want to</span>
+          <h4 style="margin:10px 0 8px; font-size:18px; line-height:24px; font-weight:750;">Looking for two people to play badminton near Indiranagar after work today.</h4>
+        </div>
+      </div>
+      <div class="banner danger">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        <div><div class="btitle">Couldn’t broadcast</div><div class="bbody">Network dropped. Check your connection and try again.</div></div>
+      </div>
+    </main>
+    <div class="cta"><button class="primary" style="opacity:0.65;"><svg class="icon" viewBox="0 0 24 24" style="animation:spin 1.2s linear infinite;"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 9 9"/></svg>Broadcasting</button></div>
+  </div></div></div>
+
+</div>
+
+<h2 class="section-title">4 · Activity</h2>
+<p class="section-sub">Requests and coordination updates. Attention items sit above the fold; filters narrow it.</p>
+<div class="board">
+
+  <!-- ACTIVITY: primary -->
+  <div class="wrap"><div class="cap">Activity · primary <span>All filter</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><svg class="icon" viewBox="0 0 24 24"><path d="M3 20v-2M8 20v-6M13 20v-10M18 20V6M23 20V2"/></svg><svg class="icon bat" viewBox="0 0 28 14"><rect x="1" y="1" width="22" height="12" rx="3"/><path d="M25 5v4"/><path d="M4 4h16v6H4z" fill="currentColor" stroke="none"/></svg></span></div>
+    <div class="bar"><h3>Activity</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button></div>
+    <main class="activity-body">
+      <div class="filters"><span class="filter on">All</span><span class="filter">Responses</span><span class="filter">Matches</span></div>
+      <div class="section">Needs your attention</div>
+      <div class="list">
+        <div class="row"><div class="avatar">RK</div><div class="rowcopy"><b>Riya responded</b><p>“I can join after 7:00 pm.”</p><time>4 minutes ago</time></div><span class="badge">1</span></div>
+        <div class="row"><div class="avatar">AK</div><div class="rowcopy"><b>Coordination updated</b><p>Arjun shared a new time.</p><time>18 minutes ago</time></div><span class="quiet-status trust">Matched</span></div>
+        <div class="row"><div class="avatar muted">NS</div><div class="rowcopy"><b>Nisha stepped back</b><p>Nisha is no longer available today.</p><time>32 minutes ago</time></div><span class="quiet-status muted">Closed</span></div>
+      </div>
+      <div class="section">Your intents</div>
+      <div class="intent-row" style="padding:0 2px;">
+        <div class="broadcast-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0M12 12h.01"/></svg></div>
+        <div class="rowcopy"><b>Badminton after work</b><p>Live · 2 responses · Ends tonight</p></div>
+        <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+  <!-- ACTIVITY: matches only -->
+  <div class="wrap"><div class="cap">Activity · matches <span>Matches filter</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>Activity</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button></div>
+    <main class="activity-body">
+      <div class="filters"><span class="filter">All</span><span class="filter">Responses</span><span class="filter on">Matches</span></div>
+      <div class="section">Needs your attention</div>
+      <div class="list">
+        <div class="row"><div class="avatar">AK</div><div class="rowcopy"><b>Coordination updated</b><p>Arjun shared a new time.</p><time>18 minutes ago</time></div><span class="quiet-status trust">Matched</span></div>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+  <!-- ACTIVITY: empty filter -->
+  <div class="wrap"><div class="cap">Activity · empty filter <span>filter yields nothing</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>Activity</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button></div>
+    <main class="activity-body">
+      <div class="filters"><span class="filter">All</span><span class="filter on">Responses</span><span class="filter">Matches</span></div>
+      <div class="section">Needs your attention</div>
+      <div class="list">
+        <div class="empty" style="padding:22px;">
+          <div class="glyph"><svg class="icon" viewBox="0 0 24 24"><path d="M4 8h16l-2 12H6z"/></svg></div>
+          <h5>Nothing to review</h5>
+          <p>Responses and matches will show up here when they happen.</p>
+        </div>
+      </div>
+    </main>
+    <nav class="tabs">
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+</div>
+
+<h2 class="section-title">5 · Intent detail</h2>
+<p class="section-sub">Recipient view. Reason panel, posted-by block, what-they-need chips, privacy strip, and the tray action. Includes not-found.</p>
+<div class="board">
+
+  <!-- INTENT DETAIL -->
+  <div class="wrap"><div class="cap">Intent detail · default <span>recipient view</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><b>Intent</b><span style="display:flex; gap:12px; padding-right:8px;"><svg class="icon" viewBox="0 0 24 24" width="20" height="20"><path d="M6 3h12v18l-6-4-6 4z"/></svg><svg class="icon" viewBox="0 0 24 24" width="20" height="20"><path d="M12 3v12M6 9l6-6 6 6M4 21h16"/></svg></span></div>
+    <main class="body-scrolled">
+      <div class="summary">
+        <div class="head"><span class="chip trust">I want to</span><span class="time"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ends tonight</span></div>
+        <h2>Two more players for badminton after work</h2>
+        <div class="meta"><span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>Indiranagar area</span><span><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>3 origin confirmations</span></div>
+      </div>
+      <div class="section">Posted by</div>
+      <div class="group">
+        <div class="profile-block">
+          <div class="avatar lg">AA</div>
+          <div class="copy">
+            <h3>Aarav</h3>
+            <div class="meta-line">Indiranagar area</div>
+            <div class="icon-line"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 4 9 8 11 4-2 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/></svg>One trusted connection</div>
+            <div class="icon-line"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>Contact details hidden until accepted</div>
+          </div>
+        </div>
+      </div>
+      <div class="section">What they need</div>
+      <div class="group"><div class="pad">
+        <p style="margin:0; font-size:15px; line-height:23px;">Looking for two intermediate players near Indiranagar for an easy doubles game after work today.</p>
+        <div class="info-chips">
+          <span class="info-chip">2 spots open</span>
+          <span class="info-chip">Intermediate friendly</span>
+          <span class="info-chip">After 7:00 PM</span>
+        </div>
+      </div></div>
+      <div class="banner info">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16h.01M9.2 9a3 3 0 1 1 5.6 1.5c-.7.9-2.3 1.3-2.3 2.8"/></svg>
+        <div><div class="btitle">Why you’re seeing this</div><div class="bbody">Nearby and relevant to your preferences.</div></div>
+      </div>
+      <div class="section">Privacy</div>
+      <div class="group">
+        <div class="privacy-strip">
+          <div class="privacy-item"><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg><span>Area approximate</span></div>
+          <div class="privacy-item"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4l16 16M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 12-6"/></svg><span>Exact place hidden</span></div>
+          <div class="privacy-item"><svg class="icon" viewBox="0 0 24 24"><path d="M22 16v3a2 2 0 0 1-2 2 20 20 0 0 1-17-17 2 2 0 0 1 2-2h3M4 4l16 16"/></svg><span>Contact hidden</span></div>
+          <div class="privacy-item"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8v6M14 11h6"/></svg><span>Origin private</span></div>
+        </div>
+        <div class="hair"></div>
+        <div style="display:flex; gap:10px; align-items:center; padding:14px 16px;"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" style="color:#0F5E46;"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg><span style="flex:1; font-size:13px; line-height:18px; color:#52635D;">Hidden until accepted. Exact place and contact details.</span></div>
+      </div>
+    </main>
+    <div class="action-tray">
+      <button class="primary"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Request to join</button>
+      <div class="secondary">Not relevant</div>
+    </div>
+  </div></div></div>
+
+  <!-- INTENT DETAIL: expired -->
+  <div class="wrap"><div class="cap">Intent detail · ended <span>read-only</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><b>Intent</b><span style="width:48px"></span></div>
+    <main class="body-scrolled">
+      <div class="summary">
+        <div class="head"><span class="chip" style="background:#ECE8E0; color:#52635D;">Ended</span><span class="time ended"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ended yesterday</span></div>
+        <h2 style="color:#7A817C;">Easy evening walk and conversation</h2>
+        <div class="meta"><span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>Koramangala area</span></div>
+      </div>
+      <div class="banner warn">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <div><div class="btitle">This intent ended</div><div class="bbody">You can’t request to join, but you can revisit context.</div></div>
+      </div>
+    </main>
+    <div class="action-tray">
+      <button class="primary" style="background:#ECE8E0; color:#16231F;">Back to For you</button>
+    </div>
+  </div></div></div>
+
+  <!-- INTENT DETAIL: not found -->
+  <div class="wrap"><div class="cap">Intent detail · not found <span>fallback</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><b>Intent</b><span style="width:48px"></span></div>
+    <main class="body-scrolled" style="display:flex; align-items:center; justify-content:center;">
+      <div class="empty" style="margin-top:120px;">
+        <div class="glyph"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.2 9a3 3 0 1 1 5.6 1.5c-.7.9-2.3 1.3-2.3 2.8M12 17h.01"/></svg></div>
+        <h5>Intent not found</h5>
+        <p>This intent may have ended or is no longer visible to you.</p>
+        <button class="primary" style="margin-top:14px; background:#ECE8E0; color:#16231F;">Back to For you</button>
+      </div>
+    </main>
+  </div></div></div>
+
+</div>
+
+<h2 class="section-title">6 · Broadcaster profile</h2>
+<p class="section-sub">Origin stays private. Identity, current intent, trust context, hidden-until-accepted note.</p>
+<div class="board">
+
+  <div class="wrap"><div class="cap">Profile · Aarav <span>broadcaster</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar-nav"><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><b>Profile</b><span style="width:48px"></span></div>
+    <main class="body-scrolled">
+      <div class="group">
+        <div class="profile-block">
+          <div class="avatar lg">AA</div>
+          <div class="copy">
+            <h3>Aarav</h3>
+            <div class="meta-line">Indiranagar area</div>
+            <div class="icon-line"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 4 9 8 11 4-2 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/></svg>One trusted connection</div>
+            <div class="icon-line"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>Contact details hidden until accepted</div>
+          </div>
+        </div>
+      </div>
+      <div class="section">Current intent</div>
+      <div class="intent-row" style="padding: 0 2px;">
+        <div class="broadcast-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0M12 12h.01"/></svg></div>
+        <div class="rowcopy"><b>Two more players for badminton after work</b><p>Indiranagar area · Ends tonight</p></div>
+        <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="section">Trust context</div>
+      <div class="group"><div class="pad">
+        <div class="icon-line" style="margin:0;"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 4 9 8 11 4-2 8-6 8-11V5Z"/></svg>Aarav is one connection away from your network.</div>
+        <div class="hair" style="margin:12px 0;"></div>
+        <div class="icon-line" style="margin:0;"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8v6M14 11h6"/></svg>Origin circle stays private.</div>
+      </div></div>
+      <div class="banner info">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        <div><div class="btitle">Hidden until accepted</div><div class="bbody">Exact place and contact details appear only after mutual acceptance.</div></div>
+      </div>
+    </main>
+    <div class="action-tray">
+      <button class="primary"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Request to join</button>
+      <div class="secondary">Not relevant</div>
+    </div>
+  </div></div></div>
+
+</div>
+
+<h2 class="section-title">7 · Request sheet</h2>
+<p class="section-sub">Bottom-sheet modal. Note with counter, privacy row, sending / sent / error states.</p>
+<div class="board">
+
+  <!-- REQUEST: default -->
+  <div class="wrap"><div class="cap">Request · default <span>bottom sheet</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <!-- background layer -->
+    <div class="bar-nav" style="opacity:0.55;"><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><b>Intent</b><span style="width:48px"></span></div>
+    <div style="opacity:0.55; padding: 0 18px;">
+      <h2 style="font-size:24px; margin:8px 0;">Two more players for badminton after work</h2>
+    </div>
+    <div class="sheet-scrim"></div>
+    <div class="sheet">
+      <div class="grabber"></div>
+      <h2>Request to join</h2>
+      <p class="sub">Aarav will see your first name and response.</p>
+      <div class="note">Happy to join. I’ll bring an extra racquet.</div>
+      <div class="counter">44 / 240</div>
+      <div class="privacy-row"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>Exact contact details stay hidden</div>
+      <div class="actions">
+        <button class="primary">Send request</button>
+        <div class="cancel">Cancel</div>
+      </div>
+    </div>
+  </div></div></div>
+
+  <!-- REQUEST: sending -->
+  <div class="wrap"><div class="cap">Request · sending <span>in progress</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="sheet-scrim"></div>
+    <div class="sheet">
+      <div class="grabber"></div>
+      <h2>Request to join</h2>
+      <p class="sub">Aarav will see your first name and response.</p>
+      <div class="note">Happy to join. I’ll bring an extra racquet.</div>
+      <div class="counter">44 / 240</div>
+      <div class="privacy-row"><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>Exact contact details stay hidden</div>
+      <div class="actions">
+        <button class="primary" style="opacity:0.7;"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 9 9"/></svg>Sending</button>
+        <div class="cancel">Cancel</div>
+      </div>
+    </div>
+  </div></div></div>
+
+  <!-- REQUEST: sent -->
+  <div class="wrap"><div class="cap">Request · sent <span>confirmation</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="sheet-scrim"></div>
+    <div class="sheet">
+      <div class="grabber"></div>
+      <h2>Request to join</h2>
+      <p class="sub">Aarav will see your first name and response.</p>
+      <div class="note">Happy to join. I’ll bring an extra racquet.</div>
+      <div class="counter">44 / 240</div>
+      <div class="banner trust" style="margin-top:12px;">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+        <div><div class="btitle">Request sent</div><div class="bbody">You’ll get a note here as soon as Aarav responds.</div></div>
+      </div>
+      <div class="actions">
+        <button class="primary" style="opacity:0.55;">Sent</button>
+        <div class="cancel">Close</div>
+      </div>
+    </div>
+  </div></div></div>
+
+  <!-- REQUEST: error empty -->
+  <div class="wrap"><div class="cap">Request · empty note <span>validation</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="sheet-scrim"></div>
+    <div class="sheet">
+      <div class="grabber"></div>
+      <h2>Request to join</h2>
+      <p class="sub">Aarav will see your first name and response.</p>
+      <div class="note placeholder">Add a short note</div>
+      <div class="counter">0 / 240</div>
+      <div class="banner danger" style="margin-top:12px;">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        <div><div class="btitle">Add a short note before sending.</div></div>
+      </div>
+      <div class="actions">
+        <button class="primary">Send request</button>
+        <div class="cancel">Cancel</div>
+      </div>
+    </div>
+  </div></div></div>
+
+</div>
+
+<h2 class="section-title">8 · You</h2>
+<p class="section-sub">Identity, privacy controls, network access, account. Every setting explains its impact.</p>
+<div class="board">
+
+  <div class="wrap"><div class="cap">You · profile &amp; settings <span>signed in</span></div><div class="device"><div class="screen"><div class="island"></div>
+    <div class="status"><b>9:41</b><span class="sys"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg></span></div>
+    <div class="bar"><h3>You</h3><button class="circle-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .4 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.4 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .4-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.4-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.4H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.4 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
+    <main class="body-scrolled">
+      <div class="group">
+        <div class="identity">
+          <div class="avatar lg">PS</div>
+          <div class="copy">
+            <h3>Piyush</h3>
+            <div class="h-meta">Indiranagar area · Private alpha</div>
+            <div class="pill-trust"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 4 9 8 11 4-2 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/></svg>Origin verified</div>
+          </div>
+        </div>
+      </div>
+      <div class="section">Privacy</div>
+      <div class="group">
+        <div class="setting">
+          <div class="glyph"><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg></div>
+          <div class="copy"><b>Approximate location</b><p>Only your neighborhood area is shared with matches.</p></div>
+          <div class="switch on"></div>
+        </div>
+        <div class="setting">
+          <div class="glyph"><svg class="icon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></div>
+          <div class="copy"><b>Quiet hours</b><p>Pause deliveries between 10 PM and 7 AM.</p></div>
+          <div class="switch"></div>
+        </div>
+      </div>
+      <div class="section">Network</div>
+      <div class="group"><div class="pad" style="padding-top:6px; padding-bottom:6px;">
+        <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><path d="M9 21v-2a4 4 0 0 0-4-4H4M17 21v-2a4 4 0 0 0-4-4h-2M9 7a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z"/></svg><span>Trusted circles</span><span class="val">3 circles · 24 people</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+        <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg><span>Approved neighborhoods</span><span class="val">Indiranagar, Koramangala</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+        <div class="detail-row" style="border-bottom:0;"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg><span>Blocked and muted</span><span class="val">Nothing blocked</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+      </div></div>
+      <div class="section">Account</div>
+      <div class="group"><div class="pad" style="padding-top:6px; padding-bottom:6px;">
+        <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13 21a2 2 0 0 1-4 0"/></svg><span>Notifications</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+        <div class="detail-row"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg><span>Privacy policy</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+        <div class="detail-row" style="border-bottom:0;"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.2 9a3 3 0 1 1 5.6 1.5c-.7.9-2.3 1.3-2.3 2.8M12 17h.01"/></svg><span>Help and feedback</span><svg class="icon chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+      </div></div>
+      <div class="banner info">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        <div><div class="btitle">Private by design</div><div class="bbody">Origins, exact places, and contact details stay hidden until permission changes.</div></div>
+      </div>
+      <div style="margin-top:16px; padding:14px; border-radius:14px; background:#FFF; text-align:center; font-weight:700; font-size:13px; color:#B8432F;">Sign out</div>
+    </main>
+    <nav class="tabs">
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9H4zM9 21v-7h6v7"/></svg>For you</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>My intents</div>
+      <div class="tab"><span class="add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Broadcast</div>
+      <div class="tab"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Activity</div>
+      <div class="tab on"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</div>
+    </nav>
+  </div></div></div>
+
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</html>
