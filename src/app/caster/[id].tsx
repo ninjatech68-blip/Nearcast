@@ -136,7 +136,7 @@ export default function CasterProfileScreen() {
           <Text style={styles.quiet}>nothing live right now.</Text>
         )}
 
-        <SheetNote>exact places + contact stay hidden until you&apos;re both in. receipts are attendance facts, not ratings.</SheetNote>
+        <SheetNote>the exact place stays hidden until you&apos;re both in. chat is in-app — nobody exchanges numbers. receipts are attendance facts, not ratings.</SheetNote>
       </ScrollView>
 
       <View style={styles.safety}>

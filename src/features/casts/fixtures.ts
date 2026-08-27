@@ -408,7 +408,7 @@ export const me = {
   areas: 'indiranagar, koramangala, hsr · always approximate',
   quietHours: '10pm to 7am',
   blocked: 'nobody',
-  privacy: 'exact places + contacts stay hidden until both sides say yes.',
+  privacy: 'the exact place stays hidden until both sides say yes. chat lives in-app — numbers never change hands.',
 };
 
 export const recap = {

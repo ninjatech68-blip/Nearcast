@@ -173,7 +173,7 @@ describe('cast detail sheet', () => {
     expect(view.getByText('Aarav cast this')).toBeTruthy();
     expect(view.getByText('31 plans made real · 0 flakes')).toBeTruthy();
     expect(view.getByLabelText('signal: 4 of 5')).toBeTruthy();
-    expect(view.getByText("exact place + contact stay hidden until you're both in")).toBeTruthy();
+    expect(view.getByText(/the exact place stays hidden until you're both in\. chat is in-app/)).toBeTruthy();
   });
 
   it('renders the gone state for an expired or unknown cast', async () => {
@@ -209,7 +209,7 @@ describe('you sheet', () => {
     expect(view.getByText('signal: strong')).toBeTruthy();
     expect(view.getByText('your cast reaches ~240 people · only you see this')).toBeTruthy();
     expect(view.getByText('receipts')).toBeTruthy();
-    expect(view.getByText('exact places + contacts stay hidden until both sides say yes.')).toBeTruthy();
+    expect(view.getByText(/the exact place stays hidden until both sides say yes\./)).toBeTruthy();
   });
 });
 

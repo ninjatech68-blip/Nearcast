@@ -42,7 +42,7 @@ export default function CastDetailScreen() {
           </View>
         </Pressable>
         <Text style={styles.body}>{cast.body}</Text>
-        <SheetNote>exact place + contact stay hidden until you&apos;re both in</SheetNote>
+        <SheetNote>the exact place stays hidden until you&apos;re both in. chat is in-app — nobody exchanges numbers.</SheetNote>
       </ScrollView>
       <View style={styles.actions}>
         <BarButton label="I'm in" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
