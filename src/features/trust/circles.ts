@@ -140,3 +140,19 @@ export function circlesVouchingForMe(): number {
 export function vouchersOfMe(): readonly string[] {
   return vouches.map((v) => v.ownerId);
 }
+
+/**
+ * a vouch requires evidence you know the person. right now that
+ * evidence is one confirmed attendance receipt with them (the
+ * attendance domain's mutual-confirm outcome). if you have not made
+ * a plan real together, you cannot put them in a circle. this is the
+ * product rule that stops the caster sheet from being a follow button.
+ *
+ * production: attendance.receipts_between(viewer, person). fixture:
+ * an explicit list of people we have a confirmed receipt with.
+ */
+const receiptsWithMe: readonly string[] = ['aarav'];
+
+export function hasReceiptWith(personId: string): boolean {
+  return receiptsWithMe.includes(personId);
+}

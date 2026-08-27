@@ -12,7 +12,7 @@ import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { useFeedCasts } from '@/features/casts/store';
-import { addToCircle, getCircles, trustGraph, useCircles } from '@/features/trust/circles';
+import { addToCircle, getCircles, hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
 import { trustLink } from '@/features/trust/domain/trust';
 
 /**
@@ -30,6 +30,11 @@ export default function CasterProfileScreen() {
   // the trust phrase is COMPUTED from the graph, never a fixture string
   const link = caster ? trustLink(trustGraph(), 'me', caster.id) : null;
   const inCircles = caster ? circles.filter((c) => c.memberIds.includes(caster.id)) : [];
+  // vouching gate: a receipt with them, OR they are already in one of
+  // your circles (someone with a receipt already put them there — you
+  // are adding to another, not starting a new vouch).
+  const metWith = caster ? hasReceiptWith(caster.id) : false;
+  const canVouch = inCircles.length > 0 || metWith;
 
   function addTo() {
     if (!caster) return;
@@ -38,20 +43,21 @@ export default function CasterProfileScreen() {
       Alert.alert('already vouched', `${caster.name} is in all your circles.`, [{ text: 'ok' }]);
       return;
     }
-    Alert.alert(
-      `vouch for ${caster.name}?`,
-      'putting them in one of your circles is your vouch. they never see which one.',
-      [
-        ...options.map((c) => ({
-          text: c.name,
-          onPress: () => {
-            haptic('selection');
-            addToCircle(c.id, caster.id);
-          },
-        })),
-        { text: 'cancel', style: 'cancel' as const },
-      ],
-    );
+    const title = inCircles.length > 0 ? `add ${caster.name} to another?` : `vouch for ${caster.name}?`;
+    const body =
+      inCircles.length > 0
+        ? 'they are never told which circle. any circle counts as your vouch.'
+        : `you have a receipt with ${caster.name}. putting them in a circle is your vouch — they never see which one.`;
+    Alert.alert(title, body, [
+      ...options.map((c) => ({
+        text: c.name,
+        onPress: () => {
+          haptic('selection');
+          addToCircle(c.id, caster.id);
+        },
+      })),
+      { text: 'cancel', style: 'cancel' as const },
+    ]);
   }
 
   if (!caster) {
@@ -95,14 +101,23 @@ export default function CasterProfileScreen() {
         </View>
         <Text style={styles.vouch}>{caster.vouchLine}</Text>
 
-        <Pressable accessibilityRole="button" accessibilityLabel={`vouch for ${caster.name}`} onPress={addTo} style={styles.addRow}>
-          <Text style={styles.addText}>
-            {inCircles.length > 0
-              ? `you vouch · in your ${inCircles.map((c) => c.name).join(', ')}`
-              : `+ vouch for ${caster.name}`}
-          </Text>
-          {inCircles.length > 0 ? <Text style={styles.addMore}>+ add to another circle</Text> : null}
-        </Pressable>
+        {canVouch ? (
+          <Pressable accessibilityRole="button" accessibilityLabel={`vouch for ${caster.name}`} onPress={addTo} style={styles.addRow}>
+            <Text style={styles.addText}>
+              {inCircles.length > 0
+                ? `you vouch · in your ${inCircles.map((c) => c.name).join(', ')}`
+                : `+ vouch for ${caster.name}`}
+            </Text>
+            {inCircles.length > 0 ? <Text style={styles.addMore}>+ add to another circle</Text> : null}
+          </Pressable>
+        ) : (
+          <View style={styles.gatedRow} accessibilityRole="text">
+            <Text style={styles.gatedTitle}>vouching locked</Text>
+            <Text style={styles.gatedSub}>
+              you can vouch for {caster.name} after a plan you&apos;ve both been in. a receipt is the only way in.
+            </Text>
+          </View>
+        )}
 
         {liveCasts.length > 0 ? (
           <>
@@ -146,6 +161,16 @@ const styles = StyleSheet.create({
   addRow: { minHeight: 44, justifyContent: 'center', marginTop: 12 },
   addText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
   addMore: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginTop: 2 },
+  gatedRow: {
+    minHeight: 44,
+    marginTop: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: tokens.primitive.radius.control,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
+  gatedTitle: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  gatedSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.ink, marginTop: 3 },
   section: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 28, marginBottom: 4 },
   quiet: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 28 },
   goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
