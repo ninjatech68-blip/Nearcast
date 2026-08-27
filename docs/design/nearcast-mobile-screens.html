@@ -46,7 +46,7 @@ html, body { margin: 0; padding: 0; background: #EFEEE8; font-family: Manrope, s
 .circle-btn svg { width: 23px; height: 23px; }
 
 .body { height: calc(100% - 204px); padding: 7px 18px 24px; overflow: hidden; }
-.body-scrolled { height: calc(100% - 60px); padding: 6px 18px 100px; overflow: hidden; }
+.body-scrolled { height: calc(100% - 60px); padding: 6px 18px 118px; overflow: hidden; }
 .body-modal { height: calc(100% - 76px); padding: 7px 18px 24px; overflow: hidden; }
 
 .lead { font-size: 16px; line-height: 23px; color: #52635D; margin: 1px 0 18px; max-width: 320px; }
@@ -169,8 +169,15 @@ html, body { margin: 0; padding: 0; background: #EFEEE8; font-family: Manrope, s
 .privacy-item svg { width: 18px; height: 18px; color: #0F5E46; }
 .privacy-item span { text-align: center; font-size: 11px; line-height: 15px; color: #52635D; }
 .hair { height: 1px; background: #ECE7DE; margin: 0 16px; }
-.action-tray { height: 100px; position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 18px 22px; background: #FFF; border-top: 1px solid #E5DFD5; display: flex; flex-direction: column; gap: 6px; }
-.action-tray .secondary { text-align: center; font-size: 13px; font-weight: 700; color: #52635D; padding: 8px 0; }
+.action-tray { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 18px 24px; background: #FFF; border-top: 1px solid #E5DFD5; display: flex; flex-direction: column; gap: 4px; }
+.action-tray .secondary { text-align: center; font-size: 13px; font-weight: 700; color: #52635D; padding: 10px 0 4px; }
+
+/* Standardized request-to-join CTA — one primitive, used everywhere */
+.btn-request { width: 100%; height: 48px; border: 0; border-radius: 14px; background: #0F5E46; color: #FFF; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 800 14px/1 Manrope; padding: 0 20px; letter-spacing: -0.005em; }
+.btn-request svg { width: 18px; height: 18px; flex: 0 0 auto; }
+.btn-request:disabled, .btn-request.is-disabled { opacity: 0.55; }
+.btn-request.is-loading { opacity: 0.7; }
+.btn-request .spin { animation: spin 1.2s linear infinite; }
 
 /* You / Settings */
 .identity { display: flex; gap: 16px; padding: 16px; align-items: center; }
@@ -243,7 +250,7 @@ html, body { margin: 0; padding: 0; background: #EFEEE8; font-family: Manrope, s
         <h4>Two more players for badminton after work</h4>
         <div class="meta"><span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></svg>Indiranagar area</span><span><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>3 origin confirmations</span></div>
         <div class="reason"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16h.01M9.2 9a3 3 0 1 1 5.6 1.5c-.7.9-2.3 1.3-2.3 2.8"/></svg><div><b>Why you’re seeing this</b>Nearby and relevant to your preferences.</div></div>
-        <button class="primary"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Request to join</button>
+        <button class="btn-request" type="button" aria-label="Request to join"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg><span>Request to join</span></button>
       </article>
       <article class="intent">
         <div class="intent-head"><span class="kind">I need</span><span class="time"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ends Friday</span></div>
@@ -649,7 +656,7 @@ html, body { margin: 0; padding: 0; background: #EFEEE8; font-family: Manrope, s
       </div>
     </main>
     <div class="action-tray">
-      <button class="primary"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Request to join</button>
+      <button class="btn-request" type="button" aria-label="Request to join"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg><span>Request to join</span></button>
       <div class="secondary">Not relevant</div>
     </div>
   </div></div></div>
@@ -727,7 +734,7 @@ html, body { margin: 0; padding: 0; background: #EFEEE8; font-family: Manrope, s
       </div>
     </main>
     <div class="action-tray">
-      <button class="primary"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Request to join</button>
+      <button class="btn-request" type="button" aria-label="Request to join"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg><span>Request to join</span></button>
       <div class="secondary">Not relevant</div>
     </div>
   </div></div></div>
