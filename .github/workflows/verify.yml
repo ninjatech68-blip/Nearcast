@@ -20,6 +20,16 @@ jobs:
           EXPO_PUBLIC_APP_ENV: local
           EXPO_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
           EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+      - name: Bundle for web (device-free preview surface)
+        # Proves the app's JS graph is bootable without a native device — a
+        # failure here surfaces a native-only import that would only otherwise
+        # be caught on a real phone. Success is not a claim about UI parity
+        # with iOS; native components can render different or missing on web.
+        run: npm run bundle:web
+        env:
+          EXPO_PUBLIC_APP_ENV: local
+          EXPO_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
 
   database:
     runs-on: ubuntu-latest

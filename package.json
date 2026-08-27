@@ -58,6 +58,7 @@
     "test:components": "jest --runInBand",
     "test:watch": "vitest",
     "bundle:ios": "expo export --platform ios --output-dir dist",
+    "bundle:web": "expo export --platform web --output-dir dist-web",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run bundle:ios",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
