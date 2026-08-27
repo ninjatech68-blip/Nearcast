@@ -2,13 +2,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" />
 <style>
   :root {
     --ground: #F7F3EA;
     --surface: #FFFFFF;
     --surface-muted: #F1F4EC;
     --border-subtle: #DDD6C8;
+    --divider: #E9E1CE;
     --text-primary: #16231F;
     --text-secondary: #52635D;
     --text-muted: #8A9791;
@@ -24,13 +25,13 @@
     --info: #E4EDF6;
     --frame-shadow: 0 24px 60px -18px rgba(22, 35, 31, 0.28), 0 6px 20px -8px rgba(22, 35, 31, 0.14);
   }
-
   :root:not([data-theme="light"]) {
     @media (prefers-color-scheme: dark) {
       --ground: #0E1714;
       --surface: #15211D;
       --surface-muted: #1E2B25;
       --border-subtle: #33443B;
+      --divider: #223028;
       --text-primary: #F3F7F1;
       --text-secondary: #B0BCB4;
       --text-muted: #7A8580;
@@ -52,6 +53,7 @@
     --surface: #15211D;
     --surface-muted: #1E2B25;
     --border-subtle: #33443B;
+    --divider: #223028;
     --text-primary: #F3F7F1;
     --text-secondary: #B0BCB4;
     --text-muted: #7A8580;
@@ -77,551 +79,277 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
-  a { color: inherit; }
 
-  .page {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 48px 24px 96px;
-  }
+  .page { max-width: 1400px; margin: 0 auto; padding: 48px 24px 96px; }
 
-  header.masthead {
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: 40px;
-  }
-  .eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--action-primary);
-  }
-  h1.title {
-    font-family: 'Manrope', sans-serif;
-    font-weight: 700;
-    font-size: clamp(32px, 5vw, 48px);
-    line-height: 1.1;
-    text-wrap: balance;
-    margin: 12px 0 8px;
-    letter-spacing: -0.01em;
-  }
-  header.masthead p {
-    color: var(--text-secondary);
-    font-size: 16px;
-    max-width: 66ch;
-    margin: 0;
-  }
+  header.masthead { padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 40px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: 11px; font-weight: 600; color: var(--action-primary); }
+  h1.title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: clamp(32px, 5vw, 48px); line-height: 1.1; text-wrap: balance; margin: 12px 0 8px; letter-spacing: -0.01em; }
+  header.masthead p { color: var(--text-secondary); font-size: 16px; max-width: 66ch; margin: 0; }
+  .revision-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--success); color: var(--action-primary); margin-left: 10px; letter-spacing: 0.02em; }
 
   nav.index {
-    position: sticky;
-    top: 8px;
-    z-index: 10;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 10px;
-    margin-bottom: 32px;
+    position: sticky; top: 8px; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 10px; margin-bottom: 32px;
     background: color-mix(in oklab, var(--ground) 82%, transparent);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-subtle);
     border-radius: 16px;
   }
-  nav.index a {
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    border: 1px solid transparent;
-  }
+  nav.index a { text-decoration: none; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--text-secondary); border: 1px solid transparent; }
   nav.index a:hover { color: var(--text-primary); border-color: var(--border-subtle); }
 
-  section.flow {
-    margin: 56px 0;
-  }
-  .flow-heading {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    margin-bottom: 8px;
-  }
-  .flow-heading .num {
-    font-family: 'Manrope', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    color: var(--text-muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .flow-heading h2 {
-    font-family: 'Manrope', sans-serif;
-    font-weight: 700;
-    font-size: 24px;
-    letter-spacing: -0.01em;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .flow-blurb {
-    color: var(--text-secondary);
-    max-width: 66ch;
-    margin: 0 0 24px;
-    font-size: 14px;
-  }
+  section.flow { margin: 56px 0; }
+  .flow-heading { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .flow-heading .num { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.14em; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .flow-heading h2 { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+  .flow-blurb { color: var(--text-secondary); max-width: 66ch; margin: 0 0 24px; font-size: 14px; }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 40px;
-    align-items: start;
-  }
-
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; align-items: start; }
   .frame-wrap { display: flex; flex-direction: column; gap: 10px; }
-  .frame-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  .frame-label small {
-    color: var(--text-muted);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 10px;
-  }
+  .frame-label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .frame-label small { color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
 
   /* iPhone frame */
-  .phone {
-    width: 320px;
-    height: 690px;
-    border-radius: 46px;
-    background: #0e1714;
-    padding: 8px;
-    box-shadow: var(--frame-shadow);
-    position: relative;
-    overflow: hidden;
-    justify-self: center;
-  }
-  .phone::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 8px;
-    background: #0e1714;
-    z-index: 3;
-  }
-  .phone::after {
-    content: "";
-    position: absolute;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 28px;
-    border-radius: 999px;
-    background: #000;
-    z-index: 4;
-  }
-  .screen {
-    width: 100%;
-    height: 100%;
-    border-radius: 38px;
-    background: var(--ground);
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    color: var(--text-primary);
-  }
-  .statusbar {
-    height: 46px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding: 0 22px 4px;
-    font-size: 12px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
-  }
-  .statusbar .glyphs {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    opacity: 0.85;
-  }
-  .glyph {
-    display: inline-block;
-    width: 16px;
-    height: 10px;
-    border-radius: 2px;
-    background: currentColor;
-  }
-  .glyph.bat { width: 22px; }
+  .phone { width: 320px; height: 690px; border-radius: 46px; background: #0e1714; padding: 8px; box-shadow: var(--frame-shadow); position: relative; overflow: hidden; justify-self: center; }
+  .phone::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 8px; background: #0e1714; z-index: 3; }
+  .phone::after { content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 100px; height: 28px; border-radius: 999px; background: #000; z-index: 4; }
+  .screen { width: 100%; height: 100%; border-radius: 38px; background: var(--ground); overflow: hidden; position: relative; display: flex; flex-direction: column; color: var(--text-primary); }
+  .statusbar { height: 46px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 22px 4px; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  .statusbar .glyphs { display: inline-flex; align-items: center; gap: 4px; opacity: 0.85; }
+  .statusbar .g { display: inline-block; width: 16px; height: 10px; border-radius: 2px; background: currentColor; }
+  .statusbar .g.bat { width: 22px; }
 
-  .titlebar {
-    padding: 4px 20px 8px;
-    font-family: 'Manrope', sans-serif;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 30px;
-    letter-spacing: -0.01em;
+  /* iOS-style navigation header */
+  .nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 6px 12px 8px;
+    gap: 8px;
+    min-height: 44px;
   }
-  .titlebar.large {
-    font-size: 28px;
-    line-height: 34px;
-    padding-top: 6px;
+  .nav .left, .nav .right { display: flex; align-items: center; gap: 4px; }
+  .nav .right { justify-content: flex-end; }
+  .nav .title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    color: var(--action-primary); background: transparent; border: none;
+    padding: 8px 4px; min-height: 32px;
   }
-  .subtitle {
-    padding: 0 20px 4px;
-    color: var(--text-muted);
-    font-size: 12px;
-  }
-  .body {
-    flex: 1 1 auto;
-    overflow: hidden;
-    padding: 8px 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  .nav-btn.strong { font-weight: 700; }
+  .nav-btn.muted { color: var(--text-secondary); font-weight: 500; }
+  .nav-btn.disabled { color: var(--text-muted); }
+  .chevron { width: 8px; height: 12px; position: relative; }
+  .chevron::before { content: ""; position: absolute; inset: 0; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); width: 8px; height: 8px; top: 2px; }
+  .more-dots { display: inline-flex; gap: 3px; }
+  .more-dots span { width: 4px; height: 4px; border-radius: 999px; background: currentColor; }
+
+  .large-title { padding: 4px 20px 6px; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 28px; line-height: 34px; letter-spacing: -0.01em; }
+  .subtitle { padding: 0 20px 4px; color: var(--text-muted); font-size: 12px; }
+
+  .body { flex: 1 1 auto; overflow: hidden; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .body.tight { gap: 8px; }
 
   /* Bottom tab bar */
   .tabbar {
-    height: 78px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    align-items: start;
-    padding: 8px 8px 22px;
+    height: 82px;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    padding: 6px 6px 20px;
     background: var(--surface);
-    border-top: 1px solid var(--border-subtle);
+    border-top: 1px solid var(--divider);
     gap: 4px;
   }
   .tabbar .tab {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 0;
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text-muted);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 4px 0; font-size: 10px; font-weight: 600; color: var(--text-muted);
   }
   .tabbar .tab.active { color: var(--action-primary); }
-  .tabbar .tab .glyph-icon {
-    width: 22px;
-    height: 22px;
-    display: grid;
-    place-items: center;
+  .tabbar .tab .ic { width: 26px; height: 26px; display: grid; place-items: center; }
+  .tabbar .tab.broadcast { color: var(--action-primary); }
+  .tabbar .tab.broadcast .ic {
+    background: var(--action-primary); color: var(--on-primary);
+    width: 36px; height: 36px; border-radius: 999px;
+    box-shadow: 0 6px 14px -6px rgba(15,94,70,0.5);
   }
-  .tabbar .tab.broadcast { position: relative; }
-  .tabbar .tab.broadcast .glyph-icon {
-    background: var(--action-primary);
-    color: var(--on-primary);
-    width: 42px;
-    height: 42px;
-    border-radius: 999px;
-    margin-top: -18px;
-    box-shadow: 0 8px 18px -6px rgba(15, 94, 70, 0.5);
-    font-weight: 700;
-    font-size: 22px;
-  }
+  .tabbar .tab .ic svg { width: 100%; height: 100%; }
 
-  /* Cards & primitives */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .card.tight { padding: 10px 12px; gap: 3px; }
+  /* Content primitives */
+  .card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .card.tight { padding: 12px; gap: 4px; }
   .card.reason { background: var(--info); border-color: transparent; }
   .card.trust { background: var(--success); border-color: transparent; }
-  .card.warn { background: var(--warning); border-color: transparent; color: var(--status-warning); }
-  .card.danger { background: var(--danger); border-color: transparent; color: var(--status-danger); }
+  .card.warn { background: var(--warning); border-color: transparent; }
+  .card.danger { background: var(--danger); border-color: transparent; }
+  .card.selected { border-color: var(--action-primary); background: var(--success); }
 
-  .primitive {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--action-primary);
-  }
-  .statement {
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 20px;
-    text-wrap: balance;
-  }
-  .meta {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
+  .primitive { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--action-primary); }
+  .statement { font-size: 15px; font-weight: 700; line-height: 20px; color: var(--text-primary); text-wrap: balance; }
+  .statement.large { font-size: 20px; line-height: 26px; }
+  .meta { font-size: 12px; color: var(--text-secondary); }
+  .meta.muted { color: var(--text-muted); }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .stack { display: flex; flex-direction: column; }
+
   .why-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px 3px 4px;
     background: color-mix(in oklab, var(--action-secondary) 12%, var(--surface));
     color: var(--action-secondary);
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 600;
+    border-radius: 999px; font-size: 11px; font-weight: 600;
     align-self: flex-start;
+    border: 1px solid color-mix(in oklab, var(--action-secondary) 24%, transparent);
   }
-  .expiry {
-    font-size: 10px;
+  .why-chip .dot-i {
+    width: 14px; height: 14px; border-radius: 999px;
+    background: color-mix(in oklab, var(--action-secondary) 22%, var(--surface));
+    display: grid; place-items: center; font-weight: 700; font-size: 9px;
+  }
+
+  .expiry-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px;
     color: var(--status-warning);
-    font-weight: 600;
+    background: color-mix(in oklab, var(--status-warning) 12%, var(--surface));
+    border-radius: 999px; font-size: 10px; font-weight: 700;
   }
-  .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .confirmed {
-    font-size: 11px;
-    color: var(--action-primary);
-    font-weight: 600;
-  }
+  .expiry-chip .dt { width: 5px; height: 5px; border-radius: 999px; background: currentColor; }
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 44px;
-    border-radius: 12px;
-    padding: 0 16px;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 14px;
-    border: none;
-    color: var(--on-primary);
-    background: var(--action-primary);
-    width: 100%;
-  }
-  .btn.secondary {
-    background: transparent;
-    border: 1px solid var(--border-subtle);
-    color: var(--text-primary);
-  }
-  .btn.quiet {
-    background: transparent;
-    color: var(--action-primary);
-    height: 40px;
-    font-weight: 600;
-  }
-  .btn.danger {
-    background: transparent;
-    border: 1px solid var(--status-danger);
-    color: var(--status-danger);
-  }
-  .btn.disabled { opacity: 0.42; }
-  .footer-cta { padding: 12px 16px 20px; border-top: 1px solid var(--border-subtle); background: var(--surface); }
+  .confirmed-line { font-size: 12px; color: var(--action-primary); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .confirmed-line .num { font-variant-numeric: tabular-nums; }
 
-  .input {
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-family: inherit;
-    font-size: 14px;
-    color: var(--text-primary);
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-  .input.textarea { min-height: 132px; align-items: flex-start; }
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; border-radius: 14px; padding: 0 16px; font-family: inherit; font-weight: 700; font-size: 15px; border: none; color: var(--on-primary); background: var(--action-primary); width: 100%; }
+  .btn.secondary { background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary); }
+  .btn.quiet { background: transparent; color: var(--action-primary); height: 40px; font-weight: 600; }
+  .btn.danger-outline { background: transparent; border: 1px solid var(--status-danger); color: var(--status-danger); }
+  .btn.danger { background: var(--status-danger); color: var(--on-primary); }
+  .btn.disabled { opacity: 0.4; }
+  .btn.small { height: 36px; font-size: 13px; padding: 0 12px; }
+  .footer-cta { padding: 12px 16px 20px; border-top: 1px solid var(--divider); background: var(--surface); }
+  .footer-cta.split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Inputs and controls */
+  .input { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 14px; color: var(--text-primary); min-height: 44px; display: flex; align-items: center; }
+  .input.textarea { min-height: 128px; align-items: flex-start; padding-top: 12px; }
+  .input.compact { min-height: 40px; padding: 8px 12px; font-size: 13px; }
 
   .chipset { display: flex; gap: 0; border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; background: var(--surface); }
-  .chipset .chip { flex: 1; padding: 10px 8px; text-align: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); border-right: 1px solid var(--border-subtle); }
+  .chipset .chip { flex: 1; padding: 12px 8px; text-align: center; font-size: 13px; font-weight: 600; color: var(--text-secondary); border-right: 1px solid var(--divider); }
   .chipset .chip:last-child { border-right: none; }
   .chipset .chip.on { background: var(--success); color: var(--action-primary); }
 
-  .radio {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 12px 14px;
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    background: var(--surface);
-  }
+  .radio { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface); }
   .radio.on { border-color: var(--action-primary); background: var(--success); }
-  .radio strong { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-  .radio.on strong { color: var(--action-primary); }
+  .radio .radio-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .radio.on .radio-title { color: var(--action-primary); }
   .radio small { font-size: 11px; color: var(--text-secondary); line-height: 15px; }
+  .radio-ring { width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--border-subtle); flex-shrink: 0; }
+  .radio.on .radio-ring { border-color: var(--action-primary); background: radial-gradient(circle at center, var(--action-primary) 40%, transparent 42%); }
 
-  .toggle-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 2px;
-  }
-  .switch {
-    width: 42px;
-    height: 26px;
-    border-radius: 999px;
-    background: var(--border-subtle);
-    position: relative;
-  }
-  .switch::after {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 20px;
-    height: 20px;
-    border-radius: 999px;
-    background: var(--surface);
-  }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 2px; min-height: 44px; }
+  .switch { width: 44px; height: 26px; border-radius: 999px; background: var(--border-subtle); position: relative; flex-shrink: 0; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 999px; background: var(--surface); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
   .switch.on { background: var(--action-primary); }
   .switch.on::after { left: auto; right: 3px; }
 
-  .bubble {
-    max-width: 80%;
-    padding: 8px 12px;
-    border-radius: 14px;
-    font-size: 13px;
-    line-height: 18px;
-  }
-  .bubble.theirs {
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-  }
-  .bubble.mine {
-    background: var(--action-primary);
-    color: var(--on-primary);
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-  }
+  /* Row items (list/settings) */
+  .list { background: var(--surface); border-radius: 14px; overflow: hidden; }
+  .list .item { padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--divider); font-size: 14px; }
+  .list .item:last-child { border-bottom: none; }
+  .list .item .lead { flex: 1; }
+  .list .item .lead strong { display: block; color: var(--text-primary); font-weight: 600; }
+  .list .item .lead small { display: block; color: var(--text-secondary); font-size: 12px; }
+  .list .item .disclosure { color: var(--text-muted); font-size: 20px; line-height: 1; }
 
-  .sheet {
-    position: absolute;
-    inset: auto 0 0 0;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    background: var(--surface);
-    padding: 12px 20px 22px;
-    box-shadow: 0 -12px 30px -12px rgba(0,0,0,0.2);
-  }
-  .sheet-handle {
-    width: 42px;
-    height: 4px;
-    background: var(--border-subtle);
-    border-radius: 999px;
-    margin: 0 auto 12px;
-  }
+  /* Bubbles */
+  .bubble { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; line-height: 18px; }
+  .bubble.theirs { background: var(--surface); border: 1px solid var(--border-subtle); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .bubble.mine { background: var(--action-primary); color: var(--on-primary); align-self: flex-end; border-bottom-right-radius: 4px; }
+  .bubble.system { background: transparent; border: none; align-self: center; text-align: center; color: var(--text-muted); font-size: 11px; font-style: italic; max-width: 100%; padding: 4px 8px; }
 
-  .avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    background: var(--action-primary);
-    color: var(--on-primary);
-    display: grid;
-    place-items: center;
-    font-size: 11px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
+  /* Sheet */
+  .sheet { position: absolute; inset: auto 0 0 0; border-top-left-radius: 20px; border-top-right-radius: 20px; background: var(--surface); padding: 12px 20px 22px; box-shadow: 0 -12px 30px -12px rgba(0,0,0,0.2); }
+  .sheet-handle { width: 42px; height: 4px; background: var(--border-subtle); border-radius: 999px; margin: 0 auto 12px; }
+  .sheet-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .sheet-nav .t { font-size: 15px; font-weight: 700; }
 
-  .response {
-    display: flex;
-    gap: 10px;
-    padding: 12px 14px;
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-  }
-  .response .msg { font-size: 13px; line-height: 18px; color: var(--text-secondary); }
-  .response strong { display: block; font-size: 13px; color: var(--text-primary); }
+  .avatar { width: 32px; height: 32px; border-radius: 999px; background: var(--surface-muted); color: var(--text-primary); display: grid; place-items: center; font-size: 12px; font-weight: 700; flex-shrink: 0; border: 1px solid var(--border-subtle); }
+  .avatar.filled { background: var(--action-primary); color: var(--on-primary); border-color: transparent; }
+
+  .response { display: flex; gap: 12px; padding: 14px; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; }
+  .response .msg { font-size: 14px; line-height: 19px; color: var(--text-primary); margin-top: 4px; }
+  .response .who { display: flex; align-items: baseline; gap: 8px; }
+  .response .who strong { font-size: 14px; color: var(--text-primary); font-weight: 700; }
+  .response .who small { font-size: 11px; color: var(--text-muted); font-weight: 500; }
   .response .reliability { font-size: 11px; color: var(--action-primary); font-weight: 600; margin-top: 2px; }
+  .response .actions { display: flex; gap: 8px; margin-top: 12px; }
 
-  .status-line {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
+  .status-line { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--text-secondary); }
   .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--action-primary); display: inline-block; }
   .dot.warn { background: var(--status-warning); }
   .dot.danger { background: var(--status-danger); }
+  .dot.muted { background: var(--text-muted); }
 
-  .skeleton {
-    background: linear-gradient(90deg, var(--surface-muted), var(--border-subtle), var(--surface-muted));
-    background-size: 200% 100%;
-    border-radius: 8px;
-  }
+  .skeleton { background: linear-gradient(90deg, var(--surface-muted), var(--divider), var(--surface-muted)); background-size: 200% 100%; border-radius: 8px; display: block; }
   .sk-line { height: 12px; }
   .sk-lg { height: 20px; }
 
-  .state-panel {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 24px 24px 60px;
-    gap: 10px;
-  }
-  .state-panel .icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    display: grid;
-    place-items: center;
-    font-size: 20px;
-  }
-  .state-panel h3 { margin: 0; font-size: 16px; font-weight: 700; }
-  .state-panel p { margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 220px; }
+  .state-panel { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 24px 40px; gap: 12px; }
+  .state-panel .icon { width: 52px; height: 52px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border-subtle); display: grid; place-items: center; }
+  .state-panel h3 { margin: 0; font-size: 17px; font-weight: 700; }
+  .state-panel p { margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 220px; line-height: 18px; }
 
-  .disclosure {
-    background: var(--success);
-    border-radius: 14px;
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .disclosure strong { color: var(--action-primary); font-size: 13px; font-weight: 700; }
-  .disclosure small { color: var(--action-primary); font-size: 12px; line-height: 17px; }
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat { padding: 12px; border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--surface); display: flex; flex-direction: column; }
+  .stat .n { font-size: 22px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-top: 4px; }
 
-  footer.legal {
-    margin-top: 80px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border-subtle);
-    color: var(--text-muted);
-    font-size: 12px;
-  }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin: 4px 2px 0; }
 
-  @media (max-width: 640px) {
-    .grid { grid-template-columns: 1fr; }
-    .page { padding: 24px 12px 60px; }
-  }
+  .released-line { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--success); border-radius: 10px; font-size: 12px; color: var(--action-primary); font-weight: 600; }
+  .released-line .lock { width: 12px; height: 12px; border-radius: 3px; background: var(--action-primary); }
+
+  .safety-note { background: color-mix(in oklab, var(--status-danger) 8%, var(--surface)); border: 1px solid color-mix(in oklab, var(--status-danger) 22%, transparent); border-radius: 12px; padding: 10px 12px; font-size: 12px; color: var(--status-danger); font-weight: 600; }
+
+  .delete-link { text-align: center; color: var(--status-danger); font-size: 13px; font-weight: 600; padding: 12px 0; }
+
+  footer.legal { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 12px; }
+  code { background: var(--surface-muted); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .page { padding: 24px 12px 60px; } }
 </style>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1v-8.5Z" fill="currentColor"/></symbol>
+    <symbol id="i-house-o" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1v-8.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 10a6 6 0 1 1 12 0v3.5l1.5 2.5H4.5L6 13.5V10Zm4 8a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c1.2-3.5 4-5 7-5s5.8 1.5 7 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 12 12"><path d="M8 2 4 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-info" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M6 5.4v3M6 3.4v0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M6 3v3l2 1.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 12 12"><path d="M6 1a3 3 0 0 1 3 3c0 2-3 6-3 6S3 6 3 4a3 3 0 0 1 3-3Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="6" cy="4" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 21h20L12 3Zm0 6v6m0 3v0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M4 8c5-4 11-4 16 0M7 11c3-2 7-2 10 0M10 14c1-1 3-1 4 0M12 18v0M3 3l18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-empty" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-4 16-4-7-8-1Z" fill="currentColor"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
 
 <div class="page">
   <header class="masthead">
-    <span class="eyebrow">Nearcast · Screen Mockups</span>
+    <span class="eyebrow">Nearcast · Screen Mockups <span class="revision-tag">v2 · rev after review</span></span>
     <h1 class="title">The whole app on one page</h1>
-    <p>Every MVP screen at 320 × 690 (iPhone target), rendered in the same design tokens Manrope, cream ground, and forest-green accent the app itself uses. Use this as the source of truth for the React Native implementation, not the other way round. Both light and dark palettes are defined; toggle your OS theme (or the browser DevTools emulator) to see dark.</p>
+    <p>Every MVP screen at 320 × 690 (iPhone target), in the app's own tokens Manrope, cream ground, forest-green primary. This is v2 after the founder's review: real SVG icons in the tab bar (not text glyphs), proper iOS navigation headers on every screen with cancel/back and primary actions, one CTA per feed card with "Why shown" as a chip, safety in a menu, and delete as a two-step confirmation, not a red button under Sign out. Toggle your OS to see dark.</p>
   </header>
 
   <nav class="index" aria-label="Screen groups">
@@ -635,47 +363,58 @@
     <a href="#states">08 · States</a>
   </nav>
 
-  <!-- ================================================================ 01 ENTER -->
+  <!-- ============================================================ 01 ENTER -->
   <section class="flow" id="enter">
     <div class="flow-heading"><span class="num">01</span><h2>Enter</h2></div>
-    <p class="flow-blurb">Invitation-only. Google or Apple in production; local dev sign-in appears with the seeded personas listed inline. The invitation screen is the only surface that talks about the network before someone joins.</p>
+    <p class="flow-blurb">Google or Apple in production. Local dev sign-in appears with seeded personas listed inline so no one has to open <code>seed.sql</code> to reach the app.</p>
     <div class="grid">
 
       <div class="frame-wrap"><div class="frame-label">Sign in <small>signed-out cold boot</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="body">
           <div style="margin-top:8px;">
-            <div style="font-size:26px;font-weight:700;line-height:32px;">Sign in to Nearcast</div>
-            <div class="meta" style="margin-top:6px;">Invitation-only. We need to know it's you so intents reach the right people and safety works.</div>
+            <div style="font-size:26px;font-weight:700;line-height:32px;letter-spacing:-0.01em;">Sign in to Nearcast</div>
+            <div class="meta" style="margin-top:8px;">Invitation-only. We need to know it's you so intents reach the right people and safety works.</div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
             <button class="btn secondary">Continue with Google</button>
             <button class="btn secondary">Continue with Apple</button>
           </div>
-          <div style="margin-top:auto;padding:14px;background:var(--warning);border-radius:14px;">
+          <div class="meta muted" style="margin-top:8px;">You'll need an invitation link after signing in.</div>
+
+          <div style="margin-top:auto;padding:14px;background:var(--warning);border-radius:14px;border:1px solid color-mix(in oklab, var(--status-warning) 24%, transparent);">
             <div style="font-size:12px;font-weight:700;color:var(--status-warning);">Development sign-in</div>
             <div style="font-size:11px;color:var(--status-warning);line-height:15px;margin-top:4px;">Local testing only. Never available in production.</div>
-            <div style="font-size:11px;color:var(--status-warning);line-height:15px;margin-top:6px;">Personas (password: nearcast-local): asha@nearcast.local, dev@nearcast.local, mira@nearcast.local.</div>
-            <div class="input" style="margin-top:8px;font-size:12px;color:var(--text-muted);">persona@nearcast.local</div>
-            <div class="input" style="margin-top:6px;font-size:12px;color:var(--text-muted);">Password</div>
-            <button class="btn" style="margin-top:8px;">Sign in as local persona</button>
+            <div style="font-size:11px;color:var(--status-warning);line-height:15px;margin-top:6px;">Personas (password: <code>nearcast-local</code>): asha@nearcast.local, dev@nearcast.local, mira@nearcast.local.</div>
+            <div class="input compact" style="margin-top:8px;color:var(--text-muted);">persona@nearcast.local</div>
+            <div class="input compact" style="margin-top:6px;color:var(--text-muted);">Password</div>
+            <button class="btn small" style="margin-top:8px;">Sign in as local persona</button>
           </div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Invitation <small>redemption</small></div>
+      <div class="frame-wrap"><div class="frame-label">Invitation <small>redemption modal</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn muted">Cancel</button></div>
+          <div class="title">Join network</div>
+          <div class="right"></div>
+        </div>
         <div class="body">
-          <div class="titlebar large">Join this network</div>
-          <div class="meta" style="padding:0 4px;">Choose the name other people will see on your intents and responses. You can change it later.</div>
+          <div style="font-size:22px;font-weight:700;line-height:28px;margin-top:2px;">Choose the name others will see.</div>
+          <div class="meta">You can change it later.</div>
           <div class="input" style="margin-top:8px;color:var(--text-primary);">Asha Rao</div>
-          <div style="display:flex;gap:10px;margin-top:14px;padding:2px;">
-            <div style="width:22px;height:22px;border-radius:6px;background:var(--action-primary);color:var(--on-primary);display:grid;place-items:center;font-weight:700;font-size:14px;">✓</div>
-            <div style="font-size:12px;line-height:16px;color:var(--text-primary);flex:1;">I confirm that I am 18 or over. Nearcast is for adults, and accounts for people under 18 are not permitted.</div>
+
+          <div style="display:flex;gap:12px;margin-top:12px;padding:12px;background:var(--surface);border-radius:12px;border:1px solid var(--border-subtle);">
+            <div style="width:24px;height:24px;border-radius:6px;background:var(--action-primary);color:var(--on-primary);display:grid;place-items:center;flex-shrink:0;">
+              <svg width="14" height="14"><use href="#i-check"/></svg>
+            </div>
+            <div style="font-size:12px;line-height:17px;color:var(--text-primary);flex:1;">I confirm that I am 18 or over. Nearcast is for adults, and accounts for people under 18 are not permitted.</div>
           </div>
-          <div class="meta" style="margin-top:14px;">Your originating group and its members remain private. Nearcast never reads your group conversations.</div>
+
+          <div class="meta muted" style="margin-top:12px;">Your originating group and its members remain private. Nearcast never reads your group conversations.</div>
         </div>
         <div class="footer-cta"><button class="btn">Join network</button></div>
       </div></div></div>
@@ -683,534 +422,689 @@
     </div>
   </section>
 
-  <!-- ================================================================ 02 EXPLORE -->
+  <!-- ============================================================ 02 EXPLORE -->
   <section class="flow" id="explore">
     <div class="flow-heading"><span class="num">02</span><h2>Explore</h2></div>
-    <p class="flow-blurb">A finite list of intents already delivered to this person, each carrying its stored reason. Confirmation counts and areas are shown; no exact addresses, no contact details, no infinite feed.</p>
+    <p class="flow-blurb">A finite list of intents already delivered to this person. Card carries the statement, area, expiry, and a "Why shown" chip that expands the reason on tap. One CTA per card; hide moves off the card into a swipe/context action.</p>
     <div class="grid">
 
       <div class="frame-wrap"><div class="frame-label">For You <small>home feed</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div class="titlebar large">For You</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">For You</div>
+        <div class="subtitle">2 active intents</div>
+        <div class="body">
+
+          <div class="card">
+            <div class="row">
+              <span class="primitive">I need</span>
+              <span class="expiry-chip"><svg width="10" height="10"><use href="#i-clock"/></svg> 4h</span>
+            </div>
+            <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
+            <div class="row">
+              <span class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar area · Nearby</span>
+            </div>
+            <div class="row" style="margin-top:2px;">
+              <span class="why-chip"><span class="dot-i">i</span> Why shown</span>
+              <span class="confirmed-line"><span class="dot"></span><span class="num">3</span> confirmed at origin</span>
+            </div>
+            <button class="btn small" style="margin-top:10px;">Offer help</button>
+          </div>
+
+          <div class="card">
+            <div class="row">
+              <span class="primitive">I offer</span>
+              <span class="expiry-chip" style="color:var(--text-secondary);background:var(--surface-muted);"><svg width="10" height="10"><use href="#i-clock"/></svg> 3d</span>
+            </div>
+            <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
+            <div class="row"><span class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Whitefield area · Across town</span></div>
+            <div class="row" style="margin-top:2px;">
+              <span class="why-chip"><span class="dot-i">i</span> Why shown</span>
+            </div>
+            <button class="btn small secondary" style="margin-top:10px;border-color:var(--action-primary);color:var(--action-primary);">I am interested</button>
+          </div>
+
+          <div class="meta muted" style="margin-top:auto;text-align:center;padding:6px 12px;">Swipe left on a card to mark it "not relevant".</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Why shown <small>chip expanded</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">For You</div>
         <div class="subtitle">2 active intents</div>
         <div class="body">
           <div class="card">
-            <div class="row"><span class="primitive">I need</span><span class="expiry">Expires in 4h</span></div>
+            <div class="row"><span class="primitive">I need</span><span class="expiry-chip"><svg width="10" height="10"><use href="#i-clock"/></svg> 4h</span></div>
             <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
-            <div class="meta">Indiranagar area · Nearby</div>
-            <div class="card reason tight" style="margin-top:6px;">
-              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--action-secondary);">Why you are seeing this</div>
-              <div style="font-size:12px;color:var(--action-secondary);">Shared through one trusted connection.</div>
-            </div>
-            <div class="row" style="margin-top:6px;">
-              <span class="confirmed">Confirmed by 3 people at the origin</span>
-            </div>
-            <div class="row" style="margin-top:6px;">
-              <span style="font-size:14px;font-weight:700;color:var(--action-primary);">Offer help ›</span>
-              <span style="font-size:11px;color:var(--text-muted);font-weight:600;">Not relevant</span>
-            </div>
-          </div>
+            <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar area · Nearby</div>
 
-          <div class="card">
-            <div class="row"><span class="primitive">I offer</span><span class="expiry">Expires in 3d</span></div>
-            <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
-            <div class="meta">Whitefield area · Across town</div>
-            <div class="card reason tight" style="margin-top:6px;">
-              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--action-secondary);">Why you are seeing this</div>
-              <div style="font-size:12px;color:var(--action-secondary);">Shared through one trusted connection.</div>
+            <div class="card reason tight" style="margin-top:8px;padding:10px 12px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--action-secondary);">Why you are seeing this</div>
+              <div style="font-size:13px;line-height:18px;color:var(--action-secondary);margin-top:2px;">Shared through one trusted connection who confirmed the intent.</div>
+              <div style="font-size:11px;color:var(--action-secondary);font-weight:600;margin-top:4px;">Not relevant?</div>
             </div>
-            <div class="row" style="margin-top:6px;">
-              <span style="font-size:14px;font-weight:700;color:var(--action-primary);">I am interested ›</span>
-              <span style="font-size:11px;color:var(--text-muted);font-weight:600;">Not relevant</span>
-            </div>
-          </div>
 
-          <div class="meta" style="margin-top:auto;">Origins, exact places, and contact details stay hidden until permission changes.</div>
+            <div class="confirmed-line" style="margin-top:6px;"><span class="dot"></span><span class="num">3</span> confirmed at origin</div>
+            <button class="btn small" style="margin-top:10px;">Offer help</button>
+          </div>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
-          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
-          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
-          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
         </div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Intent detail <small>respondent view</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 4px;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
-        <div class="body">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> For You</button></div>
+          <div class="title">Intent</div>
+          <div class="right"><button class="nav-btn"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
+        </div>
+        <div class="body tight" style="padding-top:4px;">
           <span class="primitive">I need</span>
-          <div style="font-size:20px;font-weight:700;line-height:26px;">Looking for one person to help sort donated books tomorrow morning.</div>
-          <div class="meta">Indiranagar area</div>
+          <div class="statement large">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar area</div>
 
-          <div class="card reason">
-            <strong style="font-size:12px;color:var(--action-secondary);">Why you are seeing this</strong>
-            <span style="font-size:13px;color:var(--action-secondary);">Shared through one trusted connection.</span>
+          <div class="card reason" style="margin-top:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--action-secondary);text-transform:uppercase;letter-spacing:0.08em;">Why you are seeing this</div>
+            <div style="font-size:14px;color:var(--action-secondary);line-height:19px;">Shared through one trusted connection.</div>
           </div>
 
           <div class="card trust">
-            <strong style="font-size:14px;color:var(--action-primary);">Confirmed by 3 people at the origin.</strong>
-            <span style="font-size:12px;color:var(--action-primary);line-height:17px;">Confirmation means someone recognises or supports this intent. It does not guarantee attendance, accuracy, or safety.</span>
+            <div style="font-size:14px;font-weight:700;color:var(--action-primary);">Confirmed by 3 people at the origin.</div>
+            <div style="font-size:12px;color:var(--action-primary);line-height:17px;">Confirmation means someone recognises or supports this intent. It does not guarantee attendance, accuracy, or safety.</div>
           </div>
 
           <div class="meta">Shared by Asha</div>
-          <div class="meta" style="color:var(--text-muted);">No exact address or contact details are shown. The originating group stays private.</div>
+          <div class="meta muted">No exact address or contact details are shown. The originating group stays private.</div>
         </div>
         <div class="footer-cta"><button class="btn">Offer help</button></div>
-      </div></div></div>
-
-      <div class="frame-wrap"><div class="frame-label">Public intent <small>share-link landing</small></div>
-      <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 4px;"><span style="font-size:12px;color:var(--text-muted);">nearcast.app/i/abc123</span></div>
-        <div class="body">
-          <span class="primitive">I need</span>
-          <div style="font-size:20px;font-weight:700;line-height:26px;">Looking for one person to help sort donated books tomorrow morning.</div>
-          <div class="meta">Indiranagar area · Shared by Asha</div>
-
-          <div class="card">
-            <strong style="font-size:13px;">To respond, you'll need to sign in.</strong>
-            <span class="meta">Nearcast is invitation-only. Signing in tells us who is responding.</span>
-          </div>
-
-          <div class="meta" style="margin-top:auto;color:var(--text-muted);">No exact address or contact details shown. Reach cannot expand without the broadcaster's action.</div>
-        </div>
-        <div class="footer-cta"><button class="btn">Sign in to respond</button></div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ================================================================ 03 BROADCAST -->
+  <!-- ============================================================ 03 BROADCAST -->
   <section class="flow" id="broadcast">
     <div class="flow-heading"><span class="num">03</span><h2>Broadcast</h2></div>
-    <p class="flow-blurb">Composer → Review → Publish. Reach is picked with the audience it exposes named on the same tile. A privacy warning surfaces before publish if the text carries an exact address, but never blocks — the broadcaster's own words go through.</p>
+    <p class="flow-blurb">Composer → Review → Publish. Each step is a modal with a proper header: Cancel out the left, primary action on the right. The reach picker's tile also names the audience it exposes. Privacy warnings surface before publish but never block — the broadcaster's own words go through.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Composer <small>modal</small></div>
+      <div class="frame-wrap"><div class="frame-label">Composer <small>step 1 · modal</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;text-align:center;font-weight:700;font-size:16px;">Broadcast</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn muted">Cancel</button></div>
+          <div class="title">New intent</div>
+          <div class="right"><button class="nav-btn strong">Next</button></div>
+        </div>
         <div class="body">
-          <div style="font-size:22px;font-weight:700;line-height:28px;margin-top:12px;">What do you need, offer, or want to do?</div>
-          <div class="chipset" style="margin-top:14px;">
+          <div style="font-size:20px;font-weight:700;line-height:26px;">What do you need, offer, or want to do?</div>
+          <div class="chipset" style="margin-top:6px;">
             <div class="chip on">I need</div>
             <div class="chip">I offer</div>
             <div class="chip">I want to</div>
           </div>
-          <div class="input textarea" style="margin-top:14px;font-size:14px;color:var(--text-primary);flex-direction:column;align-items:flex-start;padding-top:12px;">Need one person to help sort donated books tomorrow morning at the library.</div>
-          <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px;">76/500</div>
+          <div class="input textarea" style="color:var(--text-primary);">Need one person to help sort donated books tomorrow morning at the library.</div>
+          <div style="text-align:right;font-size:11px;color:var(--text-muted);">76 / 500</div>
+
           <div class="card trust" style="margin-top:auto;">
-            <strong style="color:var(--action-primary);font-size:13px;">You choose who can see this.</strong>
-            <span style="font-size:12px;color:var(--action-primary);line-height:17px;">Contact details stay hidden. You'll review reach and expiry before publishing.</span>
+            <div style="font-size:13px;font-weight:700;color:var(--action-primary);">You choose who can see this.</div>
+            <div style="font-size:12px;color:var(--action-primary);line-height:17px;">Contact details stay hidden. You'll review reach and expiry before publishing.</div>
           </div>
         </div>
-        <div class="footer-cta"><button class="btn">Review intent</button></div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Review <small>reach + privacy</small></div>
+      <div class="frame-wrap"><div class="frame-label">Review <small>step 2 · reach + privacy</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Review intent</div>
-        <div class="body" style="gap:10px;">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> Back</button></div>
+          <div class="title">Review</div>
+          <div class="right"><button class="nav-btn strong">Broadcast</button></div>
+        </div>
+        <div class="body tight">
           <div class="card">
             <span class="primitive">I need</span>
             <div class="statement">Need one person to help sort donated books tomorrow morning at the library.</div>
-            <div style="font-size:11px;color:var(--text-muted);">This is what recipients will see.</div>
+            <div class="meta muted">This is what recipients will see.</div>
           </div>
 
-          <div style="font-size:14px;font-weight:700;margin-top:4px;">How far should this intent travel?</div>
-          <div class="radio on"><strong>People connected to my circles</strong><small>One connection beyond your circle. Your circle is never named.</small></div>
-          <div class="radio"><strong>Relevant people nearby</strong><small>People in your approximate area whose interests match.</small></div>
+          <div class="section-label">Reach</div>
+          <div class="radio on">
+            <div class="radio-title">People connected to my circles <span class="radio-ring"></span></div>
+            <small>One connection beyond your circle. Your circle is never named.</small>
+          </div>
+          <div class="radio">
+            <div class="radio-title">Relevant people nearby <span class="radio-ring"></span></div>
+            <small>People in your approximate area whose interests match.</small>
+          </div>
 
           <div class="toggle-row"><span style="font-size:14px;">Allow a shareable link</span><span class="switch on"></span></div>
-          <div class="toggle-row"><span style="font-size:14px;">Show my first name</span><span class="switch on"></span></div>
+          <div class="toggle-row" style="margin-top:-4px;"><span style="font-size:14px;">Show my first name</span><span class="switch on"></span></div>
 
           <div class="card trust">
-            <strong style="color:var(--action-primary);font-size:13px;">What stays private</strong>
-            <span style="font-size:12px;color:var(--action-primary);line-height:17px;">No exact address or contact details shown. Reach never expands without your action. Expires in 48 hours.</span>
+            <div style="font-size:13px;font-weight:700;color:var(--action-primary);">What stays private</div>
+            <div style="font-size:12px;color:var(--action-primary);line-height:17px;">No exact address or contact details shown. Reach never expands without your action. Expires in 48 hours.</div>
           </div>
         </div>
-        <div class="footer-cta"><button class="btn">Broadcast intent</button></div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Review <small>privacy warning</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Review intent</div>
-        <div class="body" style="gap:10px;">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> Back</button></div>
+          <div class="title">Review</div>
+          <div class="right"><button class="nav-btn strong">Broadcast</button></div>
+        </div>
+        <div class="body tight">
           <div class="card">
             <span class="primitive">I need</span>
             <div class="statement">Ride to 44 Play Lane, Indiranagar tonight at 8pm.</div>
           </div>
 
-          <div class="card warn">
-            <span style="font-size:12px;line-height:17px;color:var(--status-warning);">This looks like it includes an exact address. Everyone this reaches will see it — an approximate area is usually enough, and you can share the exact place with one person after you accept them.</span>
+          <div class="card warn" style="display:flex;gap:10px;align-items:flex-start;">
+            <svg width="18" height="18" style="color:var(--status-warning);flex-shrink:0;margin-top:2px;"><use href="#i-alert"/></svg>
+            <div style="font-size:12px;line-height:17px;color:var(--status-warning);">This looks like it includes an exact address. Everyone this reaches will see it — an approximate area is usually enough, and you can share the exact place with one person after you accept them.</div>
           </div>
 
-          <div style="font-size:14px;font-weight:700;">How far should this intent travel?</div>
-          <div class="radio on"><strong>My trusted circles</strong><small>Only people you already share a circle with can see this.</small></div>
-          <div class="radio"><strong>People connected to my circles</strong><small>One connection beyond your circle. Your circle is never named.</small></div>
+          <div class="section-label">Reach</div>
+          <div class="radio on">
+            <div class="radio-title">My trusted circles <span class="radio-ring"></span></div>
+            <small>Only people you already share a circle with can see this.</small>
+          </div>
+          <div class="radio">
+            <div class="radio-title">People connected to my circles <span class="radio-ring"></span></div>
+            <small>One connection beyond your circle.</small>
+          </div>
         </div>
-        <div class="footer-cta"><button class="btn">Broadcast intent</button></div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ================================================================ 04 RESPOND -->
+  <!-- ============================================================ 04 RESPOND -->
   <section class="flow" id="respond">
     <div class="flow-heading"><span class="num">04</span><h2>Respond</h2></div>
-    <p class="flow-blurb">A sheet with room for one short message and an honest disclosure of what will be shared. No competing responses are visible; qualifying questions are optional.</p>
+    <p class="flow-blurb">A sheet with room for one short message and an honest disclosure of exactly what will be shared. Sheet header carries Cancel and Send; no competing responses are visible.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Response sheet <small>sheet presentation</small></div>
+      <div class="frame-wrap"><div class="frame-label">Response sheet <small>overlay</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:8px 20px;opacity:0.45;">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div style="padding:12px 20px 8px;opacity:0.4;">
           <span class="primitive">I need</span>
-          <div style="font-size:16px;font-weight:700;">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div style="font-size:16px;font-weight:700;line-height:22px;">Looking for one person to help sort donated books tomorrow morning.</div>
         </div>
         <div class="sheet">
           <div class="sheet-handle"></div>
-          <div style="font-size:18px;font-weight:700;">Send a response</div>
-          <div class="input textarea" style="margin-top:12px;font-size:14px;padding-top:12px;flex-direction:column;align-items:flex-start;color:var(--text-primary);">I've helped catalog with the library before. Free tomorrow 9-11am.</div>
-          <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px;">64/1000</div>
-          <div class="disclosure" style="margin-top:12px;">
-            <strong>What will be shared</strong>
-            <small>Your display name and approximate area. Your message and any confirmed interactions.</small>
-            <small>Nothing else. Your contact details stay hidden unless you choose to release them after a match.</small>
+          <div class="sheet-nav">
+            <button class="nav-btn muted">Cancel</button>
+            <span class="t">Respond</span>
+            <button class="nav-btn strong">Send</button>
           </div>
-          <button class="btn" style="margin-top:14px;">Send response</button>
+          <div class="input textarea" style="font-size:14px;flex-direction:column;align-items:flex-start;color:var(--text-primary);">I've helped catalog with the library before. Free tomorrow 9–11am.</div>
+          <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px;">64 / 1000</div>
+
+          <div style="background:var(--success);border-radius:14px;padding:12px 14px;margin-top:12px;display:flex;flex-direction:column;gap:4px;">
+            <strong style="color:var(--action-primary);font-size:13px;font-weight:700;">What will be shared</strong>
+            <small style="color:var(--action-primary);font-size:12px;line-height:17px;">Your display name and approximate area. Your message and any confirmed interactions.</small>
+            <small style="color:var(--action-primary);font-size:12px;line-height:17px;">Nothing else. Contact details stay hidden unless you release them after a match.</small>
+          </div>
         </div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ================================================================ 05 COORDINATE -->
+  <!-- ============================================================ 05 COORDINATE -->
   <section class="flow" id="coordinate">
     <div class="flow-heading"><span class="num">05</span><h2>Coordinate</h2></div>
-    <p class="flow-blurb">The broadcaster reads the inbox one respondent at a time and decides. Accepting opens exactly one room, private to two people, with private fields released one at a time.</p>
+    <p class="flow-blurb">The broadcaster reads the inbox one respondent at a time and decides. Accepting jumps straight to the room private to two people — one less tap than v1. Safety actions (Report, Block, Resolve) live in the header <code>⋯</code> menu; the chat surface stays uncluttered.</p>
     <div class="grid">
 
       <div class="frame-wrap"><div class="frame-label">Inbox <small>broadcaster</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
-        <div class="titlebar large">Responses</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> Activity</button></div>
+          <div class="title">Responses</div>
+          <div class="right"></div>
+        </div>
+        <div class="subtitle" style="padding:0 20px 8px;">2 people responded</div>
         <div class="body">
+
           <div class="response">
-            <div class="avatar">D</div>
+            <div class="avatar filled">D</div>
             <div style="flex:1;">
-              <strong>Dev Mehta</strong>
+              <div class="who"><strong>Dev Mehta</strong><small>just now</small></div>
               <div class="reliability">2 of 2 confirmed interactions completed</div>
-              <div class="msg" style="margin-top:6px;">I've helped catalog with the library before. Free tomorrow 9–11am.</div>
-              <div style="display:flex;gap:8px;margin-top:10px;">
-                <button class="btn" style="height:36px;flex:1;font-size:13px;">Accept</button>
-                <button class="btn secondary" style="height:36px;flex:1;font-size:13px;">Decline</button>
+              <div class="msg">I've helped catalog with the library before. Free tomorrow 9–11am.</div>
+              <div class="actions">
+                <button class="btn small" style="flex:1;">Accept</button>
+                <button class="btn small secondary" style="flex:1;">Decline</button>
               </div>
             </div>
           </div>
-          <div class="response" style="opacity:0.7;">
+
+          <div class="response">
             <div class="avatar">M</div>
             <div style="flex:1;">
-              <strong>Mira Sen</strong>
+              <div class="who"><strong>Mira Sen</strong><small>10m</small></div>
               <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">No confirmed interactions yet</div>
-              <div class="msg" style="margin-top:6px;">I can help! Great with organizing.</div>
-              <div style="display:flex;gap:8px;margin-top:10px;">
-                <button class="btn" style="height:36px;flex:1;font-size:13px;">Accept</button>
-                <button class="btn secondary" style="height:36px;flex:1;font-size:13px;">Decline</button>
+              <div class="msg">I can help! Great with organizing.</div>
+              <div class="actions">
+                <button class="btn small" style="flex:1;">Accept</button>
+                <button class="btn small secondary" style="flex:1;">Decline</button>
               </div>
             </div>
           </div>
-          <div class="meta" style="margin-top:auto;color:var(--text-muted);">Declined respondents receive a neutral status. Accepting opens a private coordination room; nothing else is revealed until you choose to share it.</div>
+
+          <div class="meta muted" style="margin-top:auto;text-align:center;">Declined respondents receive a neutral status. Accepting opens a private coordination room.</div>
         </div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Room <small>match coordination</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
-        <div style="margin:8px 16px;padding:12px 14px;border:1px solid var(--border-subtle);border-radius:14px;background:var(--surface);">
-          <div style="font-size:14px;font-weight:700;line-height:19px;">Looking for one person to help sort donated books tomorrow morning.</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:2px;">Matched · Temporary coordination is available.</div>
-          <div style="font-size:11px;color:var(--text-muted);">Coordinating with Dev Mehta</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
+          <div class="title" style="display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.2;">
+            <span>Dev Mehta</span>
+            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched · 2 of 2 confirmed</span>
+          </div>
+          <div class="right"><button class="nav-btn"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
         </div>
-        <div style="display:flex;gap:8px;padding:0 16px;flex-wrap:wrap;">
-          <button class="btn secondary" style="height:32px;font-size:12px;padding:0 10px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;width:auto;">Share exact address</button>
-          <button class="btn secondary" style="height:32px;font-size:12px;padding:0 10px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;width:auto;">Share contact</button>
+
+        <div style="margin:0 16px 6px;padding:10px 12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;">
+          <div style="font-size:13px;font-weight:700;line-height:18px;">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">Live · Coordination temporary</div>
         </div>
-        <div class="body" style="gap:8px;padding-top:12px;">
+
+        <div style="display:flex;gap:6px;padding:0 16px;flex-wrap:wrap;">
+          <button class="btn small secondary" style="width:auto;padding:0 12px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;height:30px;font-size:12px;"><svg width="10" height="10" style="margin-right:4px;"><use href="#i-pin"/></svg> Share address</button>
+          <button class="btn small secondary" style="width:auto;padding:0 12px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;height:30px;font-size:12px;">Share contact</button>
+        </div>
+
+        <div class="body" style="gap:8px;padding-top:10px;">
           <div class="bubble theirs">Great, I'm nearby. What time works?</div>
           <div class="bubble mine">9am tomorrow at the library entrance?</div>
           <div class="bubble theirs">Perfect. See you then.</div>
         </div>
-        <div style="display:flex;gap:20px;padding:6px 20px;">
-          <span style="font-size:11px;font-weight:600;color:var(--status-danger);">Report</span>
-          <span style="font-size:11px;font-weight:600;color:var(--status-danger);">Block</span>
+
+        <div style="display:flex;gap:8px;padding:10px 16px 14px;border-top:1px solid var(--divider);background:var(--surface);align-items:center;">
+          <div class="input compact" style="flex:1;color:var(--text-muted);">Message</div>
+          <button class="btn small" style="width:44px;height:44px;padding:0;border-radius:999px;"><svg width="18" height="18" style="color:var(--on-primary);"><use href="#i-send"/></svg></button>
         </div>
-        <div style="display:flex;gap:8px;padding:12px 16px 16px;border-top:1px solid var(--border-subtle);background:var(--surface);align-items:flex-end;">
-          <div class="input" style="flex:1;font-size:14px;color:var(--text-muted);">Message</div>
-          <button class="btn" style="width:auto;padding:0 18px;">Send</button>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Room <small>⋯ menu open</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;">
+            <span>Dev Mehta</span>
+            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched</span>
+          </div>
+          <div class="right"><button class="nav-btn strong" style="color:var(--action-primary);"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
+        </div>
+
+        <div style="position:absolute;top:48px;right:12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:14px;padding:6px;min-width:180px;box-shadow:0 12px 30px -12px rgba(0,0,0,0.25);z-index:5;">
+          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--text-primary);border-bottom:1px solid var(--divider);">Resolve intent</div>
+          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--text-primary);border-bottom:1px solid var(--divider);">Withdraw intent</div>
+          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--status-danger);border-bottom:1px solid var(--divider);">Report</div>
+          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--status-danger);">Block</div>
+        </div>
+
+        <div style="margin:0 16px 6px;opacity:0.4;padding:10px 12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;">
+          <div style="font-size:13px;font-weight:700;line-height:18px;">Looking for one person to help sort donated books tomorrow morning.</div>
+        </div>
+
+        <div class="body" style="gap:8px;opacity:0.4;">
+          <div class="bubble theirs">Great, I'm nearby.</div>
+          <div class="bubble mine">9am tomorrow?</div>
         </div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Room <small>after address released</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
-        <div style="margin:8px 16px;padding:12px 14px;border:1px solid var(--border-subtle);border-radius:14px;background:var(--surface);">
-          <div style="font-size:14px;font-weight:700;line-height:19px;">Looking for one person to help sort donated books tomorrow morning.</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:2px;">Matched · Temporary coordination is available.</div>
-          <div style="font-size:11px;color:var(--text-muted);">Coordinating with Dev Mehta</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;">
+            <span>Dev Mehta</span>
+            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched</span>
+          </div>
+          <div class="right"><button class="nav-btn"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
         </div>
-        <div style="margin:0 16px;padding:10px 12px;background:var(--success);border-radius:12px;">
-          <div style="font-size:12px;font-weight:600;color:var(--action-primary);">Exact address: 44 Play Lane, Indiranagar</div>
+
+        <div style="margin:0 16px 6px;padding:10px 12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;">
+          <div style="font-size:13px;font-weight:700;line-height:18px;">Looking for one person to help sort donated books tomorrow morning.</div>
         </div>
-        <div class="body" style="gap:8px;padding-top:12px;">
-          <div class="bubble theirs">Great, I'm nearby. What time works?</div>
-          <div class="bubble mine">9am tomorrow at the library entrance?</div>
-          <div class="bubble mine" style="background:var(--surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-style:italic;font-size:12px;">Asha shared exact address</div>
+
+        <div class="released-line" style="margin:0 16px;">
+          <span class="lock"></span>
+          <span>Exact address: 44 Play Lane, Indiranagar</span>
+        </div>
+
+        <div class="body" style="gap:8px;padding-top:10px;">
+          <div class="bubble theirs">What time?</div>
+          <div class="bubble mine">9am at the library entrance</div>
+          <div class="bubble system">Asha shared exact address</div>
           <div class="bubble theirs">Got it. See you then.</div>
         </div>
-        <div style="display:flex;gap:8px;padding:12px 16px 16px;border-top:1px solid var(--border-subtle);background:var(--surface);align-items:flex-end;">
-          <div class="input" style="flex:1;font-size:14px;color:var(--text-muted);">Message</div>
-          <button class="btn" style="width:auto;padding:0 18px;">Send</button>
+
+        <div style="display:flex;gap:8px;padding:10px 16px 14px;border-top:1px solid var(--divider);background:var(--surface);align-items:center;">
+          <div class="input compact" style="flex:1;color:var(--text-muted);">Message</div>
+          <button class="btn small" style="width:44px;height:44px;padding:0;border-radius:999px;"><svg width="18" height="18" style="color:var(--on-primary);"><use href="#i-send"/></svg></button>
         </div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ================================================================ 06 RESOLVE -->
+  <!-- ============================================================ 06 RESOLVE -->
   <section class="flow" id="resolve">
     <div class="flow-heading"><span class="num">06</span><h2>Resolve</h2></div>
-    <p class="flow-blurb">Closing an intent asks for a factual outcome, not a rating. Only "resolved through Nearcast" with the other person's confirmation ever affects reliability.</p>
+    <p class="flow-blurb">Closing an intent asks for a factual outcome, not a rating. Only "resolved through Nearcast" with the other person's confirmation ever affects reliability. Withdraw becomes a quiet action, not a full red button beside the primary CTA.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Resolution <small>modal</small></div>
+      <div class="frame-wrap"><div class="frame-label">Resolve <small>modal</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Resolve intent</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn muted">Cancel</button></div>
+          <div class="title">Resolve</div>
+          <div class="right"><button class="nav-btn strong">Resolve</button></div>
+        </div>
         <div class="body">
-          <div style="font-size:18px;font-weight:700;line-height:24px;margin-top:4px;">Was your intent resolved?</div>
+          <div style="font-size:20px;font-weight:700;line-height:26px;margin-top:2px;">Was your intent resolved?</div>
           <div class="radio on">
-            <strong>Resolved through Nearcast</strong>
+            <div class="radio-title">Resolved through Nearcast <span class="radio-ring"></span></div>
             <small>Counts toward reliability once the other person confirms it happened.</small>
           </div>
-          <div class="radio"><strong>Resolved elsewhere</strong></div>
-          <div class="radio"><strong>No longer needed</strong></div>
-          <div class="radio"><strong>Could not resolve before expiry</strong></div>
-          <div class="meta">Closing this intent stops new responses immediately. Only "Resolved through Nearcast", confirmed by the other person, affects reliability.</div>
-          <button class="btn danger" style="margin-top:4px;">Withdraw intent</button>
+          <div class="radio"><div class="radio-title">Resolved elsewhere <span class="radio-ring"></span></div></div>
+          <div class="radio"><div class="radio-title">No longer needed <span class="radio-ring"></span></div></div>
+          <div class="radio"><div class="radio-title">Could not resolve before expiry <span class="radio-ring"></span></div></div>
+
+          <div class="meta muted" style="margin-top:4px;">Closing this intent stops new responses immediately. Only "Resolved through Nearcast", confirmed by the other person, affects reliability.</div>
+
+          <div style="text-align:center;margin-top:auto;">
+            <button class="nav-btn" style="color:var(--status-danger);font-weight:600;">Withdraw intent instead</button>
+          </div>
         </div>
-        <div class="footer-cta"><button class="btn">Resolve intent</button></div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Room <small>outcome confirmation</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
-        <div style="margin:8px 16px;padding:12px 14px;border:1px solid var(--border-subtle);border-radius:14px;background:var(--surface);">
-          <div style="font-size:14px;font-weight:700;line-height:19px;">Looking for one person to help sort donated books tomorrow morning.</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:2px;">Resolved · This intent is closed to new responses.</div>
-        </div>
-        <div class="card reason" style="margin:8px 16px;padding:12px 14px;">
-          <strong style="color:var(--action-secondary);font-size:13px;">Did this interaction happen?</strong>
-          <span style="font-size:12px;color:var(--action-secondary);line-height:17px;">Only a confirmed completion affects reliability. You can dispute an incorrect status.</span>
-          <div style="display:flex;gap:8px;margin-top:8px;">
-            <button class="btn" style="height:36px;flex:1;font-size:13px;">It happened</button>
-            <button class="btn secondary" style="height:36px;flex:1;font-size:13px;">It did not</button>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;">
+            <span>Dev Mehta</span>
+            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Resolved · read-only</span>
           </div>
-          <span style="font-size:11px;color:var(--action-secondary);font-weight:600;margin-top:6px;">Dispute the recorded status</span>
+          <div class="right"><button class="nav-btn"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
         </div>
-        <div class="body" style="gap:8px;">
+
+        <div class="card reason" style="margin:0 16px;padding:12px 14px;">
+          <div style="font-size:13px;font-weight:700;color:var(--action-secondary);">Did this interaction happen?</div>
+          <div style="font-size:12px;color:var(--action-secondary);line-height:17px;">Only a confirmed completion affects reliability. You can dispute an incorrect status.</div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn small" style="flex:1;">It happened</button>
+            <button class="btn small secondary" style="flex:1;">It did not</button>
+          </div>
+          <button class="nav-btn" style="color:var(--action-secondary);font-weight:600;margin-top:2px;">Dispute the recorded status</button>
+        </div>
+
+        <div class="body" style="gap:8px;padding-top:8px;">
           <div class="bubble mine">Thanks again!</div>
           <div class="bubble theirs">Anytime.</div>
         </div>
-        <div style="padding:12px 16px 16px;border-top:1px solid var(--border-subtle);background:var(--surface);">
-          <div style="font-size:12px;color:var(--text-muted);text-align:center;">This intent is closed, so the room is read-only.</div>
+
+        <div style="padding:14px 20px;border-top:1px solid var(--divider);background:var(--surface);text-align:center;">
+          <div style="font-size:12px;color:var(--text-muted);">This intent is closed. The room is read-only.</div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Activity <small>the broadcaster's view</small></div>
+      <div class="frame-wrap"><div class="frame-label">Activity <small>owner dashboard</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div class="titlebar large">Activity</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">Activity</div>
         <div class="body">
-          <div style="display:flex;gap:10px;">
-            <div class="card tight" style="flex:1;align-items:flex-start;padding:12px 14px;"><span style="font-size:22px;font-weight:700;">3</span><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Your intents</span></div>
-            <div class="card tight" style="flex:1;align-items:flex-start;padding:12px 14px;"><span style="font-size:22px;font-weight:700;">7</span><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Your responses</span></div>
-            <div class="card tight" style="flex:1;align-items:flex-start;padding:12px 14px;"><span style="font-size:22px;font-weight:700;">2</span><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Matches</span></div>
+
+          <div class="stat-row">
+            <div class="stat"><div class="n">3</div><div class="l">Your intents</div></div>
+            <div class="stat"><div class="n">7</div><div class="l">Your responses</div></div>
+            <div class="stat"><div class="n">2</div><div class="l">Matches</div></div>
           </div>
-          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-top:8px;">Your broadcasts</div>
+
+          <div class="section-label">Your broadcasts</div>
+
           <div class="card">
-            <div class="row"><span class="primitive">I need</span><span style="font-size:11px;color:var(--text-secondary);font-weight:600;">Resolved</span></div>
+            <div class="row">
+              <span class="primitive">I need</span>
+              <span class="status-line"><span class="dot muted"></span>Resolved</span>
+            </div>
             <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
-            <div class="meta">This intent is closed to new responses.</div>
-            <span style="font-size:12px;color:var(--action-primary);font-weight:600;">1 response accepted</span>
+            <div class="meta muted">1 response accepted · Coordination complete</div>
           </div>
+
           <div class="card">
-            <div class="row"><span class="primitive">I offer</span><span style="font-size:11px;color:var(--text-secondary);font-weight:600;">Live</span></div>
+            <div class="row">
+              <span class="primitive">I offer</span>
+              <span class="status-line"><span class="dot"></span>Live</span>
+            </div>
             <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
-            <span style="font-size:12px;color:var(--action-primary);font-weight:600;">2 responses to review</span>
+            <div class="row" style="margin-top:2px;">
+              <span class="confirmed-line"><span class="dot"></span>2 responses to review</span>
+              <span style="font-size:13px;font-weight:700;color:var(--action-primary);">Review ›</span>
+            </div>
           </div>
+
         </div>
         <div class="tabbar">
-          <div class="tab"><div class="glyph-icon">⌂</div>For You</div>
-          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
-          <div class="tab active"><div class="glyph-icon">◉</div>Activity</div>
-          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
         </div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ================================================================ 07 YOU -->
+  <!-- ============================================================ 07 YOU -->
   <section class="flow" id="you">
     <div class="flow-heading"><span class="num">07</span><h2>You</h2></div>
-    <p class="flow-blurb">Contextual trust evidence, not a score. Verification badges are honest about what they don't guarantee. Delete Account is a two-step confirmation that names exactly what's removed and what survives.</p>
+    <p class="flow-blurb">Contextual trust evidence, not a score. Sign out is quiet. Delete Account is a small danger link that opens a full confirmation modal — never a red button under Sign out.</p>
     <div class="grid">
 
       <div class="frame-wrap"><div class="frame-label">You <small>profile</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div class="titlebar large">You</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">You</div>
         <div class="body">
-          <div style="margin-top:4px;">
-            <div style="font-size:18px;font-weight:700;">Asha Rao</div>
-            <div class="meta">Bengaluru area</div>
+
+          <div style="display:flex;gap:12px;align-items:center;padding:8px 2px;">
+            <div class="avatar filled" style="width:52px;height:52px;font-size:18px;">A</div>
+            <div>
+              <div style="font-size:18px;font-weight:700;">Asha Rao</div>
+              <div class="meta">Bengaluru area · <span style="color:var(--action-primary);font-weight:600;">Email verified</span></div>
+            </div>
           </div>
 
-          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-top:8px;">Trust context</div>
-          <div class="card">
-            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">I need: 4 of 5 confirmed interactions were completed.</div>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">I offer: 2 of 2 confirmed interactions were completed.</div>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">Email verified. Verification does not guarantee safety.</div>
+          <div class="section-label">Trust context</div>
+          <div class="list">
+            <div class="item">
+              <div class="lead"><strong>I need</strong><small>4 of 5 confirmed interactions completed</small></div>
+            </div>
+            <div class="item">
+              <div class="lead"><strong>I offer</strong><small>2 of 2 confirmed interactions completed</small></div>
+            </div>
+          </div>
+          <div class="meta muted" style="padding:2px 4px;">Verification does not guarantee safety.</div>
+
+          <div class="section-label">Privacy</div>
+          <div class="list">
+            <div class="item"><div class="lead"><small>People can see your first name and approximate area.</small></div></div>
+            <div class="item"><div class="lead"><small>Only accepted respondents can see details you release.</small></div></div>
+            <div class="item"><div class="lead"><small>Your originating group and its members stay private.</small></div></div>
           </div>
 
-          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-top:4px;">Privacy</div>
-          <div class="card">
-            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">People can see your first name and approximate area.</div>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">Only accepted respondents can see details you explicitly release.</div>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">Your originating group and its members remain private.</div>
-          </div>
-
-          <button class="btn secondary" style="margin-top:8px;">Sign out</button>
-          <button class="btn danger">Delete account</button>
+          <button class="btn quiet" style="margin-top:6px;">Sign out</button>
+          <div class="delete-link">Delete account</div>
         </div>
         <div class="tabbar">
-          <div class="tab"><div class="glyph-icon">⌂</div>For You</div>
-          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
-          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
-          <div class="tab active"><div class="glyph-icon">◐</div>You</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Delete account <small>confirmation</small></div>
+      <div class="frame-wrap"><div class="frame-label">Delete account <small>confirmation modal</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div class="titlebar large">You</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn muted">Cancel</button></div>
+          <div class="title">Delete account</div>
+          <div class="right"></div>
+        </div>
         <div class="body">
-          <div class="card danger" style="gap:8px;">
-            <strong style="color:var(--status-danger);font-size:16px;">Delete your account?</strong>
-            <span style="color:var(--status-danger);font-size:13px;line-height:18px;">Your profile is anonymized, open intents are withdrawn, exact locations and contact details are removed, and messages you sent are redacted. Safety reports you filed are preserved. This cannot be undone.</span>
-            <div style="display:flex;gap:10px;margin-top:6px;">
-              <button style="flex:1;height:44px;background:var(--status-danger);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;">Delete my account</button>
-              <button style="flex:1;height:44px;background:var(--surface);color:var(--text-primary);border:1px solid var(--border-subtle);border-radius:12px;font-weight:600;font-size:14px;">Keep my account</button>
+          <div style="font-size:22px;font-weight:700;line-height:28px;">Delete your Nearcast account?</div>
+
+          <div class="card">
+            <div class="section-label" style="margin:0;">What is removed</div>
+            <div class="list" style="margin-top:6px;">
+              <div class="item"><div class="lead"><small>Your profile is anonymized to "Deleted member".</small></div></div>
+              <div class="item"><div class="lead"><small>Open intents are withdrawn.</small></div></div>
+              <div class="item"><div class="lead"><small>Exact locations and contact details are removed.</small></div></div>
+              <div class="item"><div class="lead"><small>Messages you sent are redacted.</small></div></div>
             </div>
           </div>
+
+          <div class="card trust">
+            <div style="font-size:13px;font-weight:700;color:var(--action-primary);">What is preserved</div>
+            <div style="font-size:12px;color:var(--action-primary);line-height:17px;">Safety reports you filed. The other party's history is not altered.</div>
+          </div>
+
+          <div class="safety-note">This cannot be undone.</div>
+        </div>
+        <div class="footer-cta split">
+          <button class="btn secondary">Keep account</button>
+          <button class="btn danger">Delete my account</button>
         </div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ================================================================ 08 STATES -->
+  <!-- ============================================================ 08 STATES -->
   <section class="flow" id="states">
     <div class="flow-heading"><span class="num">08</span><h2>States</h2></div>
-    <p class="flow-blurb">Every data screen must render one of these. Skeletons imply shape, never people or counts. Restricted is honest — an entitled reader sees content, an unentitled one sees a plain refusal, and the app never leaks what it hides.</p>
+    <p class="flow-blurb">Every data screen must render one of these. Skeletons imply shape, never people or counts. Restricted is honest — an entitled reader sees content, an unentitled one sees a plain refusal.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Loading <small>skeleton</small></div>
+      <div class="frame-wrap"><div class="frame-label">Loading <small>feed skeleton</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div class="titlebar large">For You</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">For You</div>
         <div class="body">
-          <div class="card"><span class="skeleton sk-line" style="width:40%;"></span><span class="skeleton sk-lg" style="margin-top:8px;width:90%;"></span><span class="skeleton sk-lg" style="margin-top:6px;width:70%;"></span><span class="skeleton sk-line" style="margin-top:12px;width:50%;"></span></div>
-          <div class="card"><span class="skeleton sk-line" style="width:40%;"></span><span class="skeleton sk-lg" style="margin-top:8px;width:90%;"></span><span class="skeleton sk-lg" style="margin-top:6px;width:60%;"></span></div>
+          <div class="card"><span class="skeleton sk-line" style="width:34%;"></span><span class="skeleton sk-lg" style="margin-top:8px;width:90%;"></span><span class="skeleton sk-lg" style="margin-top:6px;width:70%;"></span><span class="skeleton sk-line" style="margin-top:10px;width:50%;"></span><span class="skeleton" style="height:36px;margin-top:10px;width:100%;border-radius:12px;"></span></div>
+          <div class="card"><span class="skeleton sk-line" style="width:30%;"></span><span class="skeleton sk-lg" style="margin-top:8px;width:88%;"></span><span class="skeleton sk-lg" style="margin-top:6px;width:60%;"></span></div>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
-          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
-          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
-          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
         </div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Empty <small>no active intents</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div class="titlebar large">For You</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">For You</div>
         <div class="subtitle">0 active intents</div>
         <div class="state-panel">
-          <div class="icon">◯</div>
-          <h3>Nothing relevant is active right now</h3>
+          <div class="icon"><svg width="22" height="22" style="color:var(--text-secondary);"><use href="#i-empty"/></svg></div>
+          <h3>Nothing relevant is active</h3>
           <p>Adjust your preferences or broadcast an intent.</p>
+          <button class="btn small" style="width:auto;padding:0 16px;margin-top:4px;">Broadcast</button>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
-          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
-          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
-          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
         </div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Offline <small>publish queued</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Review intent</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> Back</button></div>
+          <div class="title">Review</div>
+          <div class="right"><button class="nav-btn disabled" style="font-weight:700;">Broadcast</button></div>
+        </div>
         <div class="body">
           <div class="card">
             <span class="primitive">I need</span>
             <div class="statement">Need one person to help sort donated books tomorrow morning at the library.</div>
           </div>
-          <div class="card warn">
-            <span style="font-size:13px;font-weight:600;color:var(--status-warning);">You're offline</span>
-            <span style="font-size:12px;color:var(--status-warning);line-height:17px;">Your draft is saved on this device. It will not be published until you are online.</span>
+          <div class="card warn" style="display:flex;gap:10px;align-items:flex-start;">
+            <svg width="18" height="18" style="color:var(--status-warning);flex-shrink:0;margin-top:2px;"><use href="#i-wifi-off"/></svg>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--status-warning);">You're offline</div>
+              <div style="font-size:12px;color:var(--status-warning);line-height:17px;">Your draft is saved on this device. It will not be published until you are online.</div>
+            </div>
           </div>
         </div>
-        <div class="footer-cta"><button class="btn disabled">Broadcast intent</button></div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Error <small>with retry</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div class="titlebar large">For You</div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">For You</div>
         <div class="state-panel">
-          <div class="icon" style="background:var(--danger);color:var(--status-danger);border-color:transparent;">!</div>
+          <div class="icon" style="background:var(--danger);border-color:transparent;"><svg width="22" height="22" style="color:var(--status-danger);"><use href="#i-alert"/></svg></div>
           <h3>Something went wrong</h3>
           <p>We couldn't load your feed. Try again.</p>
-          <button class="btn secondary" style="width:auto;padding:0 20px;margin-top:4px;">Try again</button>
+          <button class="btn secondary" style="width:auto;padding:0 20px;margin-top:4px;height:40px;">Try again</button>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
-          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
-          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
-          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
         </div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Restricted <small>not entitled</small></div>
       <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
-        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="nav">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> Back</button></div>
+          <div class="title">Intent</div>
+          <div class="right"></div>
+        </div>
         <div class="state-panel">
-          <div class="icon">◉</div>
+          <div class="icon"><svg width="22" height="22" style="color:var(--text-secondary);"><use href="#i-lock"/></svg></div>
           <h3>Not available</h3>
           <p>This information is not available to you.</p>
         </div>
@@ -1220,6 +1114,6 @@
   </section>
 
   <footer class="legal">
-    Nearcast · Trustworthy Native Clarity. Every color and control token here is defined in <code>src/design-system/tokens.ts</code>; when the RN screen drifts from a mockup, the mockup is the target unless the founder says otherwise. Manrope from Google Fonts is the only external asset; everything else is inline.
+    Nearcast · Trustworthy Native Clarity · v2 mockup revision. All tokens defined in <code>src/design-system/tokens.ts</code>. When an RN screen drifts from a mockup, the mockup is the target unless the founder says otherwise. Manrope from Google Fonts is the only external asset; icons are inline SVG symbols.
   </footer>
 </div>
