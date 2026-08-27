@@ -10,8 +10,8 @@ import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
-import { yourMove, type ActivityItem } from '@/features/casts/fixtures';
-import { useMyCasts } from '@/features/casts/store';
+import { type ActivityItem } from '@/features/casts/fixtures';
+import { useMyCasts, usePendingJoinsOnMyCasts } from '@/features/casts/store';
 import { usePendingReports } from '@/features/attendance/store';
 
 import { AvatarDot } from './avatar-dot';
@@ -25,19 +25,24 @@ export function ActivityPage() {
   const { width } = useWindowDimensions();
   const yourCasts = useMyCasts();
   const pending = usePendingReports('me');
-  const [moveItems, setMoveItems] = useState<readonly ActivityItem[]>(yourMove);
+  // YOUR MOVE is now COMPUTED from pending joins on your posted casts.
+  // fixture yourMove is gone — every row here is a real accept/decline
+  // decision the caster owes a joiner.
+  const pendingJoins = usePendingJoinsOnMyCasts();
+  const [dismissed, setDismissed] = useState<readonly string[]>([]);
+  const moveItems = pendingJoins.filter((item) => !dismissed.includes(item.id));
   const [archived, setArchived] = useState<ActivityItem | null>(null);
 
   function archive(item: ActivityItem) {
     haptic('light');
-    setMoveItems((current) => current.filter((row) => row.id !== item.id));
+    setDismissed((current) => [...current, item.id]);
     setArchived(item);
     setTimeout(() => setArchived((held) => (held?.id === item.id ? null : held)), 4000);
   }
 
   function undo() {
     if (!archived) return;
-    setMoveItems((current) => [archived, ...current]);
+    setDismissed((current) => current.filter((id) => id !== archived.id));
     setArchived(null);
   }
 
@@ -91,11 +96,14 @@ export function ActivityPage() {
               left={item.personId ? <Face photo={facePhotos[item.personId]} initials={item.title.slice(0, 2).toUpperCase()} size={44} label={`photo of ${item.title}`} /> : undefined}
               right={item.tag ? <Tag label={item.tag.label} tone={item.tag.tone} /> : undefined}
               onPress={
-                item.tag?.label === 'matched' && item.castId
-                  ? () => router.push(`/chat/${item.castId}`)
-                  : item.castId
-                    ? () => router.push(`/cast/${item.castId}`)
-                    : undefined
+                // pending join → invite sheet; matched → chat; cast → detail
+                item.tag?.label === 'decide' && item.castId && item.personId
+                  ? () => router.push(`/invite/${item.castId}__${item.personId}`)
+                  : item.tag?.label === 'matched' && item.castId
+                    ? () => router.push(`/chat/${item.castId}`)
+                    : item.castId
+                      ? () => router.push(`/cast/${item.castId}`)
+                      : undefined
               }
               onLongPress={() => archive(item)}
             />

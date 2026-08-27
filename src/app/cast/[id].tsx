@@ -5,7 +5,7 @@ import { SignalBars } from '@/design-system/components/bars';
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { getCast } from '@/features/casts/store';
+import { getCast, slotsFor } from '@/features/casts/store';
 
 /**
  * the detail sheet. receipts show at the decision moment:
@@ -42,14 +42,26 @@ export default function CastDetailScreen() {
           </View>
         </Pressable>
         <Text style={styles.body}>{cast.body}</Text>
+        <Text style={styles.slots}>{slotsLine(cast)}</Text>
         <SheetNote>the exact place stays hidden until you&apos;re both in. chat is in-app — nobody exchanges numbers.</SheetNote>
       </ScrollView>
       <View style={styles.actions}>
-        <BarButton label="I'm in" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
+        {slotsFor(cast).full ? (
+          <BarButton label="full — no slots left" variant="onCream" disabled onPress={() => undefined} />
+        ) : (
+          <BarButton label="I'm in" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
+        )}
         <QuietAction label="skip" color={tokens.semantic.color.ink} onPress={() => router.back()} />
       </View>
     </SheetShell>
   );
+}
+
+function slotsLine(cast: ReturnType<typeof getCast>): string {
+  if (!cast) return '';
+  const s = slotsFor(cast);
+  if (s.full) return `full — ${s.filled} in`;
+  return `${s.filled} in · ${s.remaining} ${s.remaining === 1 ? 'slot' : 'slots'} left of ${s.wanted}`;
 }
 
 const styles = StyleSheet.create({
@@ -63,6 +75,11 @@ const styles = StyleSheet.create({
     lineHeight: 25,
     color: tokens.semantic.color.ink,
     marginTop: 16,
+  },
+  slots: {
+    ...tokens.typography.meta,
+    color: tokens.semantic.color.accent,
+    marginTop: 14,
   },
   goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
   actions: { marginTop: 18, gap: 2 },

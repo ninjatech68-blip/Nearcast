@@ -8,6 +8,13 @@ import type { DeliverableCast, ViewerContext } from '@/features/casts/domain/del
  * written by hand.
  */
 
+export type PendingJoin = {
+  personId: string;
+  note: string;
+  /** display label, never a real timestamp (fixtures never call Date.now) */
+  sentAgo: string;
+};
+
 export type CastDetail = PosterData & {
   by: string;
   byId: string;
@@ -17,6 +24,12 @@ export type CastDetail = PosterData & {
   delivery: DeliverableCast;
   /** every delivery signal that fired, for the transparency tap */
   signals?: readonly string[];
+  /** how many joiners the caster wants. filled slots = matched.length. defaults to 2 in the store. */
+  slotsWanted?: number;
+  /** who has sent a note but not yet been accepted or declined */
+  pendingJoins?: readonly PendingJoin[];
+  /** who the caster has already accepted — these people have chat access */
+  matched?: readonly string[];
 };
 
 /** the signed-in viewer, as the delivery framework sees them. */
@@ -123,6 +136,36 @@ export const casters: readonly CasterProfile[] = [
 ];
 
 export const casts: readonly CastDetail[] = [
+  {
+    id: 'chess-park-mine',
+    category: 'games',
+    text: 'chess in the park sunday morning. bring a board.',
+    area: 'indiranagar',
+    vouches: 'your circles',
+    expiry: 'gone sun',
+    why: 'you cast this',
+    exactSpot: 'cubbon park · bandstand corner',
+    by: 'Piyush',
+    byId: 'me',
+    byLine: 'indiranagar · your cast',
+    receipts: { lit: 4, line: '31 plans made real · 0 flakes' },
+    body: 'casual games, 3–4 people. bring a board if you have one.',
+    delivery: {
+      casterId: 'me',
+      area: 'indiranagar',
+      category: 'games',
+      categoryLabel: 'games',
+      window: 'weekend-morning',
+      reach: 'adjacent_network',
+      casterCircleIds: [],
+    },
+    slotsWanted: 2,
+    matched: [],
+    pendingJoins: [
+      { personId: 'riya', note: 'I play regularly. would love to join.', sentAgo: '4m ago' },
+      { personId: 'arjun', note: 'can be there by 9. sunday works.', sentAgo: '18m ago' },
+    ],
+  },
   {
     id: 'badminton-after-work',
     category: 'sports',

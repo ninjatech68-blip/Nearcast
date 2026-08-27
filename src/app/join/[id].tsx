@@ -8,7 +8,7 @@ import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Stamp } from '@/design-system/components/stamp';
 import { haptic } from '@/design-system/haptics';
 import { tokens } from '@/design-system/tokens';
-import { getCast } from '@/features/casts/store';
+import { getCast, submitJoin } from '@/features/casts/store';
 
 type SendState = 'idle' | 'sending' | 'sent';
 
@@ -28,6 +28,7 @@ export default function JoinScreen() {
     setState('sending');
     setTimeout(() => {
       haptic('success');
+      if (cast) submitJoin(cast.id, note);
       setState('sent');
       setTimeout(() => router.back(), 900);
     }, 600);

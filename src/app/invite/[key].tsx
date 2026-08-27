@@ -1,0 +1,138 @@
+import { router, useLocalSearchParams } from 'expo-router';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { BarButton, QuietAction } from '@/design-system/components/button';
+import { Face } from '@/design-system/components/face';
+import { SheetNote, SheetShell } from '@/design-system/components/sheet';
+import { haptic } from '@/design-system/haptics';
+import { fontFamily, tokens } from '@/design-system/tokens';
+import { facePhotos } from '@/features/casts/faces';
+import { casters } from '@/features/casts/fixtures';
+import { acceptJoin, declineJoin, getCast, getPendingJoin, slotsFor } from '@/features/casts/store';
+import { people } from '@/features/trust/circles';
+
+/**
+ * the invite sheet: shown to the caster when someone has asked to
+ * join. accept → they enter the plan (a slot fills, chat opens with
+ * the exact meeting spot revealed). decline → the request vanishes,
+ * silent to the joiner (product law: no reason given, no notification).
+ *
+ * routed as /invite/[key] where key = "castId__personId" so a single
+ * dynamic file handles every (cast, joiner) pair.
+ */
+export default function InviteScreen() {
+  const { key } = useLocalSearchParams<{ key: string }>();
+  const [castId, personId] = (key ?? '').split('__');
+
+  const cast = castId ? getCast(castId) : undefined;
+  const join = castId && personId ? getPendingJoin(castId, personId) : undefined;
+
+  if (!cast || !join) {
+    return (
+      <SheetShell title="not around.">
+        <Text style={styles.goneSub}>this request is no longer pending.</Text>
+        <View style={styles.actions}>
+          <BarButton label="back" variant="onCream" onPress={() => router.back()} />
+        </View>
+      </SheetShell>
+    );
+  }
+
+  const person = people[personId] ?? { id: personId, name: personId, area: '' };
+  const caster = casters.find((c) => c.id === personId);
+  const s = slotsFor(cast);
+
+  function accept() {
+    if (s.full) {
+      Alert.alert('already full', 'this plan is full. decline or extend slots first.', [{ text: 'ok' }]);
+      return;
+    }
+    if (!cast) return;
+    haptic('success');
+    acceptJoin(castId, personId);
+    // land the caster on the chat so the exact spot reveal happens now
+    router.replace(`/chat/${cast.id}`);
+  }
+
+  function decline() {
+    Alert.alert(`decline ${person.name}?`, `they won't be told why. they see nothing change.`, [
+      { text: 'never mind' },
+      {
+        text: 'decline',
+        style: 'destructive',
+        onPress: () => {
+          haptic('light');
+          declineJoin(castId, personId);
+          router.back();
+        },
+      },
+    ]);
+  }
+
+  return (
+    <SheetShell
+      title={`${person.name} wants in`}
+      accessory={
+        <Face
+          photo={facePhotos[personId]}
+          initials={person.name.slice(0, 2).toUpperCase()}
+          size={64}
+          label={`photo of ${person.name}`}
+        />
+      }
+    >
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
+        <Text style={styles.meta}>
+          {person.area || 'nearby'} · {caster?.trustLine ?? 'not in your network'} · {join.sentAgo}
+        </Text>
+
+        <Text style={styles.section}>THEIR NOTE</Text>
+        <View style={styles.noteCard}>
+          <Text style={styles.noteText}>{join.note}</Text>
+        </View>
+
+        <Text style={styles.section}>YOUR PLAN</Text>
+        <Text style={styles.planTitle}>{cast.text}</Text>
+        <Text style={styles.planMeta}>
+          {cast.area} · {s.filled} in · {s.remaining} {s.remaining === 1 ? 'slot' : 'slots'} left · {cast.expiry}
+        </Text>
+
+        {caster ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`about ${caster.name}`}
+            onPress={() => router.push(`/caster/${caster.id}`)}
+            style={styles.aboutRow}
+          >
+            <Text style={styles.aboutText}>{caster.receipts.line} ›</Text>
+          </Pressable>
+        ) : null}
+
+        <SheetNote>{`accepting reveals the exact meeting spot to ${person.name} in chat. declining is silent — they see nothing change.`}</SheetNote>
+      </ScrollView>
+
+      <View style={styles.actions}>
+        <BarButton label={`accept ${person.name}`} variant="onOrange" onPress={accept} disabled={s.full} />
+        <QuietAction label="decline" color={tokens.semantic.color.ink} onPress={decline} />
+      </View>
+    </SheetShell>
+  );
+}
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1 },
+  meta: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
+  section: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 22, marginBottom: 6 },
+  noteCard: {
+    padding: 14,
+    borderRadius: tokens.primitive.radius.control,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
+  noteText: { ...tokens.typography.meta, color: tokens.semantic.color.ink, lineHeight: 24 },
+  planTitle: { fontFamily: fontFamily.displaySemi, fontSize: 20, letterSpacing: -0.3, color: tokens.semantic.color.ink },
+  planMeta: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 6 },
+  aboutRow: { minHeight: 44, justifyContent: 'center', marginTop: 12 },
+  aboutText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
+  goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
+  actions: { marginTop: 18, gap: 2 },
+});

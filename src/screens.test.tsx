@@ -268,8 +268,9 @@ describe('compose', () => {
     expect(view.getByRole('button', { name: 'done' })).toBeTruthy();
 
     const feed = await render(<HomeScreen />);
-    // present twice by design: the feed poster and the "your casts" row
-    expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(2);
+    // your own casts never appear in the feed (the feed is decisions to
+    // make — yours aren't). they surface as an activity row.
+    expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(1);
   });
 
   it('sends the area row to its own screen and opens the time picker inline', async () => {

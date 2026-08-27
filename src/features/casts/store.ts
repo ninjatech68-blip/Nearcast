@@ -1,22 +1,32 @@
-import { useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { category as categoryTokens, type Category } from '@/design-system/tokens';
 import { deliveryFor } from './domain/delivery';
-import { casts as fixtureCasts, viewer, yourCasts as fixtureYourCasts, type ActivityItem, type CastDetail } from './fixtures';
+import {
+  casts as fixtureCasts,
+  viewer,
+  yourCasts as fixtureYourCasts,
+  type ActivityItem,
+  type CastDetail,
+  type PendingJoin,
+} from './fixtures';
 
 /**
  * in-memory session store so the loop closes on device: a cast you
  * publish lands in the feed and in your casts immediately. replaced by
  * supabase in the backend phase; the shape stays.
  *
- * the feed runs every cast through the delivery framework: a cast with
- * no matched signal never renders, and the why line is the framework's
- * generated reason — never fixture prose.
+ * two lists: `feed` is casts BY OTHERS that the delivery framework
+ * lets through; `myCasts` is casts YOU authored (always visible to
+ * you, never subject to delivery gates because they are yours). they
+ * never mix — the feed is decisions to make, my casts is what I have
+ * out.
  */
 
 function deliverFeed(source: readonly CastDetail[]): readonly CastDetail[] {
   const delivered: CastDetail[] = [];
   for (const cast of source) {
+    if (cast.byId === 'me') continue; // your own casts belong in myCasts
     const result = deliveryFor(viewer, cast.delivery);
     if (!result.deliver) continue;
     delivered.push({ ...cast, why: result.reason, signals: result.signals });
@@ -26,6 +36,7 @@ function deliverFeed(source: readonly CastDetail[]): readonly CastDetail[] {
 
 type State = {
   feed: readonly CastDetail[];
+  myCasts: readonly CastDetail[];
   mine: readonly ActivityItem[];
   /** session-only category lens. null = all. never trains delivery, never persists. */
   filter: readonly Category[] | null;
@@ -33,6 +44,7 @@ type State = {
 
 let state: State = {
   feed: deliverFeed(fixtureCasts),
+  myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
   mine: fixtureYourCasts,
   filter: null,
 };
@@ -52,6 +64,10 @@ export function useFeedCasts(): readonly CastDetail[] {
   return useSyncExternalStore(subscribe, () => state.feed);
 }
 
+export function useMyCastDetails(): readonly CastDetail[] {
+  return useSyncExternalStore(subscribe, () => state.myCasts);
+}
+
 export function useFilter(): readonly Category[] | null {
   return useSyncExternalStore(subscribe, () => state.filter);
 }
@@ -67,16 +83,134 @@ export function feedCountFor(filter: readonly Category[] | null): number {
 }
 
 export function useMyCasts(): readonly ActivityItem[] {
-  return useSyncExternalStore(subscribe, () => state.mine);
+  const myCasts = useMyCastDetails();
+  return useMemo(
+    () =>
+      myCasts.map((cast) => ({
+        id: `mine-${cast.id}`,
+        title: cast.text,
+        sub: statusLine(cast),
+        castId: cast.id,
+      })),
+    [myCasts],
+  );
+}
+
+/**
+ * pending joins across all your posted casts, as activity rows. one
+ * row per (cast, joiner). tap a row → the invite sheet decides.
+ */
+export function usePendingJoinsOnMyCasts(): readonly ActivityItem[] {
+  const myCasts = useMyCastDetails();
+  return useMemo(() => {
+    const items: ActivityItem[] = [];
+    for (const cast of myCasts) {
+      for (const join of cast.pendingJoins ?? []) {
+        items.push({
+          id: `join-${cast.id}-${join.personId}`,
+          personId: join.personId,
+          title: `${nameFor(join.personId)}'s in`,
+          sub: `"${join.note}" · ${join.sentAgo} · ${cast.text}`,
+          tag: { label: 'decide', tone: 'hot' },
+          castId: cast.id,
+        });
+      }
+    }
+    return items;
+  }, [myCasts]);
+}
+
+function nameFor(personId: string): string {
+  // small local map avoids pulling the whole trust store into activity render
+  const names: Record<string, string> = {
+    riya: 'Riya',
+    arjun: 'Arjun',
+    kavya: 'Kavya',
+    aarav: 'Aarav',
+    meera: 'Meera',
+    dev: 'Dev',
+  };
+  return names[personId] ?? personId;
+}
+
+function statusLine(cast: CastDetail): string {
+  const filled = cast.matched?.length ?? 0;
+  const wanted = cast.slotsWanted ?? 2;
+  const remaining = Math.max(wanted - filled, 0);
+  const pending = cast.pendingJoins?.length ?? 0;
+  const parts = [`live · ${filled} in`];
+  if (remaining > 0) parts.push(`${remaining} left`);
+  else parts.push('full');
+  if (pending > 0) parts.push(`${pending} pending`);
+  parts.push(cast.expiry);
+  return parts.join(' · ');
 }
 
 export function getCast(id: string): CastDetail | undefined {
-  return state.feed.find((cast) => cast.id === id);
+  return state.feed.find((c) => c.id === id) ?? state.myCasts.find((c) => c.id === id);
 }
 
 export function skipCast(id: string): void {
   state = { ...state, feed: state.feed.filter((cast) => cast.id !== id) };
   emit();
+}
+
+/** slots + fill counters read from the cast, defaults applied here. */
+export function slotsFor(cast: CastDetail): { wanted: number; filled: number; remaining: number; full: boolean } {
+  const wanted = cast.slotsWanted ?? 2;
+  const filled = cast.matched?.length ?? 0;
+  const remaining = Math.max(wanted - filled, 0);
+  return { wanted, filled, remaining, full: remaining === 0 };
+}
+
+/** joiner path: send a note. lands as pending on the caster's cast. */
+export function submitJoin(castId: string, note: string, joinerId: string = 'me'): void {
+  state = mutateCast(state, castId, (cast) => {
+    const already = (cast.pendingJoins ?? []).some((j) => j.personId === joinerId);
+    if (already) return cast;
+    const join: PendingJoin = { personId: joinerId, note: note.trim(), sentAgo: 'just now' };
+    return { ...cast, pendingJoins: [...(cast.pendingJoins ?? []), join] };
+  });
+  emit();
+}
+
+/** caster path: yes → fills a slot, joiner enters chat. no-op if already full. */
+export function acceptJoin(castId: string, personId: string): void {
+  state = mutateCast(state, castId, (cast) => {
+    const s = slotsFor(cast);
+    if (s.full) return cast;
+    const pending = (cast.pendingJoins ?? []).filter((j) => j.personId !== personId);
+    const alreadyMatched = (cast.matched ?? []).includes(personId);
+    return {
+      ...cast,
+      pendingJoins: pending,
+      matched: alreadyMatched ? cast.matched ?? [] : [...(cast.matched ?? []), personId],
+    };
+  });
+  emit();
+}
+
+/** caster path: no → pending vanishes. silent to the joiner (product law: no reason given). */
+export function declineJoin(castId: string, personId: string): void {
+  state = mutateCast(state, castId, (cast) => ({
+    ...cast,
+    pendingJoins: (cast.pendingJoins ?? []).filter((j) => j.personId !== personId),
+  }));
+  emit();
+}
+
+/** look up a pending join by cast + person; drives the invite sheet. */
+export function getPendingJoin(castId: string, personId: string): PendingJoin | undefined {
+  const cast = getCast(castId);
+  return cast?.pendingJoins?.find((j) => j.personId === personId);
+}
+
+function mutateCast(current: State, castId: string, transform: (cast: CastDetail) => CastDetail): State {
+  return {
+    ...current,
+    feed: current.feed.map((c) => (c.id === castId ? transform(c) : c)),
+    myCasts: current.myCasts.map((c) => (c.id === castId ? transform(c) : c)),
+  };
 }
 
 export function addCast(input: {
@@ -112,18 +246,26 @@ export function addCast(input: {
       reach: 'adjacent_network',
       casterCircleIds: [],
     },
+    slotsWanted: 2,
+    matched: [],
+    pendingJoins: [],
   };
   state = {
     ...state,
-    feed: [cast, ...state.feed],
-    mine: [{ id, title: input.text, sub: `live · 0 in · ${input.gone}`, castId: id }, ...state.mine],
+    myCasts: [cast, ...state.myCasts],
+    mine: [{ id, title: input.text, sub: `live · 0 in · 2 left · ${input.gone}`, castId: id }, ...state.mine],
   };
   emit();
 }
 
 /** test-only reset. */
 export function resetCastStore(): void {
-  state = { feed: deliverFeed(fixtureCasts), mine: fixtureYourCasts, filter: null };
+  state = {
+    feed: deliverFeed(fixtureCasts),
+    myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
+    mine: fixtureYourCasts,
+    filter: null,
+  };
   emit();
 }
 
