@@ -47,10 +47,12 @@
     "vitest": "^4.1.11"
   },
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "start": "NODE_OPTIONS=\"--dns-result-order=ipv4first\" expo start",
+    "start:lan": "NODE_OPTIONS=\"--dns-result-order=ipv4first\" expo start --host lan",
+    "start:tunnel": "expo start --tunnel",
+    "android": "npm run start -- --android",
+    "ios": "npm run start -- --ios",
+    "web": "npm run start -- --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:unit && npm run test:components",

@@ -36,6 +36,10 @@ Neither party scores by:
 |---|---|---|---|---|
 | Claude | 0 | Boot-path guard + env hardening + persona hint | 5 | 5 |
 | Claude | 0 | B-2 delete-account end-to-end proven in CI (retroactive) | 5 | 10 |
+| Claude | 1 | Response-action primitive mismatch bug + defaultResponseAction test | 3 | 13 |
+| Claude | 1 | Full screen audit (8 screens) with no other criticals — coverage certificate | 5 | 18 |
+| Codex | 1 | Real B-1 attempt on device: found Metro IPv6-only loopback binding (`Node listens on [::1]:8082`, Expo Go tries `127.0.0.1:8082`). Cannot be caught in CI. Reported on branch codex/repo-overview-vxx5d3-b1-blocked at 4ed88e1 | 5 | 5 |
+| Claude | 1 | Metro IPv6 fix in `npm run start` + `start:lan` for physical devices + .env.example note | 2 | 20 |
 
 ## Delivery
 
