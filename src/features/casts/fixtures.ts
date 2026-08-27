@@ -21,10 +21,11 @@ export type CastDetail = PosterData & {
 
 /** the signed-in viewer, as the delivery framework sees them. */
 export const viewer: ViewerContext = {
-  areas: ['indiranagar', 'koramangala'],
+  areas: ['indiranagar', 'koramangala', 'hsr'],
   circleIds: ['badminton-gang', 'flat-4b', 'college-crew'],
   adjacentCircleIds: ['kavya-friends', 'dev-music-people'],
-  recentTopics: ['badminton', 'ceramics'],
+  // onboarding picks: the standing interest signal
+  interests: ['sports', 'games', 'arts'],
   activeWindows: ['weekday-evening'],
   blockedCasterIds: [],
 };
@@ -68,7 +69,7 @@ export const casters: readonly CasterProfile[] = [
 export const casts: readonly CastDetail[] = [
   {
     id: 'badminton-after-work',
-    verb: 'lets',
+    category: 'sports',
     text: 'badminton after work. need two.',
     area: 'indiranagar',
     vouches: '3 vouches',
@@ -82,7 +83,8 @@ export const casts: readonly CastDetail[] = [
     delivery: {
       casterId: 'aarav',
       area: 'indiranagar',
-      topics: ['badminton'],
+      category: 'sports',
+      categoryLabel: 'sports',
       window: 'weekday-evening',
       reach: 'adjacent_network',
       casterCircleIds: ['kavya-friends'],
@@ -90,7 +92,7 @@ export const casts: readonly CastDetail[] = [
   },
   {
     id: 'ceramics-slot',
-    verb: 'need',
+    category: 'arts',
     text: 'someone to split a ceramics slot saturday morning.',
     area: 'hsr',
     vouches: '1 vouch',
@@ -104,7 +106,8 @@ export const casts: readonly CastDetail[] = [
     delivery: {
       casterId: 'meera',
       area: 'hsr',
-      topics: ['ceramics'],
+      category: 'arts',
+      categoryLabel: 'arts + making',
       window: 'weekend-morning',
       reach: 'nearby_relevant',
       casterCircleIds: ['pottery-people'],
@@ -112,7 +115,7 @@ export const casts: readonly CastDetail[] = [
   },
   {
     id: 'concert-ticket',
-    verb: 'got',
+    category: 'music',
     text: 'extra concert ticket for thursday. face value.',
     area: 'koramangala',
     vouches: '2 vouches',
@@ -126,7 +129,8 @@ export const casts: readonly CastDetail[] = [
     delivery: {
       casterId: 'dev',
       area: 'koramangala',
-      topics: ['music'],
+      category: 'music',
+      categoryLabel: 'music + nightlife',
       window: 'weekday-evening',
       reach: 'adjacent_network',
       casterCircleIds: ['dev-music-people'],
@@ -184,7 +188,7 @@ export const me = {
   range: 'your cast reaches ~240 people · only you see this',
   receipts: { count: 31, sub: '31 plans made real · last: badminton, tuesday' },
   circles: '3 circles · 24 people',
-  areas: 'indiranagar, koramangala · always approximate',
+  areas: 'indiranagar, koramangala, hsr · always approximate',
   quietHours: '10pm to 7am',
   blocked: 'nobody',
   privacy: 'exact places + contacts stay hidden until both sides say yes.',

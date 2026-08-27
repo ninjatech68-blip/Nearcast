@@ -67,6 +67,10 @@ const YouScreen = require('./app/you').default;
 const ComposeScreen = require('./app/compose').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const CasterProfileScreen = require('./app/caster/[id]').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const FilterScreen = require('./app/filter').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const AreaScreen = require('./app/area').default;
 
 describe('home pager', () => {
   beforeEach(() => {
@@ -80,6 +84,7 @@ describe('home pager', () => {
 
     expect(view.getByText('badminton after work. need two.')).toBeTruthy();
     expect(view.getByText('indiranagar · 3 vouches · gone 10pm')).toBeTruthy();
+    expect(view.getByText('SPORTS')).toBeTruthy();
     // the why line is computed by the delivery framework, never fixture prose
     expect(view.getByText('why you: one trusted link away · near you in indiranagar ›')).toBeTruthy();
     expect(view.getByRole('button', { name: 'cast' })).toBeTruthy();
@@ -180,17 +185,30 @@ describe('compose', () => {
     mockBack.mockReset();
   });
 
-  it('keeps the next step dead until a cast exists', async () => {
+  it('keeps the next step dead until both a category and a cast exist', async () => {
+    const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
     const next = view.getByRole('button', { name: 'next: who sees it' });
     expect(next.props.accessibilityState).toMatchObject({ disabled: true });
+
+    // text alone is not enough: the category is required
+    await user.type(view.getByLabelText('your cast'), 'chess in the park.');
+    expect(view.getByRole('button', { name: 'next: who sees it' }).props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+
+    await user.press(view.getByRole('radio', { name: 'games' }));
+    expect(view.getByRole('button', { name: 'next: who sees it' }).props.accessibilityState).toMatchObject({
+      disabled: false,
+    });
   });
 
   it('moves to the reach step once the cast is written', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
+    await user.press(view.getByRole('radio', { name: 'sports' }));
     await user.type(view.getByLabelText('your cast'), 'badminton after work. need two.');
     await user.press(view.getByRole('button', { name: 'next: who sees it' }));
 
@@ -205,6 +223,7 @@ describe('compose', () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
+    await user.press(view.getByRole('radio', { name: 'games' }));
     await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
     await user.press(view.getByRole('button', { name: 'next: who sees it' }));
     await user.press(view.getByRole('button', { name: 'cast it' }));
@@ -217,29 +236,47 @@ describe('compose', () => {
     expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('opens the custom area and time controls from their rows', async () => {
+  it('sends the area row to its own screen and opens the time picker inline', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
     await user.press(view.getByRole('button', { name: 'area' }));
-    expect(view.getByLabelText('search area by name')).toBeTruthy();
-    expect(view.getByRole('button', { name: 'use my location' })).toBeTruthy();
-    expect(view.getByText('casts show the area only. the exact spot stays hidden.')).toBeTruthy();
-    await user.press(view.getByRole('button', { name: 'indiranagar' }));
-    expect(view.getByText('indiranagar · stays approximate')).toBeTruthy();
+    expect(mockPush).toHaveBeenCalledWith('/area');
 
     await user.press(view.getByRole('button', { name: 'time' }));
     expect(view.getByTestId('datetimepicker')).toBeTruthy();
   });
+});
 
-  it('suggests areas from device location', async () => {
-    const user = userEvent.setup();
-    const view = await render(<ComposeScreen />);
+describe('area screen', () => {
+  it('suggests real nearby areas and keeps the field above the results', async () => {
+    const view = await render(<AreaScreen />);
 
-    await user.press(view.getByRole('button', { name: 'area' }));
-    await user.press(view.getByRole('button', { name: 'use my location' }));
-
+    expect(view.getByLabelText('search area by name')).toBeTruthy();
+    expect(view.getByRole('button', { name: 'use my location' })).toBeTruthy();
+    expect(view.getByText('casts show the area only. the exact spot stays hidden.')).toBeTruthy();
+    // ring sampling turns one position into several neighborhood names
     expect(await view.findByRole('button', { name: 'indiranagar' })).toBeTruthy();
+  });
+});
+
+describe('filter sheet', () => {
+  beforeEach(() => {
+    mockBack.mockReset();
+  });
+
+  it('multi-selects categories and states the honest count', async () => {
+    const user = userEvent.setup();
+    const view = await render(<FilterScreen />);
+
+    expect(view.getByRole('button', { name: 'show everything' })).toBeTruthy();
+    expect(view.getByText('resets when you leave the feed. your feed never narrows silently.')).toBeTruthy();
+
+    await user.press(view.getByRole('button', { name: 'sports' }));
+    expect(view.getByRole('button', { name: 'show 1 cast' })).toBeTruthy();
+
+    await user.press(view.getByRole('button', { name: 'music + nightlife' }));
+    expect(view.getByRole('button', { name: 'show 2 casts' })).toBeTruthy();
   });
 });
 

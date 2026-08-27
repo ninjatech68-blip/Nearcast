@@ -75,25 +75,49 @@ export const tokens = {
   },
 } as const;
 
-export type Verb = 'need' | 'got' | 'lets';
+export const CATEGORIES = [
+  'social',
+  'sports',
+  'food',
+  'music',
+  'travel',
+  'games',
+  'arts',
+  'learning',
+  'networking',
+  'help',
+] as const;
 
-export const verbColor: Record<Verb, string> = {
-  need: semantic.color.verbNeed,
-  got: semantic.color.verbGot,
-  lets: semantic.color.verbLets,
+export type Category = (typeof CATEGORIES)[number];
+
+/**
+ * category is the color: each category owns a flat poster field with a
+ * declared ink-or-cream foreground. the category NAME always renders in
+ * type as well — color is never the only carrier. ink and orange remain
+ * the only chrome colors; buttons and the rail never change per category.
+ */
+export const category: Record<Category, { field: string; fg: string; label: string }> = {
+  social: { field: '#FF4D00', fg: primitive.color.ink, label: 'social' },
+  sports: { field: '#FFC633', fg: primitive.color.ink, label: 'sports' },
+  food: { field: '#FFA38B', fg: primitive.color.ink, label: 'food + drinks' },
+  music: { field: '#14120E', fg: primitive.color.cream, label: 'music + nightlife' },
+  travel: { field: '#17442E', fg: primitive.color.cream, label: 'travel + outdoors' },
+  games: { field: '#2B5BE3', fg: primitive.color.cream, label: 'games' },
+  arts: { field: '#A98BDE', fg: primitive.color.ink, label: 'arts + making' },
+  learning: { field: '#8FC1E3', fg: primitive.color.ink, label: 'learning' },
+  networking: { field: '#46647A', fg: primitive.color.cream, label: 'networking' },
+  help: { field: '#F4EFE4', fg: primitive.color.ink, label: 'help + favors' },
 };
 
-/** ink type sits on yellow and orange; cream type sits on green */
-export const verbForeground: Record<Verb, string> = {
-  need: primitive.color.ink,
-  got: primitive.color.cream,
-  lets: primitive.color.ink,
-};
-
-export const verbLabel: Record<Verb, string> = {
-  need: 'NEED',
-  got: 'GOT',
-  lets: "LET'S",
-};
+/**
+ * the opposite-pole rule: pills and dots on a poster take the field's
+ * foreground as their background, so they always read as controls.
+ */
+export function polesFor(id: Category): { pillBg: string; pillFg: string } {
+  const fg = category[id].fg;
+  return fg === primitive.color.ink
+    ? { pillBg: primitive.color.ink, pillFg: primitive.color.cream }
+    : { pillBg: primitive.color.cream, pillFg: primitive.color.ink };
+}
 
 export type NearcastTokens = typeof tokens;

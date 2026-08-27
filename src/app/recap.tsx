@@ -25,7 +25,7 @@ export default function RecapScreen() {
     <Poster
       cast={{
         id: 'recap',
-        verb: 'got',
+        category: 'travel',
         text: recap.headline,
         area: recap.meta,
         vouches: '',

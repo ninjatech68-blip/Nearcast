@@ -6,7 +6,7 @@ const viewer: ViewerContext = {
   areas: ['indiranagar', 'koramangala'],
   circleIds: ['badminton-gang'],
   adjacentCircleIds: ['kavya-friends'],
-  recentTopics: ['badminton', 'ceramics'],
+  interests: ['sports', 'arts'],
   activeWindows: ['weekday-evening'],
   blockedCasterIds: ['creep-1'],
 };
@@ -14,7 +14,8 @@ const viewer: ViewerContext = {
 const baseCast: DeliverableCast = {
   casterId: 'aarav',
   area: 'indiranagar',
-  topics: ['badminton'],
+  category: 'sports',
+  categoryLabel: 'sports',
   window: 'weekday-evening',
   reach: 'adjacent_network',
   casterCircleIds: ['kavya-friends'],
@@ -39,11 +40,12 @@ describe('delivery framework', () => {
       ...baseCast,
       reach: 'nearby_relevant',
       casterCircleIds: ['unknown-circle'],
-      topics: ['chess'],
+      category: 'networking',
+      categoryLabel: 'networking',
     };
     expect(deliveryFor(viewer, stranger).deliver).toBe(false);
 
-    const sharedThread = { ...stranger, topics: ['badminton'] };
+    const sharedThread = { ...stranger, category: 'sports', categoryLabel: 'sports' };
     expect(deliveryFor(viewer, sharedThread).deliver).toBe(true);
   });
 
@@ -69,7 +71,8 @@ describe('delivery framework', () => {
     const noSignal: DeliverableCast = {
       casterId: 'x',
       area: 'whitefield',
-      topics: ['golf'],
+      category: 'networking',
+      categoryLabel: 'networking',
       window: 'weekend-morning',
       reach: 'broader_approved',
       casterCircleIds: ['kavya-friends'],

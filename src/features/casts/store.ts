@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-import type { Verb } from '@/design-system/tokens';
+import { category as categoryTokens, type Category } from '@/design-system/tokens';
 import { deliveryFor } from './domain/delivery';
 import { casts as fixtureCasts, viewer, yourCasts as fixtureYourCasts, type ActivityItem, type CastDetail } from './fixtures';
 
@@ -27,11 +27,14 @@ function deliverFeed(source: readonly CastDetail[]): readonly CastDetail[] {
 type State = {
   feed: readonly CastDetail[];
   mine: readonly ActivityItem[];
+  /** session-only category lens. null = all. never trains delivery, never persists. */
+  filter: readonly Category[] | null;
 };
 
 let state: State = {
   feed: deliverFeed(fixtureCasts),
   mine: fixtureYourCasts,
+  filter: null,
 };
 
 const listeners = new Set<() => void>();
@@ -49,6 +52,20 @@ export function useFeedCasts(): readonly CastDetail[] {
   return useSyncExternalStore(subscribe, () => state.feed);
 }
 
+export function useFilter(): readonly Category[] | null {
+  return useSyncExternalStore(subscribe, () => state.filter);
+}
+
+export function setFilter(filter: readonly Category[] | null): void {
+  state = { ...state, filter: filter && filter.length > 0 ? filter : null };
+  emit();
+}
+
+export function feedCountFor(filter: readonly Category[] | null): number {
+  if (!filter || filter.length === 0) return state.feed.length;
+  return state.feed.filter((cast) => filter.includes(cast.category)).length;
+}
+
 export function useMyCasts(): readonly ActivityItem[] {
   return useSyncExternalStore(subscribe, () => state.mine);
 }
@@ -62,11 +79,11 @@ export function skipCast(id: string): void {
   emit();
 }
 
-export function addCast(input: { verb: Verb; text: string; area: string; gone: string; reach: string }): void {
+export function addCast(input: { category: Category; text: string; area: string; gone: string; reach: string }): void {
   const id = `mine-${Date.now()}`;
   const cast: CastDetail = {
     id,
-    verb: input.verb,
+    category: input.category,
     text: input.text,
     area: input.area,
     vouches: input.reach,
@@ -81,13 +98,15 @@ export function addCast(input: { verb: Verb; text: string; area: string; gone: s
     delivery: {
       casterId: 'me',
       area: input.area,
-      topics: [],
+      category: input.category,
+      categoryLabel: categoryTokens[input.category].label,
       window: null,
       reach: 'adjacent_network',
       casterCircleIds: [],
     },
   };
   state = {
+    ...state,
     feed: [cast, ...state.feed],
     mine: [{ id, title: input.text, sub: `live · 0 in · ${input.gone}`, castId: id }, ...state.mine],
   };
@@ -96,6 +115,32 @@ export function addCast(input: { verb: Verb; text: string; area: string; gone: s
 
 /** test-only reset. */
 export function resetCastStore(): void {
-  state = { feed: deliverFeed(fixtureCasts), mine: fixtureYourCasts };
+  state = { feed: deliverFeed(fixtureCasts), mine: fixtureYourCasts, filter: null };
   emit();
+}
+
+/**
+ * compose draft: the area picker is its own screen (keyboard needs the
+ * room), so it hands its answer back through here.
+ */
+type Draft = { area: string };
+let draft: Draft = { area: '' };
+const draftListeners = new Set<() => void>();
+
+function subscribeDraft(listener: () => void): () => void {
+  draftListeners.add(listener);
+  return () => draftListeners.delete(listener);
+}
+
+export function useDraftArea(): string {
+  return useSyncExternalStore(subscribeDraft, () => draft.area);
+}
+
+export function setDraftArea(area: string): void {
+  draft = { area };
+  draftListeners.forEach((listener) => listener());
+}
+
+export function clearDraft(): void {
+  setDraftArea('');
 }

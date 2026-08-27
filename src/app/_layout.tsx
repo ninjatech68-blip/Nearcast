@@ -62,6 +62,8 @@ export default function RootLayout() {
       <Stack.Screen name="join/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="you" options={{ presentation: 'modal' }} />
       <Stack.Screen name="caster/[id]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="filter" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="area" options={{ presentation: 'fullScreenModal' }} />
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
     </>

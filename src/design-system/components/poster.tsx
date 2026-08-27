@@ -1,12 +1,13 @@
 import { type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { fontFamily, tokens, verbColor, verbForeground, verbLabel, type Verb } from '@/design-system/tokens';
+import { Face } from '@/design-system/components/face';
+import { category as categoryTokens, fontFamily, polesFor, tokens, type Category } from '@/design-system/tokens';
 
 export type PosterData = {
   id: string;
-  verb: Verb;
+  category: Category;
   text: string;
   area: string;
   vouches: string;
@@ -15,8 +16,10 @@ export type PosterData = {
 };
 
 /**
- * one cast fills the viewport. the verb is the color, so no category
- * chip exists. the why line rides on every poster: that is product law.
+ * one cast fills the viewport. the category owns the field color AND
+ * always appears in type above the headline — color is never the only
+ * carrier. the why line rides on every poster: that is product law.
+ * pills and dots follow the opposite-pole rule (see tokens.polesFor).
  */
 export function Poster({
   cast,
@@ -26,9 +29,10 @@ export function Poster({
   reserveRail = true,
   badge,
   tagLabel,
-  casterLine,
+  caster,
   onOpenCaster,
   onWhyPress,
+  onWordmarkPress,
 }: {
   cast: PosterData;
   topRight?: ReactNode;
@@ -37,19 +41,22 @@ export function Poster({
   reserveRail?: boolean;
   badge?: ReactNode;
   tagLabel?: string;
-  casterLine?: string;
+  caster?: { line: string; photo?: ImageSourcePropType; initials: string };
   onOpenCaster?: () => void;
   onWhyPress?: () => void;
+  onWordmarkPress?: () => void;
 }) {
   const insets = useSafeAreaInsets();
-  const fg = verbForeground[cast.verb];
-  const muted = cast.verb === 'got' ? 'rgba(244,239,228,0.62)' : 'rgba(20,18,14,0.62)';
+  const spec = categoryTokens[cast.category];
+  const fg = spec.fg;
+  const poles = polesFor(cast.category);
+  const muted = fg === tokens.semantic.color.cream ? 'rgba(244,239,228,0.62)' : 'rgba(20,18,14,0.62)';
   const meta = [cast.area, cast.vouches, cast.expiry].filter(Boolean).join(' · ');
 
   const headline = (
     <View>
       {badge ? <View style={styles.badge}>{badge}</View> : null}
-      <Text style={[styles.verb, { color: fg }]}>{tagLabel ?? verbLabel[cast.verb]}</Text>
+      <Text style={[styles.categoryTag, { color: fg }]}>{tagLabel ?? spec.label.toUpperCase()}</Text>
       <Text style={[styles.cast, { color: fg }]}>{cast.text}</Text>
     </View>
   );
@@ -59,14 +66,20 @@ export function Poster({
       style={[
         styles.poster,
         {
-          backgroundColor: verbColor[cast.verb],
+          backgroundColor: spec.field,
           paddingTop: insets.top + 24,
           paddingBottom: reserveRail ? tokens.component.posterBottomReserve : insets.bottom + 16,
         },
       ]}
     >
       <View style={styles.top}>
-        <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>
+        {onWordmarkPress ? (
+          <Pressable accessibilityRole="button" accessibilityLabel="filter the feed" hitSlop={10} onPress={onWordmarkPress}>
+            <Text style={[styles.wordmark, { color: fg }]}>NEARCAST ⌄</Text>
+          </Pressable>
+        ) : (
+          <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>
+        )}
         {topRight}
       </View>
       <View style={styles.middle}>
@@ -79,19 +92,20 @@ export function Poster({
         )}
       </View>
       <View>
-        {casterLine ? (
+        {caster ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`about ${casterLine}`}
-            hitSlop={8}
+            accessibilityLabel={`about ${caster.line}`}
+            hitSlop={6}
             disabled={!onOpenCaster}
             onPress={onOpenCaster}
-            style={styles.casterTap}
+            style={[styles.casterPill, { backgroundColor: poles.pillBg }]}
           >
-            <Text style={[styles.caster, { color: fg }]}>cast by {casterLine} ›</Text>
+            <Face photo={caster.photo} initials={caster.initials} size={22} label="" />
+            <Text style={[styles.casterText, { color: poles.pillFg }]}>{caster.line} ›</Text>
           </Pressable>
         ) : null}
-        <Text style={[styles.meta, casterLine ? styles.metaTight : null, { color: fg }]}>{meta}</Text>
+        <Text style={[styles.meta, { color: fg }]}>{meta}</Text>
         {cast.why ? (
           onWhyPress ? (
             <Pressable accessibilityRole="button" accessibilityLabel="why you're seeing this" hitSlop={8} onPress={onWhyPress}>
@@ -113,18 +127,26 @@ const styles = StyleSheet.create({
   wordmark: { ...tokens.typography.tag },
   middle: { flex: 1, justifyContent: 'center' },
   badge: { marginBottom: 18 },
-  verb: { ...tokens.typography.tag, marginBottom: 14 },
+  categoryTag: { ...tokens.typography.tag, marginBottom: 14 },
   cast: {
     fontFamily: fontFamily.display,
     fontSize: tokens.typography.cast.fontSize,
     lineHeight: tokens.typography.cast.lineHeight,
     letterSpacing: tokens.typography.cast.letterSpacing,
-    maxWidth: 330,
+    maxWidth: 335,
   },
-  casterTap: { minHeight: 32, justifyContent: 'flex-end', marginTop: 10 },
-  caster: { ...tokens.typography.meta, fontFamily: 'IBMPlexMono_600SemiBold' },
-  meta: { ...tokens.typography.meta, marginTop: 18 },
-  metaTight: { marginTop: 4 },
+  casterPill: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minHeight: 38,
+    paddingHorizontal: 12,
+    borderRadius: tokens.primitive.radius.pill,
+    marginBottom: 12,
+  },
+  casterText: { ...tokens.typography.metaSmall, fontFamily: 'IBMPlexMono_600SemiBold' },
+  meta: { ...tokens.typography.meta },
   why: { ...tokens.typography.metaSmall, marginTop: 6 },
-  bar: { marginTop: 24, gap: 2 },
+  bar: { marginTop: 20, gap: 2 },
 });

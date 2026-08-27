@@ -1,12 +1,16 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { fontFamily, tokens, type Verb } from '@/design-system/tokens';
+import { category as categoryTokens, fontFamily, polesFor, tokens, type Category } from '@/design-system/tokens';
 
-/** the avatar dot: profile lives behind it. */
-export function AvatarDot({ onColored = false, verb }: { onColored?: boolean; verb?: Verb }) {
-  const initialColor =
-    onColored && verb ? (verb === 'need' ? tokens.semantic.color.verbNeed : verb === 'got' ? tokens.semantic.color.verbGot : tokens.semantic.color.accent) : tokens.semantic.color.cream;
+/**
+ * the avatar dot: profile lives behind it. on a poster it follows the
+ * opposite-pole rule; on cream chrome it defaults to ink with cream text.
+ */
+export function AvatarDot({ castCategory }: { castCategory?: Category }) {
+  const poles = castCategory ? polesFor(castCategory) : null;
+  const bg = poles ? poles.pillBg : tokens.semantic.color.ink;
+  const fg = castCategory ? categoryTokens[castCategory].field : tokens.semantic.color.cream;
 
   return (
     <Pressable
@@ -14,9 +18,9 @@ export function AvatarDot({ onColored = false, verb }: { onColored?: boolean; ve
       accessibilityLabel="you"
       hitSlop={10}
       onPress={() => router.push('/you')}
-      style={styles.dot}
+      style={[styles.dot, { backgroundColor: bg }]}
     >
-      <Text style={[styles.initials, { color: initialColor }]}>PS</Text>
+      <Text style={[styles.initials, { color: fg }]}>PS</Text>
     </Pressable>
   );
 }
@@ -26,7 +30,6 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: tokens.semantic.color.ink,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -20,8 +20,8 @@ export type ViewerContext = {
   circleIds: readonly string[];
   /** circles one trusted link away */
   adjacentCircleIds: readonly string[];
-  /** topics from the viewer's own joins and saves (their actions, nothing inferred) */
-  recentTopics: readonly string[];
+  /** categories from the viewer's onboarding picks and own joins (their actions, nothing inferred) */
+  interests: readonly string[];
   /** coarse activity pattern, e.g. 'weekday-evening' */
   activeWindows: readonly string[];
   blockedCasterIds: readonly string[];
@@ -30,7 +30,10 @@ export type ViewerContext = {
 export type DeliverableCast = {
   casterId: string;
   area: string;
-  topics: readonly string[];
+  /** exactly one category per cast */
+  category: string;
+  /** human label for reasons, e.g. 'sports' */
+  categoryLabel: string;
   /** coarse time window of the plan */
   window: string | null;
   reach: 'origin_only' | 'adjacent_network' | 'nearby_relevant' | 'broader_approved';
@@ -69,7 +72,7 @@ export function deliveryFor(viewer: ViewerContext, cast: DeliverableCast): Deliv
 
   const distance = trustDistance(viewer, cast);
   const areaMatch = viewer.areas.includes(cast.area);
-  const topicMatches = cast.topics.filter((topic) => viewer.recentTopics.includes(topic));
+  const categoryMatch = viewer.interests.includes(cast.category);
   const windowMatch = cast.window !== null && viewer.activeWindows.includes(cast.window);
 
   switch (cast.reach) {
@@ -81,7 +84,7 @@ export function deliveryFor(viewer: ViewerContext, cast: DeliverableCast): Deliv
       break;
     case 'nearby_relevant':
       // strangers need BOTH place and a shared thread — never place alone.
-      if (distance === 'none' && (!areaMatch || topicMatches.length === 0)) return { deliver: false };
+      if (distance === 'none' && (!areaMatch || !categoryMatch)) return { deliver: false };
       break;
     case 'broader_approved':
       if (distance === 'none' && !areaMatch) return { deliver: false };
@@ -103,9 +106,9 @@ export function deliveryFor(viewer: ViewerContext, cast: DeliverableCast): Deliv
     score += 1;
     signals.push(`near you in ${cast.area}`);
   }
-  for (const topic of topicMatches.slice(0, 1)) {
+  if (categoryMatch) {
     score += 1;
-    signals.push(`you joined a ${topic} plan recently`);
+    signals.push(`you're into ${cast.categoryLabel}`);
   }
   if (windowMatch) {
     score += 1;

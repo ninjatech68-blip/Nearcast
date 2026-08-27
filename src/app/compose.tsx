@@ -1,7 +1,7 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
@@ -9,36 +9,39 @@ import { Field } from '@/design-system/components/field';
 import { Poster } from '@/design-system/components/poster';
 import { Stamp } from '@/design-system/components/stamp';
 import { haptic } from '@/design-system/haptics';
-import { fontFamily, tokens, verbColor, verbForeground, verbLabel, type Verb } from '@/design-system/tokens';
-import { areasNearMe, searchAreas } from '@/features/casts/area-lookup';
+import {
+  CATEGORIES,
+  category as categoryTokens,
+  fontFamily,
+  tokens,
+  type Category,
+} from '@/design-system/tokens';
 import { reachLevels, type ReachValue } from '@/features/casts/fixtures';
-import { addCast } from '@/features/casts/store';
+import { addCast, clearDraft, useDraftArea } from '@/features/casts/store';
 
 type Step = 'write' | 'reach' | 'sent';
 
-const verbs: readonly Verb[] = ['need', 'got', 'lets'];
-const areaSuggestions = ['indiranagar', 'koramangala', 'hsr'] as const;
 const CAST_WINDOW_HOURS = 2;
 
 export default function ComposeScreen() {
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState<Step>('write');
-  const [verb, setVerb] = useState<Verb>('lets');
+  const [pick, setPick] = useState<Category | null>(null);
   const [text, setText] = useState('');
-  const [area, setArea] = useState('');
-  const [areaOpen, setAreaOpen] = useState(false);
-  const [areaQuery, setAreaQuery] = useState('');
-  const [areaOptions, setAreaOptions] = useState<readonly string[]>(areaSuggestions);
-  const [areaStatus, setAreaStatus] = useState<'idle' | 'locating' | 'searching' | 'no-permission' | 'not-found'>('idle');
   const [when, setWhen] = useState<Date | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
   const [reach, setReach] = useState<ReachValue>('adjacent_network');
   const [casting, setCasting] = useState(false);
 
+  const area = useDraftArea();
+  useEffect(() => clearDraft, []);
+
   const trimmed = text.trim();
-  const trimmedArea = area.trim();
+  const chosen = pick ?? 'social';
+  const spec = categoryTokens[chosen];
   const goneLabel = when ? formatGone(when) : 'gone 10pm';
   const whenLabel = when ? formatWhen(when) : null;
+  const ready = trimmed.length > 0 && pick !== null;
 
   function close() {
     if (trimmed.length > 0 && step !== 'sent') {
@@ -51,52 +54,18 @@ export default function ComposeScreen() {
     router.back();
   }
 
-  function pickVerb(next: Verb) {
+  function pickCategory(next: Category) {
     haptic('selection');
-    setVerb(next);
-  }
-
-  function pickArea(name: string) {
-    haptic('selection');
-    setArea(name);
-    setAreaOpen(false);
-    setAreaStatus('idle');
-  }
-
-  async function useMyLocation() {
-    setAreaStatus('locating');
-    const result = await areasNearMe();
-    if (result.ok) {
-      setAreaOptions(result.areas);
-      setAreaStatus('idle');
-      if (result.areas.length === 1) pickArea(result.areas[0]);
-    } else {
-      setAreaStatus(result.reason === 'permission' ? 'no-permission' : 'not-found');
-    }
-  }
-
-  async function runAreaSearch() {
-    const typed = areaQuery.trim().toLowerCase();
-    if (typed.length < 2) return;
-    setAreaStatus('searching');
-    const result = await searchAreas(areaQuery);
-    if (result.ok) {
-      setAreaOptions(result.areas);
-      setAreaStatus('idle');
-    } else {
-      // areas are names, not pins: the typed name is always usable
-      setAreaOptions([typed]);
-      setAreaStatus('not-found');
-    }
+    setPick(next);
   }
 
   function castIt() {
     setCasting(true);
     setTimeout(() => {
       addCast({
-        verb,
+        category: chosen,
         text: trimmed,
-        area: trimmedArea || 'nearby',
+        area: area.trim() || 'nearby',
         gone: goneLabel,
         reach: reachTitle(reach),
       });
@@ -110,25 +79,27 @@ export default function ComposeScreen() {
       <Poster
         cast={{
           id: 'mine',
-          verb,
+          category: chosen,
           text: trimmed,
-          area: trimmedArea || 'nearby',
+          area: area.trim() || 'nearby',
           vouches: reachTitle(reach),
           expiry: goneLabel,
           why: '',
         }}
         reserveRail={false}
-        badge={<Stamp label="OUT" color={verbForeground[verb]} />}
+        badge={<Stamp label="OUT" color={spec.fg} />}
         topRight={
           <Pressable accessibilityRole="button" accessibilityLabel="close" hitSlop={12} onPress={() => router.back()} style={styles.closeTarget}>
-            <Text style={[styles.close, { color: verbForeground[verb] }]}>×</Text>
+            <Text style={[styles.close, { color: spec.fg }]}>×</Text>
           </Pressable>
         }
       >
-        <Text style={[styles.sentNote, { color: verbForeground[verb] }]}>
-          you&apos;ll hear the second someone&apos;s in.
-        </Text>
-        <BarButton label="done" variant={verb === 'got' ? 'onCream' : 'onInk'} onPress={() => router.back()} />
+        <Text style={[styles.sentNote, { color: spec.fg }]}>you&apos;ll hear the second someone&apos;s in.</Text>
+        <BarButton
+          label="done"
+          variant={spec.fg === tokens.semantic.color.cream ? 'onCream' : 'onInk'}
+          onPress={() => router.back()}
+        />
       </Poster>
     );
   }
@@ -151,89 +122,45 @@ export default function ComposeScreen() {
         {step === 'write' ? (
           <>
             <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" style={styles.flex}>
-              <View accessibilityRole="radiogroup" style={styles.verbs}>
-                {verbs.map((option) => {
-                  const selected = verb === option;
+              <Text style={styles.label}>WHAT KIND OF PLAN?</Text>
+              <View accessibilityRole="radiogroup" style={styles.chips}>
+                {CATEGORIES.map((id) => {
+                  const selected = pick === id;
+                  const item = categoryTokens[id];
                   return (
                     <Pressable
-                      key={option}
+                      key={id}
                       accessibilityRole="radio"
-                      accessibilityLabel={verbLabel[option]}
+                      accessibilityLabel={item.label}
                       accessibilityState={{ selected }}
-                      onPress={() => pickVerb(option)}
-                      style={[styles.verbChip, selected && { backgroundColor: verbColor[option], borderColor: verbColor[option] }]}
+                      onPress={() => pickCategory(id)}
+                      style={[
+                        styles.chip,
+                        selected && { backgroundColor: item.field, borderColor: item.field },
+                      ]}
                     >
-                      <Text style={[styles.verbText, selected && { color: verbForeground[option] }]}>{verbLabel[option]}</Text>
+                      <Text style={[styles.chipText, selected && { color: item.fg }]}>{item.label}</Text>
                     </Pressable>
                   );
                 })}
               </View>
 
-              <Field value={text} onChange={setText} placeholder="what's the plan?" accessibilityLabel="your cast" autoFocus />
+              <Field value={text} onChange={setText} placeholder="what's the plan?" accessibilityLabel="your cast" />
 
               <View style={styles.detailBlock}>
-                {/* area: a neighborhood name, typed or picked. never an address. */}
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel="area"
-                  onPress={() => setAreaOpen((open) => !open)}
+                  onPress={() => router.push('/area')}
                   style={styles.detailRow}
                 >
                   <View style={styles.flex}>
                     <Text style={styles.detailTitle}>area</Text>
-                    <Text style={styles.detailSub}>{trimmedArea ? `${trimmedArea} · stays approximate` : 'add approximate area'}</Text>
+                    <Text style={styles.detailSub}>{area ? `${area} · stays approximate` : 'add approximate area'}</Text>
                   </View>
-                  <Text style={styles.detailAction}>{trimmedArea ? 'EDIT' : 'ADD'}</Text>
+                  <Text style={styles.detailAction}>{area ? 'EDIT' : 'ADD'}</Text>
                 </Pressable>
-                {areaOpen ? (
-                  <View style={styles.expand}>
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel="use my location"
-                      onPress={useMyLocation}
-                      style={styles.locateRow}
-                    >
-                      <Text style={styles.locateText}>
-                        {areaStatus === 'locating' ? 'finding your area…' : '◉ use my location'}
-                      </Text>
-                    </Pressable>
-                    <TextInput
-                      accessibilityLabel="search area by name"
-                      value={areaQuery}
-                      onChangeText={setAreaQuery}
-                      placeholder="or search an area by name"
-                      placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                      selectionColor={tokens.semantic.color.accent}
-                      style={styles.areaInput}
-                      autoCapitalize="none"
-                      returnKeyType="search"
-                      onSubmitEditing={runAreaSearch}
-                    />
-                    <View style={styles.chips}>
-                      {areaOptions.map((suggestion) => (
-                        <Pressable
-                          key={suggestion}
-                          accessibilityRole="button"
-                          accessibilityLabel={suggestion}
-                          onPress={() => pickArea(suggestion)}
-                          style={styles.chip}
-                        >
-                          <Text style={styles.chipText}>{suggestion}</Text>
-                        </Pressable>
-                      ))}
-                    </View>
-                    {areaStatus === 'searching' ? <Text style={styles.expandNote}>searching…</Text> : null}
-                    {areaStatus === 'no-permission' ? (
-                      <Text style={styles.expandNote}>location is off. search or type your area instead.</Text>
-                    ) : null}
-                    {areaStatus === 'not-found' ? (
-                      <Text style={styles.expandNote}>nothing found nearby. use the name anyway, or try another.</Text>
-                    ) : null}
-                    <Text style={styles.expandNote}>casts show the area only. the exact spot stays hidden.</Text>
-                  </View>
-                ) : null}
 
-                {/* time: native picker. expiry is derived, stated as a fact. */}
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel="time"
@@ -265,9 +192,14 @@ export default function ComposeScreen() {
                 ) : null}
               </View>
 
+              {pick ? (
+                <View style={[styles.tint, { backgroundColor: spec.field }]}>
+                  <Text style={[styles.tintText, { color: spec.fg }]}>your poster goes out in {spec.label}.</Text>
+                </View>
+              ) : null}
               {trimmed.length > 0 ? <Text style={styles.saved}>draft saved. only you see it.</Text> : null}
             </ScrollView>
-            <BarButton label="next: who sees it" onPress={() => setStep('reach')} disabled={trimmed.length === 0} />
+            <BarButton label="next: who sees it" onPress={() => setStep('reach')} disabled={!ready} />
           </>
         ) : (
           <>
@@ -358,20 +290,20 @@ const styles = StyleSheet.create({
   wordmark: { ...tokens.typography.tag, color: tokens.semantic.color.textMutedOnCream },
   closeTarget: { minWidth: 44, minHeight: 44, alignItems: 'flex-end', justifyContent: 'center' },
   close: { fontFamily: fontFamily.text, fontSize: 28, lineHeight: 30, color: tokens.semantic.color.ink },
-  progress: { flexDirection: 'row', gap: 6, marginBottom: 22 },
+  progress: { flexDirection: 'row', gap: 6, marginBottom: 18 },
   progressBar: { flex: 1, height: 3, borderRadius: 4, backgroundColor: tokens.semantic.color.hairlineOnCream },
   progressOn: { backgroundColor: tokens.semantic.color.accent },
-  verbs: { flexDirection: 'row', gap: 8, marginBottom: 24 },
-  verbChip: {
-    flex: 1,
-    height: 52,
-    borderRadius: tokens.primitive.radius.control,
-    borderWidth: 1.5,
+  label: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, marginBottom: 10 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 22 },
+  chip: {
+    minHeight: 38,
+    paddingHorizontal: 14,
+    borderRadius: tokens.primitive.radius.pill,
+    borderWidth: 1,
     borderColor: tokens.semantic.color.hairlineOnCream,
-    alignItems: 'center',
     justifyContent: 'center',
   },
-  verbText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  chipText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   detailBlock: { marginTop: 20 },
   detailRow: {
     minHeight: 64,
@@ -386,32 +318,10 @@ const styles = StyleSheet.create({
   detailSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },
   detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expand: { paddingBottom: 18, gap: 12 },
-  locateRow: { minHeight: 44, justifyContent: 'center' },
-  locateText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
-  areaInput: {
-    minHeight: 48,
-    borderRadius: tokens.primitive.radius.control,
-    borderWidth: 1.5,
-    borderColor: tokens.semantic.color.accent,
-    paddingHorizontal: 14,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: tokens.semantic.color.ink,
-    backgroundColor: tokens.semantic.color.cream,
-  },
-  chips: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  chip: {
-    minHeight: 38,
-    paddingHorizontal: 14,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: tokens.semantic.color.hairlineOnCream,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chipText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expandNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
-  saved: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 16 },
+  tint: { marginTop: 18, borderRadius: tokens.primitive.radius.control, padding: 14 },
+  tintText: { ...tokens.typography.meta },
+  saved: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
   reachTitle: {
     fontFamily: fontFamily.display,
     fontSize: 30,

@@ -11,9 +11,9 @@
 :root{
   --ink:#14120E;
   --cream:#F4EFE4;
-  --orange:#FF4D00;   /* LET'S — a flare */
-  --yellow:#FFC633;   /* NEED — asking */
-  --green:#17442E;    /* GOT — giving */
+  --orange:#FF4D00;   /* social · the brand */
+  --yellow:#FFC633;   /* sports */
+  --green:#17442E;    /* travel + outdoors */
   --ink40:rgba(20,18,14,.4);
   --ink12:rgba(20,18,14,.12);
   --cream40:rgba(244,239,228,.45);
@@ -259,8 +259,9 @@ pre.tree i{color:var(--cream40);font-style:normal}
 <p class="sub">Primary: Gen Z, 17 to 27. Nearcast moves real-world plans through vouched trust chains, which is adult social-graph behavior; a meetup app should not court under-16s. Gen Alpha still gets the parts that transfer: gesture nav, system lines under ten words, motion doing the explaining. Nothing is averaged between the two.</p>
 <ul class="rule-list">
   <li><b>Posters, not cards</b><span>One cast fills the viewport. The feed is a vertical snap through flat color blocks, TikTok's chrome discipline without its scroll trap: casts expire, the feed ends.</span></li>
-  <li><b>Color is the category</b><span>NEED is yellow, GOT is green, LET'S is orange. The verb chip from v1 is deleted because the background already says it.</span></li>
-  <li><b>Verbs start sentences</b><span>NEED / GOT / LET'S read as the first word of what the person typed, so every headline sounds like someone talking.</span></li>
+  <li><b>Color is the category</b><span>Ten categories, ten flat fields: social orange, sports yellow, food salmon, music ink, travel green, games cobalt, arts lavender, learning sky, networking slate, help cream. One category per cast.</span></li>
+  <li><b>The name always shows too</b><span>The category renders in type above the headline, so color is never the only carrier and the poster reads for colorblind users. The ask ("need two", "face value") lives in the headline words, where people write it anyway.</span></li>
+  <li><b>Chrome never changes</b><span>Ink and orange stay the only chrome colors. Buttons, the rail, and sheets look identical on every category; only the field moves. Pills follow the opposite-pole rule so they always read as controls.</span></li>
   <li><b>Three nav points</b><span>Feed, cast, activity. Profile lives behind the avatar dot. Five tabs was two too many.</span></li>
   <li><b>Trust stays loud</b><span>Vouch count and the "why you" line ride on every poster. Privacy disclosures are one mono line, not a banner. This is the non-negotiable product rule, restyled, never removed.</span></li>
   <li><b>No pressure mechanics</b><span>Expiry is a fact ("gone 10pm"), never a countdown. No streaks, no guilt copy, nothing that works by making you feel bad for leaving.</span></li>
@@ -270,15 +271,22 @@ pre.tree i{color:var(--cream40);font-style:normal}
 <!-- ================= 01 ================= -->
 <div class="secnum" style="margin-top:96px">01</div>
 <h2 class="sec" style="margin-top:8px">Color</h2>
-<p class="sub">Five values total. Ink and cream are the neutrals. Orange dominates because casting is sending up a flare. Yellow and green exist only as the other two verb fields. There are no gradients, no tints, no elevation shadows on surfaces.</p>
+<p class="sub">Ink and cream are the neutrals and the entire chrome. Every other color belongs to exactly one category and appears only as a poster field, a selected chip, or a preview tint. Orange doubles as the brand and the social category.</p>
 <div class="swatches">
   <div class="sw ink"><div class="name">Ink</div><div class="hex mono">#14120E · text, chrome</div></div>
   <div class="sw cream"><div class="name">Cream</div><div class="hex mono">#F4EFE4 · resting surface</div></div>
-  <div class="sw orange"><div class="name">LET'S</div><div class="hex mono">#FF4D00 · plans, brand</div></div>
-  <div class="sw yellow"><div class="name">NEED</div><div class="hex mono">#FFC633 · asks</div></div>
-  <div class="sw green"><div class="name">GOT</div><div class="hex mono">#17442E · offers</div></div>
+  <div class="sw" style="background:#FF4D00;color:#14120E"><div class="name">social</div><div class="hex mono">#FF4D00 · ink type</div></div>
+  <div class="sw" style="background:#FFC633;color:#14120E"><div class="name">sports</div><div class="hex mono">#FFC633 · ink type</div></div>
+  <div class="sw" style="background:#FFA38B;color:#14120E"><div class="name">food + drinks</div><div class="hex mono">#FFA38B · ink type</div></div>
+  <div class="sw" style="background:#14120E;color:#F4EFE4;border:1px solid rgba(244,239,228,.16)"><div class="name">music + nightlife</div><div class="hex mono">#14120E · cream type</div></div>
+  <div class="sw" style="background:#17442E;color:#F4EFE4"><div class="name">travel + outdoors</div><div class="hex mono">#17442E · cream type</div></div>
+  <div class="sw" style="background:#2B5BE3;color:#F4EFE4"><div class="name">games</div><div class="hex mono">#2B5BE3 · cream type</div></div>
+  <div class="sw" style="background:#A98BDE;color:#14120E"><div class="name">arts + making</div><div class="hex mono">#A98BDE · ink type</div></div>
+  <div class="sw" style="background:#8FC1E3;color:#14120E"><div class="name">learning</div><div class="hex mono">#8FC1E3 · ink type</div></div>
+  <div class="sw" style="background:#46647A;color:#F4EFE4"><div class="name">networking</div><div class="hex mono">#46647A · cream type</div></div>
+  <div class="sw" style="background:#F4EFE4;color:#14120E;border:1px solid rgba(244,239,228,.16)"><div class="name">help + favors</div><div class="hex mono">#F4EFE4 · ink type</div></div>
 </div>
-<p class="defense">ink type on orange and yellow, cream type on green. every pairing clears large-type contrast; nothing lighter than ink ever sits on orange.</p>
+<p class="defense">every category declares its own foreground, ink or cream, and every pairing clears large-type contrast. social keeps brand orange because people are the brand; music is the ink poster (night); help + favors is the cream corkboard note. no gradients, no tints, no elevation shadows on surfaces.</p>
 
 <!-- ================= 02 ================= -->
 <div class="secnum" style="margin-top:96px">02</div>
@@ -288,18 +296,18 @@ pre.tree i{color:var(--cream40);font-style:normal}
 <div class="spec"><div class="lab">title / 30 · 800</div><div class="t-title">who sees it?</div></div>
 <div class="spec"><div class="lab">body / 17 · 400</div><div class="t-body">easy doubles, intermediate is fine. court's booked, split is ₹80.</div></div>
 <div class="spec"><div class="lab">meta / 13 · plex mono</div><div class="t-meta">indiranagar · 3 vouches · gone 10pm</div></div>
-<div class="spec"><div class="lab">tag / 12 · mono caps</div><div class="t-tag" style="color:var(--orange)">let's&nbsp;&nbsp;·&nbsp;&nbsp;need&nbsp;&nbsp;·&nbsp;&nbsp;got</div></div>
+<div class="spec"><div class="lab">category / 12 · mono caps</div><div class="t-tag" style="color:var(--orange)">sports&nbsp;&nbsp;·&nbsp;&nbsp;music + nightlife&nbsp;&nbsp;·&nbsp;&nbsp;help + favors</div></div>
 
 <!-- ================= 03 ================= -->
 <div class="secnum" style="margin-top:96px">03</div>
 <h2 class="sec" style="margin-top:8px">Seven primitives</h2>
 <p class="sub">Poster, bar, sheet, row, tag, field, bars. Every screen below is built from these and nothing else; each one appears in at least two screens. If a screen seems to need an eighth, the screen is wrong.</p>
 <ul class="rule-list">
-  <li><b>poster</b><span>full-bleed verb-colored block: tag, cast headline, meta line, why line, bar. used: feed, cast-sent, empty, detail underlay.</span></li>
+  <li><b>poster</b><span>full-bleed category-colored block: category tag, cast headline, tappable caster pill, meta line, why line, bar. used: feed, cast-sent, recap, empty, detail underlay.</span></li>
   <li><b>bar</b><span>one 58px button plus at most one quiet text action. used: every screen with an action.</span></li>
   <li><b>sheet</b><span>bottom sheet for everything secondary: detail, reach, request note. progressive disclosure lives here, not in chrome.</span></li>
   <li><b>row</b><span>mono-subtitled list line. used: activity, your casts, profile.</span></li>
-  <li><b>tag</b><span>mono caps chip for verbs and states (new / matched / draft). used: posters, rows, compose.</span></li>
+  <li><b>tag</b><span>mono caps chip for categories and states (new / matched / draft). used: posters, rows, compose, filter, onboarding.</span></li>
   <li><b>field</b><span>display-size text input, orange caret, no border. typing looks like the poster it becomes. used: compose, request note.</span></li>
   <li><b>bars</b><span>the one data visual: five signal bars, filled by attendance facts only. never a number in public. used: detail sheet, profile, recap.</span></li>
 </ul>
@@ -320,7 +328,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
 
         <section class="poster lets">
           <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
-          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">let's</span>badminton after work. need two.</div>
+          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
           <div>
             <div class="p-meta">indiranagar · 3 vouches · gone 10pm</div>
             <div class="p-why">why you: you play nearby on weekday evenings</div>
@@ -333,7 +341,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
 
         <section class="poster need">
           <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
-          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">need</span>someone to split a ceramics slot saturday morning.</div>
+          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">arts + making</span>someone to split a ceramics slot saturday morning.</div>
           <div>
             <div class="p-meta">hsr · 1 vouch · gone friday</div>
             <div class="p-why">why you: you saved a ceramics cast last week</div>
@@ -346,7 +354,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
 
         <section class="poster got">
           <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot oncream"><i>PS</i></span></div>
-          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">got</span>extra concert ticket for thursday. face value.</div>
+          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">music + nightlife</span>extra concert ticket for thursday. face value.</div>
           <div>
             <div class="p-meta">koramangala · 2 vouches · gone thu</div>
             <div class="p-why">why you: two of your circles overlap</div>
@@ -369,7 +377,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <div class="device"><div class="screen"><div class="island"></div>
       <section class="poster lets" style="height:100%">
         <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
-        <div class="p-cast" style="opacity:.5"><span class="t-tag" style="display:block;margin-bottom:14px">let's</span>badminton after work. need two.</div>
+        <div class="p-cast" style="opacity:.5"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
       </section>
       <div class="scrim"></div>
       <div class="sheet">
@@ -415,7 +423,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
       <div class="strip">no signal · showing from 9:41</div>
       <section class="poster lets" style="filter:saturate(.55) brightness(.92)">
         <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
-        <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">let's</span>badminton after work. need two.</div>
+        <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
         <div>
           <div class="p-meta">indiranagar · 3 vouches · gone 10pm</div>
           <div class="p-bar bar">
@@ -439,7 +447,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
       <div class="appbody">
         <div class="a-top"><span class="wordmark" style="color:var(--ink40)">CAST</span><button class="xbtn">×</button></div>
         <div class="verbs">
-          <span class="v">NEED</span><span class="v">GOT</span><span class="v on-lets">LET'S</span>
+          <span class="v" style="background:#FFC633;border-color:#FFC633;color:#14120E">sports</span><span class="v">social</span><span class="v">games</span>
         </div>
         <div class="field" role="textbox" aria-label="your cast">badminton near indiranagar after work. need two.<span style="color:var(--orange)">|</span></div>
         <div class="f-count" style="margin-top:10px">49/140</div>
@@ -485,7 +493,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <div class="device"><div class="screen"><div class="island"></div>
       <section class="poster lets">
         <div class="p-top"><span class="p-verb">nearcast</span><button class="xbtn" style="color:var(--ink)">×</button></div>
-        <div class="p-cast"><span class="stamp" style="margin-bottom:18px">OUT</span><br/><span class="t-tag" style="display:block;margin-bottom:14px">let's</span>badminton near indiranagar after work. need two.</div>
+        <div class="p-cast"><span class="stamp" style="margin-bottom:18px">OUT</span><br/><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton near indiranagar after work. need two.</div>
         <div>
           <div class="p-meta">friends of circles · gone 10pm</div>
           <div class="p-why">you'll hear the second someone's in.</div>
@@ -542,7 +550,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <div class="cap">Joining <span class="g">note sheet · sending → sent inline</span></div>
     <div class="device"><div class="screen"><div class="island"></div>
       <section class="poster lets" style="height:100%">
-        <div class="p-cast" style="opacity:.4;margin-top:90px"><span class="t-tag" style="display:block;margin-bottom:14px">let's</span>badminton after work. need two.</div>
+        <div class="p-cast" style="opacity:.4;margin-top:90px"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
       </section>
       <div class="scrim"></div>
       <div class="sheet">
@@ -661,7 +669,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
   <tbody>
     <tr><td class="old">Request to join</td><td class="new">I'm in</td></tr>
     <tr><td class="old">Broadcast intent</td><td class="new">cast it</td></tr>
-    <tr><td class="old">What do you need, offer, or want to do?</td><td class="new">NEED / GOT / LET'S + the field. the question dissolved into the verbs.</td></tr>
+    <tr><td class="old">What do you need, offer, or want to do?</td><td class="new"><span class="m">WHAT KIND OF PLAN?</span> + ten category chips. the ask moved into the headline words.</td></tr>
     <tr><td class="old">Why you're seeing this: Nearby and relevant to your preferences.</td><td class="new"><span class="m">why you: you play nearby on weekday evenings</span></td></tr>
     <tr><td class="old">3 origin confirmations</td><td class="new"><span class="m">3 vouches</span></td></tr>
     <tr><td class="old">Ends tonight</td><td class="new"><span class="m">gone 10pm</span></td></tr>
@@ -677,6 +685,10 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">31 plans made real · 0 flakes</span> · receipts at the decision moment</td></tr>
     <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">your cast reaches ~240 people · only you see this</span></td></tr>
     <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">it recovers the next time you show up. nothing decays while you're gone.</span></td></tr>
+    <tr><td class="old">What do you need, offer, or want to do? (verbs)</td><td class="new"><span class="m">WHAT KIND OF PLAN?</span> + ten category chips</td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">your poster goes out in sports.</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">where, roughly?</span> · <span class="m">casts show the area only. the exact spot stays hidden.</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">resets when you leave the feed. your feed never narrows silently.</span></td></tr>
   </tbody>
 </table>
 
@@ -707,7 +719,8 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <tr><td>skip</td><td>tap skip on a poster</td><td>poster exits left with −2° rotation, 240ms --slide; next cast rises into place. scrolling past a cast is the passive skip and animates nothing extra</td><td>impactLight</td></tr>
     <tr><td>sheet present</td><td>swipe ↑ on poster text / route push</td><td>translateY 100%→0 --slide; scrim fades to 45% in 200ms linear</td><td>impactLight on settle</td></tr>
     <tr><td>sheet dismiss</td><td>drag ↓ past 30% height or velocity &gt; 0.5pt/ms</td><td>follows finger 1:1; commits 260ms; else springs back --snap</td><td class="dim">none</td></tr>
-    <tr><td>verb change</td><td>tap NEED / GOT / LET'S</td><td>chip fills its color instantly; compose caret + counter re-tint 180ms; chip scales .95→1 --snap</td><td>selection</td></tr>
+    <tr><td>category pick</td><td>tap a category chip in compose</td><td>chip fills its category color instantly; the poster-tint strip below the rows swaps color 180ms; chip scales .95→1 --snap</td><td>selection</td></tr>
+    <tr><td>filter apply</td><td>tap show N casts</td><td>sheet dismisses --slide; feed re-renders; the filter pill fades in below the top row and stays until cleared</td><td>selection</td></tr>
     <tr><td>cap hit</td><td>141st character</td><td>counter shakes ±4px, 240ms, 3 cycles; input hard-stops. no red, no error line</td><td>notificationWarning</td></tr>
     <tr><td>cast it</td><td>tap on reach sheet</td><td>bar label fades 80ms → loader bars; on ok, route replaces to sent frame; OUT stamp lands scale 1.4→1 · rotate −12°→−6° --snap</td><td>impactMedium on stamp</td></tr>
     <tr><td>send it (join)</td><td>tap in note sheet</td><td>same label→loader swap; on ok SENT stamp --snap, sheet auto-dismisses after 900ms</td><td>notificationSuccess</td></tr>
@@ -749,7 +762,9 @@ pre.tree i{color:var(--cream40);font-style:normal}
       └── sent frame           <i>replace — no back to the form</i>
 <b>/cast/[id]</b>      detail sheet  <i>formSheet · detents .55 / .92 · grabber on</i>
   └── <b>/join/[id]</b>  note sheet  <i>formSheet · .55, stacks over detail</i>
-<b>/you</b>            profile       <i>pageSheet · .92, from avatar dot</i>
+<b>/you</b>            profile       <i>pageSheet, from avatar dot</i>
+<b>/filter</b>         session lens  <i>pageSheet, from the NEARCAST wordmark</i>
+<b>/area</b>           area picker   <i>fullScreenModal, from compose · field pinned top, results scroll under it</i>
 <b>/recap/[month]</b>  recap         <i>fullScreenModal</i></pre>
 <table class="dev" style="margin-top:28px">
   <thead><tr><th>rule</th><th>spec</th></tr></thead>
@@ -771,7 +786,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
 <table class="dev">
   <thead><tr><th>primitive</th><th>box</th><th>states</th></tr></thead>
   <tbody>
-    <tr><td>poster</td><td>full-bleed · padding: x24, top safe+24, bottom safe+16 · headline 46/1.0, −2.5%, clamps 34–52 under dynamic type, max 6 lines then truncates with "…more" opening the sheet</td><td>verb sets background (yellow / green / orange); ended = desaturated 55% + EN­DED tag; offline = saturate .55 + strip</td></tr>
+    <tr><td>poster</td><td>full-bleed · padding: x24, top safe+24, bottom safe+16 · headline 46/1.0, −2.5%, clamps 34–52 under dynamic type, max 6 lines then truncates with "…more" opening the sheet</td><td>category sets background and foreground; caster pill and avatar dot take the opposite pole; ended = desaturated 55% + ENDED tag; offline = saturate .55 + strip</td></tr>
     <tr><td>bar</td><td>button 58h · r16 · x-pad 20 · font 800 17 · icon 18 · gap 10 · quiet action 44h min target</td><td>pressed scale .96 · disabled opacity .45, no haptic · loading = label→equalizer bars, width locked</td></tr>
     <tr><td>sheet</td><td>r28 top · pad 24, top 14 · grabber 40×4 r99 ink12 · scrim ink 45%</td><td>detents .55 / .92 · drag-dismiss per catalog · keyboard pushes sheet, never overlaps the field</td></tr>
     <tr><td>row</td><td>min 64h · pad-y 16 · hairline top ink12 · title 17/600 · sub mono 12 ink40 · right slot: tag or →</td><td>pressed bg ink 4% · long-press archives, undo line replaces the row for 4s · rows never own horizontal gestures (pager axis)</td></tr>
@@ -788,7 +803,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
 <table class="dev">
   <thead><tr><th>screen</th><th>loading</th><th>empty</th><th>error</th><th>offline</th></tr></thead>
   <tbody>
-    <tr><td>feed</td><td>equalizer center, 150ms delay</td><td>"quiet. nothing cast near you right now." + cast something</td><td>"feed didn't load. pull to retry."</td><td>strip "no signal · showing from 9:41", posters desaturate, joins queue</td></tr>
+    <tr><td>feed</td><td>equalizer center, 150ms delay</td><td>"quiet. nothing cast near you right now." + cast something · filtered: "nothing cast in those categories right now." + show everything</td><td>"feed didn't load. pull to retry."</td><td>strip "no signal · showing from 9:41", posters desaturate, joins queue</td></tr>
     <tr><td>detail sheet</td><td>sheet skeleton: bars + two dim lines</td><td>"this one's gone. it ended or got filled." + back</td><td>"couldn't load it. tap to retry."</td><td>read-only from cache; bar disabled with "no signal"</td></tr>
     <tr><td>compose</td><td class="dim">—</td><td class="dim">— (placeholder is the empty state)</td><td>"didn't send. tap to retry." on the bar</td><td>"casts when you're back online." — cast queues</td></tr>
     <tr><td>activity</td><td>equalizer center</td><td>"nothing yet. when someone's in, it lands here." + cast something</td><td>"couldn't load activity. pull to retry."</td><td>cached rows + strip</td></tr>
@@ -808,7 +823,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <tr><td>touch targets</td><td>44×44 minimum everywhere. quiet actions and the avatar dot get invisible hit-slop to reach it</td></tr>
     <tr><td>dynamic type</td><td>body, meta, and rows follow the system size fully. the cast headline scales with UIFontMetrics but clamps 34–52; a poster that overflows scrolls inside itself rather than truncating someone's words</td></tr>
     <tr><td>reduce motion</td><td>every translate/scale/rotate in the catalog becomes a 120ms opacity fade. snap scrolling, haptics, and the loader stay. count-up renders final value instantly</td></tr>
-    <tr><td>voiceover</td><td>poster reads as one element: "LET'S. badminton after work, need two. indiranagar, 3 vouches, gone 10pm. why you: …". actions are real buttons after the content. bars read "signal: strong, 4 of 5" — the private number is never spoken aloud in public contexts</td></tr>
+    <tr><td>voiceover</td><td>poster reads as one element: "sports. badminton after work, need two. indiranagar, 3 vouches, gone 10pm. why you: …". actions are real buttons after the content. bars read "signal: strong, 4 of 5" — the private number is never spoken aloud in public contexts</td></tr>
     <tr><td>contrast</td><td>ink on orange 5.6:1, ink on yellow 9.8:1, cream on green 9.1:1 — every text pairing clears AA at its used size. the unlit bar (16% current color) is decorative and exempt</td></tr>
     <tr><td>haptics map</td><td>expo-haptics: selection → selectionAsync · impactLight/Medium → impactAsync(.Light/.Medium) · notificationSuccess/Warning → notificationAsync. android falls back to its nearest effect, never a raw vibrate</td></tr>
     <tr><td>fonts</td><td>@expo-google-fonts/bricolage-grotesque (400/600/800) + @expo-google-fonts/ibm-plex-mono (400/500/600), loaded before splash hides — the current root layout already does this pattern</td></tr>
