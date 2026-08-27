@@ -216,38 +216,36 @@ describe('compose', () => {
     mockBack.mockReset();
   });
 
-  it('keeps the next step dead until both a category and a cast exist', async () => {
+  it('keeps cast it dead until both a category and a cast exist', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
-    const next = view.getByRole('button', { name: 'next: who sees it' });
-    expect(next.props.accessibilityState).toMatchObject({ disabled: true });
+    const cast = view.getByRole('button', { name: 'cast it' });
+    expect(cast.props.accessibilityState).toMatchObject({ disabled: true });
 
     // text alone is not enough: the category is required
     await user.type(view.getByLabelText('your cast'), 'chess in the park.');
-    expect(view.getByRole('button', { name: 'next: who sees it' }).props.accessibilityState).toMatchObject({
+    expect(view.getByRole('button', { name: 'cast it' }).props.accessibilityState).toMatchObject({
       disabled: true,
     });
 
     await user.press(view.getByRole('radio', { name: 'games' }));
-    expect(view.getByRole('button', { name: 'next: who sees it' }).props.accessibilityState).toMatchObject({
+    expect(view.getByRole('button', { name: 'cast it' }).props.accessibilityState).toMatchObject({
       disabled: false,
     });
   });
 
-  it('moves to the reach step once the cast is written', async () => {
+  it('shows reach inline with the smart default of friends of circles', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
-    await user.press(view.getByRole('radio', { name: 'sports' }));
-    await user.type(view.getByLabelText('your cast'), 'badminton after work. need two.');
-    await user.press(view.getByRole('button', { name: 'next: who sees it' }));
+    // reach row summarizes the current choice — no separate step
+    expect(view.getByLabelText('who sees it')).toBeTruthy();
 
-    expect(view.getByText('who sees it?')).toBeTruthy();
-    expect(view.getByText('wider reach never happens on its own.')).toBeTruthy();
-
+    await user.press(view.getByLabelText('who sees it'));
     const adjacent = view.getByRole('radio', { name: 'friends of circles' });
     expect(adjacent.props.accessibilityState).toMatchObject({ selected: true });
+    expect(view.getByText('wider reach never happens on its own.')).toBeTruthy();
   });
 
   it('publishes the cast into the sent frame and the feed', async () => {
@@ -256,7 +254,6 @@ describe('compose', () => {
 
     await user.press(view.getByRole('radio', { name: 'games' }));
     await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
-    await user.press(view.getByRole('button', { name: 'next: who sees it' }));
     await user.press(view.getByRole('button', { name: 'cast it' }));
 
     expect(await view.findByText('OUT')).toBeTruthy();
