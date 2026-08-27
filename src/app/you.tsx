@@ -22,6 +22,7 @@ export default function YouScreen() {
   const photoUri = useMyPhoto();
   const quiet = useQuietHours();
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
+  const [tempTime, setTempTime] = useState<Date | null>(null);
 
   async function pickPhoto() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -104,31 +105,62 @@ export default function YouScreen() {
             </View>
             {quiet.on ? (
               <View style={styles.quietTimes}>
-                <Pressable accessibilityRole="button" accessibilityLabel="edit start time" onPress={() => setOpenPicker('start')} style={styles.timeChip}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="edit start time"
+                  onPress={() => {
+                    setTempTime(timeToDate(quiet.start));
+                    setOpenPicker('start');
+                  }}
+                  style={styles.timeChip}
+                >
                   <Text style={styles.timeLabel}>start</Text>
                   <Text style={styles.timeValue}>{quiet.start}</Text>
                 </Pressable>
-                <Pressable accessibilityRole="button" accessibilityLabel="edit end time" onPress={() => setOpenPicker('end')} style={styles.timeChip}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="edit end time"
+                  onPress={() => {
+                    setTempTime(timeToDate(quiet.end));
+                    setOpenPicker('end');
+                  }}
+                  style={styles.timeChip}
+                >
                   <Text style={styles.timeLabel}>end</Text>
                   <Text style={styles.timeValue}>{quiet.end}</Text>
                 </Pressable>
               </View>
             ) : null}
             {openPicker ? (
-              <DateTimePicker
-                mode="time"
-                display="spinner"
-                minuteInterval={5}
-                value={timeToDate(openPicker === 'start' ? quiet.start : quiet.end)}
-                themeVariant="light"
-                accentColor={tokens.semantic.color.accent}
-                onChange={(_, date) => {
-                  if (date) {
-                    setQuietHours(openPicker === 'start' ? { start: dateToTime(date) } : { end: dateToTime(date) });
-                  }
-                  setOpenPicker(null);
-                }}
-              />
+              <View style={styles.pickerBlock}>
+                <DateTimePicker
+                  mode="time"
+                  display="spinner"
+                  minuteInterval={5}
+                  value={tempTime ?? timeToDate(openPicker === 'start' ? quiet.start : quiet.end)}
+                  themeVariant="light"
+                  accentColor={tokens.semantic.color.accent}
+                  onChange={(_, date) => {
+                    // spin freely — the change only commits when you tap done
+                    if (date) setTempTime(date);
+                  }}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="done"
+                  onPress={() => {
+                    const commit = tempTime ?? timeToDate(openPicker === 'start' ? quiet.start : quiet.end);
+                    setQuietHours(
+                      openPicker === 'start' ? { start: dateToTime(commit) } : { end: dateToTime(commit) },
+                    );
+                    setOpenPicker(null);
+                    setTempTime(null);
+                  }}
+                  style={styles.doneBtn}
+                >
+                  <Text style={styles.doneText}>done</Text>
+                </Pressable>
+              </View>
             ) : null}
           </View>
 
@@ -210,5 +242,16 @@ const styles = StyleSheet.create({
   },
   timeLabel: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   timeValue: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.ink },
+  pickerBlock: { gap: 8, marginTop: 4 },
+  doneBtn: {
+    alignSelf: 'flex-end',
+    minHeight: 40,
+    paddingHorizontal: 20,
+    borderRadius: tokens.primitive.radius.pill,
+    backgroundColor: tokens.semantic.color.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  doneText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.cream },
   signOut: { marginTop: 20, alignItems: 'center' },
 });

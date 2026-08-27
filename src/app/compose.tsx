@@ -218,7 +218,21 @@ export default function ComposeScreen() {
                         if (date) setWhen(date);
                       }}
                     />
-                    <Text style={styles.expandNote}>it disappears {CAST_WINDOW_HOURS}h after start. no countdowns.</Text>
+                    <Text style={styles.expandNote}>
+                      pick when the plan starts. the cast stays up until then, then hangs on {CAST_WINDOW_HOURS}h more before it disappears — no countdowns.
+                    </Text>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="done picking time"
+                      onPress={() => {
+                        // if the user opened the picker and never scrolled, land on the default
+                        if (!when) setWhen(defaultWhen());
+                        setWhenOpen(false);
+                      }}
+                      style={styles.doneBtn}
+                    >
+                      <Text style={styles.doneText}>done</Text>
+                    </Pressable>
                   </View>
                 ) : null}
 
@@ -400,6 +414,16 @@ const styles = StyleSheet.create({
   detailSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },
   detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expand: { paddingBottom: 18, gap: 12 },
+  doneBtn: {
+    alignSelf: 'flex-end',
+    minHeight: 40,
+    paddingHorizontal: 20,
+    borderRadius: tokens.primitive.radius.pill,
+    backgroundColor: tokens.semantic.color.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  doneText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.cream },
   spotInput: {
     minHeight: 48,
     borderRadius: tokens.primitive.radius.control,
