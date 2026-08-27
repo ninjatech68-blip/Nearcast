@@ -205,6 +205,38 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
 .stampbox .stamp{transform:rotate(-6deg) scale(1);transition:transform var(--snap)}
 .stampbox:hover .stamp{transform:rotate(-2deg) scale(1.18)}
 
+/* dev spec tables */
+.dev{width:100%;border-collapse:collapse;max-width:1180px}
+.dev th{text-align:left;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cream40);padding:0 18px 12px 0;border-bottom:1px solid var(--cream16)}
+.dev td{padding:11px 18px 11px 0;border-bottom:1px solid var(--cream16);font:400 13px/1.55 var(--mono);vertical-align:top;color:var(--cream)}
+.dev td:first-child{font-weight:600;white-space:nowrap}
+.dev td .dim{color:var(--cream40)}
+.dev td .hot{color:var(--orange)}
+pre.tree{font:400 13px/1.7 var(--mono);color:var(--cream);background:rgba(244,239,228,.04);border:1px solid var(--cream16);border-radius:16px;padding:22px 26px;overflow-x:auto;max-width:760px}
+pre.tree b{color:var(--orange);font-weight:600}
+pre.tree i{color:var(--cream40);font-style:normal}
+
+/* extra live demos */
+.fillbars{height:120px;border-radius:12px;background:var(--cream);color:var(--ink);display:grid;place-items:center}
+.fillbars .sig.big i{transition:height 220ms cubic-bezier(.2,.9,.3,1.15),opacity 220ms}
+.fillbars .sig.big i.on{height:4px;opacity:.16;background:currentColor}
+.fillbars:hover .sig.big i.on{opacity:1;background:var(--orange)}
+.fillbars:hover .sig.big i.on:nth-child(1){height:14px;transition-delay:0ms}
+.fillbars:hover .sig.big i.on:nth-child(2){height:22px;transition-delay:60ms}
+.fillbars:hover .sig.big i.on:nth-child(3){height:30px;transition-delay:120ms}
+.fillbars:hover .sig.big i.on:nth-child(4){height:38px;transition-delay:180ms}
+.eqbox{height:120px;border-radius:12px;background:var(--green);display:grid;place-items:center;color:var(--cream)}
+.eqbox .sig i{opacity:1;background:var(--cream);animation:eq 900ms ease-in-out infinite}
+.eqbox .sig i:nth-child(2){animation-delay:120ms}
+.eqbox .sig i:nth-child(3){animation-delay:240ms}
+.eqbox .sig i:nth-child(4){animation-delay:360ms}
+.eqbox .sig i:nth-child(5){animation-delay:480ms}
+@keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1.6)}}
+.shakebox{height:120px;border-radius:12px;background:var(--cream);color:var(--ink);display:grid;place-items:center}
+.shakebox .cap140{font:500 13px var(--mono);color:var(--orange)}
+.shakebox:hover .cap140{animation:shake 240ms cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-4px)}}
+
 @media (max-width:600px){.doc{padding:40px 18px 80px}}
 </style>
 </head>
@@ -637,7 +669,7 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
     <tr><td class="old">Not relevant</td><td class="new">skip</td></tr>
     <tr><td class="old">Contact details hidden until accepted</td><td class="new"><span class="m">exact court + contact stay hidden until you're both in</span></td></tr>
     <tr><td class="old">Needs your attention</td><td class="new"><span class="m">YOUR MOVE</span></td></tr>
-    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">31 plans made real · 0 flakes</span> — receipts at the decision moment</td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">31 plans made real · 0 flakes</span> · receipts at the decision moment</td></tr>
     <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">your cast reaches ~240 people · only you see this</span></td></tr>
     <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">it recovers the next time you show up. nothing decays while you're gone.</span></td></tr>
   </tbody>
@@ -645,20 +677,133 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
 
 <!-- ================= 07 ================= -->
 <div class="secnum" style="margin-top:96px">07</div>
-<h2 class="sec" style="margin-top:8px">Motion</h2>
-<p class="sub">Three tokens, used everywhere, never per-screen. State changes move like objects: posters wipe in as color blocks, sheets slide with weight, confirmations stamp with overshoot. Nothing crossfades.</p>
+<h2 class="sec" style="margin-top:8px">Motion &amp; micro-interactions</h2>
+<p class="sub">Three curves, used everywhere, never per-screen. State changes move like objects: posters wipe, sheets slide with weight, confirmations stamp with overshoot. Nothing crossfades, nothing loops except the loader, and no animation blocks input.</p>
 <ul class="rule-list" style="max-width:680px">
-  <li><b class="mono" style="font-size:13px">--press · 120ms</b><span>every tap scales to .96 immediately. input is never silent.</span></li>
-  <li><b class="mono" style="font-size:13px">--snap · 220ms</b><span>overshoot curve for arrivals: stamps, tags, the "in" confirmation.</span></li>
-  <li><b class="mono" style="font-size:13px">--slide · 300ms</b><span>sheets and poster wipes. one decisive move, no bounce.</span></li>
+  <li><b class="mono" style="font-size:13px">--press · 120ms</b><span>timing, cubic-bezier(.3,.7,.4,1). every tap scales to .96 on touch-down. input is never silent.</span></li>
+  <li><b class="mono" style="font-size:13px">--snap · 220ms</b><span>overshoot arrival. reanimated spring: damping 14 · stiffness 280 · mass 0.9. stamps, tags, bars, radio picks.</span></li>
+  <li><b class="mono" style="font-size:13px">--slide · 300ms</b><span>decisive move, no bounce. reanimated spring: damping 22 · stiffness 220 · mass 1. sheets, strips, wipes.</span></li>
 </ul>
 <div class="motionrow">
   <div class="mdemo"><span class="lab">press · tap it</span><button class="btn on-orange">I'm in</button></div>
   <div class="mdemo"><span class="lab">wipe · hover it</span><div class="wipebox"><span>next cast</span></div></div>
   <div class="mdemo"><span class="lab">snap · hover it</span><div class="stampbox"><span class="stamp">SENT</span></div></div>
+  <div class="mdemo"><span class="lab">bars fill · hover it</span><div class="fillbars"><span class="sig big"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div></div>
+  <div class="mdemo"><span class="lab">loader · the only loop</span><div class="eqbox"><span class="sig"><i></i><i></i><i></i><i></i><i></i></span></div></div>
+  <div class="mdemo"><span class="lab">cap hit · hover it</span><div class="shakebox"><span class="cap140">140/140</span></div></div>
 </div>
 
-<p class="t-meta" style="color:var(--cream40);margin-top:96px;border-top:1px solid var(--cream16);padding-top:20px">nearcast v2 · open this file in a browser, everything is inspectable · fixture data throughout, nothing fabricated ships</p>
+<p class="sub" style="margin-top:40px">The full catalog. Every animated moment in the app, with its trigger, spec, and haptic. If an interaction is not in this table, it does not animate.</p>
+<table class="dev">
+  <thead><tr><th>interaction</th><th>trigger</th><th>animation</th><th>haptic</th></tr></thead>
+  <tbody>
+    <tr><td>button press</td><td>touch-down / up</td><td>scale 1→.96 --press; release springs back --snap</td><td class="dim">none</td></tr>
+    <tr><td>poster arrive</td><td>feed snap settles</td><td>verb tag + headline rise 10px + fade in 200ms; meta follows 60ms later</td><td class="dim">none</td></tr>
+    <tr><td>skip</td><td>swipe ← past 35% width, or velocity &gt; 0.5pt/ms</td><td>poster follows finger 1:1, rotates to −2° max; commits off-screen 240ms --slide; under threshold springs back --snap. "skip" button plays the same exit</td><td>impactLight on commit</td></tr>
+    <tr><td>sheet present</td><td>swipe ↑ on poster text / route push</td><td>translateY 100%→0 --slide; scrim fades to 45% in 200ms linear</td><td>impactLight on settle</td></tr>
+    <tr><td>sheet dismiss</td><td>drag ↓ past 30% height or velocity &gt; 0.5pt/ms</td><td>follows finger 1:1; commits 260ms; else springs back --snap</td><td class="dim">none</td></tr>
+    <tr><td>verb change</td><td>tap NEED / GOT / LET'S</td><td>chip fills its color instantly; compose caret + counter re-tint 180ms; chip scales .95→1 --snap</td><td>selection</td></tr>
+    <tr><td>cap hit</td><td>141st character</td><td>counter shakes ±4px, 240ms, 3 cycles; input hard-stops. no red, no error line</td><td>notificationWarning</td></tr>
+    <tr><td>cast it</td><td>tap on reach sheet</td><td>bar label fades 80ms → loader bars; on ok, route replaces to sent frame; OUT stamp lands scale 1.4→1 · rotate −12°→−6° --snap</td><td>impactMedium on stamp</td></tr>
+    <tr><td>send it (join)</td><td>tap in note sheet</td><td>same label→loader swap; on ok SENT stamp --snap, sheet auto-dismisses after 900ms</td><td>notificationSuccess</td></tr>
+    <tr><td>send failed</td><td>request error</td><td>bar label swaps to "didn't send. tap to retry." 120ms fade; no shake, no banner</td><td>notificationWarning</td></tr>
+    <tr><td>bars fill</td><td>profile / detail sheet first appears (per session)</td><td>each lit bar grows from 4px height, --snap, 60ms stagger left→right</td><td class="dim">none</td></tr>
+    <tr><td>bars drain</td><td>range narrows while visible</td><td>lost bars shrink to 4px + dim, 300ms, no stagger; recovery note fades in 200ms after</td><td class="dim">none · never punish with haptics</td></tr>
+    <tr><td>receipts count-up</td><td>profile first view per session</td><td>0→n over 600ms ease-out; skipped entirely under reduce-motion</td><td class="dim">none</td></tr>
+    <tr><td>tag NEW arrives</td><td>activity row inserts</td><td>row height animates in --slide; tag lands --snap and pulses once scale 1→1.06→1 over 600ms. never loops</td><td class="dim">none (arrival already notified)</td></tr>
+    <tr><td>row press</td><td>touch-down</td><td>background ink 4% fades in 80ms, out 200ms</td><td class="dim">none</td></tr>
+    <tr><td>match confirmed</td><td>both sides in</td><td>activity row tag flips to MATCHED with --snap</td><td>notificationSuccess</td></tr>
+    <tr><td>pull to refresh</td><td>overscroll 70pt</td><td>equalizer loader (5 bars, 900ms loop) appears after 150ms delay; feed settles --slide</td><td>impactLight when refresh commits</td></tr>
+    <tr><td>offline strip</td><td>connectivity lost / regained</td><td>slides down --slide; retracts 200ms after reconnect</td><td class="dim">none</td></tr>
+    <tr><td>recap share</td><td>tap share the poster</td><td>poster scales to .94 as native share sheet presents over it</td><td>impactLight</td></tr>
+    <tr><td>keyboard</td><td>field focus</td><td>bar + sheet track the keyboard frame 1:1 (native curve, never a fixed duration)</td><td class="dim">none</td></tr>
+  </tbody>
+</table>
+<p class="defense">haptics fire only on state changes the user caused or must notice. nothing vibrates on scroll, arrival animations, or passive events.</p>
+
+<!-- ================= 08 ================= -->
+<div class="secnum" style="margin-top:96px">08</div>
+<h2 class="sec" style="margin-top:8px">Navigation</h2>
+<p class="sub">No tab bar exists. The root is a two-page horizontal pager (feed ↔ activity) with the cast button floating over both; everything else is a native iOS presentation. Every surface is a route, so every surface deep-links.</p>
+<pre class="tree">root <i>· horizontal pager, react-native-pager-view</i>
+├── <b>/</b>            feed          <i>no chrome, vertical snap</i>
+└── <b>/activity</b>    activity      <i>swipe ← from feed, or rail tap</i>
+
+<b>/compose</b>        cast          <i>fullScreenModal, slides up</i>
+  └── reach step               <i>push inside the modal stack, native edge-swipe back</i>
+      └── sent frame           <i>replace — no back to the form</i>
+<b>/cast/[id]</b>      detail sheet  <i>formSheet · detents .55 / .92 · grabber on</i>
+  └── <b>/join/[id]</b>  note sheet  <i>formSheet · .55, stacks over detail</i>
+<b>/you</b>            profile       <i>pageSheet · .92, from avatar dot</i>
+<b>/recap/[month]</b>  recap         <i>fullScreenModal</i></pre>
+<table class="dev" style="margin-top:28px">
+  <thead><tr><th>rule</th><th>spec</th></tr></thead>
+  <tbody>
+    <tr><td>pager</td><td>feed ↔ activity, standard UIScrollView paging feel. a 3-glyph bottom rail (near · cast · activity) fades out during vertical scroll, returns on snap settle. rail is the button fallback; the pager gesture is primary</td></tr>
+    <tr><td>cast button</td><td>floats bottom-center over both pager pages, 56×56, r18, orange, respects home-indicator inset + 8pt. hidden while any sheet or modal is up</td></tr>
+    <tr><td>modal dismiss</td><td>compose: interactive swipe-down enabled while the field is empty; once dirty, dismiss asks one sheet: "keep draft / toss it". drafts keep by default</td></tr>
+    <tr><td>sheet stacking</td><td>max two deep (detail → join). anything deeper is a design failure, not a nav case</td></tr>
+    <tr><td>back</td><td>native interactive pop everywhere a push exists (reach step). no custom back buttons; the × closes modals, drag closes sheets</td></tr>
+    <tr><td>state restore</td><td>cold start returns to feed. a cast mid-compose restores its draft, not its screen</td></tr>
+    <tr><td>deep links</td><td>nearcast://cast/[id] opens the detail sheet over a fresh feed; expired id renders the "this one's gone" frame</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 09 ================= -->
+<div class="secnum" style="margin-top:96px">09</div>
+<h2 class="sec" style="margin-top:8px">Component specs</h2>
+<p class="sub">Exact values for the seven primitives, states included. Points, not pixels. Anything not listed inherits the type and color sections and does not exist.</p>
+<table class="dev">
+  <thead><tr><th>primitive</th><th>box</th><th>states</th></tr></thead>
+  <tbody>
+    <tr><td>poster</td><td>full-bleed · padding: x24, top safe+24, bottom safe+16 · headline 46/1.0, −2.5%, clamps 34–52 under dynamic type, max 6 lines then truncates with "…more" opening the sheet</td><td>verb sets background (yellow / green / orange); ended = desaturated 55% + EN­DED tag; offline = saturate .55 + strip</td></tr>
+    <tr><td>bar</td><td>button 58h · r16 · x-pad 20 · font 800 17 · icon 18 · gap 10 · quiet action 44h min target</td><td>pressed scale .96 · disabled opacity .45, no haptic · loading = label→equalizer bars, width locked</td></tr>
+    <tr><td>sheet</td><td>r28 top · pad 24, top 14 · grabber 40×4 r99 ink12 · scrim ink 45%</td><td>detents .55 / .92 · drag-dismiss per catalog · keyboard pushes sheet, never overlaps the field</td></tr>
+    <tr><td>row</td><td>min 64h · pad-y 16 · hairline top ink12 · title 17/600 · sub mono 12 ink40 · right slot: tag or →</td><td>pressed bg ink 4% · swipe ← reveals single archive action, full-swipe commits</td></tr>
+    <tr><td>tag</td><td>mono 11/600 caps · ls .12em · pad 6×9 · r6</td><td>hot = orange/ink · ok = green/cream · dim = ink12/ink40 · line = no fill</td></tr>
+    <tr><td>field</td><td>display 34/1.08 · no border, no background · caret orange 2pt · placeholder ink12 · counter mono 12 right</td><td>compose cap 140 · note cap 140 · counter tints orange at 120 · cap-hit shake per catalog</td></tr>
+    <tr><td>bars</td><td>small: 5×w5 g3 r2, h 7/11/15/19/23 · big: w10 g5 r3, h 14/22/30/38/46 · lit = orange, unlit = currentColor 16%</td><td>fill/drain per catalog · loader variant loops 900ms · never annotated with a public number</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 10 ================= -->
+<div class="secnum" style="margin-top:96px">10</div>
+<h2 class="sec" style="margin-top:8px">Screens × states</h2>
+<p class="sub">The acceptance matrix. A screen ships when every cell it owns renders the exact string below; cells marked — cannot occur by construction.</p>
+<table class="dev">
+  <thead><tr><th>screen</th><th>loading</th><th>empty</th><th>error</th><th>offline</th></tr></thead>
+  <tbody>
+    <tr><td>feed</td><td>equalizer center, 150ms delay</td><td>"quiet. nothing cast near you right now." + cast something</td><td>"feed didn't load. pull to retry."</td><td>strip "no signal · showing from 9:41", posters desaturate, joins queue</td></tr>
+    <tr><td>detail sheet</td><td>sheet skeleton: bars + two dim lines</td><td>"this one's gone. it ended or got filled." + back</td><td>"couldn't load it. tap to retry."</td><td>read-only from cache; bar disabled with "no signal"</td></tr>
+    <tr><td>compose</td><td class="dim">—</td><td class="dim">— (placeholder is the empty state)</td><td>"didn't send. tap to retry." on the bar</td><td>"casts when you're back online." — cast queues</td></tr>
+    <tr><td>activity</td><td>equalizer center</td><td>"all quiet. when someone's in, it lands here." + cast something</td><td>"couldn't load activity. pull to retry."</td><td>cached rows + strip</td></tr>
+    <tr><td>profile</td><td>bars fill counts as the load state</td><td class="dim">— (new users start mid-signal with 0 receipts: "no plans made real yet. join one.")</td><td>"couldn't load. pull to retry."</td><td>cached, toggles disabled</td></tr>
+    <tr><td>recap</td><td class="dim">— (generated server-side, arrives whole)</td><td>month with no plans gets no recap. absence of a poster, not a sad one</td><td class="dim">—</td><td class="dim">—</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 11 ================= -->
+<div class="secnum" style="margin-top:96px">11</div>
+<h2 class="sec" style="margin-top:8px">Platform</h2>
+<p class="sub">The rules that make it feel native instead of themed. Expo SDK 57, React Native, iOS-first.</p>
+<table class="dev">
+  <thead><tr><th>concern</th><th>rule</th></tr></thead>
+  <tbody>
+    <tr><td>safe areas</td><td>posters and modals draw edge-to-edge and pad content by inset; the wordmark row sits at top inset + 4; floating cast button at bottom inset + 8. nothing hugs the notch or the home indicator</td></tr>
+    <tr><td>touch targets</td><td>44×44 minimum everywhere. quiet actions and the avatar dot get invisible hit-slop to reach it</td></tr>
+    <tr><td>dynamic type</td><td>body, meta, and rows follow the system size fully. the cast headline scales with UIFontMetrics but clamps 34–52; a poster that overflows scrolls inside itself rather than truncating someone's words</td></tr>
+    <tr><td>reduce motion</td><td>every translate/scale/rotate in the catalog becomes a 120ms opacity fade. snap scrolling, haptics, and the loader stay. count-up renders final value instantly</td></tr>
+    <tr><td>voiceover</td><td>poster reads as one element: "LET'S. badminton after work, need two. indiranagar, 3 vouches, gone 10pm. why you: …". actions are real buttons after the content. bars read "signal: strong, 4 of 5" — the private number is never spoken aloud in public contexts</td></tr>
+    <tr><td>contrast</td><td>ink on orange 5.6:1, ink on yellow 9.8:1, cream on green 9.1:1 — every text pairing clears AA at its used size. the unlit bar (16% current color) is decorative and exempt</td></tr>
+    <tr><td>haptics map</td><td>expo-haptics: selection → selectionAsync · impactLight/Medium → impactAsync(.Light/.Medium) · notificationSuccess/Warning → notificationAsync. android falls back to its nearest effect, never a raw vibrate</td></tr>
+    <tr><td>fonts</td><td>@expo-google-fonts/bricolage-grotesque (400/600/800) + @expo-google-fonts/ibm-plex-mono (400/500/600), loaded before splash hides — the current root layout already does this pattern</td></tr>
+    <tr><td>feed impl</td><td>FlatList, pagingEnabled, snapToInterval = viewport height, decelerationRate "fast", windowSize 3. posters render offscreen at ±1</td></tr>
+    <tr><td>springs</td><td>reanimated: --snap = withSpring(damping 14, stiffness 280, mass .9) · --slide = withSpring(damping 22, stiffness 220, mass 1) · --press = withTiming(120, bezier(.3,.7,.4,1))</td></tr>
+    <tr><td>focus (a11y / keyboard)</td><td>focus ring = 2pt orange offset 2, radius follows the element. no default blue</td></tr>
+  </tbody>
+</table>
+
+<p class="t-meta" style="color:var(--cream40);margin-top:96px;border-top:1px solid var(--cream16);padding-top:20px">nearcast v2 · sections 00–06 say what it is, 07–11 say how to build it · open in a browser, everything is inspectable · fixture data throughout, nothing fabricated ships</p>
 
 </div>
 </body>
