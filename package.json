@@ -3,6 +3,8 @@
   "main": "expo-router/entry",
   "version": "0.1.1",
   "dependencies": {
+    "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
+    "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
     "@expo-google-fonts/manrope": "^0.4.2",
     "@expo/ui": "~57.0.13",
     "@supabase/supabase-js": "^2.112.4",
@@ -11,6 +13,7 @@
     "expo-device": "~57.0.1",
     "expo-font": "~57.0.1",
     "expo-glass-effect": "~57.0.1",
+    "expo-haptics": "~15.0.1",
     "expo-image": "~57.0.3",
     "expo-linking": "~57.0.7",
     "expo-router": "~57.0.16",

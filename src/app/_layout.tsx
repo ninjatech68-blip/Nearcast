@@ -1,8 +1,9 @@
-import {
-  Manrope_400Regular,
-  Manrope_600SemiBold,
-  Manrope_700Bold,
-} from '@expo-google-fonts/manrope';
+import { BricolageGrotesque_400Regular } from '@expo-google-fonts/bricolage-grotesque/400Regular';
+import { BricolageGrotesque_600SemiBold } from '@expo-google-fonts/bricolage-grotesque/600SemiBold';
+import { BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque/800ExtraBold';
+import { IBMPlexMono_400Regular } from '@expo-google-fonts/ibm-plex-mono/400Regular';
+import { IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono/500Medium';
+import { IBMPlexMono_600SemiBold } from '@expo-google-fonts/ibm-plex-mono/600SemiBold';
 import { loadAsync } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -21,9 +22,12 @@ export default function RootLayout() {
     async function prepareAppShell() {
       try {
         await loadAsync({
-          Manrope_400Regular,
-          Manrope_600SemiBold,
-          Manrope_700Bold,
+          BricolageGrotesque_400Regular,
+          BricolageGrotesque_600SemiBold,
+          BricolageGrotesque_800ExtraBold,
+          IBMPlexMono_400Regular,
+          IBMPlexMono_500Medium,
+          IBMPlexMono_600SemiBold,
         });
       } finally {
         if (isMounted) {
@@ -45,18 +49,43 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
-        headerShadowVisible: false,
-        headerStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
-        headerTitleStyle: { fontFamily: 'Manrope_700Bold' },
-        headerTintColor: tokens.semantic.color.textPrimary,
-      }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="create" options={{ title: 'New intent', presentation: 'modal' }} />
-      <Stack.Screen name="preview" options={{ title: 'Review intent' }} />
-      <Stack.Screen name="intent/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="profile/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="request/[id]" options={{ headerShown: false, presentation: 'modal' }} />
+        headerShown: false,
+        contentStyle: { backgroundColor: tokens.semantic.color.cream },
+      }}
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="compose" options={{ presentation: 'fullScreenModal' }} />
+      <Stack.Screen
+        name="cast/[id]"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.55, 0.92],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 28,
+          contentStyle: { backgroundColor: tokens.semantic.color.cream },
+        }}
+      />
+      <Stack.Screen
+        name="join/[id]"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.6],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 28,
+          contentStyle: { backgroundColor: tokens.semantic.color.cream },
+        }}
+      />
+      <Stack.Screen
+        name="you"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.92],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 28,
+          contentStyle: { backgroundColor: tokens.semantic.color.cream },
+        }}
+      />
+      <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
     </Stack>
   );
 }

@@ -39,16 +39,22 @@ describe('RootLayout', () => {
     mockPreventAutoHideAsync.mockReset();
   });
 
-  it('loads fonts from an effect before showing the app shell', async () => {
+  it('loads both v2 families before showing the app shell', async () => {
     let finishLoadingFonts: () => void = () => undefined;
-    mockLoadAsync.mockReturnValue(new Promise<void>((resolve) => {
-      finishLoadingFonts = resolve;
-    }));
+    mockLoadAsync.mockReturnValue(
+      new Promise<void>((resolve) => {
+        finishLoadingFonts = resolve;
+      }),
+    );
 
     const view = await render(<RootLayout />);
 
     expect(view.queryByTestId('root-stack')).toBeNull();
     expect(mockLoadAsync).toHaveBeenCalledTimes(1);
+    const fontMap = mockLoadAsync.mock.calls[0][0] as Record<string, unknown>;
+    expect(Object.keys(fontMap)).toEqual(
+      expect.arrayContaining(['BricolageGrotesque_800ExtraBold', 'IBMPlexMono_500Medium']),
+    );
     expect(mockHideAsync).not.toHaveBeenCalled();
 
     await act(async () => {
@@ -57,5 +63,16 @@ describe('RootLayout', () => {
 
     expect(view.getByTestId('root-stack')).toBeTruthy();
     expect(mockHideAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('registers the sheet and modal routes', async () => {
+    mockLoadAsync.mockResolvedValue(undefined);
+
+    const view = await render(<RootLayout />);
+    await act(async () => undefined);
+
+    for (const route of ['index', 'compose', 'cast/[id]', 'join/[id]', 'you', 'recap']) {
+      expect(view.getByText(route)).toBeTruthy();
+    }
   });
 });
