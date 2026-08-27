@@ -26,7 +26,11 @@ jest.mock('expo-router', () => {
     return <Text>{name}</Text>;
   };
 
-  return { Stack };
+  return {
+    Stack,
+    router: { back: () => undefined, push: () => undefined, replace: () => undefined },
+    useSegments: () => [],
+  };
 });
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports

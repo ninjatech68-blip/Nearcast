@@ -1,7 +1,7 @@
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { category as categoryTokens, type Category } from '@/design-system/tokens';
-import { deliveryFor } from './domain/delivery';
+import { deliveryFor, type ViewerContext } from './domain/delivery';
 import {
   casts as fixtureCasts,
   viewer,
@@ -10,6 +10,7 @@ import {
   type CastDetail,
   type PendingJoin,
 } from './fixtures';
+import { useViewerContext } from '@/features/me/me-store';
 
 /**
  * in-memory session store so the loop closes on device: a cast you
@@ -23,11 +24,11 @@ import {
  * out.
  */
 
-function deliverFeed(source: readonly CastDetail[]): readonly CastDetail[] {
+function deliverFeed(source: readonly CastDetail[], ctx: ViewerContext = viewer): readonly CastDetail[] {
   const delivered: CastDetail[] = [];
   for (const cast of source) {
     if (cast.byId === 'me') continue; // your own casts belong in myCasts
-    const result = deliveryFor(viewer, cast.delivery);
+    const result = deliveryFor(ctx, cast.delivery);
     if (!result.deliver) continue;
     delivered.push({ ...cast, why: result.reason, signals: result.signals });
   }
@@ -61,7 +62,21 @@ function subscribe(listener: () => void): () => void {
 }
 
 export function useFeedCasts(): readonly CastDetail[] {
-  return useSyncExternalStore(subscribe, () => state.feed);
+  // re-derive delivery when the viewer context changes (interests,
+  // areas, blocked). the mutated base feed (pendingJoins, matched)
+  // carries through — delivery only rewrites the why + signals + gates.
+  const base = useSyncExternalStore(subscribe, () => state.feed);
+  const ctx = useViewerContext();
+  return useMemo(() => {
+    const out: CastDetail[] = [];
+    for (const c of base) {
+      if (ctx.blockedCasterIds.includes(c.delivery.casterId)) continue;
+      const result = deliveryFor(ctx, c.delivery);
+      if (!result.deliver) continue;
+      out.push({ ...c, why: result.reason, signals: result.signals });
+    }
+    return out;
+  }, [base, ctx]);
 }
 
 export function useMyCastDetails(): readonly CastDetail[] {
@@ -203,6 +218,71 @@ export function declineJoin(castId: string, personId: string): void {
 export function getPendingJoin(castId: string, personId: string): PendingJoin | undefined {
   const cast = getCast(castId);
   return cast?.pendingJoins?.find((j) => j.personId === personId);
+}
+
+/** joiner path: withdraw a join you sent. silent to the caster. */
+export function withdrawJoin(castId: string, joinerId: string = 'me'): void {
+  state = mutateCast(state, castId, (cast) => ({
+    ...cast,
+    pendingJoins: (cast.pendingJoins ?? []).filter((j) => j.personId !== joinerId),
+  }));
+  emit();
+}
+
+/** caster path: cancel your posted cast entirely. removes from myCasts. */
+export function cancelCast(castId: string): void {
+  state = {
+    ...state,
+    myCasts: state.myCasts.filter((c) => c.id !== castId),
+    mine: state.mine.filter((row) => row.castId !== castId),
+  };
+  emit();
+}
+
+/** caster path: change slotsWanted. never below the current filled count. */
+export function extendSlots(castId: string, nextWanted: number): void {
+  state = mutateCast(state, castId, (cast) => {
+    const filled = cast.matched?.length ?? 0;
+    return { ...cast, slotsWanted: Math.max(nextWanted, filled) };
+  });
+  emit();
+}
+
+/**
+ * joins you sent that are still pending on someone else's cast.
+ * one row per (cast, me) — surfaces as "waiting on {caster}" in
+ * activity. tap → withdraw or open the cast detail.
+ */
+export function useJoinsISent(): readonly {
+  castId: string;
+  castTitle: string;
+  casterName: string;
+  casterId: string;
+  sentAgo: string;
+}[] {
+  const feed = useSyncExternalStore(subscribe, () => state.feed);
+  return useMemo(() => {
+    const items: {
+      castId: string;
+      castTitle: string;
+      casterName: string;
+      casterId: string;
+      sentAgo: string;
+    }[] = [];
+    for (const cast of feed) {
+      const mine = cast.pendingJoins?.find((j) => j.personId === 'me');
+      if (mine) {
+        items.push({
+          castId: cast.id,
+          castTitle: cast.text,
+          casterName: cast.by,
+          casterId: cast.byId,
+          sentAgo: mine.sentAgo,
+        });
+      }
+    }
+    return items;
+  }, [feed]);
 }
 
 function mutateCast(current: State, castId: string, transform: (cast: CastDetail) => CastDetail): State {

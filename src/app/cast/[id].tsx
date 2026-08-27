@@ -1,11 +1,12 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
+import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { getCast, slotsFor } from '@/features/casts/store';
+import { cancelCast, extendSlots, getCast, slotsFor } from '@/features/casts/store';
 
 /**
  * the detail sheet. receipts show at the decision moment:
@@ -45,16 +46,68 @@ export default function CastDetailScreen() {
         <Text style={styles.slots}>{slotsLine(cast)}</Text>
         <SheetNote>the exact place stays hidden until you&apos;re both in. chat is in-app — nobody exchanges numbers.</SheetNote>
       </ScrollView>
-      <View style={styles.actions}>
-        {slotsFor(cast).full ? (
-          <BarButton label="full — no slots left" variant="onCream" disabled onPress={() => undefined} />
-        ) : (
-          <BarButton label="I'm in" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
-        )}
-        <QuietAction label="skip" color={tokens.semantic.color.ink} onPress={() => router.back()} />
-      </View>
+      <View style={styles.actions}>{renderActions()}</View>
     </SheetShell>
   );
+
+  function renderActions() {
+    if (!cast) return null;
+    if (cast.byId === 'me') {
+      return (
+        <>
+          <BarButton label="extend slots" variant="onOrange" onPress={openExtend} />
+          <QuietAction label="cancel this cast" color={tokens.semantic.color.ink} onPress={openCancel} />
+        </>
+      );
+    }
+    return slotsFor(cast).full ? (
+      <>
+        <BarButton label="full — no slots left" variant="onCream" disabled onPress={() => undefined} />
+        <QuietAction label="skip" color={tokens.semantic.color.ink} onPress={() => router.back()} />
+      </>
+    ) : (
+      <>
+        <BarButton label="I'm in" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
+        <QuietAction label="skip" color={tokens.semantic.color.ink} onPress={() => router.back()} />
+      </>
+    );
+  }
+
+  function openExtend() {
+    if (!cast) return;
+    const s = slotsFor(cast);
+    Alert.alert(
+      'extend slots',
+      `currently ${s.wanted} wanted · ${s.filled} in. widening lets more joiners in on this same plan.`,
+      [
+        { text: '+1 slot', onPress: () => bump(s.wanted + 1) },
+        { text: '+2 slots', onPress: () => bump(s.wanted + 2) },
+        { text: 'cancel', style: 'cancel' as const },
+      ],
+    );
+  }
+
+  function bump(next: number) {
+    if (!cast) return;
+    haptic('success');
+    extendSlots(cast.id, next);
+  }
+
+  function openCancel() {
+    if (!cast) return;
+    Alert.alert(`cancel "${cast.text}"?`, 'the cast comes down. anyone matched will see it end.', [
+      { text: 'never mind' },
+      {
+        text: 'cancel it',
+        style: 'destructive',
+        onPress: () => {
+          haptic('light');
+          cancelCast(cast.id);
+          router.back();
+        },
+      },
+    ]);
+  }
 }
 
 function slotsLine(cast: ReturnType<typeof getCast>): string {

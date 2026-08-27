@@ -5,17 +5,20 @@ import { IBMPlexMono_400Regular } from '@expo-google-fonts/ibm-plex-mono/400Regu
 import { IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono/500Medium';
 import { IBMPlexMono_600SemiBold } from '@expo-google-fonts/ibm-plex-mono/600SemiBold';
 import { loadAsync } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, router, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
 import { tokens } from '@/design-system/tokens';
+import { useMe } from '@/features/me/me-store';
 
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsReady, setFontsReady] = useState(false);
+  const me = useMe();
+  const segments = useSegments();
 
   useEffect(() => {
     let isMounted = true;
@@ -45,6 +48,22 @@ export default function RootLayout() {
     };
   }, []);
 
+  // gate the shell on signed-in + onboarding-done, but only after
+  // fonts are ready so we don't route through a partially-mounted app.
+  useEffect(() => {
+    if (!fontsReady) return;
+    const first = segments[0];
+    const inSignin = first === 'signin';
+    const inOnboarding = first === 'onboarding';
+    if (!me.signedIn && !inSignin) {
+      router.replace('/signin');
+      return;
+    }
+    if (me.signedIn && !me.onboardingDone && !inOnboarding) {
+      router.replace('/onboarding');
+    }
+  }, [fontsReady, me.signedIn, me.onboardingDone, segments]);
+
   if (!fontsReady) return null;
 
   return (
@@ -69,6 +88,14 @@ export default function RootLayout() {
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
       <Stack.Screen name="reflect/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="invite/[key]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="signin" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
+      <Stack.Screen name="onboarding" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
+      <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="report/[id]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="legal/terms" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="legal/privacy" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="legal/guidelines" options={{ presentation: 'modal' }} />
       </Stack>
     </>
   );

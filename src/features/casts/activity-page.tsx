@@ -11,8 +11,16 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { type ActivityItem } from '@/features/casts/fixtures';
-import { useMyCasts, usePendingJoinsOnMyCasts } from '@/features/casts/store';
+import {
+  cancelCast,
+  useJoinsISent,
+  useMyCasts,
+  useMyCastDetails,
+  usePendingJoinsOnMyCasts,
+  withdrawJoin,
+} from '@/features/casts/store';
 import { usePendingReports } from '@/features/attendance/store';
+import { Alert } from 'react-native';
 
 import { AvatarDot } from './avatar-dot';
 
@@ -24,7 +32,9 @@ export function ActivityPage() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const yourCasts = useMyCasts();
+  const myCastDetails = useMyCastDetails();
   const pending = usePendingReports('me');
+  const joinsISent = useJoinsISent();
   // YOUR MOVE is now COMPUTED from pending joins on your posted casts.
   // fixture yourMove is gone — every row here is a real accept/decline
   // decision the caster owes a joiner.
@@ -44,6 +54,34 @@ export function ActivityPage() {
     if (!archived) return;
     setDismissed((current) => current.filter((id) => id !== archived.id));
     setArchived(null);
+  }
+
+  function confirmWithdraw(castId: string, casterName: string) {
+    Alert.alert(`withdraw from ${casterName}'s plan?`, "they see nothing change. they'll never know you'd asked.", [
+      { text: 'never mind' },
+      {
+        text: 'withdraw',
+        style: 'destructive',
+        onPress: () => {
+          haptic('light');
+          withdrawJoin(castId);
+        },
+      },
+    ]);
+  }
+
+  function confirmCancel(castId: string, castTitle: string) {
+    Alert.alert(`cancel "${castTitle}"?`, 'the cast comes down. anyone matched will see it end.', [
+      { text: 'never mind' },
+      {
+        text: 'cancel it',
+        style: 'destructive',
+        onPress: () => {
+          haptic('light');
+          cancelCast(castId);
+        },
+      },
+    ]);
   }
 
   const empty = moveItems.length === 0 && !archived;
@@ -109,16 +147,36 @@ export function ActivityPage() {
             />
           ))}
 
+          {joinsISent.length > 0 ? (
+            <>
+              <Text style={styles.sectionDim}>WAITING ON</Text>
+              {joinsISent.map((j) => (
+                <Row
+                  key={`sent-${j.castId}`}
+                  title={`${j.casterName} decides`}
+                  sub={`"${j.castTitle}" · sent ${j.sentAgo} · long-press to withdraw`}
+                  right={<Tag label="pending" tone="dim" />}
+                  onPress={() => router.push(`/cast/${j.castId}`)}
+                  onLongPress={() => confirmWithdraw(j.castId, j.casterName)}
+                />
+              ))}
+            </>
+          ) : null}
+
           <Text style={styles.sectionDim}>YOUR CASTS</Text>
-          {yourCasts.map((item) => (
-            <Row
-              key={item.id}
-              title={item.title}
-              sub={item.sub}
-              right={item.tag ? <Tag label={item.tag.label} tone={item.tag.tone} /> : <Tag label="→" tone="line" />}
-              onPress={item.castId ? () => router.push(`/cast/${item.castId}`) : () => router.push('/compose')}
-            />
-          ))}
+          {yourCasts.map((item) => {
+            const isPosted = myCastDetails.some((c) => c.id === item.castId);
+            return (
+              <Row
+                key={item.id}
+                title={item.title}
+                sub={`${item.sub}${isPosted ? ' · long-press to cancel' : ''}`}
+                right={item.tag ? <Tag label={item.tag.label} tone={item.tag.tone} /> : <Tag label="→" tone="line" />}
+                onPress={item.castId ? () => router.push(`/cast/${item.castId}`) : () => router.push('/compose')}
+                onLongPress={isPosted && item.castId ? () => confirmCancel(item.castId!, item.title) : undefined}
+              />
+            );
+          })}
         </ScrollView>
       )}
 

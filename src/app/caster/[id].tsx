@@ -15,6 +15,7 @@ import { useFeedCasts } from '@/features/casts/store';
 import { addToCircle, getCircles, hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
 import { trustLink } from '@/features/trust/domain/trust';
 import { useSharedHistoryWith } from '@/features/attendance/store';
+import { blockCaster } from '@/features/me/me-store';
 
 /**
  * the caster sheet: safety and trust facts, nothing social.
@@ -78,17 +79,23 @@ export default function CasterProfileScreen() {
   }
 
   function block() {
-    Alert.alert(`block ${caster?.name}?`, 'they see nothing change. you never hear from them again.', [
+    if (!caster) return;
+    Alert.alert(`block ${caster.name}?`, 'they see nothing change. you never hear from them again.', [
       { text: 'never mind' },
-      { text: 'block', style: 'destructive', onPress: () => router.back() },
+      {
+        text: 'block',
+        style: 'destructive',
+        onPress: () => {
+          blockCaster(caster.id);
+          router.back();
+        },
+      },
     ]);
   }
 
   function report() {
-    Alert.alert(`report ${caster?.name}?`, 'tell us what happened. they will not know it was you.', [
-      { text: 'never mind' },
-      { text: 'report', style: 'destructive', onPress: () => router.back() },
-    ]);
+    if (!caster) return;
+    router.push(`/report/${caster.id}`);
   }
 
   return (

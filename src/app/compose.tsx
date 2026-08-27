@@ -16,8 +16,9 @@ import {
   tokens,
   type Category,
 } from '@/design-system/tokens';
-import { me, reachLevels, type ReachValue } from '@/features/casts/fixtures';
+import { reachLevels, type ReachValue } from '@/features/casts/fixtures';
 import { addCast, clearDraft, setDraftArea, useDraftArea } from '@/features/casts/store';
+import { useMe } from '@/features/me/me-store';
 
 type Step = 'write' | 'details' | 'sent';
 
@@ -44,12 +45,14 @@ export default function ComposeScreen() {
   const [casting, setCasting] = useState(false);
 
   const area = useDraftArea();
+  const me = useMe();
   // pre-fill area with the viewer's home area on mount so the row is
   // never empty; the /area picker still overrides it.
   useEffect(() => {
-    if (!area) setDraftArea(me.area);
+    if (!area) setDraftArea(me.homeArea);
     return clearDraft;
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const trimmed = text.trim();
   const chosen = pick ?? 'social';

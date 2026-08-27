@@ -13,12 +13,13 @@ import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
-import { casters, me, recap } from '@/features/casts/fixtures';
-import { setMyPhoto, setQuietHours, useMyPhoto, useQuietHours } from '@/features/me/me-store';
+import { casters, me as meFixture, recap } from '@/features/casts/fixtures';
+import { setMyPhoto, setQuietHours, signOut, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
 import { circlesVouchingForMe, vouchersOfMe } from '@/features/trust/circles';
 
 export default function YouScreen() {
-  const receipts = useCountUp(me.receipts.count);
+  const me = useMe();
+  const receipts = useCountUp(meFixture.receipts.count);
   const photoUri = useMyPhoto();
   const quiet = useQuietHours();
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
@@ -51,7 +52,9 @@ export default function YouScreen() {
     .map((id) => casters.find((c) => c.id === id)?.name ?? null)
     .filter(Boolean) as readonly string[];
   const vouchNames = vouchers.length > 0 ? vouchers.join(', ') : 'nobody yet';
-  const line = `${me.area} · ${vouchCount} ${vouchCount === 1 ? 'circle vouches' : 'circles vouch'} for you`;
+  const line = `${me.homeArea} · ${vouchCount} ${vouchCount === 1 ? 'circle vouches' : 'circles vouch'} for you`;
+  const areasLine = `${me.approvedAreas.join(', ')} · always approximate`;
+  const blockedLine = me.blocked.length === 0 ? 'nobody' : `${me.blocked.length} ${me.blocked.length === 1 ? 'person' : 'people'}`;
 
   return (
     <SheetShell
@@ -69,23 +72,23 @@ export default function YouScreen() {
         </Text>
 
         <View style={styles.signalBlock}>
-          <SignalBars lit={me.signal.lit} size="big" trackColor={tokens.semantic.color.ink} />
+          <SignalBars lit={meFixture.signal.lit} size="big" trackColor={tokens.semantic.color.ink} />
           <View style={styles.signalCopy}>
-            <Text style={styles.signalWord}>signal: {me.signal.word}</Text>
+            <Text style={styles.signalWord}>signal: {meFixture.signal.word}</Text>
             <Text style={styles.signalVisibility}>signal + receipts are public · anyone on a cast can see this</Text>
           </View>
         </View>
-        <Text style={styles.range}>{me.range}</Text>
+        <Text style={styles.range}>{meFixture.range}</Text>
 
         <View style={styles.rows}>
           <Row title="receipts" sub={`${receipts} plans made real · last: badminton, tuesday`} right={<Tag label="→" tone="line" />} />
           <Row
             title="circles"
-            sub={me.circles}
+            sub={meFixture.circles}
             right={<Tag label="→" tone="line" />}
             onPress={() => router.push('/circles')}
           />
-          <Row title="areas" sub={me.areas} right={<Tag label="→" tone="line" />} />
+          <Row title="areas" sub={areasLine} right={<Tag label="→" tone="line" />} onPress={() => router.push('/areas')} />
 
           {/* quiet hours: an on-toggle + tappable start/end */}
           <View style={styles.quietBlock}>
@@ -165,18 +168,36 @@ export default function YouScreen() {
             ) : null}
           </View>
 
-          <Row title="blocked" sub={me.blocked} right={<Tag label="→" tone="line" />} />
+          <Row title="blocked" sub={blockedLine} right={<Tag label="→" tone="line" />} onPress={() => router.push('/blocked')} />
           <Row
             title={`${recap.month} recap`}
             sub={recap.headline}
             right={<Tag label="→" tone="line" />}
             onPress={() => router.push('/recap')}
           />
+          <Row title="terms + privacy" sub="what stays private · how blocks work" right={<Tag label="→" tone="line" />} onPress={() => router.push('/legal/privacy')} />
+          <Row title="community guidelines" sub="what gets you removed" right={<Tag label="→" tone="line" />} onPress={() => router.push('/legal/guidelines')} />
         </View>
 
-        <SheetNote>{me.privacy}</SheetNote>
+        <SheetNote>{meFixture.privacy}</SheetNote>
         <View style={styles.signOut}>
-          <QuietAction label="sign out" color={tokens.semantic.color.ink} onPress={() => undefined} />
+          <QuietAction
+            label="sign out"
+            color={tokens.semantic.color.ink}
+            onPress={() =>
+              Alert.alert('sign out?', 'you can sign back in with the same email.', [
+                { text: 'never mind' },
+                {
+                  text: 'sign out',
+                  style: 'destructive',
+                  onPress: () => {
+                    signOut();
+                    router.replace('/signin');
+                  },
+                },
+              ])
+            }
+          />
         </View>
       </ScrollView>
     </SheetShell>

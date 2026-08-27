@@ -19,8 +19,10 @@ jest.mock('expo-router', () => ({
   router: {
     back: () => mockBack(),
     push: (...args: unknown[]) => mockPush(...args),
+    replace: (...args: unknown[]) => mockPush(...args),
   },
   useLocalSearchParams: () => mockParams,
+  useSegments: () => [],
 }));
 
 jest.mock('expo-haptics', () => ({
@@ -80,10 +82,13 @@ jest.mock('react-native-maps', () => {
 const { resetCastStore } = require('./features/casts/store');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { resetAttendanceStore } = require('./features/attendance/store');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { testOnly_bypassGates } = require('./features/me/me-store');
 
 beforeEach(() => {
   resetCastStore();
   resetAttendanceStore();
+  testOnly_bypassGates();
 });
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
