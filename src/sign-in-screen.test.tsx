@@ -3,8 +3,9 @@ import { screen } from '@testing-library/react-native';
 
 import { renderScreen } from './test-utils';
 
+const mockReplace = jest.fn();
 jest.mock('expo-router', () => ({
-  router: { push: jest.fn(), replace: jest.fn() },
+  router: { push: jest.fn(), replace: mockReplace },
 }));
 
 jest.mock('@/features/auth/sign-in', () => ({
@@ -18,12 +19,23 @@ jest.mock('@/features/auth/dev-sign-in', () => ({
   signInWithDevPassword: jest.fn(),
 }));
 
+const mockUseSession = jest.fn();
+jest.mock('@/features/auth/session', () => ({
+  useSession: () => mockUseSession(),
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const SignInScreen = require('./app/sign-in').default;
 
 describe('SignInScreen', () => {
   beforeEach(() => {
     mockAvailable.mockReset();
+    mockUseSession.mockReset();
+    mockReplace.mockReset();
+    mockUseSession.mockReturnValue({
+      status: 'signed-out',
+      hasProfile: false,
+    });
   });
 
   it('always offers Google and Apple, the only production methods', async () => {
@@ -65,5 +77,29 @@ describe('SignInScreen', () => {
 
     expect(screen.queryByTestId('dev-sign-in')).toBeNull();
     expect(screen.queryByText(/Development sign-in/)).toBeNull();
+  });
+
+  it('redirects signed-in members away from the sign-in screen', async () => {
+    mockAvailable.mockReturnValue(true);
+    mockUseSession.mockReturnValue({
+      status: 'signed-in',
+      hasProfile: true,
+    });
+
+    await renderScreen(<SignInScreen />);
+
+    expect(mockReplace).toHaveBeenCalledWith('/');
+  });
+
+  it('does not redirect a signed-in account that still needs an invitation', async () => {
+    mockAvailable.mockReturnValue(true);
+    mockUseSession.mockReturnValue({
+      status: 'signed-in',
+      hasProfile: false,
+    });
+
+    await renderScreen(<SignInScreen />);
+
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });

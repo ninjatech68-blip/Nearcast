@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
 import { submitResponse } from '@/features/intents/data/activity-queries';
+import { createIdempotencyKey } from '@/features/intents/domain/idempotency-key';
 
 /**
  * A respondent must see exactly what the broadcaster will receive before
@@ -24,7 +25,7 @@ export default function RequestScreen() {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [idempotencyKey] = useState(() => globalThis.crypto.randomUUID());
+  const [idempotencyKey] = useState(createIdempotencyKey);
 
   const trimmed = message.trim();
 

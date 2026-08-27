@@ -162,3 +162,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-26 | Delivered the moderation queue, decisions with an immutable audit trail, and restriction lifting |
 | 2026-08-26 | Delivered PostGIS distance bands and the documented delivery ranking, replacing the interim city match |
 | 2026-08-27 | Recorded the physical-iPhone B-1 attempt: signed build/install/launch succeeded, LAN Metro bundled JS, and the run blocked on lack of accessible phone UI control/screenshots |
+| 2026-08-27 | Fixed two B-1 blockers on `claude/repo-overview-vxx5d3`: local seeded auth now works after populating required `auth.users` token fields, and device/simulator flows now fall back when `crypto.randomUUID()` is unavailable; B-1 then advanced to Asha-on-phone plus Dev-on-simulator, but stopped when iPhone Mirroring remained unavailable with “iPhone Not Found” even though `xcrun devicectl` could still launch the app on the paired device |

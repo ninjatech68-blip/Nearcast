@@ -8,6 +8,7 @@ import { tokens } from '@/design-system/tokens';
 import { findPrivacyViolations, type PrivacyViolation } from '@/design-system/privacy';
 import { clearDraft, loadDraft, saveDraft } from '@/features/intents/data/draft-store';
 import { INTENT_REACH_LEVELS, defaultResponseAction, type IntentPrimitive, type IntentReachLevel } from '@/features/intents/domain/intent';
+import { createIdempotencyKey } from '@/features/intents/domain/idempotency-key';
 import { publishIntent, PRIMITIVE_LABELS } from '@/features/intents/data/intent-queries';
 
 const REACH_COPY: Record<IntentReachLevel, { title: string; exposes: string }> = {
@@ -58,7 +59,7 @@ export default function PreviewScreen() {
   const [error, setError] = useState<string | null>(null);
   const [offline, setOffline] = useState(false);
   const [heldForReview, setHeldForReview] = useState(false);
-  const [idempotencyKey] = useState(() => globalThis.crypto.randomUUID());
+  const [idempotencyKey] = useState(createIdempotencyKey);
 
   // The reach and disclosure choices belong to the same local draft, so backing
   // out of review and returning does not silently reset them.

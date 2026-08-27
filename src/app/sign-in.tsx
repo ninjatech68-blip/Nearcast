@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,14 +7,22 @@ import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
 import { devSignInAvailable, signInWithDevPassword } from '@/features/auth/dev-sign-in';
 import { signInWithProvider, type AuthProvider } from '@/features/auth/sign-in';
+import { useSession } from '@/features/auth/session';
 
 export default function SignInScreen() {
+  const { status, hasProfile } = useSession();
   const [pending, setPending] = useState<AuthProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [devEmail, setDevEmail] = useState('');
   const [devPassword, setDevPassword] = useState('');
   const [devPending, setDevPending] = useState(false);
   const showDevSignIn = devSignInAvailable();
+
+  useEffect(() => {
+    if (status === 'signed-in' && hasProfile) {
+      router.replace('/');
+    }
+  }, [hasProfile, status]);
 
   async function startSignIn(provider: AuthProvider) {
     setPending(provider);

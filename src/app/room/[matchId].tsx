@@ -28,6 +28,7 @@ import {
 } from '@/features/coordination/queries';
 import { useRoomRealtime } from '@/features/coordination/use-room-realtime';
 import { STATUS_LABELS } from '@/features/intents/data/activity-queries';
+import { createIdempotencyKey } from '@/features/intents/domain/idempotency-key';
 
 type RoomState = { kind: 'content'; room: Room } | ScreenState;
 
@@ -78,7 +79,7 @@ export default function RoomScreen() {
       sendRoomMessage(
         room.data?.state === 'ok' ? (room.data.data?.conversationId ?? '') : '',
         body,
-        globalThis.crypto.randomUUID(),
+        createIdempotencyKey(),
         matchId,
       ),
     onSuccess: async (result) => {
