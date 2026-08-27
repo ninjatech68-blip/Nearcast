@@ -42,11 +42,37 @@ jest.mock('@react-native-community/datetimepicker', () => {
 
 jest.mock('expo-location', () => ({
   requestForegroundPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  getForegroundPermissionsAsync: jest.fn(async () => ({ granted: true })),
   getCurrentPositionAsync: jest.fn(async () => ({ coords: { latitude: 12.97, longitude: 77.64 } })),
   reverseGeocodeAsync: jest.fn(async () => [{ district: 'Indiranagar', city: 'Bengaluru' }]),
   geocodeAsync: jest.fn(async () => [{ latitude: 12.93, longitude: 77.62 }]),
   Accuracy: { Balanced: 3 },
 }));
+
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(async () => ({ canceled: false, assets: [{ uri: 'file:///picked.jpg' }] })),
+  MediaTypeOptions: { Images: 'Images' },
+}));
+
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn(async () => true),
+  shareAsync: jest.fn(async () => undefined),
+}));
+
+jest.mock('react-native-view-shot', () => ({
+  captureRef: jest.fn(async () => 'file:///cap.png'),
+}));
+
+jest.mock('react-native-maps', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { View } = require('react-native');
+  const MapView = (props: { onPress?: (e: unknown) => void }) => <View testID="mapview" {...props} />;
+  return {
+    __esModule: true,
+    default: MapView,
+    PROVIDER_DEFAULT: 'default',
+  };
+});
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { resetCastStore } = require('./features/casts/store');
@@ -71,6 +97,10 @@ const CasterProfileScreen = require('./app/caster/[id]').default;
 const FilterScreen = require('./app/filter').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const AreaScreen = require('./app/area').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const ChatScreen = require('./app/chat/[id]').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const CirclesScreen = require('./app/circles').default;
 
 describe('home pager', () => {
   beforeEach(() => {
@@ -290,7 +320,9 @@ describe('caster sheet', () => {
     const view = await render(<CasterProfileScreen />);
 
     expect(view.getByText('Aarav')).toBeTruthy();
-    expect(view.getByText('indiranagar · 1 trusted link away · your circle vouches')).toBeTruthy();
+    // trust phrase is now COMPUTED from the graph, never a fixture string.
+    // aarav shares 'badminton-gang' with me, so the phrase is "in your circle".
+    expect(view.getByText('indiranagar · in your circle')).toBeTruthy();
     expect(view.getByText('31 plans made real · 0 flakes · casting since march')).toBeTruthy();
     expect(view.getByText('vouched by 2 people you trust')).toBeTruthy();
     expect(view.getByText('badminton after work. need two.')).toBeTruthy();
@@ -306,5 +338,46 @@ describe('caster sheet', () => {
 
     await user.press(view.getAllByRole('button', { name: /about aarav/ })[0]);
     expect(mockPush).toHaveBeenCalledWith('/caster/aarav');
+  });
+});
+
+describe('chat', () => {
+  beforeEach(() => {
+    mockBack.mockReset();
+    mockParams = { id: 'badminton-after-work' };
+  });
+
+  it('shows earlier messages for context and keeps send dead until text exists', async () => {
+    const view = await render(<ChatScreen />);
+
+    expect(view.getByText('you matched. earlier messages are here for context.')).toBeTruthy();
+    expect(view.getByText('saw your cast — i’m in')).toBeTruthy();
+    expect(view.getByText('done. see you at the gate')).toBeTruthy();
+
+    const send = view.getByRole('button', { name: 'send' });
+    expect(send.props.accessibilityState).toMatchObject({ disabled: true });
+  });
+
+  it('sends a new message into the thread', async () => {
+    const user = userEvent.setup();
+    const view = await render(<ChatScreen />);
+
+    await user.type(view.getByLabelText('message'), 'on my way');
+    await user.press(view.getByRole('button', { name: 'send' }));
+
+    expect(await view.findByText('on my way')).toBeTruthy();
+  });
+});
+
+describe('circles', () => {
+  it('lists the viewer’s circles with member counts', async () => {
+    const view = await render(<CirclesScreen />);
+
+    expect(view.getByText('circles')).toBeTruthy();
+    expect(view.getByText('badminton gang')).toBeTruthy();
+    expect(view.getByText('3 people')).toBeTruthy();
+    expect(
+      view.getByText('you add people you have met through the app. they are never told which circle.'),
+    ).toBeTruthy();
   });
 });

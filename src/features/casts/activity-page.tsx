@@ -73,7 +73,13 @@ export function ActivityPage() {
               sub={item.sub}
               left={item.personId ? <Face photo={facePhotos[item.personId]} initials={item.title.slice(0, 2).toUpperCase()} size={44} label={`photo of ${item.title}`} /> : undefined}
               right={item.tag ? <Tag label={item.tag.label} tone={item.tag.tone} /> : undefined}
-              onPress={item.castId ? () => router.push(`/cast/${item.castId}`) : undefined}
+              onPress={
+                item.tag?.label === 'matched' && item.castId
+                  ? () => router.push(`/chat/${item.castId}`)
+                  : item.castId
+                    ? () => router.push(`/cast/${item.castId}`)
+                    : undefined
+              }
               onLongPress={() => archive(item)}
             />
           ))}

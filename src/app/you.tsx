@@ -1,10 +1,12 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Animated, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
-import { Face } from '@/design-system/components/face';
 import { QuietAction } from '@/design-system/components/button';
+import { Face } from '@/design-system/components/face';
 import { Row } from '@/design-system/components/row';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
@@ -12,19 +14,45 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { me, recap } from '@/features/casts/fixtures';
+import { setMyPhoto, setQuietHours, useMyPhoto, useQuietHours } from '@/features/me/me-store';
 
-/**
- * you: signal, five rows, one privacy sentence, out.
- * the identity flex is receipts and vouches, not a profile page.
- */
 export default function YouScreen() {
-  const [quiet, setQuiet] = useState(true);
   const receipts = useCountUp(me.receipts.count);
+  const photoUri = useMyPhoto();
+  const quiet = useQuietHours();
+  const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
+
+  async function pickPhoto() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.9,
+    });
+    if (!result.canceled && result.assets[0]) {
+      haptic('success');
+      setMyPhoto(result.assets[0].uri);
+    }
+  }
+
+  function changePhoto() {
+    Alert.alert('profile photo', undefined, [
+      { text: 'choose from library', onPress: pickPhoto },
+      photoUri ? { text: 'remove photo', style: 'destructive' as const, onPress: () => setMyPhoto(null) } : null,
+      { text: 'cancel', style: 'cancel' as const },
+    ].filter(Boolean) as Parameters<typeof Alert.alert>[2]);
+  }
+
+  const source = photoUri ? { uri: photoUri } : facePhotos.me;
 
   return (
     <SheetShell
       title={me.name}
-      accessory={<Face photo={facePhotos.me} initials="PS" size={64} label="your photo" />}
+      accessory={
+        <Pressable accessibilityRole="button" accessibilityLabel="change your photo" onPress={changePhoto}>
+          <Face photo={source} initials="PS" size={64} label="your photo" />
+        </Pressable>
+      }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.line}>{me.line}</Text>
@@ -39,23 +67,61 @@ export default function YouScreen() {
 
         <View style={styles.rows}>
           <Row title="receipts" sub={`${receipts} plans made real · last: badminton, tuesday`} right={<Tag label="→" tone="line" />} />
-          <Row title="circles" sub={me.circles} right={<Tag label="→" tone="line" />} />
-          <Row title="areas" sub={me.areas} right={<Tag label="→" tone="line" />} />
           <Row
-            title="quiet hours"
-            sub={me.quietHours}
-            right={
+            title="circles"
+            sub={me.circles}
+            right={<Tag label="→" tone="line" />}
+            onPress={() => router.push('/circles')}
+          />
+          <Row title="areas" sub={me.areas} right={<Tag label="→" tone="line" />} />
+
+          {/* quiet hours: an on-toggle + tappable start/end */}
+          <View style={styles.quietBlock}>
+            <View style={styles.quietHead}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.rowTitle}>quiet hours</Text>
+                <Text style={styles.rowSub}>{quiet.start} to {quiet.end}</Text>
+              </View>
               <Switch
                 accessibilityLabel="quiet hours"
-                value={quiet}
-                onValueChange={(next) => {
+                value={quiet.on}
+                onValueChange={(on) => {
                   haptic('selection');
-                  setQuiet(next);
+                  setQuietHours({ on });
                 }}
                 trackColor={{ true: tokens.semantic.color.accent, false: tokens.semantic.color.hairlineOnCream }}
               />
-            }
-          />
+            </View>
+            {quiet.on ? (
+              <View style={styles.quietTimes}>
+                <Pressable accessibilityRole="button" accessibilityLabel="edit start time" onPress={() => setOpenPicker('start')} style={styles.timeChip}>
+                  <Text style={styles.timeLabel}>start</Text>
+                  <Text style={styles.timeValue}>{quiet.start}</Text>
+                </Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel="edit end time" onPress={() => setOpenPicker('end')} style={styles.timeChip}>
+                  <Text style={styles.timeLabel}>end</Text>
+                  <Text style={styles.timeValue}>{quiet.end}</Text>
+                </Pressable>
+              </View>
+            ) : null}
+            {openPicker ? (
+              <DateTimePicker
+                mode="time"
+                display="spinner"
+                minuteInterval={5}
+                value={timeToDate(openPicker === 'start' ? quiet.start : quiet.end)}
+                themeVariant="light"
+                accentColor={tokens.semantic.color.accent}
+                onChange={(_, date) => {
+                  if (date) {
+                    setQuietHours(openPicker === 'start' ? { start: dateToTime(date) } : { end: dateToTime(date) });
+                  }
+                  setOpenPicker(null);
+                }}
+              />
+            ) : null}
+          </View>
+
           <Row title="blocked" sub={me.blocked} right={<Tag label="→" tone="line" />} />
           <Row
             title={`${recap.month} recap`}
@@ -74,7 +140,26 @@ export default function YouScreen() {
   );
 }
 
-/** receipts count up over 600ms on first view. facts arrive, they don't blink in. */
+function timeToDate(label: string): Date {
+  const match = label.match(/(\d+):(\d+)\s*(am|pm)/i);
+  const now = new Date();
+  now.setSeconds(0, 0);
+  if (!match) return now;
+  let hours = Number.parseInt(match[1], 10) % 12;
+  const minutes = Number.parseInt(match[2], 10);
+  if (match[3].toLowerCase() === 'pm') hours += 12;
+  now.setHours(hours, minutes);
+  return now;
+}
+
+function dateToTime(date: Date): string {
+  const minutes = date.getMinutes();
+  let hours = date.getHours();
+  const suffix = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12 || 12;
+  return `${hours}:${String(minutes).padStart(2, '0')} ${suffix}`;
+}
+
 function useCountUp(target: number): number {
   const [value, setValue] = useState(0);
   const [progress] = useState(() => new Animated.Value(0));
@@ -92,14 +177,27 @@ const styles = StyleSheet.create({
   line: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
   signalBlock: { flexDirection: 'row', alignItems: 'flex-end', gap: 16, marginTop: 26 },
   signalCopy: { flex: 1 },
-  signalWord: {
-    fontFamily: fontFamily.display,
-    fontSize: 22,
-    lineHeight: 24,
-    letterSpacing: -0.45,
-    color: tokens.semantic.color.ink,
-  },
+  signalWord: { fontFamily: fontFamily.display, fontSize: 22, lineHeight: 24, letterSpacing: -0.45, color: tokens.semantic.color.ink },
   range: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
   rows: { marginTop: 24 },
+  rowTitle: { fontFamily: fontFamily.displaySemi, fontSize: 17, letterSpacing: -0.2, color: tokens.semantic.color.ink },
+  rowSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },
+  quietBlock: {
+    minHeight: 64,
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: tokens.semantic.color.hairlineOnCream,
+  },
+  quietHead: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  quietTimes: { flexDirection: 'row', gap: 10, marginTop: 12 },
+  timeChip: {
+    minHeight: 44,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: tokens.primitive.radius.control,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
+  timeLabel: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  timeValue: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.ink },
   signOut: { marginTop: 20, alignItems: 'center' },
 });

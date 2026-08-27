@@ -7,10 +7,13 @@ import { Face } from '@/design-system/components/face';
 import { Row } from '@/design-system/components/row';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
+import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { useFeedCasts } from '@/features/casts/store';
+import { addToCircle, getCircles, trustGraph, useCircles } from '@/features/trust/circles';
+import { trustLink } from '@/features/trust/domain/trust';
 
 /**
  * the caster sheet: safety and trust facts, nothing social.
@@ -21,7 +24,31 @@ export default function CasterProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const caster = casters.find((person) => person.id === id);
   const feed = useFeedCasts();
+  const circles = useCircles();
   const liveCasts = caster ? feed.filter((cast) => cast.byId === caster.id) : [];
+
+  // the trust phrase is COMPUTED from the graph, never a fixture string
+  const link = caster ? trustLink(trustGraph(), 'me', caster.id) : null;
+  const inCircles = caster ? circles.filter((c) => c.memberIds.includes(caster.id)) : [];
+
+  function addTo() {
+    if (!caster) return;
+    const options = getCircles().filter((c) => !c.memberIds.includes(caster.id));
+    if (options.length === 0) {
+      Alert.alert('already added', `${caster.name} is in all your circles.`, [{ text: 'ok' }]);
+      return;
+    }
+    Alert.alert(`add ${caster.name} to…`, 'they are never told which circle.', [
+      ...options.map((c) => ({
+        text: c.name,
+        onPress: () => {
+          haptic('selection');
+          addToCircle(c.id, caster.id);
+        },
+      })),
+      { text: 'cancel', style: 'cancel' as const },
+    ]);
+  }
 
   if (!caster) {
     return (
@@ -55,7 +82,7 @@ export default function CasterProfileScreen() {
     >
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
         <Text style={styles.meta}>
-          {caster.area} · {caster.trustLine}
+          {caster.area} · {link?.phrase ?? caster.trustLine}
         </Text>
 
         <View style={styles.receipts}>
@@ -63,6 +90,15 @@ export default function CasterProfileScreen() {
           <Text style={styles.receiptsLine}>{caster.receipts.line}</Text>
         </View>
         <Text style={styles.vouch}>{caster.vouchLine}</Text>
+
+        <Pressable accessibilityRole="button" accessibilityLabel={`add ${caster.name} to a circle`} onPress={addTo} style={styles.addRow}>
+          <Text style={styles.addText}>
+            {inCircles.length > 0
+              ? `in your ${inCircles.map((c) => c.name).join(', ')}`
+              : `+ add ${caster.name} to a circle`}
+          </Text>
+          {inCircles.length > 0 ? <Text style={styles.addMore}>+ add to another</Text> : null}
+        </Pressable>
 
         {liveCasts.length > 0 ? (
           <>
@@ -103,6 +139,9 @@ const styles = StyleSheet.create({
   receipts: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
   receiptsLine: { ...tokens.typography.meta, color: tokens.semantic.color.ink, flex: 1 },
   vouch: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 8 },
+  addRow: { minHeight: 44, justifyContent: 'center', marginTop: 12 },
+  addText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
+  addMore: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginTop: 2 },
   section: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 28, marginBottom: 4 },
   quiet: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 28 },
   goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },

@@ -42,7 +42,13 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Nearcast uses your location once to suggest your approximate area. Casts never show your exact location."
+          "locationWhenInUsePermission": "Nearcast uses your location to drop a pin and suggest your approximate area. Casts never show your exact location."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Nearcast uses a photo you pick as your profile picture, shown at decision moments for trust."
         }
       ]
     ],

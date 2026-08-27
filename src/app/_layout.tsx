@@ -64,6 +64,8 @@ export default function RootLayout() {
       <Stack.Screen name="caster/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="filter" options={{ presentation: 'modal' }} />
       <Stack.Screen name="area" options={{ presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="circles" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="chat/[id]" options={{ presentation: 'card' }} />
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
     </>

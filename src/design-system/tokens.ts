@@ -8,6 +8,7 @@ const primitive = {
     ink40: 'rgba(20,18,14,0.4)',
     ink12: 'rgba(20,18,14,0.12)',
     ink04: 'rgba(20,18,14,0.04)',
+    ink08: 'rgba(20,18,14,0.08)',
     cream45: 'rgba(244,239,228,0.45)',
     cream16: 'rgba(244,239,228,0.16)',
     scrim: 'rgba(20,18,14,0.45)',
@@ -28,6 +29,7 @@ const semantic = {
     textMutedOnCream: primitive.color.ink40,
     hairlineOnCream: primitive.color.ink12,
     pressedOnCream: primitive.color.ink04,
+    backgroundSubtle: primitive.color.ink08,
     scrim: primitive.color.scrim,
   },
 } as const;
