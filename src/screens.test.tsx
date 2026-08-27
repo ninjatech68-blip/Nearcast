@@ -31,6 +31,22 @@ jest.mock('expo-haptics', () => ({
   NotificationFeedbackType: { Success: 'success', Warning: 'warning' },
 }));
 
+jest.mock('@react-native-community/datetimepicker', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { View } = require('react-native');
+  return {
+    __esModule: true,
+    default: () => <View testID="datetimepicker" />,
+  };
+});
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { resetCastStore } = require('./features/casts/store');
+
+beforeEach(() => {
+  resetCastStore();
+});
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const HomeScreen = require('./app/index').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -155,5 +171,34 @@ describe('compose', () => {
 
     const adjacent = view.getByRole('radio', { name: 'friends of circles' });
     expect(adjacent.props.accessibilityState).toMatchObject({ selected: true });
+  });
+
+  it('publishes the cast into the sent frame and the feed', async () => {
+    const user = userEvent.setup();
+    const view = await render(<ComposeScreen />);
+
+    await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
+    await user.press(view.getByRole('button', { name: 'next: who sees it' }));
+    await user.press(view.getByRole('button', { name: 'cast it' }));
+
+    expect(await view.findByText('OUT')).toBeTruthy();
+    expect(view.getByRole('button', { name: 'done' })).toBeTruthy();
+
+    const feed = await render(<HomeScreen />);
+    // present twice by design: the feed poster and the "your casts" row
+    expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('opens the custom area and time controls from their rows', async () => {
+    const user = userEvent.setup();
+    const view = await render(<ComposeScreen />);
+
+    await user.press(view.getByRole('button', { name: 'area' }));
+    expect(view.getByLabelText('approximate area')).toBeTruthy();
+    await user.press(view.getByRole('button', { name: 'indiranagar' }));
+    expect(view.getByText('indiranagar · stays approximate')).toBeTruthy();
+
+    await user.press(view.getByRole('button', { name: 'time' }));
+    expect(view.getByTestId('datetimepicker')).toBeTruthy();
   });
 });

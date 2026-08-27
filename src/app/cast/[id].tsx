@@ -5,7 +5,7 @@ import { SignalBars } from '@/design-system/components/bars';
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { casts } from '@/features/casts/fixtures';
+import { getCast } from '@/features/casts/store';
 
 /**
  * the detail sheet. receipts show at the decision moment:
@@ -13,7 +13,7 @@ import { casts } from '@/features/casts/fixtures';
  */
 export default function CastDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const cast = casts.find((item) => item.id === id);
+  const cast = getCast(id ?? '');
 
   if (!cast) {
     return (
@@ -28,7 +28,7 @@ export default function CastDetailScreen() {
 
   return (
     <SheetShell title={`${cast.by} cast this`}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
         <Text style={styles.byLine}>{cast.byLine}</Text>
         <View style={styles.receipts}>
           <SignalBars lit={cast.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
@@ -46,6 +46,7 @@ export default function CastDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1 },
   byLine: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
   receipts: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 },
   receiptsLine: { ...tokens.typography.meta, color: tokens.semantic.color.ink },

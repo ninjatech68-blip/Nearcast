@@ -7,6 +7,7 @@ import { IBMPlexMono_600SemiBold } from '@expo-google-fonts/ibm-plex-mono/600Sem
 import { loadAsync } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
 import { tokens } from '@/design-system/tokens';
@@ -47,45 +48,21 @@ export default function RootLayout() {
   if (!fontsReady) return null;
 
   return (
-    <Stack
+    <>
+      <StatusBar style="dark" />
+      <Stack
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: tokens.semantic.color.cream },
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="compose" options={{ presentation: 'fullScreenModal' }} />
-      <Stack.Screen
-        name="cast/[id]"
-        options={{
-          presentation: 'formSheet',
-          sheetAllowedDetents: [0.55, 0.92],
-          sheetGrabberVisible: true,
-          sheetCornerRadius: 28,
-          contentStyle: { backgroundColor: tokens.semantic.color.cream },
-        }}
-      />
-      <Stack.Screen
-        name="join/[id]"
-        options={{
-          presentation: 'formSheet',
-          sheetAllowedDetents: [0.6],
-          sheetGrabberVisible: true,
-          sheetCornerRadius: 28,
-          contentStyle: { backgroundColor: tokens.semantic.color.cream },
-        }}
-      />
-      <Stack.Screen
-        name="you"
-        options={{
-          presentation: 'formSheet',
-          sheetAllowedDetents: [0.92],
-          sheetGrabberVisible: true,
-          sheetCornerRadius: 28,
-          contentStyle: { backgroundColor: tokens.semantic.color.cream },
-        }}
-      />
+      <Stack.Screen name="compose" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
+      <Stack.Screen name="cast/[id]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="join/[id]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="you" options={{ presentation: 'modal' }} />
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
-    </Stack>
+      </Stack>
+    </>
   );
 }

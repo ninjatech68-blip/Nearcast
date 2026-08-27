@@ -1,31 +1,40 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { Field } from '@/design-system/components/field';
 import { Poster } from '@/design-system/components/poster';
-import { Row } from '@/design-system/components/row';
 import { Stamp } from '@/design-system/components/stamp';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens, verbColor, verbForeground, verbLabel, type Verb } from '@/design-system/tokens';
 import { reachLevels, type ReachValue } from '@/features/casts/fixtures';
+import { addCast } from '@/features/casts/store';
 
 type Step = 'write' | 'reach' | 'sent';
 
 const verbs: readonly Verb[] = ['need', 'got', 'lets'];
+const areaSuggestions = ['indiranagar', 'koramangala', 'hsr'] as const;
+const CAST_WINDOW_HOURS = 2;
 
 export default function ComposeScreen() {
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState<Step>('write');
   const [verb, setVerb] = useState<Verb>('lets');
   const [text, setText] = useState('');
-  const [area, setArea] = useState<string | null>(null);
-  const [time, setTime] = useState<string | null>(null);
+  const [area, setArea] = useState('');
+  const [areaOpen, setAreaOpen] = useState(false);
+  const [when, setWhen] = useState<Date | null>(null);
+  const [whenOpen, setWhenOpen] = useState(false);
   const [reach, setReach] = useState<ReachValue>('adjacent_network');
   const [casting, setCasting] = useState(false);
 
   const trimmed = text.trim();
+  const trimmedArea = area.trim();
+  const goneLabel = when ? formatGone(when) : 'gone 10pm';
+  const whenLabel = when ? formatWhen(when) : null;
 
   function close() {
     if (trimmed.length > 0 && step !== 'sent') {
@@ -46,6 +55,13 @@ export default function ComposeScreen() {
   function castIt() {
     setCasting(true);
     setTimeout(() => {
+      addCast({
+        verb,
+        text: trimmed,
+        area: trimmedArea || 'nearby',
+        gone: goneLabel,
+        reach: reachTitle(reach),
+      });
       setCasting(false);
       setStep('sent');
     }, 700);
@@ -58,15 +74,15 @@ export default function ComposeScreen() {
           id: 'mine',
           verb,
           text: trimmed,
-          area: area ?? 'area later',
-          vouches: reachLabel(reach),
-          expiry: time ?? 'gone 10pm',
+          area: trimmedArea || 'nearby',
+          vouches: reachTitle(reach),
+          expiry: goneLabel,
           why: '',
         }}
         reserveRail={false}
         badge={<Stamp label="OUT" color={verbForeground[verb]} />}
         topRight={
-          <Pressable accessibilityRole="button" accessibilityLabel="close" hitSlop={12} onPress={() => router.back()}>
+          <Pressable accessibilityRole="button" accessibilityLabel="close" hitSlop={12} onPress={() => router.back()} style={styles.closeTarget}>
             <Text style={[styles.close, { color: verbForeground[verb] }]}>×</Text>
           </Pressable>
         }
@@ -80,11 +96,11 @@ export default function ComposeScreen() {
   }
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top + 8, paddingBottom: Math.max(insets.bottom, 12) }]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
         <View style={styles.top}>
           <Text style={styles.wordmark}>CAST</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="close" hitSlop={12} onPress={close}>
+          <Pressable accessibilityRole="button" accessibilityLabel="cancel" hitSlop={12} onPress={close} style={styles.closeTarget}>
             <Text style={styles.close}>×</Text>
           </Pressable>
         </View>
@@ -115,27 +131,86 @@ export default function ComposeScreen() {
                 })}
               </View>
 
-              <Field
-                value={text}
-                onChange={setText}
-                placeholder="what's the plan?"
-                accessibilityLabel="your cast"
-                autoFocus
-              />
+              <Field value={text} onChange={setText} placeholder="what's the plan?" accessibilityLabel="your cast" autoFocus />
 
               <View style={styles.detailBlock}>
-                <Row
-                  title="area"
-                  sub={area ? `${area} · stays approximate` : 'add approximate area'}
-                  right={<Text style={styles.edit}>{area ? 'edit' : 'add'}</Text>}
-                  onPress={() => setArea('indiranagar')}
-                />
-                <Row
-                  title="time"
-                  sub={time ? `tonight, 8pm · ${time}` : 'add time'}
-                  right={<Text style={styles.edit}>{time ? 'edit' : 'add'}</Text>}
-                  onPress={() => setTime('gone 10pm')}
-                />
+                {/* area: a neighborhood name, typed or picked. never an address. */}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="area"
+                  onPress={() => setAreaOpen((open) => !open)}
+                  style={styles.detailRow}
+                >
+                  <View style={styles.flex}>
+                    <Text style={styles.detailTitle}>area</Text>
+                    <Text style={styles.detailSub}>{trimmedArea ? `${trimmedArea} · stays approximate` : 'add approximate area'}</Text>
+                  </View>
+                  <Text style={styles.detailAction}>{trimmedArea ? 'EDIT' : 'ADD'}</Text>
+                </Pressable>
+                {areaOpen ? (
+                  <View style={styles.expand}>
+                    <TextInput
+                      accessibilityLabel="approximate area"
+                      value={area}
+                      onChangeText={setArea}
+                      placeholder="neighborhood, not an address"
+                      placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+                      selectionColor={tokens.semantic.color.accent}
+                      style={styles.areaInput}
+                      autoCapitalize="none"
+                      returnKeyType="done"
+                      onSubmitEditing={() => setAreaOpen(false)}
+                    />
+                    <View style={styles.chips}>
+                      {areaSuggestions.map((suggestion) => (
+                        <Pressable
+                          key={suggestion}
+                          accessibilityRole="button"
+                          accessibilityLabel={suggestion}
+                          onPress={() => {
+                            haptic('selection');
+                            setArea(suggestion);
+                            setAreaOpen(false);
+                          }}
+                          style={styles.chip}
+                        >
+                          <Text style={styles.chipText}>{suggestion}</Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                ) : null}
+
+                {/* time: native picker. expiry is derived, stated as a fact. */}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="time"
+                  onPress={() => setWhenOpen((open) => !open)}
+                  style={styles.detailRow}
+                >
+                  <View style={styles.flex}>
+                    <Text style={styles.detailTitle}>time</Text>
+                    <Text style={styles.detailSub}>{whenLabel ? `${whenLabel} · ${goneLabel}` : 'add date + time'}</Text>
+                  </View>
+                  <Text style={styles.detailAction}>{whenLabel ? 'EDIT' : 'ADD'}</Text>
+                </Pressable>
+                {whenOpen ? (
+                  <View style={styles.expand}>
+                    <DateTimePicker
+                      value={when ?? defaultWhen()}
+                      mode="datetime"
+                      display={Platform.OS === 'ios' ? 'compact' : 'default'}
+                      minimumDate={new Date()}
+                      minuteInterval={5}
+                      themeVariant="light"
+                      accentColor={tokens.semantic.color.accent}
+                      onChange={(_, date) => {
+                        if (date) setWhen(date);
+                      }}
+                    />
+                    <Text style={styles.expandNote}>it disappears {CAST_WINDOW_HOURS}h after start. no countdowns.</Text>
+                  </View>
+                ) : null}
               </View>
 
               {trimmed.length > 0 ? <Text style={styles.saved}>draft saved. only you see it.</Text> : null}
@@ -148,7 +223,7 @@ export default function ComposeScreen() {
               <Text accessibilityRole="header" style={styles.reachTitle}>
                 who sees it?
               </Text>
-              <View style={styles.reachList}>
+              <View>
                 {reachLevels.map((level) => {
                   const selected = reach === level.value;
                   return (
@@ -181,13 +256,47 @@ export default function ComposeScreen() {
           </>
         )}
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
-function reachLabel(reach: ReachValue): string {
+function reachTitle(reach: ReachValue): string {
   const level = reachLevels.find((item) => item.value === reach);
   return level ? level.title : 'your circles';
+}
+
+function defaultWhen(): Date {
+  const date = new Date();
+  date.setHours(date.getHours() + 1, 0, 0, 0);
+  return date;
+}
+
+function formatClock(date: Date): string {
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const suffix = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12 || 12;
+  return minutes === 0 ? `${hours}${suffix}` : `${hours}:${String(minutes).padStart(2, '0')}${suffix}`;
+}
+
+function dayWord(date: Date): string | null {
+  const now = new Date();
+  const startOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const diffDays = Math.round((startOf(date) - startOf(now)) / 86400000);
+  if (diffDays === 0) return null;
+  if (diffDays === 1) return 'tomorrow';
+  return date.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase();
+}
+
+function formatWhen(date: Date): string {
+  const day = dayWord(date);
+  return day ? `${day}, ${formatClock(date)}` : `today, ${formatClock(date)}`;
+}
+
+function formatGone(when: Date): string {
+  const gone = new Date(when.getTime() + CAST_WINDOW_HOURS * 3600000);
+  const day = dayWord(gone);
+  return day ? `gone ${day} ${formatClock(gone)}` : `gone ${formatClock(gone)}`;
 }
 
 const styles = StyleSheet.create({
@@ -195,7 +304,8 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44 },
   wordmark: { ...tokens.typography.tag, color: tokens.semantic.color.textMutedOnCream },
-  close: { fontFamily: fontFamily.text, fontSize: 26, lineHeight: 28, color: tokens.semantic.color.ink },
+  closeTarget: { minWidth: 44, minHeight: 44, alignItems: 'flex-end', justifyContent: 'center' },
+  close: { fontFamily: fontFamily.text, fontSize: 28, lineHeight: 30, color: tokens.semantic.color.ink },
   progress: { flexDirection: 'row', gap: 6, marginBottom: 22 },
   progressBar: { flex: 1, height: 3, borderRadius: 4, backgroundColor: tokens.semantic.color.hairlineOnCream },
   progressOn: { backgroundColor: tokens.semantic.color.accent },
@@ -211,7 +321,42 @@ const styles = StyleSheet.create({
   },
   verbText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   detailBlock: { marginTop: 20 },
-  edit: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, textTransform: 'uppercase' },
+  detailRow: {
+    minHeight: 64,
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: tokens.semantic.color.hairlineOnCream,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  detailTitle: { fontFamily: fontFamily.displaySemi, fontSize: 17, letterSpacing: -0.2, color: tokens.semantic.color.ink },
+  detailSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },
+  detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  expand: { paddingBottom: 18, gap: 12 },
+  areaInput: {
+    minHeight: 48,
+    borderRadius: tokens.primitive.radius.control,
+    borderWidth: 1.5,
+    borderColor: tokens.semantic.color.accent,
+    paddingHorizontal: 14,
+    fontFamily: fontFamily.displaySemi,
+    fontSize: 16,
+    color: tokens.semantic.color.ink,
+    backgroundColor: tokens.semantic.color.cream,
+  },
+  chips: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  chip: {
+    minHeight: 38,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: tokens.semantic.color.hairlineOnCream,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chipText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  expandNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
   saved: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 16 },
   reachTitle: {
     fontFamily: fontFamily.display,
@@ -221,7 +366,6 @@ const styles = StyleSheet.create({
     color: tokens.semantic.color.ink,
     marginBottom: 14,
   },
-  reachList: {},
   reachRow: {
     minHeight: 66,
     paddingVertical: 14,

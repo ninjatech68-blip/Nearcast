@@ -7,7 +7,8 @@ import { BarButton, QuietAction } from '@/design-system/components/button';
 import { Poster } from '@/design-system/components/poster';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens, verbForeground } from '@/design-system/tokens';
-import { casts, type CastDetail } from '@/features/casts/fixtures';
+import { type CastDetail } from '@/features/casts/fixtures';
+import { skipCast, useFeedCasts } from '@/features/casts/store';
 
 import { AvatarDot } from './avatar-dot';
 
@@ -22,11 +23,11 @@ export function FeedPage({
   onScrollStateChange?: (scrolling: boolean) => void;
 }) {
   const { height, width } = useWindowDimensions();
-  const [visible, setVisible] = useState<readonly CastDetail[]>(casts);
+  const visible = useFeedCasts();
 
   function skip(id: string) {
     haptic('light');
-    setVisible((current) => current.filter((cast) => cast.id !== id));
+    skipCast(id);
   }
 
   if (visible.length === 0) {

@@ -8,7 +8,7 @@ import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Stamp } from '@/design-system/components/stamp';
 import { haptic } from '@/design-system/haptics';
 import { tokens } from '@/design-system/tokens';
-import { casts } from '@/features/casts/fixtures';
+import { getCast } from '@/features/casts/store';
 
 type SendState = 'idle' | 'sending' | 'sent';
 
@@ -18,7 +18,7 @@ type SendState = 'idle' | 'sending' | 'sent';
  */
 export default function JoinScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const cast = casts.find((item) => item.id === id);
+  const cast = getCast(id ?? '');
   const name = cast?.by ?? 'them';
 
   const [note, setNote] = useState('');

@@ -8,7 +8,8 @@ import { Row } from '@/design-system/components/row';
 import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { yourCasts, yourMove, type ActivityItem } from '@/features/casts/fixtures';
+import { yourMove, type ActivityItem } from '@/features/casts/fixtures';
+import { useMyCasts } from '@/features/casts/store';
 
 import { AvatarDot } from './avatar-dot';
 
@@ -19,6 +20,7 @@ import { AvatarDot } from './avatar-dot';
 export function ActivityPage() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const yourCasts = useMyCasts();
   const [moveItems, setMoveItems] = useState<readonly ActivityItem[]>(yourMove);
   const [archived, setArchived] = useState<ActivityItem | null>(null);
 
