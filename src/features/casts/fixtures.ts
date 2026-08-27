@@ -131,6 +131,7 @@ export const casts: readonly CastDetail[] = [
     vouches: '3 vouches',
     expiry: 'gone 10pm',
     why: 'you play nearby on weekday evenings',
+    exactSpot: 'KSLTA Court 3 · gate 2, indiranagar',
     by: 'Aarav',
     byId: 'aarav',
     byLine: 'indiranagar · 1 trusted link · your circle vouches',
@@ -420,9 +421,17 @@ export const recap = {
 
 export const reachLevels = [
   { value: 'origin_only', title: 'your circles', sub: '24 people you trust' },
-  { value: 'adjacent_network', title: 'friends of circles', sub: 'one trusted link away' },
-  { value: 'nearby_relevant', title: 'nearby with context', sub: 'strangers who share a thread' },
-  { value: 'broader_approved', title: 'approved areas', sub: 'widest. still not public.' },
+  { value: 'adjacent_network', title: 'friends of circles', sub: 'one link away · your circles vouch for them' },
+  {
+    value: 'nearby_relevant',
+    title: 'same intent, nearby',
+    sub: 'strangers into the same thing in your area — the point of the app',
+  },
+  {
+    value: 'broader_approved',
+    title: 'approved neighborhoods',
+    sub: 'widest reach · everyone with an interest match in the areas you approved',
+  },
 ] as const;
 
 export type ReachValue = (typeof reachLevels)[number]['value'];

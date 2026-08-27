@@ -252,7 +252,7 @@ describe('compose', () => {
     await user.press(view.getByLabelText('who sees it'));
     const adjacent = view.getByRole('radio', { name: 'friends of circles' });
     expect(adjacent.props.accessibilityState).toMatchObject({ selected: true });
-    expect(view.getByText('wider reach never happens on its own.')).toBeTruthy();
+    expect(view.getByText(/wider reach is a real choice, not the default/)).toBeTruthy();
   });
 
   it('publishes the cast into the sent frame and the feed', async () => {

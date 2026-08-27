@@ -51,6 +51,20 @@ export default function AreaScreen() {
     void locate();
   }, []);
 
+  /**
+   * live typeahead: after the user pauses for 300ms, run a search and
+   * fill the list with real geocoded neighborhoods. cancelled if they
+   * keep typing, so we never race a stale search over a fresh one.
+   */
+  useEffect(() => {
+    const typed = query.trim();
+    if (typed.length < 2) return;
+    const handle = setTimeout(() => {
+      void search(query);
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [query]);
+
   async function locate() {
     setStatus('locating');
     const result = await areasNearMe();

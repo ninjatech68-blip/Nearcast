@@ -9,7 +9,7 @@ import { useSyncExternalStore } from 'react';
 
 export type Message = {
   id: string;
-  from: 'me' | 'them';
+  from: 'me' | 'them' | 'system';
   text: string;
   time: string;
 };
@@ -32,6 +32,15 @@ let state: State = {
       withId: 'riya',
       castTitle: 'badminton after work',
       messages: [
+        // system message: the exact meeting spot is revealed the
+        // moment the caster accepts the join. before this, the poster
+        // showed only the area name — never the exact place.
+        {
+          id: 'm0',
+          from: 'system',
+          text: 'meeting spot: KSLTA Court 3 · gate 2, indiranagar. shared now that you’re both in.',
+          time: '5:01 pm',
+        },
         { id: 'm1', from: 'them', text: 'saw your cast — i’m in', time: '5:02 pm' },
         { id: 'm2', from: 'me', text: 'nice. court’s booked 7–8', time: '5:04 pm' },
         { id: 'm3', from: 'them', text: 'can do 7:00 pm', time: '5:05 pm' },

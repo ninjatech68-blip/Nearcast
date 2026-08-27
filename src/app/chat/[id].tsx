@@ -112,6 +112,13 @@ export default function ChatScreen() {
 }
 
 function Bubble({ message }: { message: Message }) {
+  if (message.from === 'system') {
+    return (
+      <View style={styles.systemRow} accessibilityLabel="meeting spot">
+        <Text style={styles.systemText}>{message.text}</Text>
+      </View>
+    );
+  }
   const mine = message.from === 'me';
   return (
     <View style={[styles.bubbleRow, mine ? styles.rowMine : styles.rowTheirs]}>
@@ -145,6 +152,23 @@ const styles = StyleSheet.create({
   sub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
   thread: { paddingVertical: 16, gap: 10 },
   matchedNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, textAlign: 'center', marginBottom: 8 },
+  systemRow: {
+    alignSelf: 'center',
+    maxWidth: '90%',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+    borderWidth: 1,
+    borderColor: tokens.semantic.color.hairlineOnCream,
+  },
+  systemText: {
+    fontFamily: fontFamily.monoSemi,
+    fontSize: 13,
+    lineHeight: 19,
+    color: tokens.semantic.color.ink,
+    textAlign: 'center',
+  },
   bubbleRow: { maxWidth: '82%' },
   rowMine: { alignSelf: 'flex-end', alignItems: 'flex-end' },
   rowTheirs: { alignSelf: 'flex-start', alignItems: 'flex-start' },

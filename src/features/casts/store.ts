@@ -79,7 +79,14 @@ export function skipCast(id: string): void {
   emit();
 }
 
-export function addCast(input: { category: Category; text: string; area: string; gone: string; reach: string }): void {
+export function addCast(input: {
+  category: Category;
+  text: string;
+  area: string;
+  gone: string;
+  reach: string;
+  exactSpot?: string;
+}): void {
   const id = `mine-${Date.now()}`;
   const cast: CastDetail = {
     id,
@@ -90,6 +97,7 @@ export function addCast(input: { category: Category; text: string; area: string;
     expiry: input.gone,
     why: 'you cast this',
     signals: ['you cast this'],
+    exactSpot: input.exactSpot,
     by: 'Piyush',
     byId: 'me',
     byLine: `${input.area} · your cast`,
