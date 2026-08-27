@@ -35,19 +35,23 @@ export default function CasterProfileScreen() {
     if (!caster) return;
     const options = getCircles().filter((c) => !c.memberIds.includes(caster.id));
     if (options.length === 0) {
-      Alert.alert('already added', `${caster.name} is in all your circles.`, [{ text: 'ok' }]);
+      Alert.alert('already vouched', `${caster.name} is in all your circles.`, [{ text: 'ok' }]);
       return;
     }
-    Alert.alert(`add ${caster.name} to…`, 'they are never told which circle.', [
-      ...options.map((c) => ({
-        text: c.name,
-        onPress: () => {
-          haptic('selection');
-          addToCircle(c.id, caster.id);
-        },
-      })),
-      { text: 'cancel', style: 'cancel' as const },
-    ]);
+    Alert.alert(
+      `vouch for ${caster.name}?`,
+      'putting them in one of your circles is your vouch. they never see which one.',
+      [
+        ...options.map((c) => ({
+          text: c.name,
+          onPress: () => {
+            haptic('selection');
+            addToCircle(c.id, caster.id);
+          },
+        })),
+        { text: 'cancel', style: 'cancel' as const },
+      ],
+    );
   }
 
   if (!caster) {
@@ -91,13 +95,13 @@ export default function CasterProfileScreen() {
         </View>
         <Text style={styles.vouch}>{caster.vouchLine}</Text>
 
-        <Pressable accessibilityRole="button" accessibilityLabel={`add ${caster.name} to a circle`} onPress={addTo} style={styles.addRow}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`vouch for ${caster.name}`} onPress={addTo} style={styles.addRow}>
           <Text style={styles.addText}>
             {inCircles.length > 0
-              ? `in your ${inCircles.map((c) => c.name).join(', ')}`
-              : `+ add ${caster.name} to a circle`}
+              ? `you vouch · in your ${inCircles.map((c) => c.name).join(', ')}`
+              : `+ vouch for ${caster.name}`}
           </Text>
-          {inCircles.length > 0 ? <Text style={styles.addMore}>+ add to another</Text> : null}
+          {inCircles.length > 0 ? <Text style={styles.addMore}>+ add to another circle</Text> : null}
         </Pressable>
 
         {liveCasts.length > 0 ? (

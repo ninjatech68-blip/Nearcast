@@ -127,6 +127,8 @@ export default function ComposeScreen() {
                 {CATEGORIES.map((id) => {
                   const selected = pick === id;
                   const item = categoryTokens[id];
+                  const selectionBorder =
+                    item.field === tokens.semantic.color.cream ? tokens.semantic.color.ink : item.field;
                   return (
                     <Pressable
                       key={id}
@@ -136,7 +138,7 @@ export default function ComposeScreen() {
                       onPress={() => pickCategory(id)}
                       style={[
                         styles.chip,
-                        selected && { backgroundColor: item.field, borderColor: item.field },
+                        selected && { backgroundColor: item.field, borderColor: selectionBorder, borderWidth: 1.5 },
                       ]}
                     >
                       <Text style={[styles.chipText, selected && { color: item.fg }]}>{item.label}</Text>
@@ -193,8 +195,11 @@ export default function ComposeScreen() {
               </View>
 
               {pick ? (
-                <View style={[styles.tint, { backgroundColor: spec.field }]}>
-                  <Text style={[styles.tintText, { color: spec.fg }]}>your poster goes out in {spec.label}.</Text>
+                <View accessibilityRole="text" style={styles.preview}>
+                  <View style={[styles.swatch, { backgroundColor: spec.field, borderColor: tokens.semantic.color.hairlineOnCream }]} />
+                  <Text style={styles.previewText}>
+                    your poster reads as <Text style={styles.previewName}>{spec.label}</Text>.
+                  </Text>
                 </View>
               ) : null}
               {trimmed.length > 0 ? <Text style={styles.saved}>draft saved. only you see it.</Text> : null}
@@ -319,8 +324,10 @@ const styles = StyleSheet.create({
   detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expand: { paddingBottom: 18, gap: 12 },
   expandNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
-  tint: { marginTop: 18, borderRadius: tokens.primitive.radius.control, padding: 14 },
-  tintText: { ...tokens.typography.meta },
+  preview: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
+  swatch: { width: 18, height: 18, borderRadius: 4, borderWidth: 1 },
+  previewText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, flex: 1 },
+  previewName: { color: tokens.semantic.color.ink, fontFamily: fontFamily.monoSemi },
   saved: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
   reachTitle: {
     fontFamily: fontFamily.display,

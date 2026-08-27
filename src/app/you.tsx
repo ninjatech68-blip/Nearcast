@@ -13,8 +13,9 @@ import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
-import { me, recap } from '@/features/casts/fixtures';
+import { casters, me, recap } from '@/features/casts/fixtures';
 import { setMyPhoto, setQuietHours, useMyPhoto, useQuietHours } from '@/features/me/me-store';
+import { circlesVouchingForMe, vouchersOfMe } from '@/features/trust/circles';
 
 export default function YouScreen() {
   const receipts = useCountUp(me.receipts.count);
@@ -44,6 +45,12 @@ export default function YouScreen() {
   }
 
   const source = photoUri ? { uri: photoUri } : facePhotos.me;
+  const vouchCount = circlesVouchingForMe();
+  const vouchers = vouchersOfMe()
+    .map((id) => casters.find((c) => c.id === id)?.name ?? null)
+    .filter(Boolean) as readonly string[];
+  const vouchNames = vouchers.length > 0 ? vouchers.join(', ') : 'nobody yet';
+  const line = `${me.area} · ${vouchCount} ${vouchCount === 1 ? 'circle vouches' : 'circles vouch'} for you`;
 
   return (
     <SheetShell
@@ -55,7 +62,10 @@ export default function YouScreen() {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.line}>{me.line}</Text>
+        <Text style={styles.line}>{line}</Text>
+        <Text style={styles.vouchLine}>
+          {vouchNames} put you in one of their circles. never told which.
+        </Text>
 
         <View style={styles.signalBlock}>
           <SignalBars lit={me.signal.lit} size="big" trackColor={tokens.semantic.color.ink} />
@@ -175,6 +185,7 @@ function useCountUp(target: number): number {
 
 const styles = StyleSheet.create({
   line: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
+  vouchLine: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 6 },
   signalBlock: { flexDirection: 'row', alignItems: 'flex-end', gap: 16, marginTop: 26 },
   signalCopy: { flex: 1 },
   signalWord: { fontFamily: fontFamily.display, fontSize: 22, lineHeight: 24, letterSpacing: -0.45, color: tokens.semantic.color.ink },

@@ -115,8 +115,9 @@ describe('home pager', () => {
     expect(view.getByText('badminton after work. need two.')).toBeTruthy();
     expect(view.getByText('indiranagar · 3 vouches · gone 10pm')).toBeTruthy();
     expect(view.getByText('SPORTS')).toBeTruthy();
-    // the why line is computed by the delivery framework, never fixture prose
-    expect(view.getByText('why you: one trusted link away · near you in indiranagar ›')).toBeTruthy();
+    // the why line is computed by the delivery framework, never fixture prose.
+    // multiple casts can legitimately share a top-2 reason string, so match all.
+    expect(view.getAllByText('why you: one trusted link away · near you in indiranagar ›').length).toBeGreaterThanOrEqual(1);
     expect(view.getByRole('button', { name: 'cast' })).toBeTruthy();
     expect(view.getByRole('button', { name: 'activity' })).toBeTruthy();
   });

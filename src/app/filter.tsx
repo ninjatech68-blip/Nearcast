@@ -50,6 +50,10 @@ export default function FilterScreen() {
           {CATEGORIES.map((id) => {
             const item = categoryTokens[id];
             const on = picked.includes(id);
+            // when a chip's field equals the sheet colour (help + favors),
+            // the selected border would vanish — force an ink ring instead.
+            const selectionBorder =
+              item.field === tokens.semantic.color.cream ? tokens.semantic.color.ink : item.field;
             return (
               <Pressable
                 key={id}
@@ -57,7 +61,10 @@ export default function FilterScreen() {
                 accessibilityLabel={item.label}
                 accessibilityState={{ selected: on }}
                 onPress={() => toggle(id)}
-                style={[styles.chip, on && { backgroundColor: item.field, borderColor: item.field }]}
+                style={[
+                  styles.chip,
+                  on && { backgroundColor: item.field, borderColor: selectionBorder, borderWidth: 1.5 },
+                ]}
               >
                 <Text style={[styles.chipText, on && { color: item.fg }]}>{item.label}</Text>
               </Pressable>

@@ -32,6 +32,12 @@ export const people: Record<string, Person> = {
   riya: { id: 'riya', name: 'Riya', area: 'indiranagar' },
   arjun: { id: 'arjun', name: 'Arjun', area: 'indiranagar' },
   kavya: { id: 'kavya', name: 'Kavya', area: 'koramangala' },
+  nikhil: { id: 'nikhil', name: 'Nikhil', area: 'indiranagar' },
+  sana: { id: 'sana', name: 'Sana', area: 'koramangala' },
+  rohan: { id: 'rohan', name: 'Rohan', area: 'hsr' },
+  priya: { id: 'priya', name: 'Priya', area: 'indiranagar' },
+  vikram: { id: 'vikram', name: 'Vikram', area: 'koramangala' },
+  neha: { id: 'neha', name: 'Neha', area: 'indiranagar' },
 };
 
 type State = { circles: readonly Circle[] };
@@ -108,4 +114,29 @@ export function createCircle(name: string): string {
   state = { circles: [...state.circles, { id, name: name.trim().toLowerCase(), memberIds: [] }] };
   emit();
   return id;
+}
+
+/**
+ * external circles that hold "me" — the reciprocal of add-to-circle.
+ * every entry means: this person put you in one of their circles, and
+ * that counts as a vouch. the circle name is never shown outside its
+ * owner (privacy law), so we only expose the vouch count and the vouch
+ * givers, never the circle's identity or its other members.
+ * production: a `circle_members` row where `person_id = viewer.id` and
+ * `owner_id != viewer.id`, filtered by RLS to what the viewer may see.
+ */
+type Vouch = { circleId: string; ownerId: string };
+
+const vouches: readonly Vouch[] = [
+  { circleId: 'aarav-close-court', ownerId: 'aarav' },
+  { circleId: 'kavya-brunch-people', ownerId: 'kavya' },
+  { circleId: 'arjun-flatmates', ownerId: 'arjun' },
+];
+
+export function circlesVouchingForMe(): number {
+  return vouches.length;
+}
+
+export function vouchersOfMe(): readonly string[] {
+  return vouches.map((v) => v.ownerId);
 }
