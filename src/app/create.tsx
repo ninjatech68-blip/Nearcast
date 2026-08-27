@@ -1,84 +1,131 @@
 import { type Href, router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
 import { IntentPrimitive } from '@/features/intents/domain/intent';
-
-const primitives: { value: IntentPrimitive; label: string }[] = [
-  { value: 'request', label: 'I need' },
-  { value: 'offer', label: 'I offer' },
-  { value: 'plan', label: 'I want to' },
-];
+import { primitives } from '@/features/native-demo/nearcast-fixtures';
+import {
+  DetailRow,
+  FieldLabel,
+  ProgressBar,
+  SavedNote,
+  Segmented,
+  SymbolIcon,
+  TextArea,
+  TopBar,
+} from '@/features/native-demo/native-ui';
 
 export default function CreateIntentScreen() {
-  const [primitive, setPrimitive] = useState<IntentPrimitive>('request');
+  const [primitive, setPrimitive] = useState<IntentPrimitive>('plan');
   const [statement, setStatement] = useState('');
+  const [area, setArea] = useState<string | undefined>();
+  const [time, setTime] = useState<string | undefined>();
+
   const trimmed = statement.trim();
+  const canProceed = trimmed.length > 0;
 
   function reviewDraft() {
+    if (!canProceed) return;
     Keyboard.dismiss();
-    router.push({ pathname: '/preview', params: { primitive, statement: trimmed } } as unknown as Href);
+    router.push({
+      pathname: '/preview',
+      params: { primitive, statement: trimmed, area: area ?? '', time: time ?? '' },
+    } as unknown as Href);
   }
 
   return (
-    <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <TouchableWithoutFeedback accessible={false} onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
-          <View style={styles.content}>
-            <Text accessibilityRole="header" style={styles.title}>Broadcast</Text>
-            <Text style={styles.prompt}>What do you need, offer, or want to do?</Text>
-            <View style={styles.chips}>
-              {primitives.map((item) => {
-                const selected = primitive === item.value;
-                return (
-                  <Pressable key={item.value} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => setPrimitive(item.value)} style={[styles.chip, selected && styles.chipSelected]}>
-                    <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{item.label}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            <TextInput
-              accessibilityLabel="Intent statement"
-              autoFocus
-              multiline
-              maxLength={500}
-              onChangeText={setStatement}
-              placeholder="Share a clear and specific intent..."
-              placeholderTextColor={tokens.semantic.color.textMuted}
-              style={styles.composer}
-              textAlignVertical="top"
-              value={statement}
+    <SafeAreaView edges={['top']} style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <TopBar
+          title="New intent"
+          onBack={() => router.back()}
+          rightAction={
+            <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => router.back()} style={styles.iconTap}>
+              <SymbolIcon color={tokens.semantic.color.textPrimary} fallback="×" name="xmark" size={22} />
+            </Pressable>
+          }
+        />
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+        >
+          <ProgressBar steps={2} currentStep={1} />
+
+          <Text accessibilityRole="header" style={styles.question}>
+            What do you need, offer, or want to do?
+          </Text>
+
+          <Segmented<IntentPrimitive>
+            label="Intent primitive"
+            value={primitive}
+            onChange={setPrimitive}
+            options={primitives.map((p) => ({ value: p.value as IntentPrimitive, label: p.label }))}
+          />
+
+          <FieldLabel>Your intent</FieldLabel>
+          <TextArea
+            accessibilityLabel="Intent statement"
+            value={statement}
+            onChange={setStatement}
+            placeholder="Share a clear and specific intent."
+            maxLength={280}
+          />
+
+          <View style={styles.detailBlock}>
+            <DetailRow
+              icon="mappin.and.ellipse"
+              fallback="📍"
+              label={area ?? 'Add approximate area'}
+              value={area ? undefined : undefined}
+              onPress={() => setArea('Indiranagar area')}
             />
-            <Text style={styles.counter}>{statement.length}/500</Text>
-            <View style={styles.privacyNote}>
-              <Text style={styles.privacyTitle}>You choose who can see this.</Text>
-              <Text style={styles.privacyBody}>Contact details stay hidden. You will review reach and expiry before publishing.</Text>
-            </View>
+            <DetailRow
+              icon="clock"
+              fallback="⏱"
+              label={time ?? 'Add time'}
+              onPress={() => setTime('Tonight, 8:00 PM')}
+            />
           </View>
-          <View style={styles.footer}><Button label="Review intent" onPress={reviewDraft} disabled={trimmed.length === 0} /></View>
+
+          <SavedNote label="Draft saved privately" />
         </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+
+        <View style={styles.footer}>
+          <Button
+            label="Review intent"
+            onPress={reviewDraft}
+            disabled={!canProceed}
+            trailingIcon={<SymbolIcon color="#FFFFFF" fallback=">" name="chevron.right" size={16} />}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  scrollContent: { flexGrow: 1 },
-  content: { flex: 1, padding: 20 },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 17, lineHeight: 23, textAlign: 'center', color: tokens.semantic.color.textPrimary },
-  prompt: { marginTop: 34, fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
-  chips: { flexDirection: 'row', gap: 0, marginTop: 18, overflow: 'hidden', borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSurface },
-  chip: { flex: 1, minHeight: 42, paddingHorizontal: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.semantic.color.backgroundSurface },
-  chipSelected: { borderColor: tokens.semantic.color.actionPrimary, backgroundColor: tokens.semantic.color.trustSurface },
-  chipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
-  chipTextSelected: { color: tokens.semantic.color.trustText },
-  composer: { minHeight: 180, marginTop: 18, padding: 16, borderRadius: 14, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface, fontFamily: 'Manrope_400Regular', fontSize: 17, lineHeight: 25, color: tokens.semantic.color.textPrimary },
-  counter: { marginTop: 6, textAlign: 'right', fontFamily: 'Manrope_400Regular', fontSize: 12, color: tokens.semantic.color.textMuted },
-  privacyNote: { marginTop: 22, padding: 16, borderRadius: 14, backgroundColor: tokens.semantic.color.trustSurface },
-  privacyTitle: { fontFamily: 'Manrope_600SemiBold', color: tokens.semantic.color.trustText },
-  privacyBody: { marginTop: 4, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.trustText },
-  footer: { marginTop: 'auto', padding: 20, borderTopWidth: 1, borderTopColor: tokens.semantic.color.borderDefault },
+  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  keyboard: { flex: 1 },
+  content: { paddingHorizontal: 18, paddingBottom: 24, paddingTop: 6 },
+  question: {
+    fontFamily: 'Manrope_700Bold',
+    fontSize: 26,
+    lineHeight: 33,
+    letterSpacing: -0.9,
+    color: tokens.semantic.color.textPrimary,
+    marginBottom: 19,
+  },
+  detailBlock: { marginTop: 6 },
+  footer: {
+    padding: 18,
+    paddingBottom: 24,
+    borderTopWidth: 1,
+    borderTopColor: tokens.semantic.color.borderTabs,
+    backgroundColor: tokens.semantic.color.backgroundSurface,
+  },
+  iconTap: { padding: 6 },
 });

@@ -2,13 +2,16 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { render, userEvent } from '@testing-library/react-native';
 
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
 const mockBack = jest.fn();
 
 jest.mock('expo-router', () => ({
   router: {
     back: () => mockBack(),
     push: (...args: unknown[]) => mockPush(...args),
+    replace: (...args: unknown[]) => mockReplace(...args),
   },
+  useLocalSearchParams: () => ({ id: 'badminton-tonight' }),
   Redirect: ({ href }: { href: string }) => `Redirect:${href}`,
 }));
 
@@ -32,22 +35,25 @@ const RequestSheetScreen = require('./app/request/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ActivityScreen = require('./app/(tabs)/activity').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const MessagesScreen = require('./app/(tabs)/messages').default;
+const MyIntentsScreen = require('./app/(tabs)/my-intents').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const YouScreen = require('./app/(tabs)/you').default;
 
 describe('native page set', () => {
   beforeEach(() => {
     mockPush.mockReset();
+    mockReplace.mockReset();
     mockBack.mockReset();
   });
 
-  it('opens intent detail from the For You feed', async () => {
+  it('opens intent detail from the For you feed', async () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
 
-    expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
+    expect(view.getByText('Two more players for badminton after work')).toBeTruthy();
+    expect(view.getAllByText('Why you’re seeing this').length).toBeGreaterThan(0);
 
-    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
+    await user.press(view.getByRole('button', { name: 'Open intent: Two more players for badminton after work' }));
 
     expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
   });
@@ -61,6 +67,7 @@ describe('native page set', () => {
     expect(view.getByText('Aarav')).toBeTruthy();
     expect(view.getByText('Area approximate')).toBeTruthy();
     expect(view.getByText('Exact place hidden')).toBeTruthy();
+    expect(view.getByText('Why you’re seeing this')).toBeTruthy();
 
     await user.press(view.getByRole('button', { name: 'Open broadcaster profile for Aarav' }));
     expect(mockPush).toHaveBeenCalledWith('/profile/aarav');
@@ -74,7 +81,7 @@ describe('native page set', () => {
 
     expect(view.getByText('Profile')).toBeTruthy();
     expect(view.getByText('One trusted connection')).toBeTruthy();
-    expect(view.getByText('Contact details hidden until accepted')).toBeTruthy();
+    expect(view.getByText('Hidden until accepted')).toBeTruthy();
     expect(view.queryByText('Trust score')).toBeNull();
     expect(view.queryByText('followers')).toBeNull();
   });
@@ -88,13 +95,24 @@ describe('native page set', () => {
     expect(view.getByPlaceholderText('Add a short note')).toBeTruthy();
   });
 
-  it('shows minimal activity and messages tabs', async () => {
+  it('shows the activity tab with attention items and filters', async () => {
     const activity = await render(<ActivityScreen />);
-    expect(activity.getByText('No responses yet')).toBeTruthy();
-    expect(activity.getByText('Two people for badminton tonight')).toBeTruthy();
+    expect(activity.getByText('Activity')).toBeTruthy();
+    expect(activity.getByText('Needs your attention')).toBeTruthy();
+    expect(activity.getByText('Riya responded')).toBeTruthy();
+    expect(activity.getByText('Your intents')).toBeTruthy();
+  });
 
-    const messages = await render(<MessagesScreen />);
-    expect(messages.getByText('Messages')).toBeTruthy();
-    expect(messages.getByText('Messages appear after acceptance')).toBeTruthy();
+  it('lists the user’s broadcasts on the my intents tab', async () => {
+    const view = await render(<MyIntentsScreen />);
+    expect(view.getByText('My intents')).toBeTruthy();
+    expect(view.getByText('Badminton after work')).toBeTruthy();
+  });
+
+  it('shows the settings-anchored You tab', async () => {
+    const view = await render(<YouScreen />);
+    expect(view.getByText('You')).toBeTruthy();
+    expect(view.getByText('Privacy')).toBeTruthy();
+    expect(view.getByText('Trusted circles')).toBeTruthy();
   });
 });

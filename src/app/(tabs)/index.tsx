@@ -1,39 +1,95 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { tokens } from '@/design-system/tokens';
-import { featuredIntent, secondIntent } from '@/features/native-demo/nearcast-fixtures';
-import { Group, IconLine, IntentCard, ScreenTitle, Section } from '@/features/native-demo/native-ui';
+import { featuredIntent, secondIntent, thirdIntent } from '@/features/native-demo/nearcast-fixtures';
+import {
+  CardSkeleton,
+  EmptyState,
+  IntentCard,
+  ScreenHeader,
+  StatusBanner,
+} from '@/features/native-demo/native-ui';
+
+type FeedState = 'ready' | 'loading' | 'empty' | 'error' | 'offline';
 
 export default function HomeScreen() {
+  const [refreshing, setRefreshing] = useState(false);
+  const [state] = useState<FeedState>('ready');
+
+  const intents = useMemo(() => [featuredIntent, secondIntent, thirdIntent], []);
+
+  function onRefresh() {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 800);
+  }
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.titleRow}>
-          <ScreenTitle>For You</ScreenTitle>
-          <Text style={styles.filterIcon}>...</Text>
-        </View>
+      <ScreenHeader
+        title="For you"
+        actionIcon="person.crop.circle"
+        actionFallback="Y"
+        actionLabel="Open your profile"
+        onAction={() => router.push('/(tabs)/you')}
+      />
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={tokens.semantic.color.actionPrimary} />}
+      >
+        <Text style={styles.lead}>Relevant intents from nearby trusted networks.</Text>
 
-        <View style={styles.filterRow}>
-          <View style={styles.filterPill}><Text style={styles.filterText}>Nearby</Text></View>
-          <View style={styles.filterPill}><Text style={styles.filterText}>All intents</Text></View>
-        </View>
+        {state === 'offline' ? (
+          <StatusBanner
+            tone="warning"
+            title="You are offline"
+            body="You will see the latest intents once you reconnect."
+            icon="wifi.slash"
+            fallback="!"
+          />
+        ) : null}
 
-        <Section title="Around you">
+        {state === 'loading' ? (
           <View style={styles.cardStack}>
-            <IntentCard intent={featuredIntent} onOpen={() => router.push('/intent/badminton-tonight')} />
-            <IntentCard intent={secondIntent} onOpen={() => router.push('/intent/walk-and-talk')} />
+            <CardSkeleton />
+            <CardSkeleton />
           </View>
-        </Section>
+        ) : null}
 
-        <Section>
-          <Group compact>
-            <View style={styles.privacyRow}>
-              <IconLine fallback="P" icon="lock" text="Private by design. Origins, exact places, and contact details stay hidden until permission changes." />
-            </View>
-          </Group>
-        </Section>
+        {state === 'error' ? (
+          <EmptyState
+            icon="exclamationmark.triangle"
+            fallback="!"
+            title="Something went wrong"
+            body="We couldn’t load your feed. Pull down to try again."
+          />
+        ) : null}
+
+        {state === 'empty' ? (
+          <EmptyState
+            icon="tray"
+            fallback="·"
+            title="Nothing to show yet"
+            body="Trusted intents nearby will appear here. Broadcast one to get things going."
+            actionLabel="Broadcast intent"
+            onAction={() => router.push('/create')}
+          />
+        ) : null}
+
+        {state === 'ready' ? (
+          <View style={styles.cardStack}>
+            {intents.map((intent) => (
+              <IntentCard
+                key={intent.id}
+                intent={intent}
+                onOpen={() => router.push(`/intent/${intent.id}`)}
+                onPrimaryPress={() => router.push(`/request/${intent.id}`)}
+              />
+            ))}
+          </View>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -41,12 +97,15 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  filterIcon: { fontFamily: 'Manrope_700Bold', fontSize: 20, color: tokens.semantic.color.textSecondary },
-  filterRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
-  filterPill: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSurface },
-  filterText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
-  cardStack: { gap: 12 },
-  privacyRow: { paddingHorizontal: 16, paddingBottom: 14 },
+  content: { paddingHorizontal: 18, paddingTop: 6, paddingBottom: 30 },
+  lead: {
+    fontFamily: 'Manrope_400Regular',
+    fontSize: 16,
+    lineHeight: 23,
+    color: tokens.semantic.color.textSecondary,
+    marginTop: 1,
+    marginBottom: 18,
+    maxWidth: 320,
+  },
+  cardStack: { gap: 14 },
 });

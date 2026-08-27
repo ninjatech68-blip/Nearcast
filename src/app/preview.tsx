@@ -1,79 +1,178 @@
-import { useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tokens } from '@/design-system/tokens';
 import { Button } from '@/design-system/components/button';
-import { Group, PrimitiveChip, Section, SymbolIcon } from '@/features/native-demo/native-ui';
+import { tokens } from '@/design-system/tokens';
+import { INTENT_REACH_LEVELS, type IntentReachLevel } from '@/features/intents/domain/intent';
+import { reachLevels } from '@/features/native-demo/nearcast-fixtures';
+import {
+  DividerHairline,
+  Group,
+  PrimitiveChip,
+  ProgressBar,
+  Section,
+  StatusBanner,
+  SymbolIcon,
+  TopBar,
+} from '@/features/native-demo/native-ui';
 
-const reachLevels = [
-  ['Trusted circles', 'People you are connected to'],
-  ['Adjacent network', 'People connected to your network'],
-  ['Relevant nearby', 'People near you with shared context'],
-  ['Broader approved', 'People in approved neighborhoods'],
-] as const;
+const labelForPrimitive: Record<string, string> = {
+  request: 'I need',
+  offer: 'I offer',
+  plan: 'I want to',
+};
 
 export default function PreviewIntentScreen() {
-  const { primitive = 'request', statement = '' } = useLocalSearchParams<{ primitive?: string; statement?: string }>();
-  const primitiveLabel = primitive === 'offer' ? 'I offer' : primitive === 'plan' ? 'I want to' : 'I need';
+  const params = useLocalSearchParams<{ primitive?: string; statement?: string; area?: string; time?: string }>();
+  const primitive = params.primitive ?? 'plan';
+  const statement = params.statement ?? '';
+  const area = params.area || 'Add later';
+  const time = params.time || 'Expires today, 10:00 PM';
+
+  const [reach, setReach] = useState<IntentReachLevel>('adjacent_network');
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [error, setError] = useState<string | undefined>();
+
+  function broadcast() {
+    setError(undefined);
+    setBroadcasting(true);
+    setTimeout(() => {
+      setBroadcasting(false);
+      router.replace('/(tabs)/my-intents');
+    }, 700);
+  }
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
-      <Text accessibilityRole="header" style={styles.title}>Review</Text>
+    <SafeAreaView edges={['top']} style={styles.safeArea}>
+      <TopBar title="Review intent" onBack={() => router.back()} />
+      <ScrollView contentContainerStyle={styles.content}>
+        <ProgressBar steps={2} currentStep={2} />
 
-      <Section>
-        <Group>
-          <View style={styles.previewCard}>
-            <PrimitiveChip label={primitiveLabel} />
-            <Text style={styles.statement}>{statement || 'Your intent preview will appear here.'}</Text>
-            <View style={styles.expiryRow}>
-              <SymbolIcon fallback="E" name="clock" size={16} />
-              <Text style={styles.meta}>Expires today, 10:00 PM</Text>
-            </View>
-          </View>
-        </Group>
-      </Section>
-
-      <Section title="Who can see this?">
-        <Group>
-          {reachLevels.map(([title, body], index) => {
-            const selected = title === 'Adjacent network';
-            return (
-              <View key={title}>
-                <View style={styles.reachRow}>
-                  <View style={styles.reachCopy}>
-                    <Text style={styles.reachTitle}>{title}</Text>
-                    <Text style={styles.reachBody}>{body}</Text>
-                  </View>
-                  <View style={[styles.radio, selected && styles.radioSelected]}>{selected ? <View style={styles.radioDot} /> : null}</View>
+        <Section>
+          <Group>
+            <View style={styles.previewCard}>
+              <PrimitiveChip label={labelForPrimitive[primitive] ?? 'I want to'} />
+              <Text style={styles.statement}>{statement || 'Your intent preview will appear here.'}</Text>
+              <View style={styles.metaRow}>
+                <View style={styles.metaItem}>
+                  <SymbolIcon color={tokens.semantic.color.textSecondary} fallback="📍" name="mappin.and.ellipse" size={15} />
+                  <Text style={styles.metaText}>{area}</Text>
                 </View>
-                {index < reachLevels.length - 1 ? <View style={styles.divider} /> : null}
+                <View style={styles.metaItem}>
+                  <SymbolIcon color={tokens.semantic.color.textSecondary} fallback="⏱" name="clock" size={15} />
+                  <Text style={styles.metaText}>{time}</Text>
+                </View>
               </View>
-            );
-          })}
-        </Group>
-      </Section>
+            </View>
+          </Group>
+        </Section>
 
+        <Section title="Who can see this?">
+          <Group>
+            {reachLevels.map((level, index) => {
+              const selected = level.value === reach;
+              return (
+                <View key={level.value}>
+                  <Pressable
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={level.title}
+                    onPress={() => setReach(level.value as IntentReachLevel)}
+                    style={styles.reachRow}
+                  >
+                    <View style={styles.reachCopy}>
+                      <Text style={styles.reachTitle}>{level.title}</Text>
+                      <Text style={styles.reachBody}>{level.body}</Text>
+                    </View>
+                    <View style={[styles.radio, selected && styles.radioSelected]}>
+                      {selected ? <View style={styles.radioDot} /> : null}
+                    </View>
+                  </Pressable>
+                  {index < reachLevels.length - 1 ? <DividerHairline inset={14} /> : null}
+                </View>
+              );
+            })}
+          </Group>
+          {!INTENT_REACH_LEVELS.includes(reach) ? (
+            <Text style={styles.helpText}>Choose one option to continue.</Text>
+          ) : null}
+        </Section>
+
+        <Section>
+          <StatusBanner
+            tone="trust"
+            title="Contact stays hidden"
+            body="People will see your first name and area. Exact place and contact appear only after mutual acceptance."
+            icon="lock"
+            fallback="🔒"
+          />
+        </Section>
+
+        {error ? (
+          <Section>
+            <StatusBanner tone="danger" title="Couldn’t broadcast" body={error} icon="exclamationmark.triangle" fallback="!" />
+          </Section>
+        ) : null}
+      </ScrollView>
       <View style={styles.footer}>
-        <Button label="Broadcast intent" onPress={() => undefined} />
+        <Button
+          label="Broadcast intent"
+          onPress={broadcast}
+          loading={broadcasting}
+          disabled={!statement}
+        />
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { flexGrow: 1, padding: 20, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 17, lineHeight: 23, textAlign: 'center', color: tokens.semantic.color.textPrimary },
-  previewCard: { gap: 12, padding: 14 },
-  statement: { fontFamily: 'Manrope_700Bold', fontSize: 18, lineHeight: 24, color: tokens.semantic.color.textPrimary },
-  expiryRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  meta: { fontFamily: 'Manrope_400Regular', fontSize: 13, color: tokens.semantic.color.textMuted },
-  reachRow: { minHeight: 70, flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 14, paddingVertical: 12 },
+  safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  content: { padding: 18, paddingBottom: 12 },
+  previewCard: { padding: 16, gap: 10 },
+  statement: {
+    fontFamily: 'Manrope_700Bold',
+    fontSize: 18,
+    lineHeight: 24,
+    letterSpacing: -0.4,
+    color: tokens.semantic.color.textPrimary,
+  },
+  metaRow: { flexDirection: 'row', gap: 14, flexWrap: 'wrap' },
+  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  metaText: { fontFamily: 'Manrope_400Regular', fontSize: 12, color: tokens.semantic.color.textSecondary },
+
+  reachRow: {
+    minHeight: 66,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
   reachCopy: { flex: 1 },
-  reachTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
-  reachBody: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.textMuted },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, alignItems: 'center', justifyContent: 'center' },
+  reachTitle: { fontFamily: 'Manrope_700Bold', fontSize: 14, color: tokens.semantic.color.textPrimary },
+  reachBody: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 12, lineHeight: 17, color: tokens.semantic.color.textMuted },
+  radio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    borderColor: tokens.semantic.color.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   radioSelected: { borderColor: tokens.semantic.color.actionPrimary },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: tokens.semantic.color.actionPrimary },
-  divider: { height: 1, marginLeft: 14, backgroundColor: tokens.semantic.color.borderDefault },
-  footer: { marginTop: 'auto', paddingTop: 24 },
+
+  helpText: { marginTop: 8, fontFamily: 'Manrope_400Regular', fontSize: 12, color: tokens.semantic.color.dangerText },
+
+  footer: {
+    padding: 18,
+    paddingBottom: 24,
+    borderTopWidth: 1,
+    borderTopColor: tokens.semantic.color.borderTabs,
+    backgroundColor: tokens.semantic.color.backgroundSurface,
+  },
 });

@@ -32,15 +32,15 @@ jest.mock('expo-symbols', () => {
 const TabsLayout = require('./app/(tabs)/_layout').default;
 
 describe('TabsLayout', () => {
-  it('uses native tabs for primary mobile navigation', async () => {
+  it('uses native tabs with the design-locked route set', async () => {
     const view = await render(<TabsLayout />);
 
     expect(view.getByTestId('native-tabs')).toBeTruthy();
     expect(tabScreens).toEqual([
-      { name: 'index', title: 'For You' },
-      { name: 'activity', title: 'Activity' },
+      { name: 'index', title: 'For you' },
+      { name: 'my-intents', title: 'My intents' },
       { name: 'broadcast', title: 'Broadcast' },
-      { name: 'messages', title: 'Messages' },
+      { name: 'activity', title: 'Activity' },
       { name: 'you', title: 'You' },
     ]);
   });

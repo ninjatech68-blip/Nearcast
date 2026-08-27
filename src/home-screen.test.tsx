@@ -22,20 +22,20 @@ jest.mock('expo-symbols', () => {
 const HomeScreen = require('./app/(tabs)/index').default;
 
 describe('HomeScreen', () => {
-  it('uses a native-style For You feed as the home page', async () => {
+  it('uses the distilled For you feed as the home page', async () => {
     const view = await render(<HomeScreen />);
 
-    expect(view.getByText('For You')).toBeTruthy();
-    expect(view.getByText('Around you')).toBeTruthy();
-    expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
+    expect(view.getByText('For you')).toBeTruthy();
+    expect(view.getByText('Relevant intents from nearby trusted networks.')).toBeTruthy();
+    expect(view.getByText('Two more players for badminton after work')).toBeTruthy();
+    expect(view.getAllByText('Why you’re seeing this').length).toBeGreaterThan(0);
   });
 
   it('opens intent detail from the primary feed card', async () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
+    await user.press(view.getByRole('button', { name: 'Open intent: Two more players for badminton after work' }));
 
     expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
   });
