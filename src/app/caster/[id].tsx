@@ -14,6 +14,7 @@ import { casters } from '@/features/casts/fixtures';
 import { useFeedCasts } from '@/features/casts/store';
 import { addToCircle, getCircles, hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
 import { trustLink } from '@/features/trust/domain/trust';
+import { useSharedHistoryWith } from '@/features/attendance/store';
 
 /**
  * the caster sheet: safety and trust facts, nothing social.
@@ -35,6 +36,11 @@ export default function CasterProfileScreen() {
   // are adding to another, not starting a new vouch).
   const metWith = caster ? hasReceiptWith(caster.id) : false;
   const canVouch = inCircles.length > 0 || metWith;
+  // computed history from the attendance store — plans you've both
+  // been in and their outcomes. hooks must run every render, so the
+  // call is unconditional; caster.id is empty when the profile is
+  // missing and the selector returns zeros in that case.
+  const shared = useSharedHistoryWith(caster?.id ?? '__none__');
 
   function addTo() {
     if (!caster) return;
@@ -101,6 +107,12 @@ export default function CasterProfileScreen() {
         </View>
         <Text style={styles.vouch}>{caster.vouchLine}</Text>
 
+        {shared.plans > 0 ? (
+          <Text style={styles.withYou}>
+            with you: {sharedLine(shared)}
+          </Text>
+        ) : null}
+
         {canVouch ? (
           <Pressable accessibilityRole="button" accessibilityLabel={`vouch for ${caster.name}`} onPress={addTo} style={styles.addRow}>
             <Text style={styles.addText}>
@@ -152,12 +164,22 @@ export default function CasterProfileScreen() {
   );
 }
 
+function sharedLine(shared: { plans: number; receipts: number; flakes: number }): string {
+  const plans = `${shared.plans} ${shared.plans === 1 ? 'plan' : 'plans'}`;
+  const parts: string[] = [];
+  if (shared.receipts > 0) parts.push(`${shared.receipts} confirmed`);
+  if (shared.flakes > 0) parts.push(`${shared.flakes} flake${shared.flakes === 1 ? '' : 's'}`);
+  if (parts.length === 0) parts.push('awaiting reports');
+  return `${plans} · ${parts.join(' · ')}`;
+}
+
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
   meta: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
   receipts: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
   receiptsLine: { ...tokens.typography.meta, color: tokens.semantic.color.ink, flex: 1 },
   vouch: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 8 },
+  withYou: { ...tokens.typography.meta, color: tokens.semantic.color.ink, marginTop: 8 },
   addRow: { minHeight: 44, justifyContent: 'center', marginTop: 12 },
   addText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
   addMore: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginTop: 2 },

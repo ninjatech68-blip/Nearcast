@@ -67,6 +67,7 @@ export default function RootLayout() {
       <Stack.Screen name="circles" options={{ presentation: 'modal' }} />
       <Stack.Screen name="chat/[id]" options={{ presentation: 'card' }} />
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="reflect/[id]" options={{ presentation: 'modal' }} />
       </Stack>
     </>
   );

@@ -78,9 +78,12 @@ jest.mock('react-native-maps', () => {
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { resetCastStore } = require('./features/casts/store');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { resetAttendanceStore } = require('./features/attendance/store');
 
 beforeEach(() => {
   resetCastStore();
+  resetAttendanceStore();
 });
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports

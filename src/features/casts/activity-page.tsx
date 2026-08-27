@@ -12,6 +12,7 @@ import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { yourMove, type ActivityItem } from '@/features/casts/fixtures';
 import { useMyCasts } from '@/features/casts/store';
+import { usePendingReports } from '@/features/attendance/store';
 
 import { AvatarDot } from './avatar-dot';
 
@@ -23,6 +24,7 @@ export function ActivityPage() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const yourCasts = useMyCasts();
+  const pending = usePendingReports('me');
   const [moveItems, setMoveItems] = useState<readonly ActivityItem[]>(yourMove);
   const [archived, setArchived] = useState<ActivityItem | null>(null);
 
@@ -57,6 +59,21 @@ export function ActivityPage() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ paddingBottom: tokens.component.posterBottomReserve }} showsVerticalScrollIndicator={false}>
+          {pending.length > 0 ? (
+            <>
+              <Text style={styles.sectionHot}>HOW DID IT GO?</Text>
+              {pending.map((plan) => (
+                <Row
+                  key={plan.id}
+                  title={plan.title}
+                  sub={`${plan.area} · reflect so receipts and flakes can settle`}
+                  right={<Tag label="reflect" tone="hot" />}
+                  onPress={() => router.push(`/reflect/${plan.id}`)}
+                />
+              ))}
+            </>
+          ) : null}
+
           <Text style={styles.sectionHot}>YOUR MOVE</Text>
           {moveItems.length === 0 && !archived ? (
             <View style={styles.quietBlock}>
