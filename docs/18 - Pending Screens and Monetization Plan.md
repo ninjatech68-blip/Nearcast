@@ -39,36 +39,58 @@ Explicitly not building: public profiles, follower anything, a browse/search sur
 
 ## Part 2 — Business model
 
+Three revenue lines, one per payer: businesses pay for showed-up customers, regular users pay for capacity and identity, hosts pay for infrastructure. Sequenced by the density each needs.
+
 ### What Nearcast never sells (the moat is trust)
 
-- No ads. Intent data is the most monetizable and most betraying data there is; the first ad ends the product.
-- No paid reach, boosts, or placement. Reach expands only by informed user action (product law); selling it fabricates relevance.
+- No third-party ad networks, and no targeting on intent content, ever. What people cast is never an advertising signal.
+- No paid reach for people, no boosts, no placement. Human reach expands only by informed user action (product law); selling it fabricates relevance.
+- No unlabeled promotion. Anything commercial is visibly a DEAL in its own color, mutable per business, and capped.
 - No paywalled safety, privacy, or trust features. Receipts, vouches, blocking, and reveal controls are free forever.
-- No engagement rent: nothing that charges to avoid a bad outcome (streak repair, expiry extensions bought under pressure).
+- No engagement rent: nothing that charges to avoid a bad outcome (streak repair, panic expiry extensions).
 
-These four are marketing as much as ethics: "we can't be paid to show you to strangers" is a sentence competitors cannot say.
+### Line 1 — Deal casts: local perishable inventory (businesses pay)
 
-### The recommendation: charge the host, keep joining free forever
+Local businesses hold inventory that dies on the clock: the empty 3–5pm court, the end-of-day bakery shelf, the dead-Tuesday salon chair. Expiring inventory is native to a product whose core mechanic is "gone at 6pm". So businesses don't buy attention; they cast deals, and the trust system applies to them at full strength.
 
-In every plans product, one person does the work: books the court, fronts the money, chases confirmations. That person gets 10x the value and already pays real money (court fees, tickets) through the app's flow. Joiners are the network; they stay free.
+**Mechanics:**
+- A fourth verb, **DEAL**, with its own color — never dressed as a human cast. From verified local businesses only, geo-bound to the areas a user already approved.
+- Hard frequency cap (at most 1 deal per 10 casts in the feed) plus a per-business mute that is permanent and one tap. The "why you" line stays honest: `why you: 400m from your area · deals: on`.
+- Businesses get receipts too, public: redemptions, honored rate, flake rate. A business that posts bait builds a visible record of it.
+- Claiming a deal is a join; redeeming it is the both-sides confirm. Same plan-room flow, same receipt event.
 
-**Nearcast Standing** (working name) — for people who run things:
+**Pricing — pay per person who shows up, never per impression:**
+- ₹X per confirmed redemption (category-priced; a ₹40 coffee redemption prices differently than a ₹600 court slot). Zero showed-up = zero owed, which makes the sales pitch one sentence: *you pay only when a customer is standing in your shop.*
+- Plus a flat verification fee (one-time) and an optional storefront subscription (₹499–999/mo) for standing deals, scheduling, and redemption analytics.
+- This is Nearcast charging for its own core metric — plans made real — so the incentive to inflate impressions never exists structurally.
 
-1. **Standing casts.** "Badminton, every tuesday, 7pm" recasts itself to the same reach; regulars can hold a spot. This is the anchor feature: it turns a cast into an institution.
-2. **Spots + waitlist.** Set headcount; the cast auto-fills, waitlist promotes on a drop-out, everyone gets honest state ("you're 2nd in line").
-3. **Collect the split.** "₹80 each" collected at accept (UPI first). Nearcast fronts nothing; it moves the awkward money conversation into the flow. Later, a small convenience fee on collection is the second revenue line.
-4. **Host record.** The host's receipts get depth: plans run, fill rate, regulars. Private by default like all of Signal; shareable as a recap-style poster if the host wants.
-5. **Co-hosts.** A standing cast can name a second host who can accept and confirm.
+**Why businesses retain:** performance pricing means the bill is proof of value; churn only happens when deals stop working, which is the honest outcome. **Why users tolerate it:** deals are opt-outable per business and globally, capped, labeled, and genuinely local-cheap — the badminton group actually wants the off-peak court rate.
 
-Pricing hypothesis: ₹199/month or ₹1,499/year in India; $4.99/$39 elsewhere. One tier, no feature ladder. First standing cast free for a month so the habit forms before the paywall.
+**The line this walks:** deal casts are commerce in the feed, full stop. What keeps them on the right side: the cap, the label, the mute, geo-binding to user-approved areas, targeting on location only (never on cast content or history), and business receipts making bad actors self-evident. If any of those six erodes, this line is ads and the product is dead. They go in the community policy as invariants, not settings.
 
-### Why this retains (the honest version)
+### Line 2 — Nearcast Plus: capacity and identity (regular users pay)
 
-Subscription churn dies when cancellation breaks a commitment to other people. A host who cancels doesn't lose an app feature; their Tuesday game loses its infrastructure — the recurring cast, the held spots, the waitlist, the split collection — and six regulars notice. The value also re-proves itself on a weekly physical cadence, which is the opposite of the "forgot I subscribed" failure mode. This is positive lock-in: the cost of leaving is real utility owed to real people, never guilt mechanics, which stay banned.
+Free covers the whole trust loop: cast, join, coordinate, confirm, block. Plus sells more room and more self, never more reach into other people's feeds:
 
-### Sequencing and validation
+1. **Plan ahead.** Free casts live same-day; Plus casts up to 7 days out ("badminton saturday" cast on tuesday). The single most-requested capacity in any plans product.
+2. **More live casts.** Free: 2 at a time. Plus: 6. Pure capacity, no ranking effect.
+3. **More areas + travel mode.** Free: 2 approved areas. Plus: 5, plus a temporary "listening in {city}" while traveling. This widens what *you hear*, not who hears you — consumption-side, so it breaks no reach law.
+4. **Poster styles.** A small set of cast poster treatments (textures, type scale variants within the system) and recap themes. Identity spend is the most durable Gen Z purchase (the Nitro pattern); it distorts nothing because color still encodes the verb.
+5. **Skip history.** See and un-skip the last 30 casts you passed on.
 
-Do not build any of this until the free loop shows one number: **weekly plans-made-real per active user**. Monetization work starts when the alpha shows hosts running ≥2 plans/week organically. Then instrument three questions: what share of plans have a repeat host (ceiling for Standing), what share involve money fronted by one person (ceiling for Collect), and how many casts die from headcount chaos (Spots demand). Each Standing feature maps to one of those measurements; build in the order the numbers rank them.
+Pricing: ₹99/month or ₹699/year India; $2.99/$19.99 elsewhere. **Retention:** plan-ahead and travel mode embed into the weekly habit (cancel and next week's plans get harder); poster styles retain the way identity always does — quietly.
+
+### Line 3 — Nearcast Standing: host infrastructure (organizers pay)
+
+Unchanged from the original proposal, now positioned as the top tier (includes Plus): standing casts that recast weekly with held spots, headcount + waitlist, split collection at accept (UPI; a convenience fee on collection is the fourth revenue line), host record, co-hosts. ₹249/month including Plus. Retention argument stands: cancelling breaks infrastructure that six regulars depend on — utility owed to real people, never guilt.
+
+### Sequencing — by the density each line needs
+
+1. **Plus first** (any density): capacity limits and cosmetics work with 100 users; lowest ops, validates willingness to pay.
+2. **Standing second** (host maturity): gate on hosts running ≥2 plans/week organically; instrument repeat-host share, money-fronted share, and headcount-chaos deaths to rank its features.
+3. **Deals last** (neighborhood density): a deal cast needs enough users inside one area to redeem — gate on an area crossing ~500 weekly-active users before selling the first business. Selling deals into an empty neighborhood burns the merchant and the pitch.
+
+Nothing monetizes until the free loop shows the one number that matters: **weekly plans-made-real per active user.**
 
 ## Change Log
 
