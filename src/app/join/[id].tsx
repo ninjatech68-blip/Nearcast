@@ -47,6 +47,7 @@ export default function JoinScreen() {
           />
         </View>
         <SheetNote>{`${name} gets your first name + this note. nothing else.`}</SheetNote>
+        <SheetNote>{`first time with ${name.toLowerCase()}? somewhere public is smart.`}</SheetNote>
         <View style={styles.actions}>
           {state === 'sent' ? (
             <View style={styles.sentRow}>

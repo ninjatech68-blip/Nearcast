@@ -28,6 +28,7 @@ export function Poster({
   tagLabel,
   casterLine,
   onOpenCaster,
+  onWhyPress,
 }: {
   cast: PosterData;
   topRight?: ReactNode;
@@ -38,6 +39,7 @@ export function Poster({
   tagLabel?: string;
   casterLine?: string;
   onOpenCaster?: () => void;
+  onWhyPress?: () => void;
 }) {
   const insets = useSafeAreaInsets();
   const fg = verbForeground[cast.verb];
@@ -90,7 +92,15 @@ export function Poster({
           </Pressable>
         ) : null}
         <Text style={[styles.meta, casterLine ? styles.metaTight : null, { color: fg }]}>{meta}</Text>
-        {cast.why ? <Text style={[styles.why, { color: muted }]}>why you: {cast.why}</Text> : null}
+        {cast.why ? (
+          onWhyPress ? (
+            <Pressable accessibilityRole="button" accessibilityLabel="why you're seeing this" hitSlop={8} onPress={onWhyPress}>
+              <Text style={[styles.why, { color: muted }]}>why you: {cast.why} ›</Text>
+            </Pressable>
+          ) : (
+            <Text style={[styles.why, { color: muted }]}>why you: {cast.why}</Text>
+          )
+        ) : null}
         {children ? <View style={styles.bar}>{children}</View> : null}
       </View>
     </View>

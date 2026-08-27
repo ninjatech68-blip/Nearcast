@@ -7,14 +7,27 @@ import { fontFamily, tokens } from '@/design-system/tokens';
  * sheet content shell. presentation (drag-dismiss) comes from the native
  * pageSheet route; this renders the inside, grabber included.
  */
-export function SheetShell({ title, children }: { title?: string; children: ReactNode }) {
+export function SheetShell({
+  title,
+  accessory,
+  children,
+}: {
+  title?: string;
+  accessory?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <View style={styles.shell}>
       <View style={styles.grabber} />
-      {title ? (
-        <Text accessibilityRole="header" style={styles.title}>
-          {title}
-        </Text>
+      {title || accessory ? (
+        <View style={styles.head}>
+          {title ? (
+            <Text accessibilityRole="header" style={styles.title}>
+              {title}
+            </Text>
+          ) : null}
+          {accessory}
+        </View>
       ) : null}
       {children}
     </View>
@@ -42,12 +55,14 @@ const styles = StyleSheet.create({
     backgroundColor: tokens.semantic.color.hairlineOnCream,
     marginBottom: 18,
   },
+  head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 14 },
   title: {
     fontFamily: fontFamily.display,
     fontSize: 30,
     lineHeight: 32,
     letterSpacing: -0.6,
     color: tokens.semantic.color.ink,
+    flexShrink: 1,
   },
   note: {
     ...tokens.typography.metaSmall,

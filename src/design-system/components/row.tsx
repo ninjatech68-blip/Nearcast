@@ -10,18 +10,21 @@ import { fontFamily, tokens } from '@/design-system/tokens';
 export function Row({
   title,
   sub,
+  left,
   right,
   onPress,
   onLongPress,
 }: {
   title: string;
   sub?: string;
+  left?: ReactNode;
   right?: ReactNode;
   onPress?: () => void;
   onLongPress?: () => void;
 }) {
   const content = (
     <View style={styles.row}>
+      {left}
       <View style={styles.copy}>
         <Text style={styles.title}>{title}</Text>
         {sub ? <Text style={styles.sub}>{sub}</Text> : null}

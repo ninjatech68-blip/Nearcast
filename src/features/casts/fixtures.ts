@@ -1,8 +1,11 @@
 import type { PosterData } from '@/design-system/components/poster';
+import type { DeliverableCast, ViewerContext } from '@/features/casts/domain/delivery';
 
 /**
  * fixture data for the frontend build. nothing here ships to production:
- * counts, vouches, and receipts come from confirmed events server-side.
+ * counts, vouches, and receipts come from confirmed events server-side,
+ * and the "why you" line is computed by the delivery framework — never
+ * written by hand.
  */
 
 export type CastDetail = PosterData & {
@@ -11,6 +14,19 @@ export type CastDetail = PosterData & {
   byLine: string;
   receipts: { lit: number; line: string };
   body: string;
+  delivery: DeliverableCast;
+  /** every delivery signal that fired, for the transparency tap */
+  signals?: readonly string[];
+};
+
+/** the signed-in viewer, as the delivery framework sees them. */
+export const viewer: ViewerContext = {
+  areas: ['indiranagar', 'koramangala'],
+  circleIds: ['badminton-gang', 'flat-4b', 'college-crew'],
+  adjacentCircleIds: ['kavya-friends', 'dev-music-people'],
+  recentTopics: ['badminton', 'ceramics'],
+  activeWindows: ['weekday-evening'],
+  blockedCasterIds: [],
 };
 
 export type CasterProfile = {
@@ -63,6 +79,14 @@ export const casts: readonly CastDetail[] = [
     byLine: 'indiranagar · 1 trusted link · your circle vouches',
     receipts: { lit: 4, line: '31 plans made real · 0 flakes' },
     body: "easy doubles, intermediate is fine. court's booked, split is ₹80.",
+    delivery: {
+      casterId: 'aarav',
+      area: 'indiranagar',
+      topics: ['badminton'],
+      window: 'weekday-evening',
+      reach: 'adjacent_network',
+      casterCircleIds: ['kavya-friends'],
+    },
   },
   {
     id: 'ceramics-slot',
@@ -77,6 +101,14 @@ export const casts: readonly CastDetail[] = [
     byLine: 'hsr · 1 trusted link',
     receipts: { lit: 3, line: '12 plans made real · 1 flake' },
     body: 'shared studio, 9 to 12. wheel time split evenly. beginners fine.',
+    delivery: {
+      casterId: 'meera',
+      area: 'hsr',
+      topics: ['ceramics'],
+      window: 'weekend-morning',
+      reach: 'nearby_relevant',
+      casterCircleIds: ['pottery-people'],
+    },
   },
   {
     id: 'concert-ticket',
@@ -91,6 +123,14 @@ export const casts: readonly CastDetail[] = [
     byLine: 'koramangala · 1 trusted link',
     receipts: { lit: 5, line: '48 plans made real · 0 flakes' },
     body: 'indie gig at the brewery venue. ticket at cost, no markup.',
+    delivery: {
+      casterId: 'dev',
+      area: 'koramangala',
+      topics: ['music'],
+      window: 'weekday-evening',
+      reach: 'adjacent_network',
+      casterCircleIds: ['dev-music-people'],
+    },
   },
 ];
 
@@ -100,11 +140,13 @@ export type ActivityItem = {
   sub: string;
   tag?: { label: string; tone: 'hot' | 'ok' | 'dim' };
   castId?: string;
+  personId?: string;
 };
 
 export const yourMove: readonly ActivityItem[] = [
   {
     id: 'riya-in',
+    personId: 'riya',
     title: "Riya's in",
     sub: '"can do 7pm" · 4m ago',
     tag: { label: 'new', tone: 'hot' },
@@ -112,6 +154,7 @@ export const yourMove: readonly ActivityItem[] = [
   },
   {
     id: 'arjun-time',
+    personId: 'arjun',
     title: 'Arjun moved it to 7:30',
     sub: '18m ago',
     tag: { label: 'matched', tone: 'ok' },

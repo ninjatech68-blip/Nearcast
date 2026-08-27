@@ -1,13 +1,28 @@
 import { useSyncExternalStore } from 'react';
 
 import type { Verb } from '@/design-system/tokens';
-import { casts as fixtureCasts, yourCasts as fixtureYourCasts, type ActivityItem, type CastDetail } from './fixtures';
+import { deliveryFor } from './domain/delivery';
+import { casts as fixtureCasts, viewer, yourCasts as fixtureYourCasts, type ActivityItem, type CastDetail } from './fixtures';
 
 /**
  * in-memory session store so the loop closes on device: a cast you
  * publish lands in the feed and in your casts immediately. replaced by
  * supabase in the backend phase; the shape stays.
+ *
+ * the feed runs every cast through the delivery framework: a cast with
+ * no matched signal never renders, and the why line is the framework's
+ * generated reason — never fixture prose.
  */
+
+function deliverFeed(source: readonly CastDetail[]): readonly CastDetail[] {
+  const delivered: CastDetail[] = [];
+  for (const cast of source) {
+    const result = deliveryFor(viewer, cast.delivery);
+    if (!result.deliver) continue;
+    delivered.push({ ...cast, why: result.reason, signals: result.signals });
+  }
+  return delivered;
+}
 
 type State = {
   feed: readonly CastDetail[];
@@ -15,7 +30,7 @@ type State = {
 };
 
 let state: State = {
-  feed: fixtureCasts,
+  feed: deliverFeed(fixtureCasts),
   mine: fixtureYourCasts,
 };
 
@@ -57,11 +72,20 @@ export function addCast(input: { verb: Verb; text: string; area: string; gone: s
     vouches: input.reach,
     expiry: input.gone,
     why: 'you cast this',
+    signals: ['you cast this'],
     by: 'Piyush',
     byId: 'me',
     byLine: `${input.area} · your cast`,
     receipts: { lit: 4, line: '31 plans made real · 0 flakes' },
     body: input.text,
+    delivery: {
+      casterId: 'me',
+      area: input.area,
+      topics: [],
+      window: null,
+      reach: 'adjacent_network',
+      casterCircleIds: [],
+    },
   };
   state = {
     feed: [cast, ...state.feed],
@@ -72,6 +96,6 @@ export function addCast(input: { verb: Verb; text: string; area: string; gone: s
 
 /** test-only reset. */
 export function resetCastStore(): void {
-  state = { feed: fixtureCasts, mine: fixtureYourCasts };
+  state = { feed: deliverFeed(fixtureCasts), mine: fixtureYourCasts };
   emit();
 }

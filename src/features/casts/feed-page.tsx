@@ -1,16 +1,27 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Animated, FlatList, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Alert, Animated, FlatList, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { Poster } from '@/design-system/components/poster';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens, verbForeground } from '@/design-system/tokens';
+import { NEVER_USED } from '@/features/casts/domain/delivery';
 import { type CastDetail } from '@/features/casts/fixtures';
 import { skipCast, useFeedCasts } from '@/features/casts/store';
 
 import { AvatarDot } from './avatar-dot';
+
+function explainDelivery(cast: CastDetail) {
+  const fired = (cast.signals ?? [cast.why]).map((signal) => `· ${signal}`).join('\n');
+  const never = NEVER_USED.map((item) => `· ${item}`).join('\n');
+  Alert.alert(
+    "why you're seeing this",
+    `this cast reached you because:\n${fired}\n\nnever used to decide:\n${never}`,
+    [{ text: 'ok' }],
+  );
+}
 
 /**
  * the feed: one cast per viewport, vertical snap. scrolling past a cast
@@ -75,6 +86,7 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
         onOpen={() => router.push(`/cast/${cast.id}`)}
         casterLine={`${cast.by.toLowerCase()} · ${cast.receipts.line.split(' · ')[0]}`}
         onOpenCaster={() => router.push(`/caster/${cast.byId}`)}
+        onWhyPress={() => explainDelivery(cast)}
       >
         <BarButton
           label="I'm in"

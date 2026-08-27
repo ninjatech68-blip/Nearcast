@@ -80,7 +80,8 @@ describe('home pager', () => {
 
     expect(view.getByText('badminton after work. need two.')).toBeTruthy();
     expect(view.getByText('indiranagar · 3 vouches · gone 10pm')).toBeTruthy();
-    expect(view.getByText('why you: you play nearby on weekday evenings')).toBeTruthy();
+    // the why line is computed by the delivery framework, never fixture prose
+    expect(view.getByText('why you: one trusted link away · near you in indiranagar ›')).toBeTruthy();
     expect(view.getByRole('button', { name: 'cast' })).toBeTruthy();
     expect(view.getByRole('button', { name: 'activity' })).toBeTruthy();
   });
@@ -102,6 +103,23 @@ describe('home pager', () => {
 
     await user.press(view.getByRole('button', { name: 'cast' }));
     expect(mockPush).toHaveBeenCalledWith('/compose');
+  });
+
+  it('explains delivery on the why tap: fired signals plus what is never used', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { Alert } = require('react-native');
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    const user = userEvent.setup();
+    const view = await render(<HomeScreen />);
+
+    await user.press(view.getAllByRole('button', { name: "why you're seeing this" })[0]);
+
+    const [title, body] = alertSpy.mock.calls[0] as [string, string];
+    expect(title).toBe("why you're seeing this");
+    expect(body).toContain('one trusted link away');
+    expect(body).toContain('never used to decide');
+    expect(body).toContain('your exact location');
+    alertSpy.mockRestore();
   });
 });
 
@@ -241,6 +259,7 @@ describe('caster sheet', () => {
     expect(view.getByText('badminton after work. need two.')).toBeTruthy();
     expect(view.getByRole('button', { name: 'block Aarav' })).toBeTruthy();
     expect(view.getByRole('button', { name: 'report Aarav' })).toBeTruthy();
+    expect(view.getByLabelText('photo of Aarav')).toBeTruthy();
     expect(view.queryByText(/followers/i)).toBeNull();
   });
 

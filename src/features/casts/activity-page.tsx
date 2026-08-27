@@ -4,10 +4,12 @@ import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-n
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton } from '@/design-system/components/button';
+import { Face } from '@/design-system/components/face';
 import { Row } from '@/design-system/components/row';
 import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
+import { facePhotos } from '@/features/casts/faces';
 import { yourMove, type ActivityItem } from '@/features/casts/fixtures';
 import { useMyCasts } from '@/features/casts/store';
 
@@ -69,6 +71,7 @@ export function ActivityPage() {
               key={item.id}
               title={item.title}
               sub={item.sub}
+              left={item.personId ? <Face photo={facePhotos[item.personId]} initials={item.title.slice(0, 2).toUpperCase()} size={44} label={`photo of ${item.title}`} /> : undefined}
               right={item.tag ? <Tag label={item.tag.label} tone={item.tag.tone} /> : undefined}
               onPress={item.castId ? () => router.push(`/cast/${item.castId}`) : undefined}
               onLongPress={() => archive(item)}

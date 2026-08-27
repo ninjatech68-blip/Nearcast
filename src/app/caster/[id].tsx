@@ -3,17 +3,19 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 
 import { SignalBars } from '@/design-system/components/bars';
 import { BarButton } from '@/design-system/components/button';
+import { Face } from '@/design-system/components/face';
 import { Row } from '@/design-system/components/row';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
 import { fontFamily, tokens } from '@/design-system/tokens';
+import { facePhotos } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { useFeedCasts } from '@/features/casts/store';
 
 /**
  * the caster sheet: safety and trust facts, nothing social.
- * receipts and vouches, their live casts, block and report.
- * no followers, no photos, no bio — nothing to perform.
+ * one verified photo, receipts and vouches, their live casts, block
+ * and report. no followers, no photo grid, no bio — nothing to perform.
  */
 export default function CasterProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -47,7 +49,10 @@ export default function CasterProfileScreen() {
   }
 
   return (
-    <SheetShell title={caster.name}>
+    <SheetShell
+      title={caster.name}
+      accessory={<Face photo={facePhotos[caster.id]} initials={caster.name.slice(0, 2).toUpperCase()} size={64} label={`photo of ${caster.name}`} />}
+    >
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
         <Text style={styles.meta}>
           {caster.area} · {caster.trustLine}

@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react';
 import { Animated, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
+import { Face } from '@/design-system/components/face';
 import { QuietAction } from '@/design-system/components/button';
 import { Row } from '@/design-system/components/row';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
+import { facePhotos } from '@/features/casts/faces';
 import { me, recap } from '@/features/casts/fixtures';
 
 /**
@@ -20,7 +22,10 @@ export default function YouScreen() {
   const receipts = useCountUp(me.receipts.count);
 
   return (
-    <SheetShell title={me.name}>
+    <SheetShell
+      title={me.name}
+      accessory={<Face photo={facePhotos.me} initials="PS" size={64} label="your photo" />}
+    >
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.line}>{me.line}</Text>
 
