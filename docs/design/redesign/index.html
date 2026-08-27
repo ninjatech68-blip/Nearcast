@@ -149,6 +149,10 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
 .feedstream::-webkit-scrollbar{display:none}
 .feedstream .poster{scroll-snap-align:start;scroll-snap-stop:always;flex:0 0 auto}
 .railhint{position:absolute;z-index:15;bottom:10px;left:50%;transform:translateX(-50%);font:500 10px var(--mono);letter-spacing:.14em;opacity:.5}
+.rail{position:absolute;z-index:16;bottom:16px;left:50%;transform:translateX(-50%);height:46px;padding:0 18px;border-radius:999px;background:var(--ink);color:var(--cream40);display:flex;align-items:center;gap:18px;font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.rail .on{color:var(--orange)}
+.rail .castplus{width:32px;height:32px;border-radius:10px;background:var(--orange);color:var(--ink);display:grid;place-items:center;font:800 18px/1 var(--disp)}
+.feedstream .poster{padding-bottom:96px}
 
 /* verb picker (compose) */
 .verbs{display:flex;gap:8px;margin:6px 0 26px}
@@ -325,7 +329,6 @@ pre.tree i{color:var(--cream40);font-style:normal}
               <button class="quiet">skip</button>
             </div>
           </div>
-          <div class="railhint">↑ MORE</div>
         </section>
 
         <section class="poster need">
@@ -355,8 +358,9 @@ pre.tree i{color:var(--cream40);font-style:normal}
         </section>
 
       </div>
+      <div class="rail"><span class="on">near</span><span class="castplus">+</span><span>activity</span></div>
     </div></div>
-    <p class="gesture"><b>swipe ↑↓</b> next cast · <b>swipe ↑ on text</b> opens detail sheet · <b>swipe ←</b> skip · tap avatar for you</p>
+    <p class="gesture"><b>swipe ↑↓</b> next cast · <b>swipe ↑ on text</b> opens detail · <b>swipe ←</b> activity page · scrolling past a cast already skips it; the skip button just means "less like this" · rail mirrors every gesture</p>
   </div>
 
   <!-- DETAIL SHEET -->
@@ -481,17 +485,17 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <div class="device"><div class="screen"><div class="island"></div>
       <section class="poster lets">
         <div class="p-top"><span class="p-verb">nearcast</span><button class="xbtn" style="color:var(--ink)">×</button></div>
-        <div class="p-cast"><span class="stamp" style="margin-bottom:18px">OUT</span><br/>it's out.</div>
+        <div class="p-cast"><span class="stamp" style="margin-bottom:18px">OUT</span><br/><span class="t-tag" style="display:block;margin-bottom:14px">let's</span>badminton near indiranagar after work. need two.</div>
         <div>
           <div class="p-meta">friends of circles · gone 10pm</div>
           <div class="p-why">you'll hear the second someone's in.</div>
           <div class="p-bar bar">
-            <button class="btn on-ink">see it live</button>
+            <button class="btn on-ink">done</button>
           </div>
         </div>
       </section>
     </div></div>
-    <p class="gesture">the stamp rotates in with overshoot (--snap). failure reuses this frame in ink: <b>"didn't send. tap to retry."</b></p>
+    <p class="gesture">the confirmation is your own poster, stamped. the stamp rotates in with overshoot (--snap). failure reuses this frame in ink: <b>"didn't send. tap to retry."</b></p>
   </div>
 
 </div>
@@ -512,8 +516,9 @@ pre.tree i{color:var(--cream40);font-style:normal}
         <div class="row"><div class="r-main"><b>badminton after work</b><div class="r-sub">live · 2 in · gone 10pm</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
         <div class="row"><div class="r-main"><b>ceramics slot</b><div class="r-sub">draft · only you</div></div><span class="tag dim">draft</span></div>
       </div>
+      <div class="rail"><span>near</span><span class="castplus">+</span><span class="on">activity</span></div>
     </div></div>
-    <p class="gesture"><b>tap row</b> opens its sheet · <b>swipe ←</b> archive. v1's three filter pills are gone; two sections sort themselves.</p>
+    <p class="gesture"><b>tap row</b> opens its sheet · <b>hold row</b> archives (undo line shows for 4s) · <b>swipe →</b> back to feed. rows never own horizontal gestures; that axis belongs to the pager. v1's three filter pills are gone; two sections sort themselves.</p>
   </div>
 
   <!-- ACTIVITY EMPTY -->
@@ -523,7 +528,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
       <div class="appbody">
         <div class="a-top"><span class="a-title">activity</span><span class="p-dot" style="background:var(--ink)"><i style="color:var(--cream)">PS</i></span></div>
         <div style="margin:auto 0">
-          <div class="p-cast" style="font-size:40px">all quiet.</div>
+          <div class="p-cast" style="font-size:40px">nothing yet.</div>
           <div class="t-meta" style="color:var(--ink40);margin-top:12px">when someone's in, it lands here.</div>
         </div>
         <div class="bar"><button class="btn on-orange">cast something</button></div>
@@ -699,7 +704,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
   <tbody>
     <tr><td>button press</td><td>touch-down / up</td><td>scale 1→.96 --press; release springs back --snap</td><td class="dim">none</td></tr>
     <tr><td>poster arrive</td><td>feed snap settles</td><td>verb tag + headline rise 10px + fade in 200ms; meta follows 60ms later</td><td class="dim">none</td></tr>
-    <tr><td>skip</td><td>swipe ← past 35% width, or velocity &gt; 0.5pt/ms</td><td>poster follows finger 1:1, rotates to −2° max; commits off-screen 240ms --slide; under threshold springs back --snap. "skip" button plays the same exit</td><td>impactLight on commit</td></tr>
+    <tr><td>skip</td><td>tap skip on a poster</td><td>poster exits left with −2° rotation, 240ms --slide; next cast rises into place. scrolling past a cast is the passive skip and animates nothing extra</td><td>impactLight</td></tr>
     <tr><td>sheet present</td><td>swipe ↑ on poster text / route push</td><td>translateY 100%→0 --slide; scrim fades to 45% in 200ms linear</td><td>impactLight on settle</td></tr>
     <tr><td>sheet dismiss</td><td>drag ↓ past 30% height or velocity &gt; 0.5pt/ms</td><td>follows finger 1:1; commits 260ms; else springs back --snap</td><td class="dim">none</td></tr>
     <tr><td>verb change</td><td>tap NEED / GOT / LET'S</td><td>chip fills its color instantly; compose caret + counter re-tint 180ms; chip scales .95→1 --snap</td><td>selection</td></tr>
@@ -712,6 +717,8 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <tr><td>receipts count-up</td><td>profile first view per session</td><td>0→n over 600ms ease-out; skipped entirely under reduce-motion</td><td class="dim">none</td></tr>
     <tr><td>tag NEW arrives</td><td>activity row inserts</td><td>row height animates in --slide; tag lands --snap and pulses once scale 1→1.06→1 over 600ms. never loops</td><td class="dim">none (arrival already notified)</td></tr>
     <tr><td>row press</td><td>touch-down</td><td>background ink 4% fades in 80ms, out 200ms</td><td class="dim">none</td></tr>
+    <tr><td>row archive</td><td>long-press 400ms</td><td>row scales to .97 at 300ms as the hint; on commit the row collapses --slide and an undo line holds its place for 4s</td><td>impactLight on commit</td></tr>
+    <tr><td>rail fade</td><td>vertical scroll starts / snap settles</td><td>rail fades out 150ms on scroll, back in 200ms on settle. never moves, only fades</td><td class="dim">none</td></tr>
     <tr><td>match confirmed</td><td>both sides in</td><td>activity row tag flips to MATCHED with --snap</td><td>notificationSuccess</td></tr>
     <tr><td>pull to refresh</td><td>overscroll 70pt</td><td>equalizer loader (5 bars, 900ms loop) appears after 150ms delay; feed settles --slide</td><td>impactLight when refresh commits</td></tr>
     <tr><td>offline strip</td><td>connectivity lost / regained</td><td>slides down --slide; retracts 200ms after reconnect</td><td class="dim">none</td></tr>
@@ -724,7 +731,15 @@ pre.tree i{color:var(--cream40);font-style:normal}
 <!-- ================= 08 ================= -->
 <div class="secnum" style="margin-top:96px">08</div>
 <h2 class="sec" style="margin-top:8px">Navigation</h2>
-<p class="sub">No tab bar exists. The root is a two-page horizontal pager (feed ↔ activity) with the cast button floating over both; everything else is a native iOS presentation. Every surface is a route, so every surface deep-links.</p>
+<p class="sub">No tab bar exists. The root is a two-page horizontal pager (feed ↔ activity) with one rail floating over both; everything else is a native iOS presentation. The whole model fits in six sentences:</p>
+<ul class="rule-list" style="max-width:680px;margin-bottom:36px">
+  <li><b>up / down</b><span>next or previous cast. vertical is always content.</span></li>
+  <li><b>left / right</b><span>feed ↔ activity. horizontal is always pages, so no row or poster ever owns a horizontal swipe.</span></li>
+  <li><b>swipe up on text, or tap</b><span>opens that thing's sheet (cast detail, activity row). drag down closes it.</span></li>
+  <li><b>the + on the rail</b><span>compose, as a full-screen modal, from anywhere.</span></li>
+  <li><b>the avatar dot</b><span>you, as a sheet. drag down to leave.</span></li>
+  <li><b>the rail</b><span>near · + · activity. mirrors every gesture as a tap, fades while you scroll, returns when you settle. buttons are the fallback, never the only way.</span></li>
+</ul>
 <pre class="tree">root <i>· horizontal pager, react-native-pager-view</i>
 ├── <b>/</b>            feed          <i>no chrome, vertical snap</i>
 └── <b>/activity</b>    activity      <i>swipe ← from feed, or rail tap</i>
@@ -739,8 +754,8 @@ pre.tree i{color:var(--cream40);font-style:normal}
 <table class="dev" style="margin-top:28px">
   <thead><tr><th>rule</th><th>spec</th></tr></thead>
   <tbody>
-    <tr><td>pager</td><td>feed ↔ activity, standard UIScrollView paging feel. a 3-glyph bottom rail (near · cast · activity) fades out during vertical scroll, returns on snap settle. rail is the button fallback; the pager gesture is primary</td></tr>
-    <tr><td>cast button</td><td>floats bottom-center over both pager pages, 56×56, r18, orange, respects home-indicator inset + 8pt. hidden while any sheet or modal is up</td></tr>
+    <tr><td>pager</td><td>feed ↔ activity, standard UIScrollView paging feel. the horizontal axis belongs to the pager alone: skipping a cast is a button, archiving a row is a long-press</td></tr>
+    <tr><td>rail</td><td>one ink pill, bottom center at home-indicator inset + 8: near · + (32×32, r10, orange) · activity. current page reads orange. posters and lists reserve 96pt of bottom padding for it. fades during scroll per the catalog; hidden while any sheet or modal is up</td></tr>
     <tr><td>modal dismiss</td><td>compose: interactive swipe-down enabled while the field is empty; once dirty, dismiss asks one sheet: "keep draft / toss it". drafts keep by default</td></tr>
     <tr><td>sheet stacking</td><td>max two deep (detail → join). anything deeper is a design failure, not a nav case</td></tr>
     <tr><td>back</td><td>native interactive pop everywhere a push exists (reach step). no custom back buttons; the × closes modals, drag closes sheets</td></tr>
@@ -759,9 +774,9 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <tr><td>poster</td><td>full-bleed · padding: x24, top safe+24, bottom safe+16 · headline 46/1.0, −2.5%, clamps 34–52 under dynamic type, max 6 lines then truncates with "…more" opening the sheet</td><td>verb sets background (yellow / green / orange); ended = desaturated 55% + EN­DED tag; offline = saturate .55 + strip</td></tr>
     <tr><td>bar</td><td>button 58h · r16 · x-pad 20 · font 800 17 · icon 18 · gap 10 · quiet action 44h min target</td><td>pressed scale .96 · disabled opacity .45, no haptic · loading = label→equalizer bars, width locked</td></tr>
     <tr><td>sheet</td><td>r28 top · pad 24, top 14 · grabber 40×4 r99 ink12 · scrim ink 45%</td><td>detents .55 / .92 · drag-dismiss per catalog · keyboard pushes sheet, never overlaps the field</td></tr>
-    <tr><td>row</td><td>min 64h · pad-y 16 · hairline top ink12 · title 17/600 · sub mono 12 ink40 · right slot: tag or →</td><td>pressed bg ink 4% · swipe ← reveals single archive action, full-swipe commits</td></tr>
+    <tr><td>row</td><td>min 64h · pad-y 16 · hairline top ink12 · title 17/600 · sub mono 12 ink40 · right slot: tag or →</td><td>pressed bg ink 4% · long-press archives, undo line replaces the row for 4s · rows never own horizontal gestures (pager axis)</td></tr>
     <tr><td>tag</td><td>mono 11/600 caps · ls .12em · pad 6×9 · r6</td><td>hot = orange/ink · ok = green/cream · dim = ink12/ink40 · line = no fill</td></tr>
-    <tr><td>field</td><td>display 34/1.08 · no border, no background · caret orange 2pt · placeholder ink12 · counter mono 12 right</td><td>compose cap 140 · note cap 140 · counter tints orange at 120 · cap-hit shake per catalog</td></tr>
+    <tr><td>field</td><td>display 34/1.08 · no border, no background · caret orange 2pt · placeholder ink12 · counter mono 12 right</td><td>compose cap 140, placeholder "what's the plan?" · note cap 140, placeholder "one line. why you're in." · counter tints orange at 120 · cap-hit shake per catalog · primary bar stays dead at 0 characters</td></tr>
     <tr><td>bars</td><td>small: 5×w5 g3 r2, h 7/11/15/19/23 · big: w10 g5 r3, h 14/22/30/38/46 · lit = orange, unlit = currentColor 16%</td><td>fill/drain per catalog · loader variant loops 900ms · never annotated with a public number</td></tr>
   </tbody>
 </table>
@@ -776,7 +791,7 @@ pre.tree i{color:var(--cream40);font-style:normal}
     <tr><td>feed</td><td>equalizer center, 150ms delay</td><td>"quiet. nothing cast near you right now." + cast something</td><td>"feed didn't load. pull to retry."</td><td>strip "no signal · showing from 9:41", posters desaturate, joins queue</td></tr>
     <tr><td>detail sheet</td><td>sheet skeleton: bars + two dim lines</td><td>"this one's gone. it ended or got filled." + back</td><td>"couldn't load it. tap to retry."</td><td>read-only from cache; bar disabled with "no signal"</td></tr>
     <tr><td>compose</td><td class="dim">—</td><td class="dim">— (placeholder is the empty state)</td><td>"didn't send. tap to retry." on the bar</td><td>"casts when you're back online." — cast queues</td></tr>
-    <tr><td>activity</td><td>equalizer center</td><td>"all quiet. when someone's in, it lands here." + cast something</td><td>"couldn't load activity. pull to retry."</td><td>cached rows + strip</td></tr>
+    <tr><td>activity</td><td>equalizer center</td><td>"nothing yet. when someone's in, it lands here." + cast something</td><td>"couldn't load activity. pull to retry."</td><td>cached rows + strip</td></tr>
     <tr><td>profile</td><td>bars fill counts as the load state</td><td class="dim">— (new users start mid-signal with 0 receipts: "no plans made real yet. join one.")</td><td>"couldn't load. pull to retry."</td><td>cached, toggles disabled</td></tr>
     <tr><td>recap</td><td class="dim">— (generated server-side, arrives whole)</td><td>month with no plans gets no recap. absence of a poster, not a sad one</td><td class="dim">—</td><td class="dim">—</td></tr>
   </tbody>
