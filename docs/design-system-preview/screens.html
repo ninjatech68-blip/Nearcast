@@ -1,0 +1,1225 @@
+<title>Nearcast Screens</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" />
+<style>
+  :root {
+    --ground: #F7F3EA;
+    --surface: #FFFFFF;
+    --surface-muted: #F1F4EC;
+    --border-subtle: #DDD6C8;
+    --text-primary: #16231F;
+    --text-secondary: #52635D;
+    --text-muted: #8A9791;
+    --action-primary: #0F5E46;
+    --action-primary-pressed: #0B4A37;
+    --action-secondary: #2E5D9E;
+    --on-primary: #FFFFFF;
+    --success: #E8F3EC;
+    --warning: #FDF3D6;
+    --danger: #FCE7E4;
+    --status-danger: #C0392B;
+    --status-warning: #8A6100;
+    --info: #E4EDF6;
+    --frame-shadow: 0 24px 60px -18px rgba(22, 35, 31, 0.28), 0 6px 20px -8px rgba(22, 35, 31, 0.14);
+  }
+
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --ground: #0E1714;
+      --surface: #15211D;
+      --surface-muted: #1E2B25;
+      --border-subtle: #33443B;
+      --text-primary: #F3F7F1;
+      --text-secondary: #B0BCB4;
+      --text-muted: #7A8580;
+      --action-primary: #65D0A1;
+      --action-primary-pressed: #55B98D;
+      --action-secondary: #7CB1E8;
+      --on-primary: #062419;
+      --success: #143025;
+      --warning: #35270F;
+      --danger: #381B18;
+      --status-danger: #E38B7F;
+      --status-warning: #E6BE72;
+      --info: #142A3A;
+      --frame-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.6), 0 6px 20px -8px rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E1714;
+    --surface: #15211D;
+    --surface-muted: #1E2B25;
+    --border-subtle: #33443B;
+    --text-primary: #F3F7F1;
+    --text-secondary: #B0BCB4;
+    --text-muted: #7A8580;
+    --action-primary: #65D0A1;
+    --action-primary-pressed: #55B98D;
+    --action-secondary: #7CB1E8;
+    --on-primary: #062419;
+    --success: #143025;
+    --warning: #35270F;
+    --danger: #381B18;
+    --status-danger: #E38B7F;
+    --status-warning: #E6BE72;
+    --info: #142A3A;
+    --frame-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.6), 0 6px 20px -8px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--ground);
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  header.masthead {
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--action-primary);
+  }
+  h1.title {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.1;
+    text-wrap: balance;
+    margin: 12px 0 8px;
+    letter-spacing: -0.01em;
+  }
+  header.masthead p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    max-width: 66ch;
+    margin: 0;
+  }
+
+  nav.index {
+    position: sticky;
+    top: 8px;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px;
+    margin-bottom: 32px;
+    background: color-mix(in oklab, var(--ground) 82%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+  }
+  nav.index a {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+  }
+  nav.index a:hover { color: var(--text-primary); border-color: var(--border-subtle); }
+
+  section.flow {
+    margin: 56px 0;
+  }
+  .flow-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .flow-heading .num {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .flow-heading h2 {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .flow-blurb {
+    color: var(--text-secondary);
+    max-width: 66ch;
+    margin: 0 0 24px;
+    font-size: 14px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px;
+    align-items: start;
+  }
+
+  .frame-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .frame-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .frame-label small {
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 10px;
+  }
+
+  /* iPhone frame */
+  .phone {
+    width: 320px;
+    height: 690px;
+    border-radius: 46px;
+    background: #0e1714;
+    padding: 8px;
+    box-shadow: var(--frame-shadow);
+    position: relative;
+    overflow: hidden;
+    justify-self: center;
+  }
+  .phone::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 8px;
+    background: #0e1714;
+    z-index: 3;
+  }
+  .phone::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 28px;
+    border-radius: 999px;
+    background: #000;
+    z-index: 4;
+  }
+  .screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 38px;
+    background: var(--ground);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-primary);
+  }
+  .statusbar {
+    height: 46px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 22px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+  .statusbar .glyphs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.85;
+  }
+  .glyph {
+    display: inline-block;
+    width: 16px;
+    height: 10px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  .glyph.bat { width: 22px; }
+
+  .titlebar {
+    padding: 4px 20px 8px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 30px;
+    letter-spacing: -0.01em;
+  }
+  .titlebar.large {
+    font-size: 28px;
+    line-height: 34px;
+    padding-top: 6px;
+  }
+  .subtitle {
+    padding: 0 20px 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+  .body {
+    flex: 1 1 auto;
+    overflow: hidden;
+    padding: 8px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Bottom tab bar */
+  .tabbar {
+    height: 78px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: start;
+    padding: 8px 8px 22px;
+    background: var(--surface);
+    border-top: 1px solid var(--border-subtle);
+    gap: 4px;
+  }
+  .tabbar .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .tabbar .tab.active { color: var(--action-primary); }
+  .tabbar .tab .glyph-icon {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+  }
+  .tabbar .tab.broadcast { position: relative; }
+  .tabbar .tab.broadcast .glyph-icon {
+    background: var(--action-primary);
+    color: var(--on-primary);
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    margin-top: -18px;
+    box-shadow: 0 8px 18px -6px rgba(15, 94, 70, 0.5);
+    font-weight: 700;
+    font-size: 22px;
+  }
+
+  /* Cards & primitives */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .card.tight { padding: 10px 12px; gap: 3px; }
+  .card.reason { background: var(--info); border-color: transparent; }
+  .card.trust { background: var(--success); border-color: transparent; }
+  .card.warn { background: var(--warning); border-color: transparent; color: var(--status-warning); }
+  .card.danger { background: var(--danger); border-color: transparent; color: var(--status-danger); }
+
+  .primitive {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--action-primary);
+  }
+  .statement {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20px;
+    text-wrap: balance;
+  }
+  .meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .why-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: color-mix(in oklab, var(--action-secondary) 12%, var(--surface));
+    color: var(--action-secondary);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+  .expiry {
+    font-size: 10px;
+    color: var(--status-warning);
+    font-weight: 600;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .confirmed {
+    font-size: 11px;
+    color: var(--action-primary);
+    font-weight: 600;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    border-radius: 12px;
+    padding: 0 16px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    color: var(--on-primary);
+    background: var(--action-primary);
+    width: 100%;
+  }
+  .btn.secondary {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+  }
+  .btn.quiet {
+    background: transparent;
+    color: var(--action-primary);
+    height: 40px;
+    font-weight: 600;
+  }
+  .btn.danger {
+    background: transparent;
+    border: 1px solid var(--status-danger);
+    color: var(--status-danger);
+  }
+  .btn.disabled { opacity: 0.42; }
+  .footer-cta { padding: 12px 16px 20px; border-top: 1px solid var(--border-subtle); background: var(--surface); }
+
+  .input {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-primary);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .input.textarea { min-height: 132px; align-items: flex-start; }
+
+  .chipset { display: flex; gap: 0; border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .chipset .chip { flex: 1; padding: 10px 8px; text-align: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); border-right: 1px solid var(--border-subtle); }
+  .chipset .chip:last-child { border-right: none; }
+  .chipset .chip.on { background: var(--success); color: var(--action-primary); }
+
+  .radio {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+  .radio.on { border-color: var(--action-primary); background: var(--success); }
+  .radio strong { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .radio.on strong { color: var(--action-primary); }
+  .radio small { font-size: 11px; color: var(--text-secondary); line-height: 15px; }
+
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 2px;
+  }
+  .switch {
+    width: 42px;
+    height: 26px;
+    border-radius: 999px;
+    background: var(--border-subtle);
+    position: relative;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--surface);
+  }
+  .switch.on { background: var(--action-primary); }
+  .switch.on::after { left: auto; right: 3px; }
+
+  .bubble {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+  .bubble.theirs {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .bubble.mine {
+    background: var(--action-primary);
+    color: var(--on-primary);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .sheet {
+    position: absolute;
+    inset: auto 0 0 0;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background: var(--surface);
+    padding: 12px 20px 22px;
+    box-shadow: 0 -12px 30px -12px rgba(0,0,0,0.2);
+  }
+  .sheet-handle {
+    width: 42px;
+    height: 4px;
+    background: var(--border-subtle);
+    border-radius: 999px;
+    margin: 0 auto 12px;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--action-primary);
+    color: var(--on-primary);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .response {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+  }
+  .response .msg { font-size: 13px; line-height: 18px; color: var(--text-secondary); }
+  .response strong { display: block; font-size: 13px; color: var(--text-primary); }
+  .response .reliability { font-size: 11px; color: var(--action-primary); font-weight: 600; margin-top: 2px; }
+
+  .status-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--action-primary); display: inline-block; }
+  .dot.warn { background: var(--status-warning); }
+  .dot.danger { background: var(--status-danger); }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-muted), var(--border-subtle), var(--surface-muted));
+    background-size: 200% 100%;
+    border-radius: 8px;
+  }
+  .sk-line { height: 12px; }
+  .sk-lg { height: 20px; }
+
+  .state-panel {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 24px 60px;
+    gap: 10px;
+  }
+  .state-panel .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+  }
+  .state-panel h3 { margin: 0; font-size: 16px; font-weight: 700; }
+  .state-panel p { margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 220px; }
+
+  .disclosure {
+    background: var(--success);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .disclosure strong { color: var(--action-primary); font-size: 13px; font-weight: 700; }
+  .disclosure small { color: var(--action-primary); font-size: 12px; line-height: 17px; }
+
+  footer.legal {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .page { padding: 24px 12px 60px; }
+  }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <span class="eyebrow">Nearcast · Screen Mockups</span>
+    <h1 class="title">The whole app on one page</h1>
+    <p>Every MVP screen at 320 × 690 (iPhone target), rendered in the same design tokens Manrope, cream ground, and forest-green accent the app itself uses. Use this as the source of truth for the React Native implementation, not the other way round. Both light and dark palettes are defined; toggle your OS theme (or the browser DevTools emulator) to see dark.</p>
+  </header>
+
+  <nav class="index" aria-label="Screen groups">
+    <a href="#enter">01 · Enter</a>
+    <a href="#explore">02 · Explore</a>
+    <a href="#broadcast">03 · Broadcast</a>
+    <a href="#respond">04 · Respond</a>
+    <a href="#coordinate">05 · Coordinate</a>
+    <a href="#resolve">06 · Resolve</a>
+    <a href="#you">07 · You</a>
+    <a href="#states">08 · States</a>
+  </nav>
+
+  <!-- ================================================================ 01 ENTER -->
+  <section class="flow" id="enter">
+    <div class="flow-heading"><span class="num">01</span><h2>Enter</h2></div>
+    <p class="flow-blurb">Invitation-only. Google or Apple in production; local dev sign-in appears with the seeded personas listed inline. The invitation screen is the only surface that talks about the network before someone joins.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">Sign in <small>signed-out cold boot</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="body">
+          <div style="margin-top:8px;">
+            <div style="font-size:26px;font-weight:700;line-height:32px;">Sign in to Nearcast</div>
+            <div class="meta" style="margin-top:6px;">Invitation-only. We need to know it's you so intents reach the right people and safety works.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
+            <button class="btn secondary">Continue with Google</button>
+            <button class="btn secondary">Continue with Apple</button>
+          </div>
+          <div style="margin-top:auto;padding:14px;background:var(--warning);border-radius:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--status-warning);">Development sign-in</div>
+            <div style="font-size:11px;color:var(--status-warning);line-height:15px;margin-top:4px;">Local testing only. Never available in production.</div>
+            <div style="font-size:11px;color:var(--status-warning);line-height:15px;margin-top:6px;">Personas (password: nearcast-local): asha@nearcast.local, dev@nearcast.local, mira@nearcast.local.</div>
+            <div class="input" style="margin-top:8px;font-size:12px;color:var(--text-muted);">persona@nearcast.local</div>
+            <div class="input" style="margin-top:6px;font-size:12px;color:var(--text-muted);">Password</div>
+            <button class="btn" style="margin-top:8px;">Sign in as local persona</button>
+          </div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Invitation <small>redemption</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="body">
+          <div class="titlebar large">Join this network</div>
+          <div class="meta" style="padding:0 4px;">Choose the name other people will see on your intents and responses. You can change it later.</div>
+          <div class="input" style="margin-top:8px;color:var(--text-primary);">Asha Rao</div>
+          <div style="display:flex;gap:10px;margin-top:14px;padding:2px;">
+            <div style="width:22px;height:22px;border-radius:6px;background:var(--action-primary);color:var(--on-primary);display:grid;place-items:center;font-weight:700;font-size:14px;">✓</div>
+            <div style="font-size:12px;line-height:16px;color:var(--text-primary);flex:1;">I confirm that I am 18 or over. Nearcast is for adults, and accounts for people under 18 are not permitted.</div>
+          </div>
+          <div class="meta" style="margin-top:14px;">Your originating group and its members remain private. Nearcast never reads your group conversations.</div>
+        </div>
+        <div class="footer-cta"><button class="btn">Join network</button></div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 02 EXPLORE -->
+  <section class="flow" id="explore">
+    <div class="flow-heading"><span class="num">02</span><h2>Explore</h2></div>
+    <p class="flow-blurb">A finite list of intents already delivered to this person, each carrying its stored reason. Confirmation counts and areas are shown; no exact addresses, no contact details, no infinite feed.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">For You <small>home feed</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="titlebar large">For You</div>
+        <div class="subtitle">2 active intents</div>
+        <div class="body">
+          <div class="card">
+            <div class="row"><span class="primitive">I need</span><span class="expiry">Expires in 4h</span></div>
+            <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
+            <div class="meta">Indiranagar area · Nearby</div>
+            <div class="card reason tight" style="margin-top:6px;">
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--action-secondary);">Why you are seeing this</div>
+              <div style="font-size:12px;color:var(--action-secondary);">Shared through one trusted connection.</div>
+            </div>
+            <div class="row" style="margin-top:6px;">
+              <span class="confirmed">Confirmed by 3 people at the origin</span>
+            </div>
+            <div class="row" style="margin-top:6px;">
+              <span style="font-size:14px;font-weight:700;color:var(--action-primary);">Offer help ›</span>
+              <span style="font-size:11px;color:var(--text-muted);font-weight:600;">Not relevant</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="row"><span class="primitive">I offer</span><span class="expiry">Expires in 3d</span></div>
+            <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
+            <div class="meta">Whitefield area · Across town</div>
+            <div class="card reason tight" style="margin-top:6px;">
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--action-secondary);">Why you are seeing this</div>
+              <div style="font-size:12px;color:var(--action-secondary);">Shared through one trusted connection.</div>
+            </div>
+            <div class="row" style="margin-top:6px;">
+              <span style="font-size:14px;font-weight:700;color:var(--action-primary);">I am interested ›</span>
+              <span style="font-size:11px;color:var(--text-muted);font-weight:600;">Not relevant</span>
+            </div>
+          </div>
+
+          <div class="meta" style="margin-top:auto;">Origins, exact places, and contact details stay hidden until permission changes.</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
+          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
+          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
+          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Intent detail <small>respondent view</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 4px;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
+        <div class="body">
+          <span class="primitive">I need</span>
+          <div style="font-size:20px;font-weight:700;line-height:26px;">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div class="meta">Indiranagar area</div>
+
+          <div class="card reason">
+            <strong style="font-size:12px;color:var(--action-secondary);">Why you are seeing this</strong>
+            <span style="font-size:13px;color:var(--action-secondary);">Shared through one trusted connection.</span>
+          </div>
+
+          <div class="card trust">
+            <strong style="font-size:14px;color:var(--action-primary);">Confirmed by 3 people at the origin.</strong>
+            <span style="font-size:12px;color:var(--action-primary);line-height:17px;">Confirmation means someone recognises or supports this intent. It does not guarantee attendance, accuracy, or safety.</span>
+          </div>
+
+          <div class="meta">Shared by Asha</div>
+          <div class="meta" style="color:var(--text-muted);">No exact address or contact details are shown. The originating group stays private.</div>
+        </div>
+        <div class="footer-cta"><button class="btn">Offer help</button></div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Public intent <small>share-link landing</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 4px;"><span style="font-size:12px;color:var(--text-muted);">nearcast.app/i/abc123</span></div>
+        <div class="body">
+          <span class="primitive">I need</span>
+          <div style="font-size:20px;font-weight:700;line-height:26px;">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div class="meta">Indiranagar area · Shared by Asha</div>
+
+          <div class="card">
+            <strong style="font-size:13px;">To respond, you'll need to sign in.</strong>
+            <span class="meta">Nearcast is invitation-only. Signing in tells us who is responding.</span>
+          </div>
+
+          <div class="meta" style="margin-top:auto;color:var(--text-muted);">No exact address or contact details shown. Reach cannot expand without the broadcaster's action.</div>
+        </div>
+        <div class="footer-cta"><button class="btn">Sign in to respond</button></div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 03 BROADCAST -->
+  <section class="flow" id="broadcast">
+    <div class="flow-heading"><span class="num">03</span><h2>Broadcast</h2></div>
+    <p class="flow-blurb">Composer → Review → Publish. Reach is picked with the audience it exposes named on the same tile. A privacy warning surfaces before publish if the text carries an exact address, but never blocks — the broadcaster's own words go through.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">Composer <small>modal</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;text-align:center;font-weight:700;font-size:16px;">Broadcast</div>
+        <div class="body">
+          <div style="font-size:22px;font-weight:700;line-height:28px;margin-top:12px;">What do you need, offer, or want to do?</div>
+          <div class="chipset" style="margin-top:14px;">
+            <div class="chip on">I need</div>
+            <div class="chip">I offer</div>
+            <div class="chip">I want to</div>
+          </div>
+          <div class="input textarea" style="margin-top:14px;font-size:14px;color:var(--text-primary);flex-direction:column;align-items:flex-start;padding-top:12px;">Need one person to help sort donated books tomorrow morning at the library.</div>
+          <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px;">76/500</div>
+          <div class="card trust" style="margin-top:auto;">
+            <strong style="color:var(--action-primary);font-size:13px;">You choose who can see this.</strong>
+            <span style="font-size:12px;color:var(--action-primary);line-height:17px;">Contact details stay hidden. You'll review reach and expiry before publishing.</span>
+          </div>
+        </div>
+        <div class="footer-cta"><button class="btn">Review intent</button></div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Review <small>reach + privacy</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Review intent</div>
+        <div class="body" style="gap:10px;">
+          <div class="card">
+            <span class="primitive">I need</span>
+            <div class="statement">Need one person to help sort donated books tomorrow morning at the library.</div>
+            <div style="font-size:11px;color:var(--text-muted);">This is what recipients will see.</div>
+          </div>
+
+          <div style="font-size:14px;font-weight:700;margin-top:4px;">How far should this intent travel?</div>
+          <div class="radio on"><strong>People connected to my circles</strong><small>One connection beyond your circle. Your circle is never named.</small></div>
+          <div class="radio"><strong>Relevant people nearby</strong><small>People in your approximate area whose interests match.</small></div>
+
+          <div class="toggle-row"><span style="font-size:14px;">Allow a shareable link</span><span class="switch on"></span></div>
+          <div class="toggle-row"><span style="font-size:14px;">Show my first name</span><span class="switch on"></span></div>
+
+          <div class="card trust">
+            <strong style="color:var(--action-primary);font-size:13px;">What stays private</strong>
+            <span style="font-size:12px;color:var(--action-primary);line-height:17px;">No exact address or contact details shown. Reach never expands without your action. Expires in 48 hours.</span>
+          </div>
+        </div>
+        <div class="footer-cta"><button class="btn">Broadcast intent</button></div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Review <small>privacy warning</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Review intent</div>
+        <div class="body" style="gap:10px;">
+          <div class="card">
+            <span class="primitive">I need</span>
+            <div class="statement">Ride to 44 Play Lane, Indiranagar tonight at 8pm.</div>
+          </div>
+
+          <div class="card warn">
+            <span style="font-size:12px;line-height:17px;color:var(--status-warning);">This looks like it includes an exact address. Everyone this reaches will see it — an approximate area is usually enough, and you can share the exact place with one person after you accept them.</span>
+          </div>
+
+          <div style="font-size:14px;font-weight:700;">How far should this intent travel?</div>
+          <div class="radio on"><strong>My trusted circles</strong><small>Only people you already share a circle with can see this.</small></div>
+          <div class="radio"><strong>People connected to my circles</strong><small>One connection beyond your circle. Your circle is never named.</small></div>
+        </div>
+        <div class="footer-cta"><button class="btn">Broadcast intent</button></div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 04 RESPOND -->
+  <section class="flow" id="respond">
+    <div class="flow-heading"><span class="num">04</span><h2>Respond</h2></div>
+    <p class="flow-blurb">A sheet with room for one short message and an honest disclosure of what will be shared. No competing responses are visible; qualifying questions are optional.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">Response sheet <small>sheet presentation</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:8px 20px;opacity:0.45;">
+          <span class="primitive">I need</span>
+          <div style="font-size:16px;font-weight:700;">Looking for one person to help sort donated books tomorrow morning.</div>
+        </div>
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div style="font-size:18px;font-weight:700;">Send a response</div>
+          <div class="input textarea" style="margin-top:12px;font-size:14px;padding-top:12px;flex-direction:column;align-items:flex-start;color:var(--text-primary);">I've helped catalog with the library before. Free tomorrow 9-11am.</div>
+          <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px;">64/1000</div>
+          <div class="disclosure" style="margin-top:12px;">
+            <strong>What will be shared</strong>
+            <small>Your display name and approximate area. Your message and any confirmed interactions.</small>
+            <small>Nothing else. Your contact details stay hidden unless you choose to release them after a match.</small>
+          </div>
+          <button class="btn" style="margin-top:14px;">Send response</button>
+        </div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 05 COORDINATE -->
+  <section class="flow" id="coordinate">
+    <div class="flow-heading"><span class="num">05</span><h2>Coordinate</h2></div>
+    <p class="flow-blurb">The broadcaster reads the inbox one respondent at a time and decides. Accepting opens exactly one room, private to two people, with private fields released one at a time.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">Inbox <small>broadcaster</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
+        <div class="titlebar large">Responses</div>
+        <div class="body">
+          <div class="response">
+            <div class="avatar">D</div>
+            <div style="flex:1;">
+              <strong>Dev Mehta</strong>
+              <div class="reliability">2 of 2 confirmed interactions completed</div>
+              <div class="msg" style="margin-top:6px;">I've helped catalog with the library before. Free tomorrow 9–11am.</div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="btn" style="height:36px;flex:1;font-size:13px;">Accept</button>
+                <button class="btn secondary" style="height:36px;flex:1;font-size:13px;">Decline</button>
+              </div>
+            </div>
+          </div>
+          <div class="response" style="opacity:0.7;">
+            <div class="avatar">M</div>
+            <div style="flex:1;">
+              <strong>Mira Sen</strong>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">No confirmed interactions yet</div>
+              <div class="msg" style="margin-top:6px;">I can help! Great with organizing.</div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="btn" style="height:36px;flex:1;font-size:13px;">Accept</button>
+                <button class="btn secondary" style="height:36px;flex:1;font-size:13px;">Decline</button>
+              </div>
+            </div>
+          </div>
+          <div class="meta" style="margin-top:auto;color:var(--text-muted);">Declined respondents receive a neutral status. Accepting opens a private coordination room; nothing else is revealed until you choose to share it.</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Room <small>match coordination</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
+        <div style="margin:8px 16px;padding:12px 14px;border:1px solid var(--border-subtle);border-radius:14px;background:var(--surface);">
+          <div style="font-size:14px;font-weight:700;line-height:19px;">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:2px;">Matched · Temporary coordination is available.</div>
+          <div style="font-size:11px;color:var(--text-muted);">Coordinating with Dev Mehta</div>
+        </div>
+        <div style="display:flex;gap:8px;padding:0 16px;flex-wrap:wrap;">
+          <button class="btn secondary" style="height:32px;font-size:12px;padding:0 10px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;width:auto;">Share exact address</button>
+          <button class="btn secondary" style="height:32px;font-size:12px;padding:0 10px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;width:auto;">Share contact</button>
+        </div>
+        <div class="body" style="gap:8px;padding-top:12px;">
+          <div class="bubble theirs">Great, I'm nearby. What time works?</div>
+          <div class="bubble mine">9am tomorrow at the library entrance?</div>
+          <div class="bubble theirs">Perfect. See you then.</div>
+        </div>
+        <div style="display:flex;gap:20px;padding:6px 20px;">
+          <span style="font-size:11px;font-weight:600;color:var(--status-danger);">Report</span>
+          <span style="font-size:11px;font-weight:600;color:var(--status-danger);">Block</span>
+        </div>
+        <div style="display:flex;gap:8px;padding:12px 16px 16px;border-top:1px solid var(--border-subtle);background:var(--surface);align-items:flex-end;">
+          <div class="input" style="flex:1;font-size:14px;color:var(--text-muted);">Message</div>
+          <button class="btn" style="width:auto;padding:0 18px;">Send</button>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Room <small>after address released</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
+        <div style="margin:8px 16px;padding:12px 14px;border:1px solid var(--border-subtle);border-radius:14px;background:var(--surface);">
+          <div style="font-size:14px;font-weight:700;line-height:19px;">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:2px;">Matched · Temporary coordination is available.</div>
+          <div style="font-size:11px;color:var(--text-muted);">Coordinating with Dev Mehta</div>
+        </div>
+        <div style="margin:0 16px;padding:10px 12px;background:var(--success);border-radius:12px;">
+          <div style="font-size:12px;font-weight:600;color:var(--action-primary);">Exact address: 44 Play Lane, Indiranagar</div>
+        </div>
+        <div class="body" style="gap:8px;padding-top:12px;">
+          <div class="bubble theirs">Great, I'm nearby. What time works?</div>
+          <div class="bubble mine">9am tomorrow at the library entrance?</div>
+          <div class="bubble mine" style="background:var(--surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-style:italic;font-size:12px;">Asha shared exact address</div>
+          <div class="bubble theirs">Got it. See you then.</div>
+        </div>
+        <div style="display:flex;gap:8px;padding:12px 16px 16px;border-top:1px solid var(--border-subtle);background:var(--surface);align-items:flex-end;">
+          <div class="input" style="flex:1;font-size:14px;color:var(--text-muted);">Message</div>
+          <button class="btn" style="width:auto;padding:0 18px;">Send</button>
+        </div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 06 RESOLVE -->
+  <section class="flow" id="resolve">
+    <div class="flow-heading"><span class="num">06</span><h2>Resolve</h2></div>
+    <p class="flow-blurb">Closing an intent asks for a factual outcome, not a rating. Only "resolved through Nearcast" with the other person's confirmation ever affects reliability.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">Resolution <small>modal</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Resolve intent</div>
+        <div class="body">
+          <div style="font-size:18px;font-weight:700;line-height:24px;margin-top:4px;">Was your intent resolved?</div>
+          <div class="radio on">
+            <strong>Resolved through Nearcast</strong>
+            <small>Counts toward reliability once the other person confirms it happened.</small>
+          </div>
+          <div class="radio"><strong>Resolved elsewhere</strong></div>
+          <div class="radio"><strong>No longer needed</strong></div>
+          <div class="radio"><strong>Could not resolve before expiry</strong></div>
+          <div class="meta">Closing this intent stops new responses immediately. Only "Resolved through Nearcast", confirmed by the other person, affects reliability.</div>
+          <button class="btn danger" style="margin-top:4px;">Withdraw intent</button>
+        </div>
+        <div class="footer-cta"><button class="btn">Resolve intent</button></div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Room <small>outcome confirmation</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
+        <div style="margin:8px 16px;padding:12px 14px;border:1px solid var(--border-subtle);border-radius:14px;background:var(--surface);">
+          <div style="font-size:14px;font-weight:700;line-height:19px;">Looking for one person to help sort donated books tomorrow morning.</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:2px;">Resolved · This intent is closed to new responses.</div>
+        </div>
+        <div class="card reason" style="margin:8px 16px;padding:12px 14px;">
+          <strong style="color:var(--action-secondary);font-size:13px;">Did this interaction happen?</strong>
+          <span style="font-size:12px;color:var(--action-secondary);line-height:17px;">Only a confirmed completion affects reliability. You can dispute an incorrect status.</span>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn" style="height:36px;flex:1;font-size:13px;">It happened</button>
+            <button class="btn secondary" style="height:36px;flex:1;font-size:13px;">It did not</button>
+          </div>
+          <span style="font-size:11px;color:var(--action-secondary);font-weight:600;margin-top:6px;">Dispute the recorded status</span>
+        </div>
+        <div class="body" style="gap:8px;">
+          <div class="bubble mine">Thanks again!</div>
+          <div class="bubble theirs">Anytime.</div>
+        </div>
+        <div style="padding:12px 16px 16px;border-top:1px solid var(--border-subtle);background:var(--surface);">
+          <div style="font-size:12px;color:var(--text-muted);text-align:center;">This intent is closed, so the room is read-only.</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Activity <small>the broadcaster's view</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="titlebar large">Activity</div>
+        <div class="body">
+          <div style="display:flex;gap:10px;">
+            <div class="card tight" style="flex:1;align-items:flex-start;padding:12px 14px;"><span style="font-size:22px;font-weight:700;">3</span><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Your intents</span></div>
+            <div class="card tight" style="flex:1;align-items:flex-start;padding:12px 14px;"><span style="font-size:22px;font-weight:700;">7</span><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Your responses</span></div>
+            <div class="card tight" style="flex:1;align-items:flex-start;padding:12px 14px;"><span style="font-size:22px;font-weight:700;">2</span><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Matches</span></div>
+          </div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-top:8px;">Your broadcasts</div>
+          <div class="card">
+            <div class="row"><span class="primitive">I need</span><span style="font-size:11px;color:var(--text-secondary);font-weight:600;">Resolved</span></div>
+            <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
+            <div class="meta">This intent is closed to new responses.</div>
+            <span style="font-size:12px;color:var(--action-primary);font-weight:600;">1 response accepted</span>
+          </div>
+          <div class="card">
+            <div class="row"><span class="primitive">I offer</span><span style="font-size:11px;color:var(--text-secondary);font-weight:600;">Live</span></div>
+            <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
+            <span style="font-size:12px;color:var(--action-primary);font-weight:600;">2 responses to review</span>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><div class="glyph-icon">⌂</div>For You</div>
+          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
+          <div class="tab active"><div class="glyph-icon">◉</div>Activity</div>
+          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+        </div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 07 YOU -->
+  <section class="flow" id="you">
+    <div class="flow-heading"><span class="num">07</span><h2>You</h2></div>
+    <p class="flow-blurb">Contextual trust evidence, not a score. Verification badges are honest about what they don't guarantee. Delete Account is a two-step confirmation that names exactly what's removed and what survives.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">You <small>profile</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="titlebar large">You</div>
+        <div class="body">
+          <div style="margin-top:4px;">
+            <div style="font-size:18px;font-weight:700;">Asha Rao</div>
+            <div class="meta">Bengaluru area</div>
+          </div>
+
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-top:8px;">Trust context</div>
+          <div class="card">
+            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">I need: 4 of 5 confirmed interactions were completed.</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">I offer: 2 of 2 confirmed interactions were completed.</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">Email verified. Verification does not guarantee safety.</div>
+          </div>
+
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-top:4px;">Privacy</div>
+          <div class="card">
+            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">People can see your first name and approximate area.</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">Only accepted respondents can see details you explicitly release.</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:18px;">Your originating group and its members remain private.</div>
+          </div>
+
+          <button class="btn secondary" style="margin-top:8px;">Sign out</button>
+          <button class="btn danger">Delete account</button>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><div class="glyph-icon">⌂</div>For You</div>
+          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
+          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
+          <div class="tab active"><div class="glyph-icon">◐</div>You</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Delete account <small>confirmation</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="titlebar large">You</div>
+        <div class="body">
+          <div class="card danger" style="gap:8px;">
+            <strong style="color:var(--status-danger);font-size:16px;">Delete your account?</strong>
+            <span style="color:var(--status-danger);font-size:13px;line-height:18px;">Your profile is anonymized, open intents are withdrawn, exact locations and contact details are removed, and messages you sent are redacted. Safety reports you filed are preserved. This cannot be undone.</span>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+              <button style="flex:1;height:44px;background:var(--status-danger);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;">Delete my account</button>
+              <button style="flex:1;height:44px;background:var(--surface);color:var(--text-primary);border:1px solid var(--border-subtle);border-radius:12px;font-weight:600;font-size:14px;">Keep my account</button>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 08 STATES -->
+  <section class="flow" id="states">
+    <div class="flow-heading"><span class="num">08</span><h2>States</h2></div>
+    <p class="flow-blurb">Every data screen must render one of these. Skeletons imply shape, never people or counts. Restricted is honest — an entitled reader sees content, an unentitled one sees a plain refusal, and the app never leaks what it hides.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">Loading <small>skeleton</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="titlebar large">For You</div>
+        <div class="body">
+          <div class="card"><span class="skeleton sk-line" style="width:40%;"></span><span class="skeleton sk-lg" style="margin-top:8px;width:90%;"></span><span class="skeleton sk-lg" style="margin-top:6px;width:70%;"></span><span class="skeleton sk-line" style="margin-top:12px;width:50%;"></span></div>
+          <div class="card"><span class="skeleton sk-line" style="width:40%;"></span><span class="skeleton sk-lg" style="margin-top:8px;width:90%;"></span><span class="skeleton sk-lg" style="margin-top:6px;width:60%;"></span></div>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
+          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
+          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
+          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Empty <small>no active intents</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="titlebar large">For You</div>
+        <div class="subtitle">0 active intents</div>
+        <div class="state-panel">
+          <div class="icon">◯</div>
+          <h3>Nothing relevant is active right now</h3>
+          <p>Adjust your preferences or broadcast an intent.</p>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
+          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
+          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
+          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Offline <small>publish queued</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;font-weight:700;font-size:16px;">Review intent</div>
+        <div class="body">
+          <div class="card">
+            <span class="primitive">I need</span>
+            <div class="statement">Need one person to help sort donated books tomorrow morning at the library.</div>
+          </div>
+          <div class="card warn">
+            <span style="font-size:13px;font-weight:600;color:var(--status-warning);">You're offline</span>
+            <span style="font-size:12px;color:var(--status-warning);line-height:17px;">Your draft is saved on this device. It will not be published until you are online.</span>
+          </div>
+        </div>
+        <div class="footer-cta"><button class="btn disabled">Broadcast intent</button></div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Error <small>with retry</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div class="titlebar large">For You</div>
+        <div class="state-panel">
+          <div class="icon" style="background:var(--danger);color:var(--status-danger);border-color:transparent;">!</div>
+          <h3>Something went wrong</h3>
+          <p>We couldn't load your feed. Try again.</p>
+          <button class="btn secondary" style="width:auto;padding:0 20px;margin-top:4px;">Try again</button>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><div class="glyph-icon">⌂</div>For You</div>
+          <div class="tab broadcast"><div class="glyph-icon">+</div>Broadcast</div>
+          <div class="tab"><div class="glyph-icon">◉</div>Activity</div>
+          <div class="tab"><div class="glyph-icon">◐</div>You</div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Restricted <small>not entitled</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="glyph"></span><span class="glyph"></span><span class="glyph bat"></span></span></div>
+        <div style="padding:12px 20px 0;"><span style="font-size:14px;font-weight:600;color:var(--action-primary);">‹ Back</span></div>
+        <div class="state-panel">
+          <div class="icon">◉</div>
+          <h3>Not available</h3>
+          <p>This information is not available to you.</p>
+        </div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <footer class="legal">
+    Nearcast · Trustworthy Native Clarity. Every color and control token here is defined in <code>src/design-system/tokens.ts</code>; when the RN screen drifts from a mockup, the mockup is the target unless the founder says otherwise. Manrope from Google Fonts is the only external asset; everything else is inline.
+  </footer>
+</div>
