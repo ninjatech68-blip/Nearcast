@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Row } from '@/design-system/components/row';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { areasNearMe, searchAreas } from '@/features/casts/area-lookup';
+import { areasNearMe, searchAreas, suggestAreas, type AreaSuggestion } from '@/features/casts/area-lookup';
 import { setDraftArea } from '@/features/casts/store';
 
 type Status = 'idle' | 'locating' | 'searching' | 'no-permission' | 'not-found';
@@ -41,6 +41,7 @@ export default function AreaScreen() {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<readonly string[]>([]);
+  const [suggestions, setSuggestions] = useState<readonly AreaSuggestion[]>([]);
   const [status, setStatus] = useState<Status>('idle');
   const [region, setRegion] = useState<Region>(DEFAULT_REGION);
   const [pin, setPin] = useState<LatLng | null>(null);
@@ -52,16 +53,23 @@ export default function AreaScreen() {
   }, []);
 
   /**
-   * live typeahead: after the user pauses for 300ms, run a search and
-   * fill the list with real geocoded neighborhoods. cancelled if they
-   * keep typing, so we never race a stale search over a fresh one.
+   * live typeahead: after the user pauses for 250ms, fetch richer
+   * geocoded SUGGESTIONS (name + full formatted address) and populate
+   * the list. cancelled if they keep typing.
    */
   useEffect(() => {
     const typed = query.trim();
-    if (typed.length < 2) return;
-    const handle = setTimeout(() => {
-      void search(query);
-    }, 300);
+    if (typed.length < 2) {
+      // clear on the next tick so the effect body doesn't setState during commit
+      const cleared = setTimeout(() => setSuggestions([]), 0);
+      return () => clearTimeout(cleared);
+    }
+    const handle = setTimeout(async () => {
+      setStatus('searching');
+      const next = await suggestAreas(query);
+      setSuggestions(next);
+      setStatus('idle');
+    }, 250);
     return () => clearTimeout(handle);
   }, [query]);
 
@@ -125,6 +133,19 @@ export default function AreaScreen() {
   function tap(area: string) {
     haptic('selection');
     void highlight(area);
+  }
+
+  function tapSuggestion(s: AreaSuggestion) {
+    haptic('selection');
+    setSelected(s.name);
+    if (s.coord) {
+      const next: Region = { ...s.coord, latitudeDelta: 0.03, longitudeDelta: 0.03 };
+      setRegion(next);
+      setPin(s.coord);
+      mapRef.current?.animateToRegion(next, 350);
+    } else {
+      void highlight(s.name);
+    }
   }
 
   function choose(area: string) {
@@ -203,7 +224,9 @@ export default function AreaScreen() {
         </Pressable>
 
         <View style={styles.resultsHead}>
-          <Text style={styles.section}>{status === 'searching' ? 'MATCHES' : 'NEARBY'}</Text>
+          <Text style={styles.section}>
+            {suggestions.length > 0 ? 'SUGGESTIONS' : status === 'searching' ? 'MATCHES' : 'NEARBY'}
+          </Text>
           {busy ? <ActivityIndicator color={tokens.semantic.color.accent} size="small" /> : null}
         </View>
 
@@ -214,15 +237,24 @@ export default function AreaScreen() {
           contentContainerStyle={{ paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
         >
-          {results.map((area) => (
-            <Row
-              key={area}
-              title={area}
-              sub={selected === area ? 'pinned on the map — tap use it below' : 'tap to pin · tap use it to choose'}
-              onPress={() => tap(area)}
-            />
-          ))}
-          {results.length === 0 && !busy ? (
+          {suggestions.length > 0
+            ? suggestions.map((s) => (
+                <Row
+                  key={`${s.name}-${s.full}`}
+                  title={s.name}
+                  sub={s.full !== s.name ? s.full : 'tap to pin · tap use it to choose'}
+                  onPress={() => tapSuggestion(s)}
+                />
+              ))
+            : results.map((area) => (
+                <Row
+                  key={area}
+                  title={area}
+                  sub={selected === area ? 'pinned on the map — tap use it below' : 'tap to pin · tap use it to choose'}
+                  onPress={() => tap(area)}
+                />
+              ))}
+          {suggestions.length === 0 && results.length === 0 && !busy ? (
             <Text style={styles.note}>
               {status === 'no-permission'
                 ? 'location is off. type an area name instead.'

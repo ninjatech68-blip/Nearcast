@@ -13,13 +13,6 @@ export type PosterData = {
   vouches: string;
   expiry: string;
   why: string;
-  /**
-   * the exact meeting spot the caster has in mind (e.g. a court name,
-   * a cafe, gate 3). NEVER shown on the poster or the detail sheet —
-   * revealed only in the chat once the caster accepts a join. this is
-   * a product law, not a display choice.
-   */
-  exactSpot?: string;
 };
 
 /**

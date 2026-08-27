@@ -142,6 +142,24 @@ export default function YouScreen() {
             ) : null}
             {openPicker ? (
               <View style={styles.pickerBlock}>
+                <View style={styles.pickerHead}>
+                  <Text style={styles.pickerTitle}>quiet hours · {openPicker}</Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="done"
+                    hitSlop={10}
+                    onPress={() => {
+                      const commit = tempTime ?? timeToDate(openPicker === 'start' ? quiet.start : quiet.end);
+                      setQuietHours(
+                        openPicker === 'start' ? { start: dateToTime(commit) } : { end: dateToTime(commit) },
+                      );
+                      setOpenPicker(null);
+                      setTempTime(null);
+                    }}
+                  >
+                    <Text style={styles.pickerDone}>done</Text>
+                  </Pressable>
+                </View>
                 <DateTimePicker
                   mode="time"
                   display="spinner"
@@ -154,21 +172,6 @@ export default function YouScreen() {
                     if (date) setTempTime(date);
                   }}
                 />
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="done"
-                  onPress={() => {
-                    const commit = tempTime ?? timeToDate(openPicker === 'start' ? quiet.start : quiet.end);
-                    setQuietHours(
-                      openPicker === 'start' ? { start: dateToTime(commit) } : { end: dateToTime(commit) },
-                    );
-                    setOpenPicker(null);
-                    setTempTime(null);
-                  }}
-                  style={styles.doneBtn}
-                >
-                  <Text style={styles.doneText}>done</Text>
-                </Pressable>
               </View>
             ) : null}
           </View>
@@ -270,16 +273,21 @@ const styles = StyleSheet.create({
   },
   timeLabel: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   timeValue: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.ink },
-  pickerBlock: { gap: 8, marginTop: 4 },
-  doneBtn: {
-    alignSelf: 'flex-end',
-    minHeight: 40,
-    paddingHorizontal: 20,
-    borderRadius: tokens.primitive.radius.pill,
-    backgroundColor: tokens.semantic.color.ink,
-    alignItems: 'center',
-    justifyContent: 'center',
+  pickerBlock: {
+    marginTop: 8,
+    borderRadius: tokens.primitive.radius.control,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+    paddingHorizontal: 14,
+    paddingTop: 8,
+    paddingBottom: 4,
   },
-  doneText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.cream },
+  pickerHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 36,
+  },
+  pickerTitle: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  pickerDone: { fontFamily: fontFamily.displaySemi, fontSize: 16, color: tokens.semantic.color.accent },
   signOut: { marginTop: 20, alignItems: 'center' },
 });

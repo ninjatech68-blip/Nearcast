@@ -49,17 +49,20 @@ export default function RootLayout() {
   }, []);
 
   // gate the shell on signed-in + onboarding-done, but only after
-  // fonts are ready so we don't route through a partially-mounted app.
+  // fonts are ready so we don't route through a partially-mounted
+  // app. legal pages (terms / privacy / guidelines) stay reachable
+  // when unsigned so the links on the signin screen actually work.
   useEffect(() => {
     if (!fontsReady) return;
     const first = segments[0];
     const inSignin = first === 'signin';
     const inOnboarding = first === 'onboarding';
-    if (!me.signedIn && !inSignin) {
+    const inLegal = first === 'legal';
+    if (!me.signedIn && !inSignin && !inLegal) {
       router.replace('/signin');
       return;
     }
-    if (me.signedIn && !me.onboardingDone && !inOnboarding) {
+    if (me.signedIn && !me.onboardingDone && !inOnboarding && !inLegal) {
       router.replace('/onboarding');
     }
   }, [fontsReady, me.signedIn, me.onboardingDone, segments]);
@@ -88,6 +91,7 @@ export default function RootLayout() {
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
       <Stack.Screen name="reflect/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="invite/[key]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="vouch/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="signin" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="onboarding" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />

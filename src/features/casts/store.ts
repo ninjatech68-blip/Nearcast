@@ -330,9 +330,10 @@ export function addCast(input: {
   area: string;
   gone: string;
   reach: string;
-  exactSpot?: string;
+  slotsWanted?: number;
 }): void {
   const id = `mine-${Date.now()}`;
+  const slotsWanted = Math.max(1, input.slotsWanted ?? 2);
   const cast: CastDetail = {
     id,
     category: input.category,
@@ -342,7 +343,6 @@ export function addCast(input: {
     expiry: input.gone,
     why: 'you cast this',
     signals: ['you cast this'],
-    exactSpot: input.exactSpot,
     by: 'Piyush',
     byId: 'me',
     byLine: `${input.area} · your cast`,
@@ -357,14 +357,17 @@ export function addCast(input: {
       reach: 'adjacent_network',
       casterCircleIds: [],
     },
-    slotsWanted: 2,
+    slotsWanted,
     matched: [],
     pendingJoins: [],
   };
   state = {
     ...state,
     myCasts: [cast, ...state.myCasts],
-    mine: [{ id, title: input.text, sub: `live · 0 in · 2 left · ${input.gone}`, castId: id }, ...state.mine],
+    mine: [
+      { id, title: input.text, sub: `live · 0 in · ${slotsWanted} left · ${input.gone}`, castId: id },
+      ...state.mine,
+    ],
   };
   emit();
 }

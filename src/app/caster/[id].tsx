@@ -7,12 +7,11 @@ import { Face } from '@/design-system/components/face';
 import { Row } from '@/design-system/components/row';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
-import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { useFeedCasts } from '@/features/casts/store';
-import { addToCircle, getCircles, hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
+import { hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
 import { trustLink } from '@/features/trust/domain/trust';
 import { useSharedHistoryWith } from '@/features/attendance/store';
 import { blockCaster } from '@/features/me/me-store';
@@ -45,26 +44,11 @@ export default function CasterProfileScreen() {
 
   function addTo() {
     if (!caster) return;
-    const options = getCircles().filter((c) => !c.memberIds.includes(caster.id));
-    if (options.length === 0) {
-      Alert.alert('already vouched', `${caster.name} is in all your circles.`, [{ text: 'ok' }]);
-      return;
-    }
-    const title = inCircles.length > 0 ? `add ${caster.name} to another?` : `vouch for ${caster.name}?`;
-    const body =
-      inCircles.length > 0
-        ? 'they are never told which circle. any circle counts as your vouch.'
-        : `you have a receipt with ${caster.name}. putting them in a circle is your vouch — they never see which one.`;
-    Alert.alert(title, body, [
-      ...options.map((c) => ({
-        text: c.name,
-        onPress: () => {
-          haptic('selection');
-          addToCircle(c.id, caster.id);
-        },
-      })),
-      { text: 'cancel', style: 'cancel' as const },
-    ]);
+    // dedicated sheet — the previous Alert put the circle list next to
+    // a "cancel" button of the same shape, and there was no visual
+    // distinction between "add to X" and "cancel". the sheet renders
+    // the list as circle rows and puts cancel below as a quiet action.
+    router.push(`/vouch/${caster.id}`);
   }
 
   if (!caster) {

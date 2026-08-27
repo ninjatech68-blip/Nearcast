@@ -1,7 +1,7 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
@@ -40,8 +40,7 @@ export default function ComposeScreen() {
   const [whenOpen, setWhenOpen] = useState(false);
   const [reachOpen, setReachOpen] = useState(false);
   const [reach, setReach] = useState<ReachValue>('adjacent_network');
-  const [exactSpot, setExactSpot] = useState('');
-  const [spotOpen, setSpotOpen] = useState(false);
+  const [slots, setSlots] = useState(2);
   const [casting, setCasting] = useState(false);
 
   const area = useDraftArea();
@@ -80,7 +79,7 @@ export default function ComposeScreen() {
         area: area.trim() || 'nearby',
         gone: goneLabel,
         reach: reachTitle(reach),
-        exactSpot: exactSpot.trim() || undefined,
+        slotsWanted: slots,
       });
       setCasting(false);
       setStep('sent');
@@ -212,6 +211,9 @@ export default function ComposeScreen() {
                     <DateTimePicker
                       value={when ?? defaultWhen()}
                       mode="datetime"
+                      // 'compact' opens iOS's own popover on tap — it carries
+                      // its own dismiss; anything extra sits in the wrong
+                      // place. tap the row again to collapse.
                       display={Platform.OS === 'ios' ? 'compact' : 'default'}
                       minimumDate={new Date()}
                       minuteInterval={5}
@@ -224,20 +226,27 @@ export default function ComposeScreen() {
                     <Text style={styles.expandNote}>
                       pick when the plan starts. the cast stays up until then, then hangs on {CAST_WINDOW_HOURS}h more before it disappears — no countdowns.
                     </Text>
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel="done picking time"
-                      onPress={() => {
-                        // if the user opened the picker and never scrolled, land on the default
-                        if (!when) setWhen(defaultWhen());
-                        setWhenOpen(false);
-                      }}
-                      style={styles.doneBtn}
-                    >
-                      <Text style={styles.doneText}>done</Text>
-                    </Pressable>
                   </View>
                 ) : null}
+
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="how many joiners"
+                  onPress={() => {
+                    // cycles 1 → 2 → 3 → 4 → 5 → 1, so tap increments visibly
+                    haptic('selection');
+                    setSlots((s) => (s >= 5 ? 1 : s + 1));
+                  }}
+                  style={styles.detailRow}
+                >
+                  <View style={styles.flex}>
+                    <Text style={styles.detailTitle}>how many joiners</Text>
+                    <Text style={styles.detailSub}>
+                      {slots} {slots === 1 ? 'slot' : 'slots'} · tap to change · you can extend later
+                    </Text>
+                  </View>
+                  <Text style={styles.detailAction}>{slots}</Text>
+                </Pressable>
 
                 <Pressable
                   accessibilityRole="button"
@@ -281,42 +290,6 @@ export default function ComposeScreen() {
                   </View>
                 ) : null}
 
-                {/* exact meeting spot: shared with joiners ONLY after you
-                    accept them. the poster displays the area only. */}
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="exact meeting spot"
-                  onPress={() => setSpotOpen((open) => !open)}
-                  style={styles.detailRow}
-                >
-                  <View style={styles.flex}>
-                    <Text style={styles.detailTitle}>exact meeting spot</Text>
-                    <Text style={styles.detailSub}>
-                      {exactSpot.trim().length > 0
-                        ? `${exactSpot.trim()} · shared once you accept them`
-                        : 'optional · only shared with joiners after you accept'}
-                    </Text>
-                  </View>
-                  <Text style={styles.detailAction}>{spotOpen ? 'DONE' : exactSpot ? 'EDIT' : 'ADD'}</Text>
-                </Pressable>
-                {spotOpen ? (
-                  <View style={styles.expand}>
-                    <TextInput
-                      accessibilityLabel="exact meeting spot"
-                      value={exactSpot}
-                      onChangeText={setExactSpot}
-                      placeholder="e.g. KSLTA Court 3 · gate 2"
-                      placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                      selectionColor={tokens.semantic.color.accent}
-                      style={styles.spotInput}
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                    />
-                    <Text style={styles.expandNote}>
-                      the poster shows just the area. the exact spot is revealed to a joiner in chat, and only after you accept.
-                    </Text>
-                  </View>
-                ) : null}
               </View>
             </ScrollView>
             <View style={styles.detailsActions}>
@@ -417,26 +390,6 @@ const styles = StyleSheet.create({
   detailSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },
   detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expand: { paddingBottom: 18, gap: 12 },
-  doneBtn: {
-    alignSelf: 'flex-end',
-    minHeight: 40,
-    paddingHorizontal: 20,
-    borderRadius: tokens.primitive.radius.pill,
-    backgroundColor: tokens.semantic.color.ink,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  doneText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.cream },
-  spotInput: {
-    minHeight: 48,
-    borderRadius: tokens.primitive.radius.control,
-    borderWidth: 1.5,
-    borderColor: tokens.semantic.color.accent,
-    paddingHorizontal: 14,
-    fontFamily: fontFamily.text,
-    fontSize: 16,
-    color: tokens.semantic.color.ink,
-  },
   expandNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
   preview: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
   swatch: { width: 18, height: 18, borderRadius: 4, borderWidth: 1 },

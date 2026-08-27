@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton } from '@/design-system/components/button';
@@ -20,7 +20,6 @@ import {
   withdrawJoin,
 } from '@/features/casts/store';
 import { usePendingReports } from '@/features/attendance/store';
-import { Alert } from 'react-native';
 
 import { AvatarDot } from './avatar-dot';
 
