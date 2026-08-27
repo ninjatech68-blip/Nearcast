@@ -72,9 +72,10 @@ export default function YouScreen() {
           <SignalBars lit={me.signal.lit} size="big" trackColor={tokens.semantic.color.ink} />
           <View style={styles.signalCopy}>
             <Text style={styles.signalWord}>signal: {me.signal.word}</Text>
-            <Text style={styles.range}>{me.range}</Text>
+            <Text style={styles.signalVisibility}>signal + receipts are public · anyone on a cast can see this</Text>
           </View>
         </View>
+        <Text style={styles.range}>{me.range}</Text>
 
         <View style={styles.rows}>
           <Row title="receipts" sub={`${receipts} plans made real · last: badminton, tuesday`} right={<Tag label="→" tone="line" />} />
@@ -221,7 +222,8 @@ const styles = StyleSheet.create({
   signalBlock: { flexDirection: 'row', alignItems: 'flex-end', gap: 16, marginTop: 26 },
   signalCopy: { flex: 1 },
   signalWord: { fontFamily: fontFamily.display, fontSize: 22, lineHeight: 24, letterSpacing: -0.45, color: tokens.semantic.color.ink },
-  range: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
+  signalVisibility: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
+  range: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
   rows: { marginTop: 24 },
   rowTitle: { fontFamily: fontFamily.displaySemi, fontSize: 17, letterSpacing: -0.2, color: tokens.semantic.color.ink },
   rowSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },

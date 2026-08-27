@@ -446,7 +446,7 @@ export const me = {
   name: 'Piyush',
   area: 'indiranagar',
   signal: { lit: 4, word: 'strong' },
-  range: 'your cast reaches ~240 people · only you see this',
+  range: 'range: your next cast reaches ~240 people · only you see this number',
   receipts: { count: 31, sub: '31 plans made real · last: badminton, tuesday' },
   circles: '3 circles · 24 people',
   areas: 'indiranagar, koramangala, hsr · always approximate',

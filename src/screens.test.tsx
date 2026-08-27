@@ -210,7 +210,7 @@ describe('you sheet', () => {
     const view = await render(<YouScreen />);
 
     expect(view.getByText('signal: strong')).toBeTruthy();
-    expect(view.getByText('your cast reaches ~240 people · only you see this')).toBeTruthy();
+    expect(view.getByText(/range: your next cast reaches ~240 people · only you see this number/)).toBeTruthy();
     expect(view.getByText('receipts')).toBeTruthy();
     expect(view.getByText(/the exact place stays hidden until both sides say yes\./)).toBeTruthy();
   });

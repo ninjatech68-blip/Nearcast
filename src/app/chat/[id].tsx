@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -16,7 +17,7 @@ import { Face } from '@/design-system/components/face';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
-import { sendMessage, useThread, type Message } from '@/features/chat/chat';
+import { endChat, extendChat, sendMessage, useThread, type Message } from '@/features/chat/chat';
 
 /**
  * the plan room chat: opens after a match, shows the whole thread for
@@ -49,6 +50,40 @@ export default function ChatScreen() {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
   }
 
+  function openExpiryMenu() {
+    if (!thread) return;
+    if (thread.mode === 'ended') {
+      Alert.alert('chat ended', 'this chat is closed. it cannot be reopened.', [{ text: 'ok' }]);
+      return;
+    }
+    Alert.alert(
+      'chat window',
+      `currently ${thread.expiresLabel}. keep it open for as long as you both want, then end it.`,
+      [
+        { text: '24 hours', onPress: () => extendChat(thread.id, 'day') },
+        { text: '7 days', onPress: () => extendChat(thread.id, 'week') },
+        { text: 'keep open forever', onPress: () => extendChat(thread.id, 'always') },
+        {
+          text: 'end chat',
+          style: 'destructive',
+          onPress: () =>
+            Alert.alert('end this chat?', 'no new messages after this. it cannot be reopened.', [
+              { text: 'never mind' },
+              {
+                text: 'end',
+                style: 'destructive',
+                onPress: () => {
+                  haptic('light');
+                  endChat(thread.id);
+                },
+              },
+            ]),
+        },
+        { text: 'cancel', style: 'cancel' as const },
+      ],
+    );
+  }
+
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 8 }]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
@@ -68,6 +103,16 @@ export default function ChatScreen() {
               <Text style={styles.sub}>{thread.castTitle}</Text>
             </View>
           </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="chat window options"
+            hitSlop={10}
+            onPress={openExpiryMenu}
+            style={styles.expiryTap}
+          >
+            <Text style={styles.expiryLabel}>{thread.expiresLabel}</Text>
+            <Text style={styles.expiryChevron}>⋯</Text>
+          </Pressable>
         </View>
 
         <ScrollView
@@ -84,28 +129,34 @@ export default function ChatScreen() {
           ))}
         </ScrollView>
 
-        <View style={[styles.composer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-          <TextInput
-            accessibilityLabel="message"
-            value={draft}
-            onChangeText={setDraft}
-            placeholder="message"
-            placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-            selectionColor={tokens.semantic.color.accent}
-            style={styles.input}
-            multiline
-          />
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="send"
-            accessibilityState={{ disabled: draft.trim().length === 0 }}
-            disabled={draft.trim().length === 0}
-            onPress={send}
-            style={[styles.sendBtn, draft.trim().length === 0 && styles.sendDim]}
-          >
-            <Text style={styles.sendText}>↑</Text>
-          </Pressable>
-        </View>
+        {thread.mode === 'ended' ? (
+          <View style={[styles.endedRow, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+            <Text style={styles.endedText}>this chat has ended. no new messages.</Text>
+          </View>
+        ) : (
+          <View style={[styles.composer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+            <TextInput
+              accessibilityLabel="message"
+              value={draft}
+              onChangeText={setDraft}
+              placeholder="message"
+              placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+              selectionColor={tokens.semantic.color.accent}
+              style={styles.input}
+              multiline
+            />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="send"
+              accessibilityState={{ disabled: draft.trim().length === 0 }}
+              disabled={draft.trim().length === 0}
+              onPress={send}
+              style={[styles.sendBtn, draft.trim().length === 0 && styles.sendDim]}
+            >
+              <Text style={styles.sendText}>↑</Text>
+            </Pressable>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </View>
   );
@@ -210,4 +261,31 @@ const styles = StyleSheet.create({
   },
   sendDim: { opacity: 0.4 },
   sendText: { fontFamily: fontFamily.display, fontSize: 20, color: tokens.semantic.color.ink },
+  expiryTap: {
+    alignItems: 'flex-end',
+    minHeight: 44,
+    paddingHorizontal: 8,
+    justifyContent: 'center',
+  },
+  expiryLabel: {
+    ...tokens.typography.tagSmall,
+    color: tokens.semantic.color.textMutedOnCream,
+  },
+  expiryChevron: {
+    fontFamily: fontFamily.text,
+    fontSize: 18,
+    lineHeight: 18,
+    color: tokens.semantic.color.textMutedOnCream,
+    marginTop: 2,
+  },
+  endedRow: {
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: tokens.semantic.color.hairlineOnCream,
+    alignItems: 'center',
+  },
+  endedText: {
+    ...tokens.typography.metaSmall,
+    color: tokens.semantic.color.textMutedOnCream,
+  },
 });

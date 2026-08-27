@@ -14,12 +14,29 @@ export type Message = {
   time: string;
 };
 
+/**
+ * chats expire by default so they don't linger past their reason.
+ *  - 'day'    (24h from now) — the default when the plan window is short
+ *  - 'week'   (7 days)       — when the pair wants to plan the next one
+ *  - 'always' (no expiry)    — both sides opted to keep it open forever
+ *  - 'ended'                 — closed by one side; read-only, no new
+ *                              messages, no reopen. this is a hard stop.
+ *
+ * "always" and "ended" are TWO-SIDED transitions in production: one
+ * side proposes, the other accepts. session store here mocks the shape
+ * without the second confirmation.
+ */
+export type ExpiryMode = 'day' | 'week' | 'always' | 'ended';
+
 export type Thread = {
   id: string;
   withName: string;
   withId: string;
   castTitle: string;
   messages: readonly Message[];
+  mode: ExpiryMode;
+  /** display label for the current expiry — kept as a string so the store stays deterministic without a clock */
+  expiresLabel: string;
 };
 
 type State = { threads: Record<string, Thread> };
@@ -31,6 +48,8 @@ let state: State = {
       withName: 'Riya',
       withId: 'riya',
       castTitle: 'badminton after work',
+      mode: 'day' as const,
+      expiresLabel: 'expires in 22h',
       messages: [
         // system message: the exact meeting spot is revealed the
         // moment the caster accepts the join. before this, the poster
@@ -65,6 +84,9 @@ export function useThread(id: string): Thread | undefined {
 export function sendMessage(threadId: string, text: string): void {
   const thread = state.threads[threadId];
   if (!thread || !text.trim()) return;
+  // ended chats are read-only. drop silently rather than raise —
+  // the composer is disabled in the UI so this should not fire.
+  if (thread.mode === 'ended') return;
   const message: Message = {
     id: `m${thread.messages.length + 1}-${text.length}`,
     from: 'me',
@@ -74,6 +96,72 @@ export function sendMessage(threadId: string, text: string): void {
   };
   state = {
     threads: { ...state.threads, [threadId]: { ...thread, messages: [...thread.messages, message] } },
+  };
+  emit();
+}
+
+/**
+ * extend the chat's window. in production, "always" needs both sides
+ * to opt in; here we mock the shape by flipping the mode immediately
+ * and appending a system message describing the transition.
+ */
+export function extendChat(threadId: string, mode: 'day' | 'week' | 'always'): void {
+  const thread = state.threads[threadId];
+  if (!thread || thread.mode === 'ended') return;
+  const labels: Record<'day' | 'week' | 'always', string> = {
+    day: 'expires in 24h',
+    week: 'expires in 7 days',
+    always: 'no expiry · you both agreed to keep it open',
+  };
+  const noteText: Record<'day' | 'week' | 'always', string> = {
+    day: 'chat window reset to 24h.',
+    week: 'chat window reset to 7 days.',
+    always: 'both of you agreed to keep this chat open. no expiry now.',
+  };
+  const note: Message = {
+    id: `sys-extend-${thread.messages.length + 1}`,
+    from: 'system',
+    text: noteText[mode],
+    time: 'now',
+  };
+  state = {
+    threads: {
+      ...state.threads,
+      [threadId]: {
+        ...thread,
+        mode,
+        expiresLabel: labels[mode],
+        messages: [...thread.messages, note],
+      },
+    },
+  };
+  emit();
+}
+
+/**
+ * end the chat immediately. either side can do this at any time; the
+ * thread becomes read-only, no reopen. one-way and one-tap is the
+ * point — there is no "block the block".
+ */
+export function endChat(threadId: string): void {
+  const thread = state.threads[threadId];
+  if (!thread || thread.mode === 'ended') return;
+  const note: Message = {
+    id: `sys-end-${thread.messages.length + 1}`,
+    from: 'system',
+    text: 'this chat is ended. no new messages.',
+    time: 'now',
+  };
+  state = {
+    threads: {
+      ...state.threads,
+      [threadId]: {
+        ...thread,
+        mode: 'ended',
+        expiresLabel: 'ended',
+        messages: [...thread.messages, note],
+      },
+    },
   };
   emit();
 }
