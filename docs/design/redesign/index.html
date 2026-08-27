@@ -168,6 +168,15 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
 .pick.on{border-color:var(--ink);background:var(--ink)}
 .pick.on::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--orange)}
 
+/* SIG — signal bars, the one data visual */
+.sig{display:inline-flex;align-items:flex-end;gap:3px}
+.sig i{width:5px;border-radius:2px;background:currentColor;opacity:.16}
+.sig i:nth-child(1){height:7px}.sig i:nth-child(2){height:11px}.sig i:nth-child(3){height:15px}.sig i:nth-child(4){height:19px}.sig i:nth-child(5){height:23px}
+.sig i.on{opacity:1;background:var(--orange)}
+.sig.big{gap:5px}
+.sig.big i{width:10px;border-radius:3px}
+.sig.big i:nth-child(1){height:14px}.sig.big i:nth-child(2){height:22px}.sig.big i:nth-child(3){height:30px}.sig.big i:nth-child(4){height:38px}.sig.big i:nth-child(5){height:46px}
+
 /* strip (offline) */
 .strip{position:absolute;z-index:35;top:58px;left:24px;right:24px;background:var(--ink);color:var(--cream);border-radius:12px;padding:10px 14px;font:500 12px var(--mono)}
 
@@ -219,6 +228,7 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
   <li><b>Three nav points</b><span>Feed, cast, activity. Profile lives behind the avatar dot. Five tabs was two too many.</span></li>
   <li><b>Trust stays loud</b><span>Vouch count and the "why you" line ride on every poster. Privacy disclosures are one mono line, not a banner. This is the non-negotiable product rule, restyled, never removed.</span></li>
   <li><b>No pressure mechanics</b><span>Expiry is a fact ("gone 10pm"), never a countdown. No streaks, no guilt copy, nothing that works by making you feel bad for leaving.</span></li>
+  <li><b>Reputation is receipts</b><span>Nobody rates anybody. Signal is built from confirmed attendance, and the reward is range (who your next cast reaches), not rank. Section 05.</span></li>
 </ul>
 
 <!-- ================= 01 ================= -->
@@ -246,8 +256,8 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
 
 <!-- ================= 03 ================= -->
 <div class="secnum" style="margin-top:96px">03</div>
-<h2 class="sec" style="margin-top:8px">Six primitives</h2>
-<p class="sub">Poster, bar, sheet, row, tag, field. Every screen below is built from these and nothing else; each one appears in at least two screens. If a screen seems to need a seventh, the screen is wrong.</p>
+<h2 class="sec" style="margin-top:8px">Seven primitives</h2>
+<p class="sub">Poster, bar, sheet, row, tag, field, bars. Every screen below is built from these and nothing else; each one appears in at least two screens. If a screen seems to need an eighth, the screen is wrong.</p>
 <ul class="rule-list">
   <li><b>poster</b><span>full-bleed verb-colored block: tag, cast headline, meta line, why line, bar. used: feed, cast-sent, empty, detail underlay.</span></li>
   <li><b>bar</b><span>one 58px button plus at most one quiet text action. used: every screen with an action.</span></li>
@@ -255,6 +265,7 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
   <li><b>row</b><span>mono-subtitled list line. used: activity, your casts, profile.</span></li>
   <li><b>tag</b><span>mono caps chip for verbs and states (new / matched / draft). used: posters, rows, compose.</span></li>
   <li><b>field</b><span>display-size text input, orange caret, no border. typing looks like the poster it becomes. used: compose, request note.</span></li>
+  <li><b>bars</b><span>the one data visual: five signal bars, filled by attendance facts only. never a number in public. used: detail sheet, profile, recap.</span></li>
 </ul>
 
 <!-- ================= 04 ================= -->
@@ -329,6 +340,10 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
         <div class="grab"></div>
         <h2>Aarav cast this</h2>
         <div class="t-meta" style="color:var(--ink40);margin-top:2px">indiranagar · 1 trusted link · your circle vouches</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+          <span class="sig"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="t-meta">31 plans made real · 0 flakes</span>
+        </div>
         <p class="t-body" style="margin:16px 0 0">easy doubles, intermediate is fine. court's booked, split is ₹80.</p>
         <p class="s-note">exact court + contact stay hidden until you're both in</p>
         <div class="bar" style="margin-top:20px">
@@ -337,7 +352,7 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
         </div>
       </div>
     </div></div>
-    <p class="gesture"><b>drag ↓</b> dismiss sheet · tap "Aarav" holds nothing else: no follower counts, no profiles to scroll</p>
+    <p class="gesture"><b>drag ↓</b> dismiss sheet · receipts show at the decision moment: attendance facts, never a rating. no follower counts, no profiles to scroll</p>
   </div>
 
   <!-- FEED EMPTY -->
@@ -515,7 +530,15 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
       <div class="appbody">
         <div class="a-top"><span class="a-title">Piyush</span><button class="xbtn">×</button></div>
         <div class="t-meta" style="color:var(--ink40)">indiranagar · 3 circles vouch for you</div>
-        <div style="margin-top:26px">
+        <div style="display:flex;align-items:flex-end;gap:16px;margin-top:24px">
+          <span class="sig big"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">signal: strong</div>
+            <div class="t-meta" style="color:var(--ink40);margin-top:3px">your cast reaches ~240 people · only you see this</div>
+          </div>
+        </div>
+        <div style="margin-top:20px">
+          <div class="row"><div class="r-main"><b>receipts</b><div class="r-sub">31 plans made real · last: badminton, tuesday</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
           <div class="row"><div class="r-main"><b>circles</b><div class="r-sub">3 circles · 24 people</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
           <div class="row"><div class="r-main"><b>areas</b><div class="r-sub">indiranagar, koramangala · always approximate</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
           <div class="row"><div class="r-main"><b>quiet hours</b><div class="r-sub">10pm to 7am</div></div><span class="tag ok">on</span></div>
@@ -527,13 +550,73 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
         </div>
       </div>
     </div></div>
-    <p class="gesture">no settings tree. four rows, one privacy sentence, out. the identity flex is the vouch line, not a profile page.</p>
+    <p class="gesture">no settings tree. signal, five rows, one privacy sentence, out. the identity flex is receipts and vouches, not a profile page.</p>
   </div>
 
 </div>
 
 <!-- ================= 05 ================= -->
 <div class="secnum" style="margin-top:72px">05</div>
+<h2 class="sec" style="margin-top:8px">Signal</h2>
+<p class="sub">The reason to come back when you have no plan to make. One reputation object with three faces, and every input is an attendance fact, so "strong signal" can only ever mean "shows up", never "charming".</p>
+<ul class="rule-list">
+  <li><b>receipts · public</b><span>a plan both sides confirm happened becomes a permanent log line: "31 plans made real · last: badminton, tuesday". facts, not judgment. nobody rates anybody, ever.</span></li>
+  <li><b>range · private</b><span>strong signal widens who your next cast actually reaches; flaking on a confirmed plan narrows it for a while. reputation pays out as utility, not vanity. only you see the number.</span></li>
+  <li><b>recap · monthly</b><span>a shareable poster in the verb colors. identity expression, zero pressure, and the organic-growth surface off-platform.</span></li>
+  <li><b>guardrails</b><span>no rating UI exists. absence never decays anything. nothing public is a comparable number: public is a log, private is a reach. new users start mid-signal, never at zero.</span></li>
+</ul>
+<div class="board">
+
+  <!-- YOU · SIGNAL THIN -->
+  <div class="wrap">
+    <div class="cap">Signal · thin <span class="g">the flake case, stated flat</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="appbody">
+        <div class="a-top"><span class="a-title">Piyush</span><button class="xbtn">×</button></div>
+        <div class="t-meta" style="color:var(--ink40)">indiranagar · 3 circles vouch for you</div>
+        <div style="display:flex;align-items:flex-end;gap:16px;margin-top:24px">
+          <span class="sig big"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
+          <div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">signal: thin</div>
+            <div class="t-meta" style="color:var(--ink40);margin-top:3px">you skipped tuesday's confirmed plan · range narrowed for now</div>
+          </div>
+        </div>
+        <p class="s-note" style="margin-top:14px">it recovers the next time you show up. nothing decays while you're gone.</p>
+        <div style="margin-top:16px">
+          <div class="row"><div class="r-main"><b>receipts</b><div class="r-sub">30 plans made real · 1 flake</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
+        </div>
+        <div style="margin-top:auto">
+          <div class="bar"><button class="btn on-orange">cast something</button></div>
+        </div>
+      </div>
+    </div></div>
+    <p class="gesture">the only thing that lowers signal is skipping a plan you confirmed. no countdown, no shame copy, and the recovery path is named in the same breath.</p>
+  </div>
+
+  <!-- RECAP POSTER -->
+  <div class="wrap">
+    <div class="cap">Recap · march <span class="g">monthly, shareable, yours</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <section class="poster got">
+        <div class="p-top"><span class="p-verb">march recap</span><button class="xbtn" style="color:var(--cream)">×</button></div>
+        <div class="p-cast">6 plans made real.</div>
+        <div>
+          <div class="p-meta">2 people you'd never met · tuesdays are your night</div>
+          <div class="p-why">share it or don't. it's yours.</div>
+          <div class="p-bar bar">
+            <button class="btn on-cream">share the poster</button>
+            <button class="quiet">keep it</button>
+          </div>
+        </div>
+      </section>
+    </div></div>
+    <p class="gesture">reuses the poster primitive verbatim: recap is just a cast about your month. no comparisons to anyone else, no rank, no percentile.</p>
+  </div>
+
+</div>
+
+<!-- ================= 06 ================= -->
+<div class="secnum" style="margin-top:72px">06</div>
 <h2 class="sec" style="margin-top:8px">Voice</h2>
 <p class="sub">Second person, present tense, everywhere. Buttons say what the user says ("I'm in", "cast it", "send it"). System lines are mono, lowercase, under ten words, and always name the next move. No slang, no exclamation marks, no apologizing.</p>
 <table class="strings">
@@ -554,11 +637,14 @@ p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(
     <tr><td class="old">Not relevant</td><td class="new">skip</td></tr>
     <tr><td class="old">Contact details hidden until accepted</td><td class="new"><span class="m">exact court + contact stay hidden until you're both in</span></td></tr>
     <tr><td class="old">Needs your attention</td><td class="new"><span class="m">YOUR MOVE</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">31 plans made real · 0 flakes</span> — receipts at the decision moment</td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">your cast reaches ~240 people · only you see this</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">it recovers the next time you show up. nothing decays while you're gone.</span></td></tr>
   </tbody>
 </table>
 
-<!-- ================= 06 ================= -->
-<div class="secnum" style="margin-top:96px">06</div>
+<!-- ================= 07 ================= -->
+<div class="secnum" style="margin-top:96px">07</div>
 <h2 class="sec" style="margin-top:8px">Motion</h2>
 <p class="sub">Three tokens, used everywhere, never per-screen. State changes move like objects: posters wipe in as color blocks, sheets slide with weight, confirmations stamp with overshoot. Nothing crossfades.</p>
 <ul class="rule-list" style="max-width:680px">
