@@ -13,7 +13,7 @@ Every data screen must define loading, empty, error with retry, offline or queue
 
 ## Navigation
 
-Unauthenticated routes are invitation, sign-in, public intent, and policy pages. Authenticated primary destinations are For You, Broadcast, Activity, and You, matching the information architecture in [App Design Foundation](./17 - Mobile App Design Foundation.md) and [User Flows](./03 - User Journeys and Flows.md). Owned-intent management lives inside Activity rather than a separate destination. Creation is a full-screen modal. Response, reach, privacy, resolution, report, and disclosure decisions use sheets. Match coordination is a dedicated screen.
+Unauthenticated routes are invitation, sign-in, public intent, and policy pages. Authenticated primary destinations are For You, Explore, Chat, and Profile, plus a Broadcast tab-icon that opens a full-screen compose sheet rather than settling on a destination — matching the Threads and Instagram pattern where the create action is a modal, not a place. Match coordination lives in Chat as a first-class destination. Owned-intent management (broadcasts, responses given, reliability) lives inside Profile. Response, reach, privacy, resolution, report, and disclosure decisions use sheets with iOS 15+ detents. Every stack push supports edge-swipe back; every modal has Cancel top-left.
 
 ## MVP Screens
 
@@ -55,3 +55,4 @@ Core flows support dynamic type, screen-reader order, 48x48 minimum targets, tex
 | 2026-08-24 | Defined mobile navigation, complete state coverage, screen responsibilities, and component boundaries |
 | 2026-08-25 | Resolved C-01: replaced email/phone OTP sign-in with Google and Apple sign-in to match MVP Requirement MUST-001, which outranks this contract |
 | 2026-08-25 | Resolved C-02: replaced the Home/My Intents/Activity/Profile destinations with the governed For You/Broadcast/Activity/You information architecture |
+| 2026-08-27 | Founder direction after UI/UX review: adopted the design board's five-tab architecture and the Threads/Instagram pattern for creation. Destinations are now For You, Explore, Chat, and Profile; Broadcast is a tab-icon that opens a modal compose sheet and does not settle on a destination. Chat becomes the first-class home for match coordination (moved out of Activity). Owned-intent management moves into Profile. Rooms and other coordination surfaces are unchanged in behavior — only their entry point moved |

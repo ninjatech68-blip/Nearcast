@@ -27,59 +27,29 @@
   }
   :root:not([data-theme="light"]) {
     @media (prefers-color-scheme: dark) {
-      --ground: #0E1714;
-      --surface: #15211D;
-      --surface-muted: #1E2B25;
-      --border-subtle: #33443B;
-      --divider: #223028;
-      --text-primary: #F3F7F1;
-      --text-secondary: #B0BCB4;
-      --text-muted: #7A8580;
-      --action-primary: #65D0A1;
-      --action-primary-pressed: #55B98D;
-      --action-secondary: #7CB1E8;
+      --ground: #0E1714; --surface: #15211D; --surface-muted: #1E2B25;
+      --border-subtle: #33443B; --divider: #223028;
+      --text-primary: #F3F7F1; --text-secondary: #B0BCB4; --text-muted: #7A8580;
+      --action-primary: #65D0A1; --action-primary-pressed: #55B98D; --action-secondary: #7CB1E8;
       --on-primary: #062419;
-      --success: #143025;
-      --warning: #35270F;
-      --danger: #381B18;
-      --status-danger: #E38B7F;
-      --status-warning: #E6BE72;
-      --info: #142A3A;
+      --success: #143025; --warning: #35270F; --danger: #381B18;
+      --status-danger: #E38B7F; --status-warning: #E6BE72; --info: #142A3A;
       --frame-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.6), 0 6px 20px -8px rgba(0, 0, 0, 0.4);
     }
   }
   :root[data-theme="dark"] {
-    --ground: #0E1714;
-    --surface: #15211D;
-    --surface-muted: #1E2B25;
-    --border-subtle: #33443B;
-    --divider: #223028;
-    --text-primary: #F3F7F1;
-    --text-secondary: #B0BCB4;
-    --text-muted: #7A8580;
-    --action-primary: #65D0A1;
-    --action-primary-pressed: #55B98D;
-    --action-secondary: #7CB1E8;
+    --ground: #0E1714; --surface: #15211D; --surface-muted: #1E2B25;
+    --border-subtle: #33443B; --divider: #223028;
+    --text-primary: #F3F7F1; --text-secondary: #B0BCB4; --text-muted: #7A8580;
+    --action-primary: #65D0A1; --action-primary-pressed: #55B98D; --action-secondary: #7CB1E8;
     --on-primary: #062419;
-    --success: #143025;
-    --warning: #35270F;
-    --danger: #381B18;
-    --status-danger: #E38B7F;
-    --status-warning: #E6BE72;
-    --info: #142A3A;
+    --success: #143025; --warning: #35270F; --danger: #381B18;
+    --status-danger: #E38B7F; --status-warning: #E6BE72; --info: #142A3A;
     --frame-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.6), 0 6px 20px -8px rgba(0, 0, 0, 0.4);
   }
 
   * { box-sizing: border-box; }
-  html, body {
-    font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: var(--ground);
-    color: var(--text-primary);
-    margin: 0;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-
+  html, body { font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--ground); color: var(--text-primary); margin: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; }
   .page { max-width: 1400px; margin: 0 auto; padding: 48px 24px 96px; }
 
   header.masthead { padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 40px; }
@@ -88,22 +58,14 @@
   header.masthead p { color: var(--text-secondary); font-size: 16px; max-width: 66ch; margin: 0; }
   .revision-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--success); color: var(--action-primary); margin-left: 10px; letter-spacing: 0.02em; }
 
-  nav.index {
-    position: sticky; top: 8px; z-index: 10;
-    display: flex; flex-wrap: wrap; gap: 6px;
-    padding: 10px; margin-bottom: 32px;
-    background: color-mix(in oklab, var(--ground) 82%, transparent);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-subtle);
-    border-radius: 16px;
-  }
+  nav.index { position: sticky; top: 8px; z-index: 10; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; margin-bottom: 32px; background: color-mix(in oklab, var(--ground) 82%, transparent); backdrop-filter: blur(10px); border: 1px solid var(--border-subtle); border-radius: 16px; }
   nav.index a { text-decoration: none; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--text-secondary); border: 1px solid transparent; }
   nav.index a:hover { color: var(--text-primary); border-color: var(--border-subtle); }
 
   section.flow { margin: 56px 0; }
   .flow-heading { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
-  .flow-heading .num { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.14em; color: var(--text-muted); font-variant-numeric: tabular-nums; }
-  .flow-heading h2 { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+  .flow-heading .num { font-weight: 600; font-size: 12px; letter-spacing: 0.14em; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .flow-heading h2 { font-weight: 700; font-size: 24px; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
   .flow-blurb { color: var(--text-secondary); max-width: 66ch; margin: 0 0 24px; font-size: 14px; }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; align-items: start; }
@@ -111,7 +73,6 @@
   .frame-label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-primary); }
   .frame-label small { color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
 
-  /* iPhone frame */
   .phone { width: 320px; height: 690px; border-radius: 46px; background: #0e1714; padding: 8px; box-shadow: var(--frame-shadow); position: relative; overflow: hidden; justify-self: center; }
   .phone::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 8px; background: #0e1714; z-index: 3; }
   .phone::after { content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 100px; height: 28px; border-radius: 999px; background: #000; z-index: 4; }
@@ -121,63 +82,45 @@
   .statusbar .g { display: inline-block; width: 16px; height: 10px; border-radius: 2px; background: currentColor; }
   .statusbar .g.bat { width: 22px; }
 
-  /* iOS-style navigation header */
-  .nav {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    padding: 6px 12px 8px;
-    gap: 8px;
-    min-height: 44px;
-  }
+  .nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 6px 12px 8px; gap: 8px; min-height: 44px; }
   .nav .left, .nav .right { display: flex; align-items: center; gap: 4px; }
   .nav .right { justify-content: flex-end; }
-  .nav .title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; }
-  .nav-btn {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-family: inherit; font-size: 14px; font-weight: 600;
-    color: var(--action-primary); background: transparent; border: none;
-    padding: 8px 4px; min-height: 32px;
-  }
+  .nav .title { font-weight: 700; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; }
+  .nav-btn { display: inline-flex; align-items: center; gap: 3px; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--action-primary); background: transparent; border: none; padding: 8px 4px; min-height: 32px; }
   .nav-btn.strong { font-weight: 700; }
   .nav-btn.muted { color: var(--text-secondary); font-weight: 500; }
   .nav-btn.disabled { color: var(--text-muted); }
   .chevron { width: 8px; height: 12px; position: relative; }
   .chevron::before { content: ""; position: absolute; inset: 0; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); width: 8px; height: 8px; top: 2px; }
-  .more-dots { display: inline-flex; gap: 3px; }
-  .more-dots span { width: 4px; height: 4px; border-radius: 999px; background: currentColor; }
 
-  .large-title { padding: 4px 20px 6px; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 28px; line-height: 34px; letter-spacing: -0.01em; }
+  .large-title { padding: 4px 20px 6px; font-weight: 700; font-size: 28px; line-height: 34px; letter-spacing: -0.01em; }
   .subtitle { padding: 0 20px 4px; color: var(--text-muted); font-size: 12px; }
 
   .body { flex: 1 1 auto; overflow: hidden; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
   .body.tight { gap: 8px; }
 
-  /* Bottom tab bar */
+  /* 5-tab bar with blur; Broadcast is a modal-opening icon, not a destination */
   .tabbar {
     height: 82px;
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    align-items: center;
-    padding: 6px 6px 20px;
-    background: var(--surface);
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    align-items: center; padding: 6px 4px 20px;
+    background: color-mix(in oklab, var(--surface) 88%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--divider);
-    gap: 4px;
+    gap: 2px;
+    position: relative;
   }
-  .tabbar .tab {
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    padding: 4px 0; font-size: 10px; font-weight: 600; color: var(--text-muted);
-  }
+  .tabbar .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; font-size: 10px; font-weight: 600; color: var(--text-muted); }
   .tabbar .tab.active { color: var(--action-primary); }
   .tabbar .tab .ic { width: 26px; height: 26px; display: grid; place-items: center; }
   .tabbar .tab.broadcast { color: var(--action-primary); }
-  .tabbar .tab.broadcast .ic {
-    background: var(--action-primary); color: var(--on-primary);
-    width: 36px; height: 36px; border-radius: 999px;
-    box-shadow: 0 6px 14px -6px rgba(15,94,70,0.5);
-  }
+  .tabbar .tab.broadcast .ic { background: var(--action-primary); color: var(--on-primary); width: 40px; height: 40px; border-radius: 999px; box-shadow: 0 6px 14px -6px rgba(15,94,70,0.5); }
+  .tabbar .tab.broadcast .lbl { color: var(--action-primary); font-weight: 700; }
   .tabbar .tab .ic svg { width: 100%; height: 100%; }
+  .tabbar .tab .lbl { font-size: 10px; font-weight: 600; }
 
-  /* Content primitives */
+  /* Cards & primitives */
   .card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
   .card.tight { padding: 12px; gap: 4px; }
   .card.reason { background: var(--info); border-color: transparent; }
@@ -194,34 +137,14 @@
   .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .stack { display: flex; flex-direction: column; }
 
-  .why-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 8px 3px 4px;
-    background: color-mix(in oklab, var(--action-secondary) 12%, var(--surface));
-    color: var(--action-secondary);
-    border-radius: 999px; font-size: 11px; font-weight: 600;
-    align-self: flex-start;
-    border: 1px solid color-mix(in oklab, var(--action-secondary) 24%, transparent);
-  }
-  .why-chip .dot-i {
-    width: 14px; height: 14px; border-radius: 999px;
-    background: color-mix(in oklab, var(--action-secondary) 22%, var(--surface));
-    display: grid; place-items: center; font-weight: 700; font-size: 9px;
-  }
+  .why-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px 3px 4px; background: color-mix(in oklab, var(--action-secondary) 12%, var(--surface)); color: var(--action-secondary); border-radius: 999px; font-size: 11px; font-weight: 600; align-self: flex-start; border: 1px solid color-mix(in oklab, var(--action-secondary) 24%, transparent); }
+  .why-chip .dot-i { width: 14px; height: 14px; border-radius: 999px; background: color-mix(in oklab, var(--action-secondary) 22%, var(--surface)); display: grid; place-items: center; font-weight: 700; font-size: 9px; }
 
-  .expiry-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 8px;
-    color: var(--status-warning);
-    background: color-mix(in oklab, var(--status-warning) 12%, var(--surface));
-    border-radius: 999px; font-size: 10px; font-weight: 700;
-  }
-  .expiry-chip .dt { width: 5px; height: 5px; border-radius: 999px; background: currentColor; }
+  .expiry-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; color: var(--status-warning); background: color-mix(in oklab, var(--status-warning) 12%, var(--surface)); border-radius: 999px; font-size: 10px; font-weight: 700; }
 
   .confirmed-line { font-size: 12px; color: var(--action-primary); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
   .confirmed-line .num { font-variant-numeric: tabular-nums; }
 
-  /* Buttons */
   .btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; border-radius: 14px; padding: 0 16px; font-family: inherit; font-weight: 700; font-size: 15px; border: none; color: var(--on-primary); background: var(--action-primary); width: 100%; }
   .btn.secondary { background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary); }
   .btn.quiet { background: transparent; color: var(--action-primary); height: 40px; font-weight: 600; }
@@ -232,7 +155,6 @@
   .footer-cta { padding: 12px 16px 20px; border-top: 1px solid var(--divider); background: var(--surface); }
   .footer-cta.split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  /* Inputs and controls */
   .input { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 14px; color: var(--text-primary); min-height: 44px; display: flex; align-items: center; }
   .input.textarea { min-height: 128px; align-items: flex-start; padding-top: 12px; }
   .input.compact { min-height: 40px; padding: 8px 12px; font-size: 13px; }
@@ -256,8 +178,7 @@
   .switch.on { background: var(--action-primary); }
   .switch.on::after { left: auto; right: 3px; }
 
-  /* Row items (list/settings) */
-  .list { background: var(--surface); border-radius: 14px; overflow: hidden; }
+  .list { background: var(--surface); border-radius: 14px; overflow: hidden; border: 1px solid var(--border-subtle); }
   .list .item { padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--divider); font-size: 14px; }
   .list .item:last-child { border-bottom: none; }
   .list .item .lead { flex: 1; }
@@ -265,20 +186,31 @@
   .list .item .lead small { display: block; color: var(--text-secondary); font-size: 12px; }
   .list .item .disclosure { color: var(--text-muted); font-size: 20px; line-height: 1; }
 
-  /* Bubbles */
   .bubble { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; line-height: 18px; }
   .bubble.theirs { background: var(--surface); border: 1px solid var(--border-subtle); align-self: flex-start; border-bottom-left-radius: 4px; }
   .bubble.mine { background: var(--action-primary); color: var(--on-primary); align-self: flex-end; border-bottom-right-radius: 4px; }
   .bubble.system { background: transparent; border: none; align-self: center; text-align: center; color: var(--text-muted); font-size: 11px; font-style: italic; max-width: 100%; padding: 4px 8px; }
 
-  /* Sheet */
-  .sheet { position: absolute; inset: auto 0 0 0; border-top-left-radius: 20px; border-top-right-radius: 20px; background: var(--surface); padding: 12px 20px 22px; box-shadow: 0 -12px 30px -12px rgba(0,0,0,0.2); }
+  /* Sheet — presented from bottom with detents */
+  .sheet-scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.28); }
+  .sheet {
+    position: absolute; inset: auto 0 0 0;
+    border-top-left-radius: 22px; border-top-right-radius: 22px;
+    background: var(--surface); padding: 12px 20px 22px;
+    box-shadow: 0 -18px 40px -18px rgba(0,0,0,0.35);
+    max-height: 92%; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .sheet.large { max-height: 92%; height: 92%; }
+  .sheet.medium { max-height: 68%; height: 68%; }
   .sheet-handle { width: 42px; height: 4px; background: var(--border-subtle); border-radius: 999px; margin: 0 auto 12px; }
-  .sheet-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .sheet-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--divider); }
   .sheet-nav .t { font-size: 15px; font-weight: 700; }
 
   .avatar { width: 32px; height: 32px; border-radius: 999px; background: var(--surface-muted); color: var(--text-primary); display: grid; place-items: center; font-size: 12px; font-weight: 700; flex-shrink: 0; border: 1px solid var(--border-subtle); }
   .avatar.filled { background: var(--action-primary); color: var(--on-primary); border-color: transparent; }
+  .avatar.dev { background: #E4EDF6; color: #2E5D9E; border-color: transparent; }
+  .avatar.mira { background: #FDF3D6; color: #8A6100; border-color: transparent; }
 
   .response { display: flex; gap: 12px; padding: 14px; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; }
   .response .msg { font-size: 14px; line-height: 19px; color: var(--text-primary); margin-top: 4px; }
@@ -295,8 +227,7 @@
   .dot.muted { background: var(--text-muted); }
 
   .skeleton { background: linear-gradient(90deg, var(--surface-muted), var(--divider), var(--surface-muted)); background-size: 200% 100%; border-radius: 8px; display: block; }
-  .sk-line { height: 12px; }
-  .sk-lg { height: 20px; }
+  .sk-line { height: 12px; } .sk-lg { height: 20px; }
 
   .state-panel { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 24px 40px; gap: 12px; }
   .state-panel .icon { width: 52px; height: 52px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border-subtle); display: grid; place-items: center; }
@@ -317,6 +248,36 @@
 
   .delete-link { text-align: center; color: var(--status-danger); font-size: 13px; font-weight: 600; padding: 12px 0; }
 
+  /* Chat list rows */
+  .chat-row { display: flex; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--divider); align-items: center; }
+  .chat-row:last-child { border-bottom: none; }
+  .chat-row .body-col { flex: 1; min-width: 0; }
+  .chat-row .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .chat-row .name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .chat-row .time { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+  .chat-row .subject { font-size: 12px; font-weight: 600; color: var(--action-primary); margin-top: 2px; }
+  .chat-row .preview { font-size: 12px; color: var(--text-secondary); margin-top: 2px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+  .chat-row .badge { width: 10px; height: 10px; border-radius: 999px; background: var(--action-primary); flex-shrink: 0; }
+
+  /* Long-press context menu preview */
+  .context-preview {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.28);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px;
+  }
+  .context-preview .peek {
+    background: var(--surface); border-radius: 20px; padding: 14px; width: 90%;
+    box-shadow: 0 24px 40px -18px rgba(0,0,0,0.4);
+    transform: scale(1.02);
+  }
+  .context-menu {
+    width: 220px; background: color-mix(in oklab, var(--surface) 94%, transparent);
+    backdrop-filter: blur(20px);
+    border-radius: 14px; overflow: hidden; box-shadow: 0 24px 40px -18px rgba(0,0,0,0.4);
+  }
+  .context-menu .m-item { padding: 12px 14px; font-size: 15px; font-weight: 500; color: var(--text-primary); border-bottom: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; }
+  .context-menu .m-item:last-child { border-bottom: none; }
+  .context-menu .m-item.destructive { color: var(--status-danger); }
+
   footer.legal { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 12px; }
   code { background: var(--surface-muted); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
 
@@ -326,13 +287,11 @@
 <svg width="0" height="0" style="position:absolute;">
   <defs>
     <symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1v-8.5Z" fill="currentColor"/></symbol>
-    <symbol id="i-house-o" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1v-8.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
-    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
-    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 10a6 6 0 1 1 12 0v3.5l1.5 2.5H4.5L6 13.5V10Zm4 8a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H10l-4 4v-4H6a2 2 0 0 1-2-2V6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
     <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c1.2-3.5 4-5 7-5s5.8 1.5 7 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
-    <symbol id="i-chev" viewBox="0 0 12 12"><path d="M8 2 4 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></symbol>
-    <symbol id="i-info" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M6 5.4v3M6 3.4v0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
     <symbol id="i-clock" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M6 3v3l2 1.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-pin" viewBox="0 0 12 12"><path d="M6 1a3 3 0 0 1 3 3c0 2-3 6-3 6S3 6 3 4a3 3 0 0 1 3-3Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="6" cy="4" r="1" fill="currentColor"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
@@ -341,32 +300,35 @@
     <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M4 8c5-4 11-4 16 0M7 11c3-2 7-2 10 0M10 14c1-1 3-1 4 0M12 18v0M3 3l18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
     <symbol id="i-empty" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
     <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-4 16-4-7-8-1Z" fill="currentColor"/></symbol>
-    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v14M8 7l4-4 4 4M6 21h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 3v18M5 4h12l-3 4 3 4H5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M7 4h10v17l-5-4-5 4V4Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
   </defs>
 </svg>
 
 <div class="page">
   <header class="masthead">
-    <span class="eyebrow">Nearcast · Screen Mockups <span class="revision-tag">v2 · rev after review</span></span>
+    <span class="eyebrow">Nearcast · Screen Mockups <span class="revision-tag">v3 · 5-tab IA · native gestures</span></span>
     <h1 class="title">The whole app on one page</h1>
-    <p>Every MVP screen at 320 × 690 (iPhone target), in the app's own tokens Manrope, cream ground, forest-green primary. This is v2 after the founder's review: real SVG icons in the tab bar (not text glyphs), proper iOS navigation headers on every screen with cancel/back and primary actions, one CTA per feed card with "Why shown" as a chip, safety in a menu, and delete as a two-step confirmation, not a red button under Sign out. Toggle your OS to see dark.</p>
+    <p>Every MVP screen at 320 × 690 iPhone target, in the app's own tokens. This is v3 after the founder's UI/UX review. Five tabs: For You · Explore · Broadcast (opens a modal compose sheet — not a destination) · Chat · Profile, matching the design board and the Threads pattern. iOS-native chrome throughout: three-column nav bars with back chevron and primary action, sheets with detents, long-press context menus, swipe-to-action rows, blur tab bar over content. Both light and dark palettes are defined.</p>
   </header>
 
   <nav class="index" aria-label="Screen groups">
     <a href="#enter">01 · Enter</a>
-    <a href="#explore">02 · Explore</a>
-    <a href="#broadcast">03 · Broadcast</a>
-    <a href="#respond">04 · Respond</a>
-    <a href="#coordinate">05 · Coordinate</a>
-    <a href="#resolve">06 · Resolve</a>
-    <a href="#you">07 · You</a>
-    <a href="#states">08 · States</a>
+    <a href="#foryou">02 · For You</a>
+    <a href="#explore">03 · Explore</a>
+    <a href="#broadcast">04 · Broadcast</a>
+    <a href="#respond">05 · Respond</a>
+    <a href="#chat">06 · Chat</a>
+    <a href="#resolve">07 · Resolve</a>
+    <a href="#profile">08 · Profile</a>
+    <a href="#states">09 · States</a>
   </nav>
 
-  <!-- ============================================================ 01 ENTER -->
+  <!-- =============================================== 01 ENTER -->
   <section class="flow" id="enter">
     <div class="flow-heading"><span class="num">01</span><h2>Enter</h2></div>
-    <p class="flow-blurb">Google or Apple in production. Local dev sign-in appears with seeded personas listed inline so no one has to open <code>seed.sql</code> to reach the app.</p>
+    <p class="flow-blurb">Google or Apple in production. Dev sign-in appears with seeded personas listed inline. Invitation redemption is a modal.</p>
     <div class="grid">
 
       <div class="frame-wrap"><div class="frame-label">Sign in <small>signed-out cold boot</small></div>
@@ -382,14 +344,11 @@
             <button class="btn secondary">Continue with Apple</button>
           </div>
           <div class="meta muted" style="margin-top:8px;">You'll need an invitation link after signing in.</div>
-
           <div style="margin-top:auto;padding:14px;background:var(--warning);border-radius:14px;border:1px solid color-mix(in oklab, var(--status-warning) 24%, transparent);">
             <div style="font-size:12px;font-weight:700;color:var(--status-warning);">Development sign-in</div>
             <div style="font-size:11px;color:var(--status-warning);line-height:15px;margin-top:4px;">Local testing only. Never available in production.</div>
             <div style="font-size:11px;color:var(--status-warning);line-height:15px;margin-top:6px;">Personas (password: <code>nearcast-local</code>): asha@nearcast.local, dev@nearcast.local, mira@nearcast.local.</div>
-            <div class="input compact" style="margin-top:8px;color:var(--text-muted);">persona@nearcast.local</div>
-            <div class="input compact" style="margin-top:6px;color:var(--text-muted);">Password</div>
-            <button class="btn small" style="margin-top:8px;">Sign in as local persona</button>
+            <button class="btn small" style="margin-top:8px;">Sign in as Asha</button>
           </div>
         </div>
       </div></div></div>
@@ -400,110 +359,89 @@
         <div class="nav">
           <div class="left"><button class="nav-btn muted">Cancel</button></div>
           <div class="title">Join network</div>
-          <div class="right"></div>
+          <div class="right"><button class="nav-btn strong">Join</button></div>
         </div>
         <div class="body">
-          <div style="font-size:22px;font-weight:700;line-height:28px;margin-top:2px;">Choose the name others will see.</div>
+          <div style="font-size:22px;font-weight:700;line-height:28px;">Choose the name others will see.</div>
           <div class="meta">You can change it later.</div>
-          <div class="input" style="margin-top:8px;color:var(--text-primary);">Asha Rao</div>
-
-          <div style="display:flex;gap:12px;margin-top:12px;padding:12px;background:var(--surface);border-radius:12px;border:1px solid var(--border-subtle);">
+          <div class="input" style="margin-top:4px;color:var(--text-primary);">Asha Rao</div>
+          <div style="display:flex;gap:12px;margin-top:8px;padding:12px;background:var(--surface);border-radius:12px;border:1px solid var(--border-subtle);">
             <div style="width:24px;height:24px;border-radius:6px;background:var(--action-primary);color:var(--on-primary);display:grid;place-items:center;flex-shrink:0;">
               <svg width="14" height="14"><use href="#i-check"/></svg>
             </div>
-            <div style="font-size:12px;line-height:17px;color:var(--text-primary);flex:1;">I confirm that I am 18 or over. Nearcast is for adults, and accounts for people under 18 are not permitted.</div>
+            <div style="font-size:12px;line-height:17px;color:var(--text-primary);flex:1;">I confirm that I am 18 or over. Nearcast is for adults; accounts for people under 18 are not permitted.</div>
           </div>
-
-          <div class="meta muted" style="margin-top:12px;">Your originating group and its members remain private. Nearcast never reads your group conversations.</div>
+          <div class="meta muted" style="margin-top:auto;">Your originating group and its members remain private. Nearcast never reads your group conversations.</div>
         </div>
-        <div class="footer-cta"><button class="btn">Join network</button></div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ============================================================ 02 EXPLORE -->
-  <section class="flow" id="explore">
-    <div class="flow-heading"><span class="num">02</span><h2>Explore</h2></div>
-    <p class="flow-blurb">A finite list of intents already delivered to this person. Card carries the statement, area, expiry, and a "Why shown" chip that expands the reason on tap. One CTA per card; hide moves off the card into a swipe/context action.</p>
+  <!-- =============================================== 02 FOR YOU -->
+  <section class="flow" id="foryou">
+    <div class="flow-heading"><span class="num">02</span><h2>For You</h2></div>
+    <p class="flow-blurb">The tab bar is 5 slots: For You · Explore · Broadcast (modal) · Chat · Profile. Cards have one primary CTA, a "Why shown" chip that expands the reason on tap, and swipe-left / long-press for context actions. Broadcast is a modal-opening icon, never a destination.</p>
     <div class="grid">
 
       <div class="frame-wrap"><div class="frame-label">For You <small>home feed</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="large-title">For You</div>
-        <div class="subtitle">2 active intents</div>
-        <div class="body">
-
-          <div class="card">
-            <div class="row">
-              <span class="primitive">I need</span>
-              <span class="expiry-chip"><svg width="10" height="10"><use href="#i-clock"/></svg> 4h</span>
-            </div>
-            <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
-            <div class="row">
-              <span class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar area · Nearby</span>
-            </div>
-            <div class="row" style="margin-top:2px;">
-              <span class="why-chip"><span class="dot-i">i</span> Why shown</span>
-              <span class="confirmed-line"><span class="dot"></span><span class="num">3</span> confirmed at origin</span>
-            </div>
-            <button class="btn small" style="margin-top:10px;">Offer help</button>
-          </div>
-
-          <div class="card">
-            <div class="row">
-              <span class="primitive">I offer</span>
-              <span class="expiry-chip" style="color:var(--text-secondary);background:var(--surface-muted);"><svg width="10" height="10"><use href="#i-clock"/></svg> 3d</span>
-            </div>
-            <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
-            <div class="row"><span class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Whitefield area · Across town</span></div>
-            <div class="row" style="margin-top:2px;">
-              <span class="why-chip"><span class="dot-i">i</span> Why shown</span>
-            </div>
-            <button class="btn small secondary" style="margin-top:10px;border-color:var(--action-primary);color:var(--action-primary);">I am interested</button>
-          </div>
-
-          <div class="meta muted" style="margin-top:auto;text-align:center;padding:6px 12px;">Swipe left on a card to mark it "not relevant".</div>
-        </div>
-        <div class="tabbar">
-          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
-          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
-        </div>
-      </div></div></div>
-
-      <div class="frame-wrap"><div class="frame-label">Why shown <small>chip expanded</small></div>
-      <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="large-title">For You</div>
-        <div class="subtitle">2 active intents</div>
+        <div class="subtitle">2 active intents · Pull to refresh</div>
         <div class="body">
           <div class="card">
             <div class="row"><span class="primitive">I need</span><span class="expiry-chip"><svg width="10" height="10"><use href="#i-clock"/></svg> 4h</span></div>
             <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
-            <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar area · Nearby</div>
-
-            <div class="card reason tight" style="margin-top:8px;padding:10px 12px;">
-              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--action-secondary);">Why you are seeing this</div>
-              <div style="font-size:13px;line-height:18px;color:var(--action-secondary);margin-top:2px;">Shared through one trusted connection who confirmed the intent.</div>
-              <div style="font-size:11px;color:var(--action-secondary);font-weight:600;margin-top:4px;">Not relevant?</div>
+            <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar · Nearby</div>
+            <div class="row" style="margin-top:2px;">
+              <span class="why-chip"><span class="dot-i">i</span> Why shown</span>
+              <span class="confirmed-line"><span class="dot"></span><span class="num">3</span> confirmed</span>
             </div>
-
-            <div class="confirmed-line" style="margin-top:6px;"><span class="dot"></span><span class="num">3</span> confirmed at origin</div>
             <button class="btn small" style="margin-top:10px;">Offer help</button>
           </div>
+          <div class="card">
+            <div class="row"><span class="primitive">I offer</span><span class="expiry-chip" style="color:var(--text-secondary);background:var(--surface-muted);"><svg width="10" height="10"><use href="#i-clock"/></svg> 3d</span></div>
+            <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
+            <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Whitefield · Across town</div>
+            <div class="row" style="margin-top:2px;"><span class="why-chip"><span class="dot-i">i</span> Why shown</span></div>
+            <button class="btn small secondary" style="margin-top:10px;border-color:var(--action-primary);color:var(--action-primary);">I am interested</button>
+          </div>
+          <div class="meta muted" style="margin-top:auto;text-align:center;">Swipe left on a card to mark "not relevant". Long-press for more.</div>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
-          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Intent detail <small>respondent view</small></div>
+      <div class="frame-wrap"><div class="frame-label">Long-press <small>context menu preview</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">For You</div>
+        <div style="flex:1;opacity:0.15;padding:6px 16px;"><div class="card"><div class="row"><span class="primitive">I need</span><span class="expiry-chip"><svg width="10" height="10"><use href="#i-clock"/></svg> 4h</span></div><div class="statement">Looking for one person to help sort donated books tomorrow morning.</div></div></div>
+
+        <div class="context-preview">
+          <div class="peek">
+            <span class="primitive">I need</span>
+            <div class="statement" style="margin-top:6px;">Looking for one person to help sort donated books tomorrow morning.</div>
+            <div class="meta" style="margin-top:4px;"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar · Nearby</div>
+            <div class="row" style="margin-top:6px;"><span class="why-chip"><span class="dot-i">i</span> Why shown</span><span class="confirmed-line"><span class="dot"></span>3 confirmed</span></div>
+          </div>
+          <div class="context-menu">
+            <div class="m-item"><span>Preview</span> <svg width="16" height="16" style="color:var(--text-muted);"><use href="#i-search"/></svg></div>
+            <div class="m-item"><span>Save</span> <svg width="16" height="16" style="color:var(--text-muted);"><use href="#i-bookmark"/></svg></div>
+            <div class="m-item"><span>Share link</span> <svg width="16" height="16" style="color:var(--text-muted);"><use href="#i-share"/></svg></div>
+            <div class="m-item"><span>Not relevant</span> <span style="color:var(--text-muted);font-size:16px;">×</span></div>
+            <div class="m-item destructive"><span>Report</span> <svg width="16" height="16" style="color:var(--status-danger);"><use href="#i-flag"/></svg></div>
+          </div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Intent detail <small>push, edge-swipe back</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="nav">
@@ -515,17 +453,14 @@
           <span class="primitive">I need</span>
           <div class="statement large">Looking for one person to help sort donated books tomorrow morning.</div>
           <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Indiranagar area</div>
-
           <div class="card reason" style="margin-top:8px;">
             <div style="font-size:11px;font-weight:700;color:var(--action-secondary);text-transform:uppercase;letter-spacing:0.08em;">Why you are seeing this</div>
             <div style="font-size:14px;color:var(--action-secondary);line-height:19px;">Shared through one trusted connection.</div>
           </div>
-
           <div class="card trust">
             <div style="font-size:14px;font-weight:700;color:var(--action-primary);">Confirmed by 3 people at the origin.</div>
             <div style="font-size:12px;color:var(--action-primary);line-height:17px;">Confirmation means someone recognises or supports this intent. It does not guarantee attendance, accuracy, or safety.</div>
           </div>
-
           <div class="meta">Shared by Asha</div>
           <div class="meta muted">No exact address or contact details are shown. The originating group stays private.</div>
         </div>
@@ -535,99 +470,141 @@
     </div>
   </section>
 
-  <!-- ============================================================ 03 BROADCAST -->
-  <section class="flow" id="broadcast">
-    <div class="flow-heading"><span class="num">03</span><h2>Broadcast</h2></div>
-    <p class="flow-blurb">Composer → Review → Publish. Each step is a modal with a proper header: Cancel out the left, primary action on the right. The reach picker's tile also names the audience it exposes. Privacy warnings surface before publish but never block — the broadcaster's own words go through.</p>
+  <!-- =============================================== 03 EXPLORE -->
+  <section class="flow" id="explore">
+    <div class="flow-heading"><span class="num">03</span><h2>Explore</h2></div>
+    <p class="flow-blurb">A second destination for intents that already carry a public share-link — the only ones that can appear outside a delivery. Search reveals on pull-down. No infinite scroll; no algorithmic reordering; the list is what your area has, in the order the server chose.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Composer <small>step 1 · modal</small></div>
+      <div class="frame-wrap"><div class="frame-label">Explore <small>public-linked intents</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="nav">
-          <div class="left"><button class="nav-btn muted">Cancel</button></div>
-          <div class="title">New intent</div>
-          <div class="right"><button class="nav-btn strong">Next</button></div>
-        </div>
+        <div class="large-title">Explore</div>
+        <div style="padding: 0 20px 6px;"><div class="input compact" style="color:var(--text-muted);"><svg width="14" height="14" style="margin-right:6px;color:var(--text-muted);"><use href="#i-search"/></svg> Search intents or areas</div></div>
         <div class="body">
-          <div style="font-size:20px;font-weight:700;line-height:26px;">What do you need, offer, or want to do?</div>
-          <div class="chipset" style="margin-top:6px;">
-            <div class="chip on">I need</div>
-            <div class="chip">I offer</div>
-            <div class="chip">I want to</div>
+          <div class="section-label" style="margin:0;">Near you · Bengaluru</div>
+          <div class="card">
+            <div class="row"><span class="primitive">I offer</span><span class="expiry-chip"><svg width="10" height="10"><use href="#i-clock"/></svg> 2d</span></div>
+            <div class="statement">Free chess lessons for beginners on Saturday afternoons.</div>
+            <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Koramangala area</div>
+            <div class="row"><span class="meta muted">Shared by Nikhil</span><span class="confirmed-line"><span class="dot"></span>2 confirmed</span></div>
           </div>
-          <div class="input textarea" style="color:var(--text-primary);">Need one person to help sort donated books tomorrow morning at the library.</div>
-          <div style="text-align:right;font-size:11px;color:var(--text-muted);">76 / 500</div>
+          <div class="card">
+            <div class="row"><span class="primitive">I want to</span><span class="expiry-chip" style="color:var(--text-secondary);background:var(--surface-muted);"><svg width="10" height="10"><use href="#i-clock"/></svg> 5d</span></div>
+            <div class="statement">Start a weekend hiking group — Nandi Hills first.</div>
+            <div class="meta"><svg width="10" height="10" style="vertical-align:-1px;color:var(--text-muted);"><use href="#i-pin"/></svg> Bengaluru</div>
+            <div class="row"><span class="meta muted">Shared by Priya</span><span class="confirmed-line"><span class="dot"></span>6 confirmed</span></div>
+          </div>
+          <div class="meta muted" style="margin-top:auto;text-align:center;">Only intents with a shareable link appear here. Nothing private is discoverable.</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
+        </div>
+      </div></div></div>
 
+      <div class="frame-wrap"><div class="frame-label">Explore <small>empty · onramp</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">Explore</div>
+        <div class="state-panel">
+          <div class="icon"><svg width="22" height="22" style="color:var(--text-secondary);"><use href="#i-empty"/></svg></div>
+          <h3>No public intents nearby</h3>
+          <p>When someone in your area shares an intent with a public link, it'll show up here.</p>
+          <button class="btn small" style="width:auto;padding:0 16px;margin-top:4px;">Broadcast one</button>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
+        </div>
+      </div></div></div>
+
+    </div>
+  </section>
+
+  <!-- =============================================== 04 BROADCAST -->
+  <section class="flow" id="broadcast">
+    <div class="flow-heading"><span class="num">04</span><h2>Broadcast</h2></div>
+    <p class="flow-blurb">Tapping the Broadcast tab-icon does <em>not</em> settle on a destination — it presents a compose sheet from the bottom, drag-down to dismiss (Threads pattern). Step 1 is the composer at medium detent; step 2 pushes to Review inside the same sheet. Cancel is always top-left, primary action top-right.</p>
+    <div class="grid">
+
+      <div class="frame-wrap"><div class="frame-label">Broadcast <small>sheet presented from bottom</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div style="flex:1;opacity:0.3;">
+          <div class="large-title">For You</div>
+          <div class="body"><div class="card"><span class="primitive">I need</span><div class="statement">Looking for one person to help sort donated books tomorrow morning.</div></div></div>
+        </div>
+        <div class="sheet-scrim"></div>
+        <div class="sheet large">
+          <div class="sheet-handle"></div>
+          <div class="sheet-nav">
+            <button class="nav-btn muted">Cancel</button>
+            <span class="t">New intent</span>
+            <button class="nav-btn strong">Next</button>
+          </div>
+          <div style="font-size:18px;font-weight:700;line-height:24px;margin-top:4px;">What do you need, offer, or want to do?</div>
+          <div class="chipset" style="margin-top:12px;">
+            <div class="chip on">I need</div><div class="chip">I offer</div><div class="chip">I want to</div>
+          </div>
+          <div class="input textarea" style="margin-top:12px;color:var(--text-primary);">Need one person to help sort donated books tomorrow morning at the library.</div>
+          <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px;">76 / 500</div>
           <div class="card trust" style="margin-top:auto;">
             <div style="font-size:13px;font-weight:700;color:var(--action-primary);">You choose who can see this.</div>
-            <div style="font-size:12px;color:var(--action-primary);line-height:17px;">Contact details stay hidden. You'll review reach and expiry before publishing.</div>
+            <div style="font-size:12px;color:var(--action-primary);line-height:17px;">Contact details stay hidden. You'll review reach and expiry next.</div>
           </div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Review <small>step 2 · reach + privacy</small></div>
+      <div class="frame-wrap"><div class="frame-label">Review <small>step 2 · same sheet</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="nav">
-          <div class="left"><button class="nav-btn"><span class="chevron"></span> Back</button></div>
-          <div class="title">Review</div>
-          <div class="right"><button class="nav-btn strong">Broadcast</button></div>
-        </div>
-        <div class="body tight">
-          <div class="card">
-            <span class="primitive">I need</span>
-            <div class="statement">Need one person to help sort donated books tomorrow morning at the library.</div>
-            <div class="meta muted">This is what recipients will see.</div>
+        <div style="flex:1;opacity:0.3;background:var(--ground);"></div>
+        <div class="sheet-scrim"></div>
+        <div class="sheet large">
+          <div class="sheet-handle"></div>
+          <div class="sheet-nav">
+            <button class="nav-btn"><span class="chevron"></span> Back</button>
+            <span class="t">Review</span>
+            <button class="nav-btn strong">Broadcast</button>
           </div>
-
-          <div class="section-label">Reach</div>
-          <div class="radio on">
-            <div class="radio-title">People connected to my circles <span class="radio-ring"></span></div>
-            <small>One connection beyond your circle. Your circle is never named.</small>
-          </div>
-          <div class="radio">
-            <div class="radio-title">Relevant people nearby <span class="radio-ring"></span></div>
-            <small>People in your approximate area whose interests match.</small>
-          </div>
-
-          <div class="toggle-row"><span style="font-size:14px;">Allow a shareable link</span><span class="switch on"></span></div>
-          <div class="toggle-row" style="margin-top:-4px;"><span style="font-size:14px;">Show my first name</span><span class="switch on"></span></div>
-
-          <div class="card trust">
-            <div style="font-size:13px;font-weight:700;color:var(--action-primary);">What stays private</div>
-            <div style="font-size:12px;color:var(--action-primary);line-height:17px;">No exact address or contact details shown. Reach never expands without your action. Expires in 48 hours.</div>
+          <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:8px;">
+            <div class="card"><span class="primitive">I need</span><div class="statement">Need one person to help sort donated books tomorrow morning at the library.</div><div class="meta muted">This is what recipients will see.</div></div>
+            <div class="section-label">Reach</div>
+            <div class="radio on"><div class="radio-title">People connected to my circles <span class="radio-ring"></span></div><small>One connection beyond your circle. Your circle is never named.</small></div>
+            <div class="radio"><div class="radio-title">Relevant people nearby <span class="radio-ring"></span></div><small>People in your approximate area whose interests match.</small></div>
+            <div class="toggle-row"><span style="font-size:14px;">Allow a shareable link</span><span class="switch on"></span></div>
+            <div class="toggle-row" style="margin-top:-4px;"><span style="font-size:14px;">Show my first name</span><span class="switch on"></span></div>
           </div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Review <small>privacy warning</small></div>
+      <div class="frame-wrap"><div class="frame-label">Privacy warning <small>non-blocking</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="nav">
-          <div class="left"><button class="nav-btn"><span class="chevron"></span> Back</button></div>
-          <div class="title">Review</div>
-          <div class="right"><button class="nav-btn strong">Broadcast</button></div>
-        </div>
-        <div class="body tight">
-          <div class="card">
-            <span class="primitive">I need</span>
-            <div class="statement">Ride to 44 Play Lane, Indiranagar tonight at 8pm.</div>
+        <div style="flex:1;opacity:0.3;background:var(--ground);"></div>
+        <div class="sheet-scrim"></div>
+        <div class="sheet large">
+          <div class="sheet-handle"></div>
+          <div class="sheet-nav">
+            <button class="nav-btn"><span class="chevron"></span> Back</button>
+            <span class="t">Review</span>
+            <button class="nav-btn strong">Broadcast</button>
           </div>
-
-          <div class="card warn" style="display:flex;gap:10px;align-items:flex-start;">
-            <svg width="18" height="18" style="color:var(--status-warning);flex-shrink:0;margin-top:2px;"><use href="#i-alert"/></svg>
-            <div style="font-size:12px;line-height:17px;color:var(--status-warning);">This looks like it includes an exact address. Everyone this reaches will see it — an approximate area is usually enough, and you can share the exact place with one person after you accept them.</div>
-          </div>
-
-          <div class="section-label">Reach</div>
-          <div class="radio on">
-            <div class="radio-title">My trusted circles <span class="radio-ring"></span></div>
-            <small>Only people you already share a circle with can see this.</small>
-          </div>
-          <div class="radio">
-            <div class="radio-title">People connected to my circles <span class="radio-ring"></span></div>
-            <small>One connection beyond your circle.</small>
+          <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+            <div class="card"><span class="primitive">I need</span><div class="statement">Ride to 44 Play Lane, Indiranagar tonight at 8pm.</div></div>
+            <div class="card warn" style="display:flex;gap:10px;align-items:flex-start;">
+              <svg width="18" height="18" style="color:var(--status-warning);flex-shrink:0;margin-top:2px;"><use href="#i-alert"/></svg>
+              <div style="font-size:12px;line-height:17px;color:var(--status-warning);">This looks like it includes an exact address. Everyone this reaches will see it — an approximate area is usually enough, and you can share the exact place with one person after you accept them.</div>
+            </div>
+            <div class="section-label">Reach</div>
+            <div class="radio on"><div class="radio-title">My trusted circles <span class="radio-ring"></span></div><small>Only people you already share a circle with can see this.</small></div>
           </div>
         </div>
       </div></div></div>
@@ -635,20 +612,26 @@
     </div>
   </section>
 
-  <!-- ============================================================ 04 RESPOND -->
+  <!-- =============================================== 05 RESPOND -->
   <section class="flow" id="respond">
-    <div class="flow-heading"><span class="num">04</span><h2>Respond</h2></div>
-    <p class="flow-blurb">A sheet with room for one short message and an honest disclosure of exactly what will be shared. Sheet header carries Cancel and Send; no competing responses are visible.</p>
+    <div class="flow-heading"><span class="num">05</span><h2>Respond</h2></div>
+    <p class="flow-blurb">Response is a sheet at medium detent so the intent card stays visible above — a respondent can re-read while composing. Send is haptic-confirmed and optimistic; the sheet dismisses on tap.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Response sheet <small>overlay</small></div>
+      <div class="frame-wrap"><div class="frame-label">Response <small>sheet · medium detent</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div style="padding:12px 20px 8px;opacity:0.4;">
-          <span class="primitive">I need</span>
-          <div style="font-size:16px;font-weight:700;line-height:22px;">Looking for one person to help sort donated books tomorrow morning.</div>
+        <div class="nav" style="opacity:0.5;">
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> For You</button></div>
+          <div class="title">Intent</div>
+          <div class="right"></div>
         </div>
-        <div class="sheet">
+        <div style="padding:8px 20px;opacity:0.5;">
+          <span class="primitive">I need</span>
+          <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
+        </div>
+        <div class="sheet-scrim"></div>
+        <div class="sheet medium">
           <div class="sheet-handle"></div>
           <div class="sheet-nav">
             <button class="nav-btn muted">Cancel</button>
@@ -657,11 +640,9 @@
           </div>
           <div class="input textarea" style="font-size:14px;flex-direction:column;align-items:flex-start;color:var(--text-primary);">I've helped catalog with the library before. Free tomorrow 9–11am.</div>
           <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px;">64 / 1000</div>
-
           <div style="background:var(--success);border-radius:14px;padding:12px 14px;margin-top:12px;display:flex;flex-direction:column;gap:4px;">
             <strong style="color:var(--action-primary);font-size:13px;font-weight:700;">What will be shared</strong>
-            <small style="color:var(--action-primary);font-size:12px;line-height:17px;">Your display name and approximate area. Your message and any confirmed interactions.</small>
-            <small style="color:var(--action-primary);font-size:12px;line-height:17px;">Nothing else. Contact details stay hidden unless you release them after a match.</small>
+            <small style="color:var(--action-primary);font-size:12px;line-height:17px;">Your display name and approximate area. Your message and any confirmed interactions. Nothing else.</small>
           </div>
         </div>
       </div></div></div>
@@ -669,111 +650,131 @@
     </div>
   </section>
 
-  <!-- ============================================================ 05 COORDINATE -->
-  <section class="flow" id="coordinate">
-    <div class="flow-heading"><span class="num">05</span><h2>Coordinate</h2></div>
-    <p class="flow-blurb">The broadcaster reads the inbox one respondent at a time and decides. Accepting jumps straight to the room private to two people — one less tap than v1. Safety actions (Report, Block, Resolve) live in the header <code>⋯</code> menu; the chat surface stays uncluttered.</p>
+  <!-- =============================================== 06 CHAT -->
+  <section class="flow" id="chat">
+    <div class="flow-heading"><span class="num">06</span><h2>Chat</h2></div>
+    <p class="flow-blurb">Chat is a first-class destination now — it lists every active match and the request inbox for the broadcaster. The room pushes with an iOS transition (edge-swipe back). Safety and lifecycle actions live in the header <code>⋯</code>.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Inbox <small>broadcaster</small></div>
+      <div class="frame-wrap"><div class="frame-label">Chat <small>list of rooms and inboxes</small></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
+        <div class="large-title">Chat</div>
+        <div style="padding: 0 20px 6px;"><div class="input compact" style="color:var(--text-muted);"><svg width="14" height="14" style="margin-right:6px;color:var(--text-muted);"><use href="#i-search"/></svg> Search</div></div>
+        <div class="body" style="gap:0;padding:0 20px 12px;">
+          <div class="section-label" style="margin-bottom:6px;">Responses to review · 2</div>
+          <div class="chat-row" style="border-color:transparent;">
+            <div class="avatar dev">D</div>
+            <div class="body-col">
+              <div class="top"><span class="name">Dev Mehta</span><span class="time">now</span></div>
+              <div class="subject">Responded to · Sort books tomorrow</div>
+              <div class="preview">I've helped catalog with the library before...</div>
+            </div>
+            <div class="badge"></div>
+          </div>
+          <div class="chat-row">
+            <div class="avatar mira">M</div>
+            <div class="body-col">
+              <div class="top"><span class="name">Mira Sen</span><span class="time">10m</span></div>
+              <div class="subject">Responded to · Sort books tomorrow</div>
+              <div class="preview">I can help! Great with organizing.</div>
+            </div>
+            <div class="badge"></div>
+          </div>
+
+          <div class="section-label" style="margin:16px 0 6px;">Coordination · 1</div>
+          <div class="chat-row">
+            <div class="avatar filled">N</div>
+            <div class="body-col">
+              <div class="top"><span class="name">Nikhil Rao</span><span class="time">2h</span></div>
+              <div class="subject">Chess lesson on Saturday</div>
+              <div class="preview">See you at 2pm at the pavilion.</div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
+        </div>
+      </div></div></div>
+
+      <div class="frame-wrap"><div class="frame-label">Response <small>swipe-to-accept</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="nav">
-          <div class="left"><button class="nav-btn"><span class="chevron"></span> Activity</button></div>
-          <div class="title">Responses</div>
+          <div class="left"><button class="nav-btn"><span class="chevron"></span> Chat</button></div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;"><span>Response</span><span style="font-size:11px;font-weight:500;color:var(--text-muted);">from Dev Mehta</span></div>
           <div class="right"></div>
         </div>
-        <div class="subtitle" style="padding:0 20px 8px;">2 people responded</div>
         <div class="body">
-
+          <div class="card tight" style="opacity:0.7;">
+            <span class="primitive">I need</span>
+            <div style="font-size:13px;font-weight:700;">Looking for one person to help sort donated books tomorrow morning.</div>
+          </div>
           <div class="response">
-            <div class="avatar filled">D</div>
+            <div class="avatar dev">D</div>
             <div style="flex:1;">
-              <div class="who"><strong>Dev Mehta</strong><small>just now</small></div>
+              <div class="who"><strong>Dev Mehta</strong><small>now</small></div>
               <div class="reliability">2 of 2 confirmed interactions completed</div>
               <div class="msg">I've helped catalog with the library before. Free tomorrow 9–11am.</div>
               <div class="actions">
                 <button class="btn small" style="flex:1;">Accept</button>
                 <button class="btn small secondary" style="flex:1;">Decline</button>
               </div>
+              <div class="meta muted" style="margin-top:8px;text-align:center;font-size:11px;">Swipe left to decline, right to accept.</div>
             </div>
           </div>
-
-          <div class="response">
-            <div class="avatar">M</div>
-            <div style="flex:1;">
-              <div class="who"><strong>Mira Sen</strong><small>10m</small></div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">No confirmed interactions yet</div>
-              <div class="msg">I can help! Great with organizing.</div>
-              <div class="actions">
-                <button class="btn small" style="flex:1;">Accept</button>
-                <button class="btn small secondary" style="flex:1;">Decline</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="meta muted" style="margin-top:auto;text-align:center;">Declined respondents receive a neutral status. Accepting opens a private coordination room.</div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Room <small>match coordination</small></div>
+      <div class="frame-wrap"><div class="frame-label">Room <small>push, ⋯ menu right</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="nav">
           <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
-          <div class="title" style="display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.2;">
-            <span>Dev Mehta</span>
-            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched · 2 of 2 confirmed</span>
-          </div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;"><span>Dev Mehta</span><span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched · 2 of 2 confirmed</span></div>
           <div class="right"><button class="nav-btn"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
         </div>
-
         <div style="margin:0 16px 6px;padding:10px 12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;">
           <div style="font-size:13px;font-weight:700;line-height:18px;">Looking for one person to help sort donated books tomorrow morning.</div>
           <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">Live · Coordination temporary</div>
         </div>
-
         <div style="display:flex;gap:6px;padding:0 16px;flex-wrap:wrap;">
           <button class="btn small secondary" style="width:auto;padding:0 12px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;height:30px;font-size:12px;"><svg width="10" height="10" style="margin-right:4px;"><use href="#i-pin"/></svg> Share address</button>
           <button class="btn small secondary" style="width:auto;padding:0 12px;border-color:var(--action-primary);color:var(--action-primary);border-radius:999px;height:30px;font-size:12px;">Share contact</button>
         </div>
-
         <div class="body" style="gap:8px;padding-top:10px;">
           <div class="bubble theirs">Great, I'm nearby. What time works?</div>
           <div class="bubble mine">9am tomorrow at the library entrance?</div>
           <div class="bubble theirs">Perfect. See you then.</div>
         </div>
-
         <div style="display:flex;gap:8px;padding:10px 16px 14px;border-top:1px solid var(--divider);background:var(--surface);align-items:center;">
           <div class="input compact" style="flex:1;color:var(--text-muted);">Message</div>
           <button class="btn small" style="width:44px;height:44px;padding:0;border-radius:999px;"><svg width="18" height="18" style="color:var(--on-primary);"><use href="#i-send"/></svg></button>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Room <small>⋯ menu open</small></div>
+      <div class="frame-wrap"><div class="frame-label">Room <small>⋯ context menu</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="nav">
           <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
-          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;">
-            <span>Dev Mehta</span>
-            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched</span>
-          </div>
-          <div class="right"><button class="nav-btn strong" style="color:var(--action-primary);"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;"><span>Dev Mehta</span><span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched</span></div>
+          <div class="right"><button class="nav-btn strong"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
         </div>
-
-        <div style="position:absolute;top:48px;right:12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:14px;padding:6px;min-width:180px;box-shadow:0 12px 30px -12px rgba(0,0,0,0.25);z-index:5;">
-          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--text-primary);border-bottom:1px solid var(--divider);">Resolve intent</div>
-          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--text-primary);border-bottom:1px solid var(--divider);">Withdraw intent</div>
-          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--status-danger);border-bottom:1px solid var(--divider);">Report</div>
-          <div style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--status-danger);">Block</div>
+        <div style="position:absolute;top:48px;right:12px;background:color-mix(in oklab, var(--surface) 94%, transparent);backdrop-filter:blur(20px);border-radius:14px;padding:0;min-width:200px;box-shadow:0 12px 30px -12px rgba(0,0,0,0.25);z-index:5;overflow:hidden;">
+          <div class="m-item" style="padding:12px 14px;font-size:14px;font-weight:600;border-bottom:1px solid var(--divider);">Resolve intent</div>
+          <div class="m-item" style="padding:12px 14px;font-size:14px;font-weight:600;border-bottom:1px solid var(--divider);">Withdraw intent</div>
+          <div class="m-item" style="padding:12px 14px;font-size:14px;font-weight:600;color:var(--status-danger);border-bottom:1px solid var(--divider);">Report Dev</div>
+          <div class="m-item" style="padding:12px 14px;font-size:14px;font-weight:600;color:var(--status-danger);">Block Dev</div>
         </div>
-
-        <div style="margin:0 16px 6px;opacity:0.4;padding:10px 12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;">
+        <div style="margin:0 16px 6px;opacity:0.35;padding:10px 12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;">
           <div style="font-size:13px;font-weight:700;line-height:18px;">Looking for one person to help sort donated books tomorrow morning.</div>
         </div>
-
-        <div class="body" style="gap:8px;opacity:0.4;">
+        <div class="body" style="gap:8px;opacity:0.35;">
           <div class="bubble theirs">Great, I'm nearby.</div>
           <div class="bubble mine">9am tomorrow?</div>
         </div>
@@ -784,29 +785,22 @@
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="nav">
           <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
-          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;">
-            <span>Dev Mehta</span>
-            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched</span>
-          </div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;"><span>Dev Mehta</span><span style="font-size:11px;font-weight:500;color:var(--text-muted);">Matched</span></div>
           <div class="right"><button class="nav-btn"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
         </div>
-
         <div style="margin:0 16px 6px;padding:10px 12px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;">
           <div style="font-size:13px;font-weight:700;line-height:18px;">Looking for one person to help sort donated books tomorrow morning.</div>
         </div>
-
         <div class="released-line" style="margin:0 16px;">
           <span class="lock"></span>
           <span>Exact address: 44 Play Lane, Indiranagar</span>
         </div>
-
         <div class="body" style="gap:8px;padding-top:10px;">
           <div class="bubble theirs">What time?</div>
           <div class="bubble mine">9am at the library entrance</div>
           <div class="bubble system">Asha shared exact address</div>
           <div class="bubble theirs">Got it. See you then.</div>
         </div>
-
         <div style="display:flex;gap:8px;padding:10px 16px 14px;border-top:1px solid var(--divider);background:var(--surface);align-items:center;">
           <div class="input compact" style="flex:1;color:var(--text-muted);">Message</div>
           <button class="btn small" style="width:44px;height:44px;padding:0;border-radius:999px;"><svg width="18" height="18" style="color:var(--on-primary);"><use href="#i-send"/></svg></button>
@@ -816,50 +810,43 @@
     </div>
   </section>
 
-  <!-- ============================================================ 06 RESOLVE -->
+  <!-- =============================================== 07 RESOLVE -->
   <section class="flow" id="resolve">
-    <div class="flow-heading"><span class="num">06</span><h2>Resolve</h2></div>
-    <p class="flow-blurb">Closing an intent asks for a factual outcome, not a rating. Only "resolved through Nearcast" with the other person's confirmation ever affects reliability. Withdraw becomes a quiet action, not a full red button beside the primary CTA.</p>
+    <div class="flow-heading"><span class="num">07</span><h2>Resolve</h2></div>
+    <p class="flow-blurb">Resolve and Confirm-outcome are separate. The broadcaster resolves the intent (sheet). The counterpart confirms whether it actually happened (inline card in the room). Only "resolved through Nearcast", confirmed by the other person, affects reliability.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">Resolve <small>modal</small></div>
+      <div class="frame-wrap"><div class="frame-label">Resolve <small>sheet · medium detent</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="nav">
-          <div class="left"><button class="nav-btn muted">Cancel</button></div>
-          <div class="title">Resolve</div>
-          <div class="right"><button class="nav-btn strong">Resolve</button></div>
-        </div>
-        <div class="body">
-          <div style="font-size:20px;font-weight:700;line-height:26px;margin-top:2px;">Was your intent resolved?</div>
-          <div class="radio on">
-            <div class="radio-title">Resolved through Nearcast <span class="radio-ring"></span></div>
-            <small>Counts toward reliability once the other person confirms it happened.</small>
+        <div style="flex:1;opacity:0.35;background:var(--ground);"></div>
+        <div class="sheet-scrim"></div>
+        <div class="sheet medium">
+          <div class="sheet-handle"></div>
+          <div class="sheet-nav">
+            <button class="nav-btn muted">Cancel</button>
+            <span class="t">Resolve</span>
+            <button class="nav-btn strong">Resolve</button>
           </div>
-          <div class="radio"><div class="radio-title">Resolved elsewhere <span class="radio-ring"></span></div></div>
-          <div class="radio"><div class="radio-title">No longer needed <span class="radio-ring"></span></div></div>
-          <div class="radio"><div class="radio-title">Could not resolve before expiry <span class="radio-ring"></span></div></div>
-
-          <div class="meta muted" style="margin-top:4px;">Closing this intent stops new responses immediately. Only "Resolved through Nearcast", confirmed by the other person, affects reliability.</div>
-
-          <div style="text-align:center;margin-top:auto;">
+          <div style="font-size:18px;font-weight:700;line-height:24px;margin-top:2px;">Was your intent resolved?</div>
+          <div class="radio on" style="margin-top:8px;"><div class="radio-title">Resolved through Nearcast <span class="radio-ring"></span></div><small>Counts toward reliability once the other person confirms it happened.</small></div>
+          <div class="radio" style="margin-top:6px;"><div class="radio-title">Resolved elsewhere <span class="radio-ring"></span></div></div>
+          <div class="radio" style="margin-top:6px;"><div class="radio-title">No longer needed <span class="radio-ring"></span></div></div>
+          <div class="radio" style="margin-top:6px;"><div class="radio-title">Could not resolve before expiry <span class="radio-ring"></span></div></div>
+          <div style="text-align:center;margin-top:auto;padding-top:12px;">
             <button class="nav-btn" style="color:var(--status-danger);font-weight:600;">Withdraw intent instead</button>
           </div>
         </div>
       </div></div></div>
 
-      <div class="frame-wrap"><div class="frame-label">Room <small>outcome confirmation</small></div>
+      <div class="frame-wrap"><div class="frame-label">Room <small>outcome confirmation · inline</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
         <div class="nav">
           <div class="left"><button class="nav-btn"><span class="chevron"></span></button></div>
-          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;">
-            <span>Dev Mehta</span>
-            <span style="font-size:11px;font-weight:500;color:var(--text-muted);">Resolved · read-only</span>
-          </div>
+          <div class="title" style="display:flex;flex-direction:column;line-height:1.2;"><span>Dev Mehta</span><span style="font-size:11px;font-weight:500;color:var(--text-muted);">Resolved · read-only</span></div>
           <div class="right"><button class="nav-btn"><svg width="18" height="18"><use href="#i-more"/></svg></button></div>
         </div>
-
         <div class="card reason" style="margin:0 16px;padding:12px 14px;">
           <div style="font-size:13px;font-weight:700;color:var(--action-secondary);">Did this interaction happen?</div>
           <div style="font-size:12px;color:var(--action-secondary);line-height:17px;">Only a confirmed completion affects reliability. You can dispute an incorrect status.</div>
@@ -869,76 +856,29 @@
           </div>
           <button class="nav-btn" style="color:var(--action-secondary);font-weight:600;margin-top:2px;">Dispute the recorded status</button>
         </div>
-
         <div class="body" style="gap:8px;padding-top:8px;">
           <div class="bubble mine">Thanks again!</div>
           <div class="bubble theirs">Anytime.</div>
         </div>
-
         <div style="padding:14px 20px;border-top:1px solid var(--divider);background:var(--surface);text-align:center;">
           <div style="font-size:12px;color:var(--text-muted);">This intent is closed. The room is read-only.</div>
-        </div>
-      </div></div></div>
-
-      <div class="frame-wrap"><div class="frame-label">Activity <small>owner dashboard</small></div>
-      <div class="phone"><div class="screen">
-        <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="large-title">Activity</div>
-        <div class="body">
-
-          <div class="stat-row">
-            <div class="stat"><div class="n">3</div><div class="l">Your intents</div></div>
-            <div class="stat"><div class="n">7</div><div class="l">Your responses</div></div>
-            <div class="stat"><div class="n">2</div><div class="l">Matches</div></div>
-          </div>
-
-          <div class="section-label">Your broadcasts</div>
-
-          <div class="card">
-            <div class="row">
-              <span class="primitive">I need</span>
-              <span class="status-line"><span class="dot muted"></span>Resolved</span>
-            </div>
-            <div class="statement">Looking for one person to help sort donated books tomorrow morning.</div>
-            <div class="meta muted">1 response accepted · Coordination complete</div>
-          </div>
-
-          <div class="card">
-            <div class="row">
-              <span class="primitive">I offer</span>
-              <span class="status-line"><span class="dot"></span>Live</span>
-            </div>
-            <div class="statement">Spare projector free this weekend if anyone is running a workshop.</div>
-            <div class="row" style="margin-top:2px;">
-              <span class="confirmed-line"><span class="dot"></span>2 responses to review</span>
-              <span style="font-size:13px;font-weight:700;color:var(--action-primary);">Review ›</span>
-            </div>
-          </div>
-
-        </div>
-        <div class="tabbar">
-          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
-          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
-          <div class="tab active"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
         </div>
       </div></div></div>
 
     </div>
   </section>
 
-  <!-- ============================================================ 07 YOU -->
-  <section class="flow" id="you">
-    <div class="flow-heading"><span class="num">07</span><h2>You</h2></div>
-    <p class="flow-blurb">Contextual trust evidence, not a score. Sign out is quiet. Delete Account is a small danger link that opens a full confirmation modal — never a red button under Sign out.</p>
+  <!-- =============================================== 08 PROFILE -->
+  <section class="flow" id="profile">
+    <div class="flow-heading"><span class="num">08</span><h2>Profile</h2></div>
+    <p class="flow-blurb">Profile carries identity, trust context, privacy, and owned-intent history. Sign out is quiet. Delete Account is a small danger link that opens a full confirmation modal — never a red button beside Sign out.</p>
     <div class="grid">
 
-      <div class="frame-wrap"><div class="frame-label">You <small>profile</small></div>
+      <div class="frame-wrap"><div class="frame-label">Profile <small>identity + trust</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="large-title">You</div>
+        <div class="large-title">Profile</div>
         <div class="body">
-
           <div style="display:flex;gap:12px;align-items:center;padding:8px 2px;">
             <div class="avatar filled" style="width:52px;height:52px;font-size:18px;">A</div>
             <div>
@@ -949,30 +889,36 @@
 
           <div class="section-label">Trust context</div>
           <div class="list">
-            <div class="item">
-              <div class="lead"><strong>I need</strong><small>4 of 5 confirmed interactions completed</small></div>
-            </div>
-            <div class="item">
-              <div class="lead"><strong>I offer</strong><small>2 of 2 confirmed interactions completed</small></div>
-            </div>
+            <div class="item"><div class="lead"><strong>I need</strong><small>4 of 5 confirmed interactions completed</small></div></div>
+            <div class="item"><div class="lead"><strong>I offer</strong><small>2 of 2 confirmed interactions completed</small></div></div>
           </div>
           <div class="meta muted" style="padding:2px 4px;">Verification does not guarantee safety.</div>
 
-          <div class="section-label">Privacy</div>
+          <div class="section-label">Your broadcasts · 3</div>
           <div class="list">
-            <div class="item"><div class="lead"><small>People can see your first name and approximate area.</small></div></div>
-            <div class="item"><div class="lead"><small>Only accepted respondents can see details you release.</small></div></div>
-            <div class="item"><div class="lead"><small>Your originating group and its members stay private.</small></div></div>
+            <div class="item">
+              <div class="lead"><strong>Sort donated books</strong><small><span class="status-line"><span class="dot muted"></span>Resolved</span></small></div>
+              <span class="disclosure">›</span>
+            </div>
+            <div class="item">
+              <div class="lead"><strong>Spare projector</strong><small><span class="status-line"><span class="dot"></span>Live · 2 responses to review</span></small></div>
+              <span class="disclosure">›</span>
+            </div>
+            <div class="item">
+              <div class="lead"><strong>Coffee for morning walkers</strong><small><span class="status-line"><span class="dot warn"></span>Expiring in 4h</span></small></div>
+              <span class="disclosure">›</span>
+            </div>
           </div>
 
-          <button class="btn quiet" style="margin-top:6px;">Sign out</button>
+          <button class="btn quiet" style="margin-top:8px;">Sign out</button>
           <div class="delete-link">Delete account</div>
         </div>
         <div class="tabbar">
-          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
-          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
-          <div class="tab active"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
+          <div class="tab"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
         </div>
       </div></div></div>
 
@@ -986,7 +932,6 @@
         </div>
         <div class="body">
           <div style="font-size:22px;font-weight:700;line-height:28px;">Delete your Nearcast account?</div>
-
           <div class="card">
             <div class="section-label" style="margin:0;">What is removed</div>
             <div class="list" style="margin-top:6px;">
@@ -996,12 +941,10 @@
               <div class="item"><div class="lead"><small>Messages you sent are redacted.</small></div></div>
             </div>
           </div>
-
           <div class="card trust">
             <div style="font-size:13px;font-weight:700;color:var(--action-primary);">What is preserved</div>
             <div style="font-size:12px;color:var(--action-primary);line-height:17px;">Safety reports you filed. The other party's history is not altered.</div>
           </div>
-
           <div class="safety-note">This cannot be undone.</div>
         </div>
         <div class="footer-cta split">
@@ -1013,9 +956,9 @@
     </div>
   </section>
 
-  <!-- ============================================================ 08 STATES -->
+  <!-- =============================================== 09 STATES -->
   <section class="flow" id="states">
-    <div class="flow-heading"><span class="num">08</span><h2>States</h2></div>
+    <div class="flow-heading"><span class="num">09</span><h2>States</h2></div>
     <p class="flow-blurb">Every data screen must render one of these. Skeletons imply shape, never people or counts. Restricted is honest — an entitled reader sees content, an unentitled one sees a plain refusal.</p>
     <div class="grid">
 
@@ -1028,10 +971,11 @@
           <div class="card"><span class="skeleton sk-line" style="width:30%;"></span><span class="skeleton sk-lg" style="margin-top:8px;width:88%;"></span><span class="skeleton sk-lg" style="margin-top:6px;width:60%;"></span></div>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
-          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
         </div>
       </div></div></div>
 
@@ -1047,31 +991,34 @@
           <button class="btn small" style="width:auto;padding:0 16px;margin-top:4px;">Broadcast</button>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
-          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
         </div>
       </div></div></div>
 
       <div class="frame-wrap"><div class="frame-label">Offline <small>publish queued</small></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span class="glyphs"><span class="g"></span><span class="g"></span><span class="g bat"></span></span></div>
-        <div class="nav">
-          <div class="left"><button class="nav-btn"><span class="chevron"></span> Back</button></div>
-          <div class="title">Review</div>
-          <div class="right"><button class="nav-btn disabled" style="font-weight:700;">Broadcast</button></div>
-        </div>
-        <div class="body">
-          <div class="card">
-            <span class="primitive">I need</span>
-            <div class="statement">Need one person to help sort donated books tomorrow morning at the library.</div>
+        <div style="flex:1;opacity:0.35;background:var(--ground);"></div>
+        <div class="sheet-scrim"></div>
+        <div class="sheet large">
+          <div class="sheet-handle"></div>
+          <div class="sheet-nav">
+            <button class="nav-btn"><span class="chevron"></span> Back</button>
+            <span class="t">Review</span>
+            <button class="nav-btn disabled" style="font-weight:700;">Broadcast</button>
           </div>
-          <div class="card warn" style="display:flex;gap:10px;align-items:flex-start;">
-            <svg width="18" height="18" style="color:var(--status-warning);flex-shrink:0;margin-top:2px;"><use href="#i-wifi-off"/></svg>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--status-warning);">You're offline</div>
-              <div style="font-size:12px;color:var(--status-warning);line-height:17px;">Your draft is saved on this device. It will not be published until you are online.</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+            <div class="card"><span class="primitive">I need</span><div class="statement">Need one person to help sort donated books tomorrow morning.</div></div>
+            <div class="card warn" style="display:flex;gap:10px;align-items:flex-start;">
+              <svg width="18" height="18" style="color:var(--status-warning);flex-shrink:0;margin-top:2px;"><use href="#i-wifi-off"/></svg>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--status-warning);">You're offline</div>
+                <div style="font-size:12px;color:var(--status-warning);line-height:17px;">Your draft is saved on this device. It will not be published until you are online.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1088,10 +1035,11 @@
           <button class="btn secondary" style="width:auto;padding:0 20px;margin-top:4px;height:40px;">Try again</button>
         </div>
         <div class="tabbar">
-          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div>For You</div>
-          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div>Broadcast</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-bell"/></svg></div>Activity</div>
-          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div>You</div>
+          <div class="tab active"><div class="ic"><svg><use href="#i-house"/></svg></div><span class="lbl">For You</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-search"/></svg></div><span class="lbl">Explore</span></div>
+          <div class="tab broadcast"><div class="ic"><svg><use href="#i-plus"/></svg></div><span class="lbl">Broadcast</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-chat"/></svg></div><span class="lbl">Chat</span></div>
+          <div class="tab"><div class="ic"><svg><use href="#i-person"/></svg></div><span class="lbl">Profile</span></div>
         </div>
       </div></div></div>
 
@@ -1114,6 +1062,6 @@
   </section>
 
   <footer class="legal">
-    Nearcast · Trustworthy Native Clarity · v2 mockup revision. All tokens defined in <code>src/design-system/tokens.ts</code>. When an RN screen drifts from a mockup, the mockup is the target unless the founder says otherwise. Manrope from Google Fonts is the only external asset; icons are inline SVG symbols.
+    Nearcast · Trustworthy Native Clarity · v3 · 5-tab IA · native iOS gestures. All tokens defined in <code>src/design-system/tokens.ts</code>. Broadcast is a modal-opening tab-icon per the founder's confirmation, matching the Threads pattern. When an RN screen drifts from a mockup, the mockup is the target. Manrope from Google Fonts is the only external asset; icons are inline SVG symbols.
   </footer>
 </div>
