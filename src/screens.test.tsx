@@ -40,6 +40,14 @@ jest.mock('@react-native-community/datetimepicker', () => {
   };
 });
 
+jest.mock('expo-location', () => ({
+  requestForegroundPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  getCurrentPositionAsync: jest.fn(async () => ({ coords: { latitude: 12.97, longitude: 77.64 } })),
+  reverseGeocodeAsync: jest.fn(async () => [{ district: 'Indiranagar', city: 'Bengaluru' }]),
+  geocodeAsync: jest.fn(async () => [{ latitude: 12.93, longitude: 77.62 }]),
+  Accuracy: { Balanced: 3 },
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { resetCastStore } = require('./features/casts/store');
 
@@ -57,6 +65,8 @@ const JoinScreen = require('./app/join/[id]').default;
 const YouScreen = require('./app/you').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ComposeScreen = require('./app/compose').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const CasterProfileScreen = require('./app/caster/[id]').default;
 
 describe('home pager', () => {
   beforeEach(() => {
@@ -194,11 +204,51 @@ describe('compose', () => {
     const view = await render(<ComposeScreen />);
 
     await user.press(view.getByRole('button', { name: 'area' }));
-    expect(view.getByLabelText('approximate area')).toBeTruthy();
+    expect(view.getByLabelText('search area by name')).toBeTruthy();
+    expect(view.getByRole('button', { name: 'use my location' })).toBeTruthy();
+    expect(view.getByText('casts show the area only. the exact spot stays hidden.')).toBeTruthy();
     await user.press(view.getByRole('button', { name: 'indiranagar' }));
     expect(view.getByText('indiranagar · stays approximate')).toBeTruthy();
 
     await user.press(view.getByRole('button', { name: 'time' }));
     expect(view.getByTestId('datetimepicker')).toBeTruthy();
+  });
+
+  it('suggests areas from device location', async () => {
+    const user = userEvent.setup();
+    const view = await render(<ComposeScreen />);
+
+    await user.press(view.getByRole('button', { name: 'area' }));
+    await user.press(view.getByRole('button', { name: 'use my location' }));
+
+    expect(await view.findByRole('button', { name: 'indiranagar' })).toBeTruthy();
+  });
+});
+
+describe('caster sheet', () => {
+  beforeEach(() => {
+    mockPush.mockReset();
+    mockParams = { id: 'aarav' };
+  });
+
+  it('shows trust facts, live casts, and safety actions — nothing social', async () => {
+    const view = await render(<CasterProfileScreen />);
+
+    expect(view.getByText('Aarav')).toBeTruthy();
+    expect(view.getByText('indiranagar · 1 trusted link away · your circle vouches')).toBeTruthy();
+    expect(view.getByText('31 plans made real · 0 flakes · casting since march')).toBeTruthy();
+    expect(view.getByText('vouched by 2 people you trust')).toBeTruthy();
+    expect(view.getByText('badminton after work. need two.')).toBeTruthy();
+    expect(view.getByRole('button', { name: 'block Aarav' })).toBeTruthy();
+    expect(view.getByRole('button', { name: 'report Aarav' })).toBeTruthy();
+    expect(view.queryByText(/followers/i)).toBeNull();
+  });
+
+  it('opens from the feed poster caster line', async () => {
+    const user = userEvent.setup();
+    const view = await render(<HomeScreen />);
+
+    await user.press(view.getAllByRole('button', { name: /about aarav/ })[0]);
+    expect(mockPush).toHaveBeenCalledWith('/caster/aarav');
   });
 });

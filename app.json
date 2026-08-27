@@ -34,7 +34,13 @@
           "imageWidth": 76
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Nearcast uses your location once to suggest your approximate area. Casts never show your exact location."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

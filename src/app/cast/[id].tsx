@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
 import { BarButton, QuietAction } from '@/design-system/components/button';
@@ -29,11 +29,18 @@ export default function CastDetailScreen() {
   return (
     <SheetShell title={`${cast.by} cast this`}>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
-        <Text style={styles.byLine}>{cast.byLine}</Text>
-        <View style={styles.receipts}>
-          <SignalBars lit={cast.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
-          <Text style={styles.receiptsLine}>{cast.receipts.line}</Text>
-        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`about ${cast.by}`}
+          onPress={() => router.push(`/caster/${cast.byId}`)}
+          hitSlop={8}
+        >
+          <Text style={styles.byLine}>{cast.byLine} ›</Text>
+          <View style={styles.receipts}>
+            <SignalBars lit={cast.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
+            <Text style={styles.receiptsLine}>{cast.receipts.line}</Text>
+          </View>
+        </Pressable>
         <Text style={styles.body}>{cast.body}</Text>
         <SheetNote>exact place + contact stay hidden until you&apos;re both in</SheetNote>
       </ScrollView>

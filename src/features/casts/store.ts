@@ -58,6 +58,7 @@ export function addCast(input: { verb: Verb; text: string; area: string; gone: s
     expiry: input.gone,
     why: 'you cast this',
     by: 'Piyush',
+    byId: 'me',
     byLine: `${input.area} · your cast`,
     receipts: { lit: 4, line: '31 plans made real · 0 flakes' },
     body: input.text,

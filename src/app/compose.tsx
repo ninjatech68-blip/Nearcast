@@ -10,6 +10,7 @@ import { Poster } from '@/design-system/components/poster';
 import { Stamp } from '@/design-system/components/stamp';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens, verbColor, verbForeground, verbLabel, type Verb } from '@/design-system/tokens';
+import { areasNearMe, searchAreas } from '@/features/casts/area-lookup';
 import { reachLevels, type ReachValue } from '@/features/casts/fixtures';
 import { addCast } from '@/features/casts/store';
 
@@ -26,6 +27,9 @@ export default function ComposeScreen() {
   const [text, setText] = useState('');
   const [area, setArea] = useState('');
   const [areaOpen, setAreaOpen] = useState(false);
+  const [areaQuery, setAreaQuery] = useState('');
+  const [areaOptions, setAreaOptions] = useState<readonly string[]>(areaSuggestions);
+  const [areaStatus, setAreaStatus] = useState<'idle' | 'locating' | 'searching' | 'no-permission' | 'not-found'>('idle');
   const [when, setWhen] = useState<Date | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
   const [reach, setReach] = useState<ReachValue>('adjacent_network');
@@ -50,6 +54,40 @@ export default function ComposeScreen() {
   function pickVerb(next: Verb) {
     haptic('selection');
     setVerb(next);
+  }
+
+  function pickArea(name: string) {
+    haptic('selection');
+    setArea(name);
+    setAreaOpen(false);
+    setAreaStatus('idle');
+  }
+
+  async function useMyLocation() {
+    setAreaStatus('locating');
+    const result = await areasNearMe();
+    if (result.ok) {
+      setAreaOptions(result.areas);
+      setAreaStatus('idle');
+      if (result.areas.length === 1) pickArea(result.areas[0]);
+    } else {
+      setAreaStatus(result.reason === 'permission' ? 'no-permission' : 'not-found');
+    }
+  }
+
+  async function runAreaSearch() {
+    const typed = areaQuery.trim().toLowerCase();
+    if (typed.length < 2) return;
+    setAreaStatus('searching');
+    const result = await searchAreas(areaQuery);
+    if (result.ok) {
+      setAreaOptions(result.areas);
+      setAreaStatus('idle');
+    } else {
+      // areas are names, not pins: the typed name is always usable
+      setAreaOptions([typed]);
+      setAreaStatus('not-found');
+    }
   }
 
   function castIt() {
@@ -149,35 +187,49 @@ export default function ComposeScreen() {
                 </Pressable>
                 {areaOpen ? (
                   <View style={styles.expand}>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="use my location"
+                      onPress={useMyLocation}
+                      style={styles.locateRow}
+                    >
+                      <Text style={styles.locateText}>
+                        {areaStatus === 'locating' ? 'finding your area…' : '◉ use my location'}
+                      </Text>
+                    </Pressable>
                     <TextInput
-                      accessibilityLabel="approximate area"
-                      value={area}
-                      onChangeText={setArea}
-                      placeholder="neighborhood, not an address"
+                      accessibilityLabel="search area by name"
+                      value={areaQuery}
+                      onChangeText={setAreaQuery}
+                      placeholder="or search an area by name"
                       placeholderTextColor={tokens.semantic.color.hairlineOnCream}
                       selectionColor={tokens.semantic.color.accent}
                       style={styles.areaInput}
                       autoCapitalize="none"
-                      returnKeyType="done"
-                      onSubmitEditing={() => setAreaOpen(false)}
+                      returnKeyType="search"
+                      onSubmitEditing={runAreaSearch}
                     />
                     <View style={styles.chips}>
-                      {areaSuggestions.map((suggestion) => (
+                      {areaOptions.map((suggestion) => (
                         <Pressable
                           key={suggestion}
                           accessibilityRole="button"
                           accessibilityLabel={suggestion}
-                          onPress={() => {
-                            haptic('selection');
-                            setArea(suggestion);
-                            setAreaOpen(false);
-                          }}
+                          onPress={() => pickArea(suggestion)}
                           style={styles.chip}
                         >
                           <Text style={styles.chipText}>{suggestion}</Text>
                         </Pressable>
                       ))}
                     </View>
+                    {areaStatus === 'searching' ? <Text style={styles.expandNote}>searching…</Text> : null}
+                    {areaStatus === 'no-permission' ? (
+                      <Text style={styles.expandNote}>location is off. search or type your area instead.</Text>
+                    ) : null}
+                    {areaStatus === 'not-found' ? (
+                      <Text style={styles.expandNote}>nothing found nearby. use the name anyway, or try another.</Text>
+                    ) : null}
+                    <Text style={styles.expandNote}>casts show the area only. the exact spot stays hidden.</Text>
                   </View>
                 ) : null}
 
@@ -334,6 +386,8 @@ const styles = StyleSheet.create({
   detailSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },
   detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expand: { paddingBottom: 18, gap: 12 },
+  locateRow: { minHeight: 44, justifyContent: 'center' },
+  locateText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
   areaInput: {
     minHeight: 48,
     borderRadius: tokens.primitive.radius.control,

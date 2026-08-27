@@ -26,6 +26,8 @@ export function Poster({
   reserveRail = true,
   badge,
   tagLabel,
+  casterLine,
+  onOpenCaster,
 }: {
   cast: PosterData;
   topRight?: ReactNode;
@@ -34,6 +36,8 @@ export function Poster({
   reserveRail?: boolean;
   badge?: ReactNode;
   tagLabel?: string;
+  casterLine?: string;
+  onOpenCaster?: () => void;
 }) {
   const insets = useSafeAreaInsets();
   const fg = verbForeground[cast.verb];
@@ -73,7 +77,19 @@ export function Poster({
         )}
       </View>
       <View>
-        <Text style={[styles.meta, { color: fg }]}>{meta}</Text>
+        {casterLine ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`about ${casterLine}`}
+            hitSlop={8}
+            disabled={!onOpenCaster}
+            onPress={onOpenCaster}
+            style={styles.casterTap}
+          >
+            <Text style={[styles.caster, { color: fg }]}>cast by {casterLine} ›</Text>
+          </Pressable>
+        ) : null}
+        <Text style={[styles.meta, casterLine ? styles.metaTight : null, { color: fg }]}>{meta}</Text>
         {cast.why ? <Text style={[styles.why, { color: muted }]}>why you: {cast.why}</Text> : null}
         {children ? <View style={styles.bar}>{children}</View> : null}
       </View>
@@ -95,7 +111,10 @@ const styles = StyleSheet.create({
     letterSpacing: tokens.typography.cast.letterSpacing,
     maxWidth: 330,
   },
+  casterTap: { minHeight: 32, justifyContent: 'flex-end', marginTop: 10 },
+  caster: { ...tokens.typography.meta, fontFamily: 'IBMPlexMono_600SemiBold' },
   meta: { ...tokens.typography.meta, marginTop: 18 },
+  metaTight: { marginTop: 4 },
   why: { ...tokens.typography.metaSmall, marginTop: 6 },
   bar: { marginTop: 24, gap: 2 },
 });

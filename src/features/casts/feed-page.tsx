@@ -73,6 +73,8 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
         cast={cast}
         topRight={<AvatarDot onColored verb={cast.verb} />}
         onOpen={() => router.push(`/cast/${cast.id}`)}
+        casterLine={`${cast.by.toLowerCase()} · ${cast.receipts.line.split(' · ')[0]}`}
+        onOpenCaster={() => router.push(`/caster/${cast.byId}`)}
       >
         <BarButton
           label="I'm in"

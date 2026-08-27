@@ -7,10 +7,47 @@ import type { PosterData } from '@/design-system/components/poster';
 
 export type CastDetail = PosterData & {
   by: string;
+  byId: string;
   byLine: string;
   receipts: { lit: number; line: string };
   body: string;
 };
+
+export type CasterProfile = {
+  id: string;
+  name: string;
+  area: string;
+  trustLine: string;
+  receipts: { lit: number; line: string };
+  vouchLine: string;
+};
+
+export const casters: readonly CasterProfile[] = [
+  {
+    id: 'aarav',
+    name: 'Aarav',
+    area: 'indiranagar',
+    trustLine: '1 trusted link away · your circle vouches',
+    receipts: { lit: 4, line: '31 plans made real · 0 flakes · casting since march' },
+    vouchLine: 'vouched by 2 people you trust',
+  },
+  {
+    id: 'meera',
+    name: 'Meera',
+    area: 'hsr',
+    trustLine: '1 trusted link away',
+    receipts: { lit: 3, line: '12 plans made real · 1 flake · casting since april' },
+    vouchLine: 'vouched by 1 person you trust',
+  },
+  {
+    id: 'dev',
+    name: 'Dev',
+    area: 'koramangala',
+    trustLine: '2 trusted links away',
+    receipts: { lit: 5, line: '48 plans made real · 0 flakes · casting since february' },
+    vouchLine: 'vouched by 1 person one link away',
+  },
+];
 
 export const casts: readonly CastDetail[] = [
   {
@@ -22,6 +59,7 @@ export const casts: readonly CastDetail[] = [
     expiry: 'gone 10pm',
     why: 'you play nearby on weekday evenings',
     by: 'Aarav',
+    byId: 'aarav',
     byLine: 'indiranagar · 1 trusted link · your circle vouches',
     receipts: { lit: 4, line: '31 plans made real · 0 flakes' },
     body: "easy doubles, intermediate is fine. court's booked, split is ₹80.",
@@ -35,6 +73,7 @@ export const casts: readonly CastDetail[] = [
     expiry: 'gone friday',
     why: 'you saved a ceramics cast last week',
     by: 'Meera',
+    byId: 'meera',
     byLine: 'hsr · 1 trusted link',
     receipts: { lit: 3, line: '12 plans made real · 1 flake' },
     body: 'shared studio, 9 to 12. wheel time split evenly. beginners fine.',
@@ -48,6 +87,7 @@ export const casts: readonly CastDetail[] = [
     expiry: 'gone thu',
     why: 'two of your circles overlap',
     by: 'Dev',
+    byId: 'dev',
     byLine: 'koramangala · 1 trusted link',
     receipts: { lit: 5, line: '48 plans made real · 0 flakes' },
     body: 'indie gig at the brewery venue. ticket at cost, no markup.',
