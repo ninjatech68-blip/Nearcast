@@ -67,9 +67,11 @@ jest.mock('react-native-maps', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require('react-native');
   const MapView = (props: { onPress?: (e: unknown) => void }) => <View testID="mapview" {...props} />;
+  const Marker = (props: object) => <View testID="marker" {...props} />;
   return {
     __esModule: true,
     default: MapView,
+    Marker,
     PROVIDER_DEFAULT: 'default',
   };
 });
@@ -216,32 +218,34 @@ describe('compose', () => {
     mockBack.mockReset();
   });
 
-  it('keeps cast it dead until both a category and a cast exist', async () => {
+  it('keeps step 1 gated until both a category and a cast exist', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
-    const cast = view.getByRole('button', { name: 'cast it' });
-    expect(cast.props.accessibilityState).toMatchObject({ disabled: true });
+    const next = view.getByRole('button', { name: 'next: add details' });
+    expect(next.props.accessibilityState).toMatchObject({ disabled: true });
 
     // text alone is not enough: the category is required
     await user.type(view.getByLabelText('your cast'), 'chess in the park.');
-    expect(view.getByRole('button', { name: 'cast it' }).props.accessibilityState).toMatchObject({
+    expect(view.getByRole('button', { name: 'next: add details' }).props.accessibilityState).toMatchObject({
       disabled: true,
     });
 
     await user.press(view.getByRole('radio', { name: 'games' }));
-    expect(view.getByRole('button', { name: 'cast it' }).props.accessibilityState).toMatchObject({
+    expect(view.getByRole('button', { name: 'next: add details' }).props.accessibilityState).toMatchObject({
       disabled: false,
     });
   });
 
-  it('shows reach inline with the smart default of friends of circles', async () => {
+  it('lands on details with reach defaulting to friends of circles', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
-    // reach row summarizes the current choice — no separate step
-    expect(view.getByLabelText('who sees it')).toBeTruthy();
+    await user.press(view.getByRole('radio', { name: 'sports' }));
+    await user.type(view.getByLabelText('your cast'), 'badminton after work. need two.');
+    await user.press(view.getByRole('button', { name: 'next: add details' }));
 
+    expect(view.getByText('where, when, who?')).toBeTruthy();
     await user.press(view.getByLabelText('who sees it'));
     const adjacent = view.getByRole('radio', { name: 'friends of circles' });
     expect(adjacent.props.accessibilityState).toMatchObject({ selected: true });
@@ -254,6 +258,7 @@ describe('compose', () => {
 
     await user.press(view.getByRole('radio', { name: 'games' }));
     await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
+    await user.press(view.getByRole('button', { name: 'next: add details' }));
     await user.press(view.getByRole('button', { name: 'cast it' }));
 
     expect(await view.findByText('OUT')).toBeTruthy();
@@ -267,6 +272,10 @@ describe('compose', () => {
   it('sends the area row to its own screen and opens the time picker inline', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
+
+    await user.press(view.getByRole('radio', { name: 'sports' }));
+    await user.type(view.getByLabelText('your cast'), 'badminton after work.');
+    await user.press(view.getByRole('button', { name: 'next: add details' }));
 
     await user.press(view.getByRole('button', { name: 'area' }));
     expect(mockPush).toHaveBeenCalledWith('/area');
