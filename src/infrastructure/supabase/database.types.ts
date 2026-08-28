@@ -7,31 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       analytics_outbox: {
@@ -97,24 +72,92 @@ export type Database = {
           },
         ]
       }
+      circle_members: {
+        Row: {
+          added_at: string
+          circle_id: string
+          member_id: string
+        }
+        Insert: {
+          added_at?: string
+          circle_id: string
+          member_id: string
+        }
+        Update: {
+          added_at?: string
+          circle_id?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circle_members_circle_id_fkey"
+            columns: ["circle_id"]
+            isOneToOne: false
+            referencedRelation: "circles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "circle_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      circles: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           closed_at: string | null
           created_at: string
+          expires_at: string | null
           id: string
           match_id: string
+          mode: Database["public"]["Enums"]["conversation_mode"]
         }
         Insert: {
           closed_at?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           match_id: string
+          mode?: Database["public"]["Enums"]["conversation_mode"]
         }
         Update: {
           closed_at?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           match_id?: string
+          mode?: Database["public"]["Enums"]["conversation_mode"]
         }
         Relationships: [
           {
@@ -163,6 +206,7 @@ export type Database = {
         Row: {
           approximate_geography: unknown
           approximate_place: string | null
+          cancel_cutoff_hours: number
           currency: string | null
           deadline_at: string | null
           intent_id: string
@@ -174,6 +218,7 @@ export type Database = {
         Insert: {
           approximate_geography?: unknown
           approximate_place?: string | null
+          cancel_cutoff_hours?: number
           currency?: string | null
           deadline_at?: string | null
           intent_id: string
@@ -185,6 +230,7 @@ export type Database = {
         Update: {
           approximate_geography?: unknown
           approximate_place?: string | null
+          cancel_cutoff_hours?: number
           currency?: string | null
           deadline_at?: string | null
           intent_id?: string
@@ -299,47 +345,13 @@ export type Database = {
           },
         ]
       }
-      intent_private: {
-        Row: {
-          coordination_notes: string | null
-          exact_address: string | null
-          exact_geography: unknown
-          intent_id: string
-          private_contact: string | null
-          updated_at: string
-        }
-        Insert: {
-          coordination_notes?: string | null
-          exact_address?: string | null
-          exact_geography?: unknown
-          intent_id: string
-          private_contact?: string | null
-          updated_at?: string
-        }
-        Update: {
-          coordination_notes?: string | null
-          exact_address?: string | null
-          exact_geography?: unknown
-          intent_id?: string
-          private_contact?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "intent_private_intent_id_fkey"
-            columns: ["intent_id"]
-            isOneToOne: true
-            referencedRelation: "intents"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       intent_reach: {
         Row: {
           expanded_at: string | null
           intent_id: string
           level: Database["public"]["Enums"]["reach_level"]
           public_link_enabled: boolean
+          radius_km: number
           show_broadcaster_first_name: boolean
           updated_at: string
         }
@@ -348,6 +360,7 @@ export type Database = {
           intent_id: string
           level?: Database["public"]["Enums"]["reach_level"]
           public_link_enabled?: boolean
+          radius_km?: number
           show_broadcaster_first_name?: boolean
           updated_at?: string
         }
@@ -356,6 +369,7 @@ export type Database = {
           intent_id?: string
           level?: Database["public"]["Enums"]["reach_level"]
           public_link_enabled?: boolean
+          radius_km?: number
           show_broadcaster_first_name?: boolean
           updated_at?: string
         }
@@ -372,15 +386,15 @@ export type Database = {
       intents: {
         Row: {
           broadcaster_id: string
+          category: Database["public"]["Enums"]["cast_category"]
           created_at: string
           expires_at: string
           id: string
-          primitive: Database["public"]["Enums"]["intent_primitive"]
           published_at: string | null
           resolved_at: string | null
-          response_action: string
           restricted_from: Database["public"]["Enums"]["intent_status"] | null
           share_slug: string
+          slots_wanted: number | null
           statement: string
           status: Database["public"]["Enums"]["intent_status"]
           updated_at: string
@@ -388,15 +402,15 @@ export type Database = {
         }
         Insert: {
           broadcaster_id: string
+          category: Database["public"]["Enums"]["cast_category"]
           created_at?: string
           expires_at: string
           id?: string
-          primitive: Database["public"]["Enums"]["intent_primitive"]
           published_at?: string | null
           resolved_at?: string | null
-          response_action: string
           restricted_from?: Database["public"]["Enums"]["intent_status"] | null
           share_slug?: string
+          slots_wanted?: number | null
           statement: string
           status?: Database["public"]["Enums"]["intent_status"]
           updated_at?: string
@@ -404,15 +418,15 @@ export type Database = {
         }
         Update: {
           broadcaster_id?: string
+          category?: Database["public"]["Enums"]["cast_category"]
           created_at?: string
           expires_at?: string
           id?: string
-          primitive?: Database["public"]["Enums"]["intent_primitive"]
           published_at?: string | null
           resolved_at?: string | null
-          response_action?: string
           restricted_from?: Database["public"]["Enums"]["intent_status"] | null
           share_slug?: string
+          slots_wanted?: number | null
           statement?: string
           status?: Database["public"]["Enums"]["intent_status"]
           updated_at?: string
@@ -428,87 +442,10 @@ export type Database = {
           },
         ]
       }
-      interaction_outcomes: {
-        Row: {
-          completed: boolean
-          created_at: string
-          disputed: boolean
-          id: string
-          match_id: string
-          reporter_id: string
-        }
-        Insert: {
-          completed: boolean
-          created_at?: string
-          disputed?: boolean
-          id?: string
-          match_id: string
-          reporter_id: string
-        }
-        Update: {
-          completed?: boolean
-          created_at?: string
-          disputed?: boolean
-          id?: string
-          match_id?: string
-          reporter_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "interaction_outcomes_match_id_fkey"
-            columns: ["match_id"]
-            isOneToOne: false
-            referencedRelation: "matches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "interaction_outcomes_reporter_id_fkey"
-            columns: ["reporter_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      match_disclosures: {
-        Row: {
-          field_name: string
-          match_id: string
-          released_at: string
-          released_by: string
-        }
-        Insert: {
-          field_name: string
-          match_id: string
-          released_at?: string
-          released_by: string
-        }
-        Update: {
-          field_name?: string
-          match_id?: string
-          released_at?: string
-          released_by?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "match_disclosures_match_id_fkey"
-            columns: ["match_id"]
-            isOneToOne: false
-            referencedRelation: "matches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "match_disclosures_released_by_fkey"
-            columns: ["released_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       matches: {
         Row: {
           broadcaster_id: string
+          cancelled_at: string | null
           closed_at: string | null
           created_at: string
           id: string
@@ -518,6 +455,7 @@ export type Database = {
         }
         Insert: {
           broadcaster_id: string
+          cancelled_at?: string | null
           closed_at?: string | null
           created_at?: string
           id?: string
@@ -527,6 +465,7 @@ export type Database = {
         }
         Update: {
           broadcaster_id?: string
+          cancelled_at?: string | null
           closed_at?: string | null
           created_at?: string
           id?: string
@@ -545,7 +484,7 @@ export type Database = {
           {
             foreignKeyName: "matches_intent_id_fkey"
             columns: ["intent_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "intents"
             referencedColumns: ["id"]
           },
@@ -648,6 +587,52 @@ export type Database = {
           {
             foreignKeyName: "notification_jobs_recipient_id_fkey"
             columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      presence_reports: {
+        Row: {
+          created_at: string
+          intent_id: string
+          report: Database["public"]["Enums"]["presence_report"]
+          reporter_id: string
+          subject_id: string
+        }
+        Insert: {
+          created_at?: string
+          intent_id: string
+          report: Database["public"]["Enums"]["presence_report"]
+          reporter_id: string
+          subject_id: string
+        }
+        Update: {
+          created_at?: string
+          intent_id?: string
+          report?: Database["public"]["Enums"]["presence_report"]
+          reporter_id?: string
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "presence_reports_intent_id_fkey"
+            columns: ["intent_id"]
+            isOneToOne: false
+            referencedRelation: "intents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "presence_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "presence_reports_subject_id_fkey"
+            columns: ["subject_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -814,6 +799,7 @@ export type Database = {
         }
         Returns: {
           broadcaster_id: string
+          cancelled_at: string | null
           closed_at: string | null
           created_at: string
           id: string
@@ -828,29 +814,47 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      attendance_outcome: {
+        Args: { as_of?: string; target_intent: string; target_profile: string }
+        Returns: Database["public"]["Enums"]["attendance_result"]
+      }
       get_public_intent: {
         Args: { requested_share_slug: string }
         Returns: {
           approximate_place: string
           broadcaster_first_name: string
+          category: Database["public"]["Enums"]["cast_category"]
           confirmation_count: number
           currency: string
           deadline_at: string
           expires_at: string
           id: string
           price_minor: number
-          primitive: Database["public"]["Enums"]["intent_primitive"]
           published_at: string
           quantity: number
-          response_action: string
+          seats_taken: number
           share_slug: string
+          slots_wanted: number
           starts_at: string
           statement: string
         }[]
       }
     }
     Enums: {
-      intent_primitive: "request" | "offer" | "plan"
+      attendance_result:
+        "receipt" | "flake" | "withdrawn" | "disputed" | "unverified"
+      cast_category:
+        | "social"
+        | "sports"
+        | "food"
+        | "music"
+        | "travel"
+        | "games"
+        | "arts"
+        | "learning"
+        | "networking"
+        | "help"
+      conversation_mode: "day" | "week" | "always" | "ended"
       intent_status:
         | "draft"
         | "live"
@@ -859,6 +863,7 @@ export type Database = {
         | "expired"
         | "withdrawn"
         | "restricted"
+      presence_report: "showed" | "no_show"
       reach_level:
         | "origin_only"
         | "adjacent_network"
@@ -881,12 +886,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -908,13 +913,12 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -933,13 +937,12 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -958,13 +961,12 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -977,11 +979,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -991,12 +993,28 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
-      intent_primitive: ["request", "offer", "plan"],
+      attendance_result: [
+        "receipt",
+        "flake",
+        "withdrawn",
+        "disputed",
+        "unverified",
+      ],
+      cast_category: [
+        "social",
+        "sports",
+        "food",
+        "music",
+        "travel",
+        "games",
+        "arts",
+        "learning",
+        "networking",
+        "help",
+      ],
+      conversation_mode: ["day", "week", "always", "ended"],
       intent_status: [
         "draft",
         "live",
@@ -1006,6 +1024,7 @@ export const Constants = {
         "withdrawn",
         "restricted",
       ],
+      presence_report: ["showed", "no_show"],
       reach_level: [
         "origin_only",
         "adjacent_network",
@@ -1017,4 +1036,3 @@ export const Constants = {
     },
   },
 } as const
-

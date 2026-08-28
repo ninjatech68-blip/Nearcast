@@ -34,7 +34,7 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 - Enable RLS on every exposed table. Use explicit policies and test allowed and denied paths.
 - Put privileged lifecycle transitions in server-controlled database functions or Edge Functions; make transitions idempotent.
 - Write a failing test before production behavior. Run `npm run verify` before claiming app changes complete.
-- Run `npm run db:test` after schema or RLS changes when the local Supabase stack is available.
+- Run `npm run db:test` after schema or RLS changes, or `npm run db:local:test` where Docker is unavailable. Never claim a migration is verified without having run it.
 - Never commit `.env`, service-role keys, access tokens, or production data.
 
 ## Commands
@@ -49,6 +49,21 @@ npm run db:reset
 npm run db:test
 npm run db:types
 ```
+
+The `db:*` commands need a Docker daemon. Without one, the same schema, RLS,
+function and type work runs against a plain local PostgreSQL 16 — same
+migrations, same pgTAP suite, same generator:
+
+```bash
+npm run db:local        # apply every migration to a fresh local database
+npm run db:local:test   # run the pgTAP suite against it
+npm run db:local:types  # regenerate database.types.ts
+npm run db:local:stop
+```
+
+This covers schema, policies, functions, triggers and types. It does not
+run GoTrue, PostgREST, Realtime or Storage — for anything that needs those,
+use the Docker stack or a hosted project.
 
 ## Definition Of Done
 

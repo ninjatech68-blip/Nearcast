@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(19);
+select plan(23);
 
 -- ---------------------------------------------------------------
 -- shape
@@ -69,9 +69,14 @@ select results_eq(
   'the seat that fills the cast closes it'
 );
 
+-- the second seat closed the cast, so the third ask is refused on the
+-- status check before it ever reaches the ceiling. either way it is
+-- refused; this asserts the reason it actually gives.
 select throws_ok(
   $$ select public.accept_response('20000000-0000-0000-0000-000000000003','live') $$,
-  'a third accept on a two-slot cast is refused'
+  '40001',
+  'stale_intent_state',
+  'a third accept on a two-slot cast is refused — the cast already closed'
 );
 
 -- ---------------------------------------------------------------

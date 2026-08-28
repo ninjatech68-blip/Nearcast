@@ -42,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@supabase/postgres-meta": "^0.98.0",
     "@testing-library/react-native": "^14.0.1",
     "@types/jest": "29.5.14",
     "@types/react": "~19.2.2",
@@ -73,7 +74,11 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts"
+    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts",
+    "db:local": "./scripts/db-local.sh reset",
+    "db:local:test": "./scripts/db-local.sh test",
+    "db:local:types": "./scripts/db-local.sh types",
+    "db:local:stop": "./scripts/db-local.sh stop"
   },
   "jest": {
     "preset": "jest-expo",
