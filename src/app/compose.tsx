@@ -19,6 +19,7 @@ import {
 import { reachLevels, type ReachValue } from '@/features/casts/fixtures';
 import { addCast, clearDraft, setDraftArea, useDraftArea } from '@/features/casts/store';
 import { useMe } from '@/features/me/me-store';
+import { submit } from '@/infrastructure/net/submit';
 
 type Step = 'write' | 'details' | 'sent';
 
@@ -42,6 +43,7 @@ export default function ComposeScreen() {
   const [reach, setReach] = useState<ReachValue>('adjacent_network');
   const [slots, setSlots] = useState(2);
   const [casting, setCasting] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const area = useDraftArea();
   const me = useMe();
@@ -70,9 +72,15 @@ export default function ComposeScreen() {
     setPick(next);
   }
 
-  function castIt() {
+  /**
+   * cast it. on failure we stay on the details step with everything
+   * the user typed intact — losing a written cast to a dropped
+   * connection is the worst thing this screen could do.
+   */
+  async function castIt() {
     setCasting(true);
-    setTimeout(() => {
+    setSendError(null);
+    const result = await submit(() =>
       addCast({
         category: chosen,
         text: trimmed,
@@ -80,10 +88,19 @@ export default function ComposeScreen() {
         gone: goneLabel,
         reach: reachTitle(reach),
         slotsWanted: slots,
-      });
-      setCasting(false);
-      setStep('sent');
-    }, 700);
+      }),
+    );
+    setCasting(false);
+    if (!result.ok) {
+      haptic('warning');
+      setSendError(
+        result.reason === 'offline'
+          ? "you're offline. your cast is saved here — tap again when you're back."
+          : "that didn't go out. your cast is saved here — tap to try again.",
+      );
+      return;
+    }
+    setStep('sent');
   }
 
   if (step === 'sent') {
@@ -301,7 +318,14 @@ export default function ComposeScreen() {
               </View>
             </ScrollView>
             <View style={styles.detailsActions}>
-              <BarButton label="cast it" variant="onOrange" onPress={castIt} loading={casting} />
+              {sendError ? <Text style={styles.sendError}>{sendError}</Text> : null}
+              <BarButton
+                label={sendError ? 'try again' : 'cast it'}
+                variant="onOrange"
+                onPress={castIt}
+                loading={casting}
+                loadingLabel="casting…"
+              />
               <QuietAction label="back" color={tokens.semantic.color.ink} onPress={() => setStep('write')} />
             </View>
           </>
@@ -449,5 +473,11 @@ const styles = StyleSheet.create({
   pickDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: tokens.semantic.color.accent },
   reachNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
   detailsActions: { gap: 2, paddingBottom: 4 },
+  sendError: {
+    ...tokens.typography.metaSmall,
+    color: tokens.semantic.color.accent,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
   sentNote: { ...tokens.typography.metaSmall, marginBottom: 14, opacity: 0.7 },
 });

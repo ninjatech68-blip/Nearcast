@@ -17,7 +17,9 @@ import { Face } from '@/design-system/components/face';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
-import { endChat, extendChat, sendMessage, useThread, type Message } from '@/features/chat/chat';
+import { endChat, extendChat, retryMessage, sendMessage, useThread, type Message } from '@/features/chat/chat';
+import { connectivityNote } from '@/infrastructure/net/connectivity';
+import { useConnectivity } from '@/infrastructure/net/submit';
 
 /**
  * the plan room chat: opens after a match, shows the whole thread for
@@ -30,6 +32,8 @@ export default function ChatScreen() {
   const thread = useThread(id ?? '');
   const [draft, setDraft] = useState('');
   const scrollRef = useRef<ScrollView>(null);
+  const connectivity = useConnectivity();
+  const netNote = connectivityNote(connectivity);
 
   if (!thread) {
     return (
@@ -125,9 +129,19 @@ export default function ChatScreen() {
         >
           <Text style={styles.matchedNote}>you matched. earlier messages are here for context.</Text>
           {thread.messages.map((message) => (
-            <Bubble key={message.id} message={message} />
+            <Bubble
+              key={message.id}
+              message={message}
+              onRetry={() => retryMessage(thread.id, message.id)}
+            />
           ))}
         </ScrollView>
+
+        {netNote ? (
+          <View style={styles.netBanner} accessibilityLabel="connection status">
+            <Text style={styles.netBannerText}>{netNote}</Text>
+          </View>
+        ) : null}
 
         {thread.mode === 'ended' ? (
           <View style={[styles.endedRow, { paddingBottom: Math.max(insets.bottom, 12) }]}>
@@ -162,7 +176,7 @@ export default function ChatScreen() {
   );
 }
 
-function Bubble({ message }: { message: Message }) {
+function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }) {
   if (message.from === 'system') {
     return (
       <View style={styles.systemRow} accessibilityLabel="meeting spot">
@@ -171,21 +185,42 @@ function Bubble({ message }: { message: Message }) {
     );
   }
   const mine = message.from === 'me';
-  return (
-    <View style={[styles.bubbleRow, mine ? styles.rowMine : styles.rowTheirs]}>
-      <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
+  const failed = mine && message.status === 'failed';
+
+  const body = (
+    <>
+      <View style={[styles.bubble, mine ? styles.mine : styles.theirs, failed && styles.bubbleFailed]}>
         <Text style={[styles.bubbleText, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
       </View>
       <View style={styles.metaRow}>
-        <Text style={styles.time}>{message.time}</Text>
-        {mine && message.status ? <Text style={[styles.tick, message.status === 'read' && styles.tickRead]}>{tickFor(message.status)}</Text> : null}
+        <Text style={styles.time}>{failed ? 'not sent · tap to retry' : message.time}</Text>
+        {mine && message.status ? (
+          <Text style={[styles.tick, message.status === 'read' && styles.tickRead, failed && styles.tickFailed]}>
+            {tickFor(message.status)}
+          </Text>
+        ) : null}
       </View>
-    </View>
+    </>
   );
+
+  if (failed && onRetry) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`retry sending: ${message.text}`}
+        onPress={onRetry}
+        style={[styles.bubbleRow, styles.rowMine]}
+      >
+        {body}
+      </Pressable>
+    );
+  }
+
+  return <View style={[styles.bubbleRow, mine ? styles.rowMine : styles.rowTheirs]}>{body}</View>;
 }
 
 function tickFor(status: NonNullable<Message['status']>): string {
-  return { pending: '…', sent: '✓', delivered: '✓✓', read: '✓✓' }[status];
+  return { pending: '…', sent: '✓', delivered: '✓✓', read: '✓✓', failed: '!' }[status];
 }
 
 const styles = StyleSheet.create({
@@ -240,6 +275,16 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   tick: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3, marginRight: 4 },
   tickRead: { color: tokens.semantic.color.accent },
+  tickFailed: { color: tokens.semantic.color.accent, fontFamily: fontFamily.monoSemi },
+  bubbleFailed: { opacity: 0.55, borderWidth: 1, borderColor: tokens.semantic.color.accent },
+  netBanner: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: tokens.primitive.radius.control,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+    marginBottom: 8,
+  },
+  netBannerText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.ink, textAlign: 'center' },
   composer: {
     flexDirection: 'row',
     alignItems: 'flex-end',

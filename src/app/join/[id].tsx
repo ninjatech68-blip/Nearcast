@@ -9,6 +9,7 @@ import { Stamp } from '@/design-system/components/stamp';
 import { haptic } from '@/design-system/haptics';
 import { tokens } from '@/design-system/tokens';
 import { getCast, submitJoin } from '@/features/casts/store';
+import { submit } from '@/infrastructure/net/submit';
 
 type SendState = 'idle' | 'sending' | 'sent';
 
@@ -23,15 +24,32 @@ export default function JoinScreen() {
 
   const [note, setNote] = useState('');
   const [state, setState] = useState<SendState>('idle');
+  const [error, setError] = useState<string | null>(null);
 
-  function send() {
+  /**
+   * on failure the note stays in the field and the sheet stays open —
+   * a joiner should never have to rewrite what they said because the
+   * network dropped.
+   */
+  async function send() {
     setState('sending');
-    setTimeout(() => {
-      haptic('success');
+    setError(null);
+    const result = await submit(() => {
       if (cast) submitJoin(cast.id, note);
-      setState('sent');
-      setTimeout(() => router.back(), 900);
-    }, 600);
+    });
+    if (!result.ok) {
+      haptic('warning');
+      setState('idle');
+      setError(
+        result.reason === 'offline'
+          ? "you're offline. your note is still here — tap when you're back."
+          : "that didn't send. your note is still here — tap to try again.",
+      );
+      return;
+    }
+    haptic('success');
+    setState('sent');
+    setTimeout(() => router.back(), 900);
   }
 
   return (
@@ -57,11 +75,13 @@ export default function JoinScreen() {
             </View>
           ) : (
             <>
+              {error ? <Text style={styles.error}>{error}</Text> : null}
               <BarButton
-                label="send it"
+                label={error ? 'try again' : 'send it'}
                 variant="onOrange"
                 onPress={send}
                 loading={state === 'sending'}
+                loadingLabel="sending…"
                 disabled={note.trim().length === 0}
               />
               <QuietAction label="never mind" color={tokens.semantic.color.ink} onPress={() => router.back()} />
@@ -77,6 +97,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   fieldHolder: { marginTop: 14 },
   actions: { marginTop: 16, gap: 2 },
+  error: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginBottom: 10, textAlign: 'center' },
   sentRow: { flexDirection: 'row', alignItems: 'center', gap: 16, minHeight: 58 },
   sentLine: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, flex: 1 },
 });

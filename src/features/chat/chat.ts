@@ -7,6 +7,7 @@ import {
   saveState,
   STORAGE_KEYS,
 } from '@/infrastructure/persistence/storage';
+import { submit } from '@/infrastructure/net/submit';
 
 /**
  * chat opens only after a match, and carries the earlier messages so a
@@ -15,7 +16,7 @@ import {
  * message text (product law) — only ids.
  */
 
-export type MessageStatus = 'pending' | 'sent' | 'delivered' | 'read';
+export type MessageStatus = 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
 
 export type Message = {
   id: string;
@@ -102,7 +103,7 @@ export function sendMessage(threadId: string, text: string): void {
   // ended chats are read-only. drop silently rather than raise —
   // the composer is disabled in the UI so this should not fire.
   if (thread.mode === 'ended') return;
-  const id = `m${thread.messages.length + 1}-${text.length}`;
+  const id = `m${thread.messages.length + 1}-${text.length}-${thread.messages.length}`;
   const message: Message = {
     id,
     from: 'me',
@@ -115,11 +116,35 @@ export function sendMessage(threadId: string, text: string): void {
     threads: { ...state.threads, [threadId]: { ...thread, messages: [...thread.messages, message] } },
   };
   emit();
-  // fixture proxy for network → server ack → other-side read.
-  // production wires these to supabase realtime events and rr callbacks.
-  setTimeout(() => promoteStatus(threadId, id, 'sent'), 200);
-  setTimeout(() => promoteStatus(threadId, id, 'delivered'), 800);
-  setTimeout(() => promoteStatus(threadId, id, 'read'), 2600);
+  void deliverMessage(threadId, id);
+}
+
+/**
+ * push one pending message through the write path. a failure leaves
+ * the bubble in place marked 'failed' — the text is never lost, and
+ * the user can tap it to try again.
+ */
+async function deliverMessage(threadId: string, messageId: string): Promise<void> {
+  const result = await submit(() => true);
+  if (!result.ok) {
+    promoteStatus(threadId, messageId, 'failed');
+    return;
+  }
+  // fixture proxy for server ack → other-side delivery → read.
+  // production wires these to supabase realtime events.
+  promoteStatus(threadId, messageId, 'sent');
+  setTimeout(() => promoteStatus(threadId, messageId, 'delivered'), 600);
+  setTimeout(() => promoteStatus(threadId, messageId, 'read'), 2400);
+}
+
+/** retry a message that failed to send. */
+export function retryMessage(threadId: string, messageId: string): void {
+  const thread = state.threads[threadId];
+  if (!thread || thread.mode === 'ended') return;
+  const message = thread.messages.find((m) => m.id === messageId);
+  if (!message || message.status !== 'failed') return;
+  promoteStatus(threadId, messageId, 'pending');
+  void deliverMessage(threadId, messageId);
 }
 
 function promoteStatus(threadId: string, messageId: string, status: MessageStatus): void {

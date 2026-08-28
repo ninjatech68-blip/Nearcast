@@ -9,6 +9,7 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { reportPresence, usePlan } from '@/features/attendance/store';
+import { submit } from '@/infrastructure/net/submit';
 import { people } from '@/features/trust/circles';
 import type { PresenceReport } from '@/features/casts/domain/attendance';
 
@@ -32,6 +33,8 @@ export default function ReflectScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const plan = usePlan(id ?? '');
   const [choices, setChoices] = useState<Record<string, Choice>>({});
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!plan) {
     return (
@@ -54,11 +57,25 @@ export default function ReflectScreen() {
     setChoices((now) => ({ ...now, [userId]: choice }));
   }
 
-  function submit() {
-    for (const [userId, choice] of Object.entries(choices)) {
-      if (choice === 'showed' || choice === 'no-show') {
-        reportPresence(plan!.id, userId, choice);
+  async function send() {
+    setSending(true);
+    setError(null);
+    const result = await submit(() => {
+      for (const [userId, choice] of Object.entries(choices)) {
+        if (choice === 'showed' || choice === 'no-show') {
+          reportPresence(plan!.id, userId, choice);
+        }
       }
+    });
+    setSending(false);
+    if (!result.ok) {
+      haptic('warning');
+      setError(
+        result.reason === 'offline'
+          ? "you're offline. your answers are still here — tap when you're back."
+          : "that didn't save. your answers are still here — tap to try again.",
+      );
+      return;
     }
     router.back();
   }
@@ -109,11 +126,14 @@ export default function ReflectScreen() {
       </ScrollView>
 
       <View style={styles.actions}>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
         <BarButton
-          label={pending.length === 0 ? 'done' : 'submit'}
+          label={pending.length === 0 ? 'done' : error ? 'try again' : 'submit'}
           variant="onOrange"
-          onPress={pending.length === 0 ? () => router.back() : submit}
+          onPress={pending.length === 0 ? () => router.back() : send}
           disabled={pending.length > 0 && !anyChosen}
+          loading={sending}
+          loadingLabel="saving…"
         />
         <QuietAction label="close" color={tokens.semantic.color.ink} onPress={() => router.back()} />
       </View>
@@ -177,5 +197,6 @@ const styles = StyleSheet.create({
   },
   chipText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   chipTextOn: { color: tokens.semantic.color.cream },
+  error: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginBottom: 10, textAlign: 'center' },
   actions: { marginTop: 18, gap: 2 },
 });

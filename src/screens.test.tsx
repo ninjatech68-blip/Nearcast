@@ -84,10 +84,13 @@ const { resetCastStore } = require('./features/casts/store');
 const { resetAttendanceStore } = require('./features/attendance/store');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { testOnly_bypassGates } = require('./features/me/me-store');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { resetSubmit, setFailureMode } = require('./infrastructure/net/submit');
 
 beforeEach(() => {
   resetCastStore();
   resetAttendanceStore();
+  resetSubmit();
   testOnly_bypassGates();
 });
 
@@ -276,6 +279,25 @@ describe('compose', () => {
     // your own casts never appear in the feed (the feed is decisions to
     // make — yours aren't). they surface as an activity row.
     expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('keeps the written cast when the send fails, and offers a retry', async () => {
+    setFailureMode('always');
+    const user = userEvent.setup();
+    const view = await render(<ComposeScreen />);
+
+    await user.press(view.getByRole('radio', { name: 'games' }));
+    await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
+    await user.press(view.getByRole('button', { name: 'next: add details' }));
+    await user.press(view.getByRole('button', { name: 'cast it' }));
+
+    // the failure is stated, and the button becomes a retry
+    expect(await view.findByText(/saved here/)).toBeTruthy();
+    expect(view.getByRole('button', { name: 'try again' })).toBeTruthy();
+
+    // and the cast never reached the feed
+    const feed = await render(<HomeScreen />);
+    expect(feed.queryByText('chess in the park sunday morning.')).toBeNull();
   });
 
   it('sends the area row to its own screen and opens the time picker inline', async () => {

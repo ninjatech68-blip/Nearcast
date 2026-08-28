@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
@@ -10,6 +11,7 @@ import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { acceptJoin, declineJoin, getCast, getPendingJoin, slotsFor } from '@/features/casts/store';
 import { people } from '@/features/trust/circles';
+import { submit } from '@/infrastructure/net/submit';
 
 /**
  * the invite sheet: shown to the caster when someone has asked to
@@ -23,6 +25,9 @@ import { people } from '@/features/trust/circles';
 export default function InviteScreen() {
   const { key } = useLocalSearchParams<{ key: string }>();
   const [castId, personId] = (key ?? '').split('__');
+
+  const [accepting, setAccepting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const cast = castId ? getCast(castId) : undefined;
   const join = castId && personId ? getPendingJoin(castId, personId) : undefined;
@@ -42,15 +47,29 @@ export default function InviteScreen() {
   const caster = casters.find((c) => c.id === personId);
   const s = slotsFor(cast);
 
-  function accept() {
+  async function accept() {
     if (s.full) {
       Alert.alert('already full', 'this plan is full. decline or extend slots first.', [{ text: 'ok' }]);
       return;
     }
     if (!cast) return;
+    setAccepting(true);
+    setError(null);
+    const result = await submit(() => acceptJoin(castId, personId));
+    setAccepting(false);
+    if (!result.ok) {
+      // the request stays pending — better they ask again than that we
+      // tell someone they're in when the caster never confirmed.
+      haptic('warning');
+      setError(
+        result.reason === 'offline'
+          ? "you're offline. they're still waiting — try again when you're back."
+          : "that didn't go through. they're still waiting — tap to try again.",
+      );
+      return;
+    }
     haptic('success');
-    acceptJoin(castId, personId);
-    // land the caster on the chat so the exact spot reveal happens now
+    // land the caster on the chat so the plan room opens now
     router.replace(`/chat/${cast.id}`);
   }
 
@@ -113,7 +132,15 @@ export default function InviteScreen() {
       </ScrollView>
 
       <View style={styles.actions}>
-        <BarButton label={`accept ${person.name}`} variant="onOrange" onPress={accept} disabled={s.full} />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <BarButton
+          label={error ? 'try again' : `accept ${person.name}`}
+          variant="onOrange"
+          onPress={accept}
+          disabled={s.full || accepting}
+          loading={accepting}
+          loadingLabel="accepting…"
+        />
         <QuietAction label="decline" color={tokens.semantic.color.ink} onPress={decline} />
       </View>
     </SheetShell>
@@ -134,6 +161,7 @@ const styles = StyleSheet.create({
   planMeta: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 6 },
   aboutRow: { minHeight: 44, justifyContent: 'center', marginTop: 12 },
   aboutText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent },
+  error: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginBottom: 10, textAlign: 'center' },
   goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
   actions: { marginTop: 18, gap: 2 },
 });
