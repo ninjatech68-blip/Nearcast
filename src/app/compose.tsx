@@ -49,7 +49,9 @@ export default function ComposeScreen() {
   // pre-fill area with the viewer's home area on mount so the row is
   // never empty; the /area picker still overrides it.
   useEffect(() => {
-    if (!area) setDraftArea(me.homeArea);
+    // the point travels with it: a prefilled area with no centroid
+    // would publish a cast nobody outside an exact name match can see.
+    if (!area) setDraftArea(me.homeArea, me.areaPoints[me.homeArea] ?? null);
     return clearDraft;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -18,6 +18,15 @@ import { clearAllState, loadState, saveState, STORAGE_KEYS } from '@/infrastruct
 
 type QuietHours = { start: string; end: string; on: boolean };
 
+/**
+ * The approximate centre of an approved area, as the picker resolved
+ * it. Optional because the seeded defaults predate the picker and
+ * because a name can always be added without one — delivery falls
+ * back to matching the name, which is coarse but never silently goes
+ * quiet.
+ */
+export type AreaPoint = { latitude: number; longitude: number };
+
 type State = {
   signedIn: boolean;
   onboardingDone: boolean;
@@ -26,6 +35,8 @@ type State = {
   email: string;
   homeArea: string;
   approvedAreas: readonly string[];
+  /** name -> approximate centre, for the areas the picker could place */
+  areaPoints: Readonly<Record<string, AreaPoint>>;
   interests: readonly Category[];
   blocked: readonly string[];
   photoUri: string | null;
@@ -40,6 +51,7 @@ const DEFAULT_STATE: State = {
   email: '',
   homeArea: 'indiranagar',
   approvedAreas: ['indiranagar', 'koramangala', 'hsr'],
+  areaPoints: {},
   interests: ['sports', 'games', 'arts'],
   blocked: [],
   photoUri: null,
@@ -128,6 +140,24 @@ export function setName(name: string): void {
   emit();
 }
 
+/**
+ * Onboarding's home step. Replaces the approved list rather than
+ * appending to it: the defaults are a demo seed, and someone in
+ * Chandigarh who kept them would be delivered casts from Bangalore.
+ * This is the moment they tell us where they actually are.
+ */
+export function setHomeAreaFromOnboarding(homeArea: string, point?: AreaPoint | null): void {
+  const trimmed = homeArea.trim().toLowerCase();
+  if (!trimmed) return;
+  state = {
+    ...state,
+    homeArea: trimmed,
+    approvedAreas: [trimmed],
+    areaPoints: point ? { [trimmed]: point } : {},
+  };
+  emit();
+}
+
 export function setHomeArea(homeArea: string): void {
   state = { ...state, homeArea };
   emit();
@@ -138,15 +168,32 @@ export function setApprovedAreas(areas: readonly string[]): void {
   emit();
 }
 
-export function addApprovedArea(area: string): void {
+export function addApprovedArea(area: string, point?: AreaPoint | null): void {
   const trimmed = area.trim().toLowerCase();
-  if (!trimmed || state.approvedAreas.includes(trimmed)) return;
-  state = { ...state, approvedAreas: [...state.approvedAreas, trimmed] };
+  if (!trimmed) return;
+  // a name already on the list can still gain a point: someone who
+  // typed it before the picker existed should get a real centroid the
+  // first time they pick it properly.
+  const nextPoints = point
+    ? { ...state.areaPoints, [trimmed]: point }
+    : state.areaPoints;
+  if (state.approvedAreas.includes(trimmed)) {
+    if (nextPoints === state.areaPoints) return;
+    state = { ...state, areaPoints: nextPoints };
+    emit();
+    return;
+  }
+  state = { ...state, approvedAreas: [...state.approvedAreas, trimmed], areaPoints: nextPoints };
   emit();
 }
 
 export function removeApprovedArea(area: string): void {
-  state = { ...state, approvedAreas: state.approvedAreas.filter((a) => a !== area) };
+  const { [area]: _removed, ...remainingPoints } = state.areaPoints;
+  state = {
+    ...state,
+    approvedAreas: state.approvedAreas.filter((a) => a !== area),
+    areaPoints: remainingPoints,
+  };
   emit();
 }
 

@@ -1,13 +1,12 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { BarButton } from '@/design-system/components/button';
+import { BarButton, QuietAction } from '@/design-system/components/button';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { addApprovedArea, removeApprovedArea, useMe } from '@/features/me/me-store';
+import { removeApprovedArea, useMe } from '@/features/me/me-store';
 
 /**
  * approved areas manager. your list widens where "approved
@@ -17,14 +16,13 @@ import { addApprovedArea, removeApprovedArea, useMe } from '@/features/me/me-sto
  */
 export default function AreasScreen() {
   const me = useMe();
-  const [next, setNext] = useState('');
 
   function add() {
-    const trimmed = next.trim().toLowerCase();
-    if (!trimmed || me.approvedAreas.includes(trimmed)) return;
-    haptic('success');
-    addApprovedArea(trimmed);
-    setNext('');
+    haptic('selection');
+    // the picker, not a text field: an area without a point behind it
+    // can only be matched by name, so a typed one quietly stops
+    // reaching people who spell the place differently.
+    router.push('/area?target=areas');
   }
 
   function remove(area: string) {
@@ -57,29 +55,12 @@ export default function AreasScreen() {
             ) : null}
           </View>
 
-          <Text style={styles.addLabel}>ADD AN AREA</Text>
-          <TextInput
-            accessibilityLabel="new area name"
-            value={next}
-            onChangeText={setNext}
-            placeholder="e.g. jayanagar"
-            placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-            selectionColor={tokens.semantic.color.accent}
-            style={styles.input}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onSubmitEditing={add}
-            returnKeyType="done"
-          />
           <SheetNote>casts show the area only. the exact spot stays hidden until you and the caster are both in.</SheetNote>
         </ScrollView>
 
         <View style={styles.actions}>
-          <BarButton
-            label={next.trim() ? `add ${next.trim().toLowerCase()}` : 'done'}
-            variant={next.trim() ? 'onOrange' : 'onCream'}
-            onPress={next.trim() ? add : () => router.back()}
-          />
+          <BarButton label="add an area" variant="onOrange" onPress={add} />
+          <QuietAction label="done" color={tokens.semantic.color.ink} onPress={() => router.back()} />
         </View>
       </SheetShell>
     </KeyboardAvoidingView>
@@ -102,16 +83,5 @@ const styles = StyleSheet.create({
   rowText: { fontFamily: fontFamily.displaySemi, fontSize: 17, color: tokens.semantic.color.ink, flex: 1 },
   removeTap: { minHeight: 44, minWidth: 44, alignItems: 'flex-end', justifyContent: 'center' },
   empty: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 20 },
-  addLabel: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 26, marginBottom: 8 },
-  input: {
-    minHeight: 52,
-    borderRadius: tokens.primitive.radius.control,
-    borderWidth: 1.5,
-    borderColor: tokens.semantic.color.accent,
-    paddingHorizontal: 14,
-    fontFamily: fontFamily.text,
-    fontSize: 17,
-    color: tokens.semantic.color.ink,
-  },
   actions: { marginTop: 18, gap: 2 },
 });

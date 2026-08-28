@@ -114,6 +114,10 @@ const AreaScreen = require('./app/area').default;
 const ChatScreen = require('./app/chat/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const CirclesScreen = require('./app/circles').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const OnboardingScreen = require('./app/onboarding/index').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const AreasScreen = require('./app/areas').default;
 
 describe('home pager', () => {
   beforeEach(() => {
@@ -449,5 +453,67 @@ describe('circles', () => {
     expect(
       view.getByText('you add people you have met through the app. they are never told which circle.'),
     ).toBeTruthy();
+  });
+});
+
+describe('picking an area', () => {
+  beforeEach(() => {
+    mockPush.mockReset();
+    mockParams = {};
+  });
+
+  /**
+   * These guard the difference between a name and a place. Delivery
+   * measures distance between area centres, so an area typed as free
+   * text has no point behind it and can only ever be matched as a
+   * string — which stops working the moment two people spell the same
+   * place differently. Every path that adds an area has to go through
+   * the picker.
+   */
+  it('sends the onboarding home step to the map, not a text field', async () => {
+    const user = userEvent.setup();
+    const view = await render(<OnboardingScreen />);
+
+    await user.type(view.getByLabelText('your first name'), 'Piyush');
+    await user.press(view.getByRole('button', { name: 'next' }));
+
+    const home = view.getByLabelText('your home area');
+    expect(home.props.accessibilityRole).toBe('button');
+    await user.press(home);
+    expect(mockPush).toHaveBeenCalledWith('/area?target=home');
+  });
+
+  it('replaces the demo seed with the area the person actually picked', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { setHomeAreaFromOnboarding } = require('./features/me/me-store');
+    setHomeAreaFromOnboarding('zirakpur', { latitude: 30.64, longitude: 76.82 });
+
+    const view = await render(<AreasScreen />);
+    expect(view.getByText('zirakpur')).toBeTruthy();
+    // the seeded bangalore areas must not survive onboarding: someone
+    // in chandigarh who kept them would be delivered another city's
+    // casts, and would have no idea why.
+    expect(view.queryByText('indiranagar')).toBeNull();
+    expect(view.queryByText('koramangala')).toBeNull();
+  });
+
+  it('sends the onboarding areas step to the map too', async () => {
+    const user = userEvent.setup();
+    const view = await render(<OnboardingScreen />);
+
+    await user.type(view.getByLabelText('your first name'), 'Piyush');
+    await user.press(view.getByRole('button', { name: 'next' }));
+    await user.press(view.getByRole('button', { name: 'next' }));
+
+    await user.press(view.getByLabelText('add a neighborhood'));
+    expect(mockPush).toHaveBeenCalledWith('/area?target=areas');
+  });
+
+  it('sends the areas settings screen to the map', async () => {
+    const user = userEvent.setup();
+    const view = await render(<AreasScreen />);
+
+    await user.press(view.getByRole('button', { name: 'add an area' }));
+    expect(mockPush).toHaveBeenCalledWith('/area?target=areas');
   });
 });

@@ -83,6 +83,43 @@ describe('syncProfile', () => {
     });
   });
 
+  it('prefers the point the picker resolved over the seeded fallback', async () => {
+    const { client, log } = clientWithSession('uid-1');
+    mockGetSupabase.mockReturnValue(client);
+    await syncProfile({
+      ...snapshot,
+      approvedAreas: ['indiranagar'],
+      // a real pin, different from the seeded centroid for that name
+      areaPoints: { indiranagar: { latitude: 12.9, longitude: 77.6 } },
+      interests: [...snapshot.interests],
+    });
+
+    const areas = log.upserts.find((u) => u.table === 'profile_areas')?.rows as {
+      name: string;
+      centroid: string | null;
+    }[];
+    expect(areas[0].centroid).toBe('SRID=4326;POINT(77.6 12.9)');
+  });
+
+  it('places an area the picker resolved even when we have no fixture for it', async () => {
+    const { client, log } = clientWithSession('uid-1');
+    mockGetSupabase.mockReturnValue(client);
+    await syncProfile({
+      ...snapshot,
+      approvedAreas: ['gulmohar trends'],
+      areaPoints: { 'gulmohar trends': { latitude: 30.65, longitude: 76.82 } },
+      interests: [],
+    });
+
+    const areas = log.upserts.find((u) => u.table === 'profile_areas')?.rows as {
+      name: string;
+      centroid: string | null;
+    }[];
+    // this is the whole point of the picker: a place nobody hardcoded
+    // still gets a real centroid, so radius delivery works for it.
+    expect(areas[0].centroid).toBe('SRID=4326;POINT(76.82 30.65)');
+  });
+
   it('stores a centroid for an area it can place, and the name alone when it cannot', async () => {
     const { client, log } = clientWithSession('uid-1');
     mockGetSupabase.mockReturnValue(client);

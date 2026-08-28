@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -29,6 +29,7 @@ import {
 import * as NativePlaces from '@/features/casts/native-places';
 import { placesEnabled } from '@/features/casts/places-api';
 import { setDraftArea } from '@/features/casts/store';
+import { addApprovedArea, setHomeAreaFromOnboarding } from '@/features/me/me-store';
 
 type Status = 'idle' | 'locating' | 'searching' | 'no-permission' | 'not-found';
 
@@ -43,11 +44,27 @@ const DEFAULT_REGION: Region = {
  * the area picker. one view: a map on top with a pin at the currently
  * selected area, a list of nearby names below. tapping a name moves
  * the pin to that place. tapping the map drops a pin and the resolved
- * name lights up in the list. the pin is a visual hint of what "area"
- * means — the cast still stores the NAME only, never coordinates.
+ * name lights up in the list.
+ *
+ * The pin travels with the name. Delivery measures distance between
+ * area centres, so a name with no point behind it can only be matched
+ * as a string — which quietly stops working the moment two people
+ * spell the same place differently. The point is always approximate:
+ * the server rounds it before storing, and nothing here ever asks
+ * where the person actually is.
+ *
+ * One screen serves three callers, chosen by `?target=`:
+ *   cast  (default) — hands the answer to the compose draft
+ *   home            — the onboarding home-area step
+ *   areas           — an approved neighbourhood, from onboarding or settings
  */
+type Target = 'cast' | 'home' | 'areas';
+
 export default function AreaScreen() {
   const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ target?: string }>();
+  const target: Target =
+    params.target === 'home' ? 'home' : params.target === 'areas' ? 'areas' : 'cast';
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<readonly string[]>([]);
   const [suggestions, setSuggestions] = useState<readonly AreaSuggestion[]>([]);
@@ -179,10 +196,20 @@ export default function AreaScreen() {
 
   function choose(area: string) {
     haptic('success');
-    // the pin travels with the name: without it delivery can only
-    // match areas by string, which stops working the moment two people
-    // type the same place differently.
-    setDraftArea(area, pin ? { latitude: pin.latitude, longitude: pin.longitude } : null);
+    const point = pin ? { latitude: pin.latitude, longitude: pin.longitude } : null;
+    const name = area.trim().toLowerCase();
+
+    if (target === 'home') {
+      // your home area is always one of your approved areas — casts
+      // near where you live have to be able to reach you — and it
+      // replaces the demo seed, which would otherwise keep delivering
+      // another city's casts.
+      setHomeAreaFromOnboarding(name, point);
+    } else if (target === 'areas') {
+      addApprovedArea(name, point);
+    } else {
+      setDraftArea(area, point);
+    }
     router.back();
   }
 

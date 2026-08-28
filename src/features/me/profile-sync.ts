@@ -18,10 +18,13 @@
 import type { Category } from '@/design-system/tokens';
 import { centroidFor } from '@/features/casts/domain/geo';
 import { getSupabase } from '@/infrastructure/supabase/client';
+import type { AreaPoint } from './me-store';
 
 export type ProfileSnapshot = {
   name: string;
   approvedAreas: readonly string[];
+  /** name -> the centre the area picker resolved, where it has one */
+  areaPoints?: Readonly<Record<string, AreaPoint>>;
   interests: readonly Category[];
   /** coarse habits, e.g. ['weekday-evening']. never a timestamp trail. */
   activeWindows?: readonly string[];
@@ -49,7 +52,7 @@ export async function syncProfile(snapshot: ProfileSnapshot): Promise<boolean> {
     );
   if (profileError) throw new Error(profileError.message);
 
-  await syncAreas(client, user.id, snapshot.approvedAreas);
+  await syncAreas(client, user.id, snapshot.approvedAreas, snapshot.areaPoints ?? {});
   await syncInterests(client, user.id, snapshot.interests);
   return true;
 }
@@ -64,7 +67,12 @@ type Client = NonNullable<ReturnType<typeof getSupabase>>;
  * place a name we store the name alone — delivery falls back to
  * matching it, which is coarse but never silently stops.
  */
-async function syncAreas(client: Client, profileId: string, areas: readonly string[]): Promise<void> {
+async function syncAreas(
+  client: Client,
+  profileId: string,
+  areas: readonly string[],
+  points: Readonly<Record<string, AreaPoint>>,
+): Promise<void> {
   const wanted = areas.map((area) => area.trim()).filter((area) => area.length > 0);
 
   const { error: deleteError } = await client
@@ -77,7 +85,10 @@ async function syncAreas(client: Client, profileId: string, areas: readonly stri
   if (wanted.length === 0) return;
 
   const rows = wanted.map((name) => {
-    const point = centroidFor(name);
+    // what the picker resolved wins. `centroidFor` only covers the
+    // handful of seeded fixture areas, and is the fallback for a
+    // profile that predates the picker.
+    const point = points[name.toLowerCase()] ?? points[name] ?? centroidFor(name);
     return {
       profile_id: profileId,
       name,

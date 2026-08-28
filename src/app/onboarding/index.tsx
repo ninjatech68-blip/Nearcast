@@ -7,9 +7,7 @@ import { BarButton, QuietAction } from '@/design-system/components/button';
 import { haptic } from '@/design-system/haptics';
 import { CATEGORIES, category as categoryTokens, fontFamily, tokens, type Category } from '@/design-system/tokens';
 import {
-  addApprovedArea,
   removeApprovedArea,
-  setHomeArea,
   setInterests,
   setName,
   setOnboardingDone,
@@ -32,12 +30,10 @@ export default function OnboardingScreen() {
   const me = useMe();
   const [step, setStep] = useState<Step>('name');
   const [name, setLocalName] = useState(me.name);
-  const [home, setLocalHome] = useState(me.homeArea);
-  const [areaDraft, setAreaDraft] = useState('');
   const [interests, setLocalInterests] = useState<readonly Category[]>(me.interests);
 
   const step1Ready = name.trim().length > 0;
-  const step2Ready = home.trim().length > 0;
+  const step2Ready = me.homeArea.trim().length > 0;
 
   function next() {
     haptic('selection');
@@ -47,9 +43,7 @@ export default function OnboardingScreen() {
       return;
     }
     if (step === 'home') {
-      const trimmed = home.trim().toLowerCase();
-      setHomeArea(trimmed);
-      if (!me.approvedAreas.includes(trimmed)) addApprovedArea(trimmed);
+      // the picker already stored the area and approved it
       setStep('areas');
       return;
     }
@@ -87,14 +81,6 @@ export default function OnboardingScreen() {
   function toggle(id: Category) {
     haptic('selection');
     setLocalInterests((now) => (now.includes(id) ? now.filter((v) => v !== id) : [...now, id]));
-  }
-
-  function addArea() {
-    const trimmed = areaDraft.trim().toLowerCase();
-    if (!trimmed || me.approvedAreas.includes(trimmed)) return;
-    haptic('success');
-    addApprovedArea(trimmed);
-    setAreaDraft('');
   }
 
   return (
@@ -150,20 +136,24 @@ export default function OnboardingScreen() {
           {step === 'home' ? (
             <>
               <Text accessibilityRole="header" style={styles.title}>where&apos;s home, roughly?</Text>
-              <Text style={styles.hint}>the neighborhood, not the address. we keep it approximate — a cast never carries a coordinate.</Text>
-              <TextInput
+              <Text style={styles.hint}>
+                the neighborhood, not the address. pick it on the map so casts nearby can find you — a typed name
+                we can&apos;t place only ever matches itself.
+              </Text>
+              {/* a picker, not a text field: delivery measures distance
+                  between area centres, and a name with no point behind
+                  it can only be matched as a string. */}
+              <Pressable
+                accessibilityRole="button"
                 accessibilityLabel="your home area"
-                value={home}
-                onChangeText={setLocalHome}
-                placeholder="e.g. indiranagar"
-                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                selectionColor={tokens.semantic.color.accent}
-                style={styles.input}
-                autoCapitalize="none"
-                autoCorrect={false}
-                returnKeyType="next"
-                onSubmitEditing={step2Ready ? next : undefined}
-              />
+                onPress={() => router.push('/area?target=home')}
+                style={styles.pickRow}
+              >
+                <Text style={me.homeArea ? styles.pickValue : styles.pickPlaceholder}>
+                  {me.homeArea || 'choose your area'}
+                </Text>
+                <Text style={styles.pickChevron}>›</Text>
+              </Pressable>
             </>
           ) : null}
 
@@ -184,19 +174,15 @@ export default function OnboardingScreen() {
                   </Pressable>
                 ))}
               </View>
-              <TextInput
+              <Pressable
+                accessibilityRole="button"
                 accessibilityLabel="add a neighborhood"
-                value={areaDraft}
-                onChangeText={setAreaDraft}
-                placeholder="type + return to add"
-                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                selectionColor={tokens.semantic.color.accent}
-                style={styles.input}
-                autoCapitalize="none"
-                autoCorrect={false}
-                returnKeyType="done"
-                onSubmitEditing={addArea}
-              />
+                onPress={() => router.push('/area?target=areas')}
+                style={styles.pickRow}
+              >
+                <Text style={styles.pickPlaceholder}>add a neighborhood</Text>
+                <Text style={styles.pickChevron}>›</Text>
+              </Pressable>
             </>
           ) : null}
 
@@ -267,6 +253,23 @@ function isBefore(a: Step, b: Step): boolean {
 }
 
 const styles = StyleSheet.create({
+  pickRow: {
+    minHeight: 56,
+    marginTop: 18,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: tokens.semantic.color.hairlineOnCream,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  pickValue: { fontFamily: fontFamily.displaySemi, fontSize: 20, color: tokens.semantic.color.ink },
+  pickPlaceholder: {
+    fontFamily: fontFamily.displaySemi,
+    fontSize: 20,
+    color: tokens.semantic.color.textMutedOnCream,
+  },
+  pickChevron: { fontFamily: fontFamily.displaySemi, fontSize: 22, color: tokens.semantic.color.ink },
   screen: { flex: 1, backgroundColor: tokens.semantic.color.cream, paddingHorizontal: 24 },
   flex: { flex: 1 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44 },

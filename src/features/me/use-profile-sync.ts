@@ -21,6 +21,13 @@ export function useProfileSync(): void {
   const me = useMe();
   const areas = me.approvedAreas.join('|');
   const interests = me.interests.join('|');
+  // the VALUES matter, not just the keys: re-picking an area the
+  // person already had changes only its point, and that has to re-sync
+  // or delivery keeps measuring from the old place.
+  const points = Object.entries(me.areaPoints)
+    .map(([name, point]) => `${name}:${point.latitude},${point.longitude}`)
+    .sort()
+    .join('|');
   const ready = me.signedIn && me.onboardingDone;
 
   useEffect(() => {
@@ -31,6 +38,7 @@ export function useProfileSync(): void {
         await syncProfile({
           name: me.name,
           approvedAreas: me.approvedAreas,
+          areaPoints: me.areaPoints,
           interests: me.interests,
         });
       } catch {
@@ -45,5 +53,5 @@ export function useProfileSync(): void {
     // the joined strings are the dependency: the arrays are new objects
     // every render and would re-run this on every keystroke.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, me.name, areas, interests]);
+  }, [ready, me.name, areas, interests, points]);
 }
