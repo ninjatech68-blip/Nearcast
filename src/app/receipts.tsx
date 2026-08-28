@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -8,7 +9,7 @@ import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { Tag } from '@/design-system/components/tag';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
-import { useMyPastPlans } from '@/features/attendance/store';
+import { refreshAttendance, useMyPastPlans } from '@/features/attendance/store';
 import { people } from '@/features/trust/circles';
 import type { Outcome } from '@/features/casts/domain/attendance';
 
@@ -19,6 +20,9 @@ import type { Outcome } from '@/features/casts/domain/attendance';
  * just facts.
  */
 export default function ReceiptsScreen() {
+  useEffect(() => {
+    void refreshAttendance();
+  }, []);
   const past = useMyPastPlans();
   const receipts = past.filter((p) => p.outcome === 'receipt').length;
   const flakes = past.filter((p) => p.outcome === 'flake').length;

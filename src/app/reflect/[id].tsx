@@ -60,10 +60,10 @@ export default function ReflectScreen() {
   async function send() {
     setSending(true);
     setError(null);
-    const result = await submit(() => {
+    const result = await submit(async () => {
       for (const [userId, choice] of Object.entries(choices)) {
         if (choice === 'showed' || choice === 'no-show') {
-          reportPresence(plan!.id, userId, choice);
+          await reportPresence(plan!.id, userId, choice);
         }
       }
     });
@@ -95,7 +95,7 @@ export default function ReflectScreen() {
           <View style={styles.list}>
             {pending.map((participant) => {
               const person = people[participant.userId];
-              const name = person?.name ?? participant.userId;
+              const name = person?.name ?? participant.displayName ?? participant.userId;
               const choice = choices[participant.userId];
               return (
                 <View key={participant.userId} style={styles.row}>

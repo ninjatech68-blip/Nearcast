@@ -1035,6 +1035,17 @@ export type Database = {
           statement: string
         }[]
       }
+      my_receipts: {
+        Args: never
+        Returns: {
+          area: string
+          intent_id: string
+          other_names: string[]
+          outcome: Database["public"]["Enums"]["attendance_result"]
+          starts_at: string
+          title: string
+        }[]
+      }
       pending_joins_on_my_casts: {
         Args: never
         Returns: {
@@ -1045,6 +1056,17 @@ export type Database = {
           joiner_id: string
           note: string
           response_id: string
+        }[]
+      }
+      plans_to_report: {
+        Args: never
+        Returns: {
+          area: string
+          intent_id: string
+          starts_at: string
+          subject_first_name: string
+          subject_id: string
+          title: string
         }[]
       }
       publish_cast: {
@@ -1082,6 +1104,14 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      report_presence: {
+        Args: {
+          report: Database["public"]["Enums"]["presence_report"]
+          subject: string
+          target_intent: string
+        }
+        Returns: undefined
+      }
       respond_to_cast: {
         Args: { note: string; target_intent_id: string }
         Returns: string
@@ -1105,6 +1135,14 @@ export type Database = {
           target_conversation_id: string
         }
         Returns: undefined
+      }
+      shared_history_with: {
+        Args: { person: string }
+        Returns: {
+          flakes: number
+          plans: number
+          receipts: number
+        }[]
       }
       withdraw_response: {
         Args: { target_response_id: string }

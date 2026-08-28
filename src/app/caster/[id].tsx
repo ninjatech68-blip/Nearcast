@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
@@ -13,7 +14,7 @@ import { casters } from '@/features/casts/fixtures';
 import { useFeedCasts } from '@/features/casts/store';
 import { hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
 import { trustLink } from '@/features/trust/domain/trust';
-import { useSharedHistoryWith } from '@/features/attendance/store';
+import { refreshSharedHistory, useSharedHistoryWith } from '@/features/attendance/store';
 import { blockCaster } from '@/features/me/me-store';
 
 /**
@@ -41,6 +42,11 @@ export default function CasterProfileScreen() {
   // call is unconditional; caster.id is empty when the profile is
   // missing and the selector returns zeros in that case.
   const shared = useSharedHistoryWith(caster?.id ?? '__none__');
+
+  // pull real shared-history counts from the server (no-op on fixtures).
+  useEffect(() => {
+    if (caster?.id) void refreshSharedHistory(caster.id);
+  }, [caster?.id]);
 
   function addTo() {
     if (!caster) return;

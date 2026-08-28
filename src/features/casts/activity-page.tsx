@@ -20,7 +20,7 @@ import {
   usePendingJoinsOnMyCasts,
   withdrawJoin,
 } from '@/features/casts/store';
-import { usePendingReports } from '@/features/attendance/store';
+import { refreshAttendance, usePendingReports } from '@/features/attendance/store';
 import { refreshConversations, useConversations } from '@/features/chat/chat';
 
 import { AvatarDot } from './avatar-dot';
@@ -48,6 +48,7 @@ export function ActivityPage() {
   useEffect(() => {
     void refreshInteractions();
     void refreshConversations();
+    void refreshAttendance();
   }, []);
   const moveItems = pendingJoins.filter((item) => !dismissed.includes(item.id));
   const [archived, setArchived] = useState<ActivityItem | null>(null);

@@ -2,6 +2,13 @@ import { useMemo, useSyncExternalStore } from 'react';
 
 import { outcomeFor, type Outcome, type PlanRecord, type PresenceReport } from '@/features/casts/domain/attendance';
 import {
+  attendanceEnabled,
+  fetchPlansToReport,
+  fetchReceipts,
+  fetchSharedHistory,
+  reportPresenceRemote,
+} from './remote-attendance';
+import {
   clearState,
   loadState,
   registerStoreReset,
@@ -34,11 +41,29 @@ export type StoredPlan = {
 
 export type StoredParticipant = {
   userId: string;
+  /** the person's first name, from the server; fixtures resolve locally */
+  displayName?: string;
   cancelledAt?: Date;
   reportedBy: readonly { reporterId: string; report: PresenceReport }[];
 };
 
-type State = { plans: readonly StoredPlan[] };
+/** a past plan with my computed outcome, for the receipts screen. */
+export type PastPlan = { plan: StoredPlan; outcome: Outcome; others: readonly string[] };
+type SharedHistory = { plans: number; receipts: number; flakes: number };
+
+type State = {
+  plans: readonly StoredPlan[];
+  /** backend caches — populated by refreshAttendance / refreshSharedHistory */
+  remotePending: readonly StoredPlan[];
+  remotePast: readonly PastPlan[];
+  sharedHistory: Readonly<Record<string, SharedHistory>>;
+};
+
+const EMPTY_REMOTE = {
+  remotePending: [] as readonly StoredPlan[],
+  remotePast: [] as readonly PastPlan[],
+  sharedHistory: {} as Readonly<Record<string, SharedHistory>>,
+};
 
 /**
  * fixture past plans. these are the receipts and pending reports the
@@ -82,7 +107,7 @@ const FIXTURE_PLANS: readonly StoredPlan[] = [
  * durable. Date fields survive the round trip via the storage
  * layer's ISO reviver.
  */
-let state: State = loadState<State>(STORAGE_KEYS.attendance, { plans: FIXTURE_PLANS });
+let state: State = { ...EMPTY_REMOTE, ...loadState<State>(STORAGE_KEYS.attendance, { plans: FIXTURE_PLANS, ...EMPTY_REMOTE }) };
 
 const listeners = new Set<() => void>();
 const emit = () => {
@@ -95,7 +120,7 @@ const subscribe = (l: () => void) => {
 };
 
 registerStoreReset(() => {
-  state = { plans: FIXTURE_PLANS };
+  state = { plans: FIXTURE_PLANS, ...EMPTY_REMOTE };
   listeners.forEach((l) => l());
 });
 
@@ -123,15 +148,13 @@ function toRecord(plan: StoredPlan): PlanRecord {
  * state.plans (a stable reference until emit) and compute derived
  * views via useMemo, so re-renders don't churn new arrays or objects.
  */
-function usePlans(): readonly StoredPlan[] {
-  return useSyncExternalStore(subscribe, () => state.plans);
-}
-
 /** plans i still owe a report on (any other participant with no report from me). */
 export function usePendingReports(viewerId: string = 'me'): readonly StoredPlan[] {
-  const plans = usePlans();
-  return useMemo(
-    () =>
+  const snapshot = useSyncExternalStore(subscribe, () => state);
+  return useMemo(() => {
+    if (attendanceEnabled()) return snapshot.remotePending;
+    const plans = snapshot.plans;
+    return (
       plans.filter((plan) => {
         const me = plan.participants.find((p) => p.userId === viewerId);
         if (!me) return false;
@@ -140,14 +163,17 @@ export function usePendingReports(viewerId: string = 'me'): readonly StoredPlan[
             other.userId !== viewerId &&
             !other.reportedBy.some((entry) => entry.reporterId === viewerId),
         );
-      }),
-    [plans, viewerId],
-  );
+      })
+    );
+  }, [snapshot, viewerId]);
 }
 
 export function usePlan(planId: string): StoredPlan | undefined {
-  const plans = usePlans();
-  return useMemo(() => plans.find((plan) => plan.id === planId), [plans, planId]);
+  const snapshot = useSyncExternalStore(subscribe, () => state);
+  return useMemo(() => {
+    const source = attendanceEnabled() ? snapshot.remotePending : snapshot.plans;
+    return source.find((plan) => plan.id === planId);
+  }, [snapshot, planId]);
 }
 
 /**
@@ -159,9 +185,10 @@ export function useMyPastPlans(
   viewerId: string = 'me',
   now: Date = new Date(),
 ): readonly { plan: StoredPlan; outcome: Outcome; others: readonly string[] }[] {
-  const plans = usePlans();
+  const snapshot = useSyncExternalStore(subscribe, () => state);
   return useMemo(() => {
-    return plans
+    if (attendanceEnabled()) return snapshot.remotePast;
+    return snapshot.plans
       .filter((p) => p.participants.some((x) => x.userId === viewerId))
       .slice()
       .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
@@ -170,20 +197,26 @@ export function useMyPastPlans(
         outcome: outcomeFor(toRecord(plan), viewerId, now),
         others: plan.participants.filter((p) => p.userId !== viewerId).map((p) => p.userId),
       }));
-  }, [plans, viewerId, now]);
+  }, [snapshot, viewerId, now]);
 }
 
 /**
  * record a presence report on one participant of a plan. the domain
  * decides the outcome; the store just captures the fact.
  */
-export function reportPresence(
+export async function reportPresence(
   planId: string,
   reportedUserId: string,
   report: PresenceReport,
   reporterId: string = 'me',
-): void {
+): Promise<void> {
+  if (attendanceEnabled()) {
+    await reportPresenceRemote(planId, reportedUserId, report);
+    await refreshAttendance();
+    return;
+  }
   state = {
+    ...state,
     plans: state.plans.map((plan) => {
       if (plan.id !== planId) return plan;
       return {
@@ -202,6 +235,7 @@ export function reportPresence(
 /** cancel with a timestamp — the domain decides withdrawn vs. late-cancel. */
 export function cancelParticipation(planId: string, userId: string, at: Date = new Date()): void {
   state = {
+    ...state,
     plans: state.plans.map((plan) => {
       if (plan.id !== planId) return plan;
       return {
@@ -227,8 +261,12 @@ export function useSharedHistoryWith(
   personId: string,
   viewerId: string = 'me',
 ): { plans: number; receipts: number; flakes: number } {
-  const plans = usePlans();
+  const snapshot = useSyncExternalStore(subscribe, () => state);
   return useMemo(() => {
+    if (attendanceEnabled()) {
+      return snapshot.sharedHistory[personId] ?? { plans: 0, receipts: 0, flakes: 0 };
+    }
+    const plans = snapshot.plans;
     const now = new Date();
     const shared = plans.filter(
       (plan) =>
@@ -246,12 +284,75 @@ export function useSharedHistoryWith(
       if (mineOutcome === 'flake' || theirsOutcome === 'flake') flakes += 1;
     }
     return { plans: shared.length, receipts, flakes };
-  }, [plans, personId, viewerId]);
+  }, [snapshot, personId, viewerId]);
+}
+
+/**
+ * Pull the attendance state from the server: the plans I owe a report
+ * on, and my own past plans with their outcomes. No-op on fixtures.
+ *
+ * plans_to_report returns one row per (plan, person I owe), so rows are
+ * grouped back into one StoredPlan per plan with a participant per
+ * person — the shape the reflect screen and the activity rows read.
+ */
+export async function refreshAttendance(): Promise<void> {
+  if (!attendanceEnabled()) return;
+  const [pending, past] = await Promise.all([fetchPlansToReport(), fetchReceipts()]);
+
+  const byPlan = new Map<string, StoredPlan>();
+  for (const row of pending) {
+    const existing = byPlan.get(row.intent_id);
+    const subject: StoredParticipant = {
+      userId: row.subject_id,
+      displayName: row.subject_first_name ?? undefined,
+      reportedBy: [],
+    };
+    if (existing) {
+      byPlan.set(row.intent_id, {
+        ...existing,
+        participants: [...existing.participants, subject],
+      });
+    } else {
+      byPlan.set(row.intent_id, {
+        id: row.intent_id,
+        title: row.title,
+        category: '',
+        area: row.area ?? 'nearby',
+        startsAt: row.starts_at ? new Date(row.starts_at) : new Date(),
+        // 'me' is a party too, with nothing owed back to itself
+        participants: [{ userId: 'me', reportedBy: [] }, subject],
+      });
+    }
+  }
+
+  const remotePast: PastPlan[] = past.map((row) => ({
+    plan: {
+      id: row.intent_id,
+      title: row.title,
+      category: '',
+      area: row.area ?? 'nearby',
+      startsAt: row.starts_at ? new Date(row.starts_at) : new Date(),
+      participants: [],
+    },
+    outcome: row.outcome,
+    others: row.other_names ?? [],
+  }));
+
+  state = { ...state, remotePending: [...byPlan.values()], remotePast };
+  emit();
+}
+
+/** shared-history counts with one person; caches by id. no-op on fixtures. */
+export async function refreshSharedHistory(personId: string): Promise<void> {
+  if (!attendanceEnabled() || !personId || personId === '__none__') return;
+  const history = await fetchSharedHistory(personId);
+  state = { ...state, sharedHistory: { ...state.sharedHistory, [personId]: history } };
+  emit();
 }
 
 /** test-only reset. clears the persisted record too. */
 export function resetAttendanceStore(): void {
   clearState(STORAGE_KEYS.attendance);
-  state = { plans: FIXTURE_PLANS };
+  state = { plans: FIXTURE_PLANS, ...EMPTY_REMOTE };
   listeners.forEach((l) => l());
 }
