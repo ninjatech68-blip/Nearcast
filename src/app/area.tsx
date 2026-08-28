@@ -338,7 +338,7 @@ export default function AreaScreen() {
         ) : null}
 
         <Text style={[styles.privacy, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-          casts show the area only. the exact spot stays hidden.
+          casts show the neighbourhood only. an exact spot is never stored.
         </Text>
       </KeyboardAvoidingView>
     </View>

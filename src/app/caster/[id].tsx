@@ -139,7 +139,7 @@ export default function CasterProfileScreen() {
           <Text style={styles.quiet}>nothing live right now.</Text>
         )}
 
-        <SheetNote>the exact place stays hidden until you&apos;re both in. chat is in-app — nobody exchanges numbers. receipts are attendance facts, not ratings.</SheetNote>
+        <SheetNote>casts show the neighbourhood, never an exact spot. you sort out exactly where in chat — it&apos;s in-app, nobody swaps numbers. receipts are attendance facts, not ratings.</SheetNote>
       </ScrollView>
 
       <View style={styles.safety}>

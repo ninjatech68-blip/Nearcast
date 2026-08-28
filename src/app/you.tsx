@@ -82,7 +82,6 @@ export default function YouScreen() {
             <Text style={styles.signalVisibility}>signal + receipts are public · anyone on a cast can see this</Text>
           </View>
         </View>
-        <Text style={styles.range}>{meFixture.range}</Text>
 
         <View style={styles.rows}>
           <Row
@@ -285,7 +284,6 @@ const styles = StyleSheet.create({
   signalCopy: { flex: 1 },
   signalWord: { fontFamily: fontFamily.display, fontSize: 22, lineHeight: 24, letterSpacing: -0.45, color: tokens.semantic.color.ink },
   signalVisibility: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
-  range: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
   rows: { marginTop: 24 },
   rowTitle: { fontFamily: fontFamily.displaySemi, fontSize: 17, letterSpacing: -0.2, color: tokens.semantic.color.ink },
   rowSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },

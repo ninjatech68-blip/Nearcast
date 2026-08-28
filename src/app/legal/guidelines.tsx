@@ -21,7 +21,7 @@ export default function GuidelinesScreen() {
           <Item>harass, threaten, or contact anyone after they&apos;ve said no</Item>
           <Item>use the app to sell things or promote a business</Item>
           <Item>cast plans you have no intention of showing up to</Item>
-          <Item>share the exact meeting spot outside chat with anyone who wasn&apos;t accepted</Item>
+          <Item>share where you&apos;re meeting with anyone who isn&apos;t in the plan</Item>
         </Section>
 
         <Section h="rarely">
@@ -32,7 +32,7 @@ export default function GuidelinesScreen() {
 
         <Section h="always">
           <Item>show up when you say you will</Item>
-          <Item>report the exact spot in chat only when the caster has accepted you</Item>
+          <Item>agree where to meet in chat, once you&apos;ve matched — not before</Item>
           <Item>report anything that felt off — a human reads every one</Item>
         </Section>
 

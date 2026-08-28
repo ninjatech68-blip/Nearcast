@@ -188,7 +188,7 @@ describe('cast detail sheet', () => {
     expect(view.getByText('Aarav cast this')).toBeTruthy();
     expect(view.getByText('31 plans made real · 0 flakes')).toBeTruthy();
     expect(view.getByLabelText('signal: 4 of 5')).toBeTruthy();
-    expect(view.getByText(/the exact place stays hidden until you're both in\. chat is in-app/)).toBeTruthy();
+    expect(view.getByText(/casts show the neighbourhood, never an exact spot\./)).toBeTruthy();
   });
 
   it('renders the gone state for an expired or unknown cast', async () => {
@@ -218,13 +218,16 @@ describe('join sheet', () => {
 });
 
 describe('you sheet', () => {
-  it('shows signal, private range, and receipts', async () => {
+  it('shows signal and receipts, and never a fabricated range number', async () => {
     const view = await render(<YouScreen />);
 
     expect(view.getByText('signal: strong')).toBeTruthy();
-    expect(view.getByText(/range: your next cast reaches ~240 people · only you see this number/)).toBeTruthy();
     expect(view.getByText('receipts')).toBeTruthy();
-    expect(view.getByText(/the exact place stays hidden until both sides say yes\./)).toBeTruthy();
+    // the old "~240 people" range was invented — a product-law breach —
+    // and named a reach model that no longer exists. it must be gone.
+    expect(view.queryByText(/reaches ~\d+ people/)).toBeNull();
+    expect(view.queryByText(/range:/)).toBeNull();
+    expect(view.getByText(/never an exact spot — the app never has one/)).toBeTruthy();
   });
 });
 
@@ -345,7 +348,7 @@ describe('area screen', () => {
 
     expect(view.getByLabelText('search area by name')).toBeTruthy();
     expect(view.getByRole('button', { name: 'use my location' })).toBeTruthy();
-    expect(view.getByText('casts show the area only. the exact spot stays hidden.')).toBeTruthy();
+    expect(view.getByText('casts show the neighbourhood only. an exact spot is never stored.')).toBeTruthy();
     // ring sampling turns one position into several neighborhood names
     expect(await view.findByRole('button', { name: 'indiranagar' })).toBeTruthy();
   });

@@ -193,9 +193,9 @@ export const casts: readonly CastDetail[] = [
     },
   },
   {
-    id: 'ceramics-slot',
+    id: 'ceramics-split',
     category: 'arts',
-    text: 'someone to split a ceramics slot saturday morning.',
+    text: 'someone to split a ceramics class saturday morning.',
     area: 'hsr',
     vouches: '1 vouch',
     expiry: 'gone friday',
@@ -438,7 +438,7 @@ export const yourCasts: readonly ActivityItem[] = [
   },
   {
     id: 'ceramics-draft',
-    title: 'ceramics slot',
+    title: 'ceramics class',
     sub: 'draft · only you',
     tag: { label: 'draft', tone: 'dim' },
   },
@@ -448,13 +448,12 @@ export const me = {
   name: 'Piyush',
   area: 'indiranagar',
   signal: { lit: 4, word: 'strong' },
-  range: 'range: your next cast reaches ~240 people · only you see this number',
   receipts: { count: 31, sub: '31 plans made real · last: badminton, tuesday' },
   circles: '3 circles · 24 people',
   areas: 'indiranagar, koramangala, hsr · always approximate',
   quietHours: '10pm to 7am',
   blocked: 'nobody',
-  privacy: 'the exact place stays hidden until both sides say yes. chat lives in-app — numbers never change hands.',
+  privacy: 'casts carry the neighbourhood, never an exact spot — the app never has one. sort out exactly where in chat; it lives in-app, numbers never change hands.',
 };
 
 export const recap = {

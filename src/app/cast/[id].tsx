@@ -44,7 +44,7 @@ export default function CastDetailScreen() {
         </Pressable>
         <Text style={styles.body}>{cast.body}</Text>
         <Text style={styles.reach}>{reachLine(cast)}</Text>
-        <SheetNote>the exact place stays hidden until you&apos;re both in. chat is in-app — nobody exchanges numbers.</SheetNote>
+        <SheetNote>casts show the neighbourhood, never an exact spot. you sort out exactly where in chat — it&apos;s in-app, nobody swaps numbers.</SheetNote>
       </ScrollView>
       <View style={styles.actions}>{renderActions()}</View>
     </SheetShell>

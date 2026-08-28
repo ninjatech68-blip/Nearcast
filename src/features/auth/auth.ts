@@ -40,6 +40,14 @@ function readableError(error: unknown, channel: AuthChannel): string {
   if (lowered.includes('rate') || lowered.includes('too many')) {
     return 'too many tries. wait a minute and ask for a new code.';
   }
+  // phone auth needs an SMS provider wired up on the backend. until one
+  // is, say so plainly instead of leaking "Unsupported phone provider".
+  if (
+    channel === 'phone' &&
+    (lowered.includes('provider') || lowered.includes('phone') || lowered.includes('sms'))
+  ) {
+    return 'phone sign-in isn\'t set up yet. use email for now.';
+  }
   if (lowered.includes('expired')) {
     return 'that code expired. ask for a new one.';
   }

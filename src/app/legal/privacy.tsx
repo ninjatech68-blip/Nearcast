@@ -26,15 +26,14 @@ export default function PrivacyScreen() {
           <Item>your first name</Item>
           <Item>a note you wrote when you asked to join</Item>
           <Item>your public signal + receipts, on tap</Item>
-          <Item>the area (neighborhood name) — never the exact place</Item>
+          <Item>the neighborhood name — never an exact place; the app never stores one</Item>
         </Section>
 
-        <Section h="what stays hidden until both sides say yes">
-          <Item>the exact meeting spot — revealed in chat only after the caster accepts</Item>
+        <Section h="where you meet">
+          <Item>the app never holds an exact spot. you agree where to meet in chat, after you match — like any conversation.</Item>
         </Section>
 
         <Section h="what only YOU see">
-          <Item>your range number (~how many people your next cast reaches)</Item>
           <Item>your circles and their members</Item>
           <Item>your blocked list</Item>
           <Item>your quiet hours</Item>
