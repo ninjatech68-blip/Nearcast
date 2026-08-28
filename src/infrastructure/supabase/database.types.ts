@@ -207,6 +207,7 @@ export type Database = {
           approximate_geography: unknown
           approximate_place: string | null
           cancel_cutoff_hours: number
+          coarse_window: string | null
           currency: string | null
           deadline_at: string | null
           intent_id: string
@@ -219,6 +220,7 @@ export type Database = {
           approximate_geography?: unknown
           approximate_place?: string | null
           cancel_cutoff_hours?: number
+          coarse_window?: string | null
           currency?: string | null
           deadline_at?: string | null
           intent_id: string
@@ -231,6 +233,7 @@ export type Database = {
           approximate_geography?: unknown
           approximate_place?: string | null
           cancel_cutoff_hours?: number
+          coarse_window?: string | null
           currency?: string | null
           deadline_at?: string | null
           intent_id?: string
@@ -259,6 +262,8 @@ export type Database = {
           reason_code: string
           reason_text: string
           recipient_id: string
+          score: number
+          signals: string[]
         }
         Insert: {
           delivered_at?: string
@@ -269,6 +274,8 @@ export type Database = {
           reason_code: string
           reason_text: string
           recipient_id: string
+          score?: number
+          signals?: string[]
         }
         Update: {
           delivered_at?: string
@@ -279,6 +286,8 @@ export type Database = {
           reason_code?: string
           reason_text?: string
           recipient_id?: string
+          score?: number
+          signals?: string[]
         }
         Relationships: [
           {
@@ -639,6 +648,64 @@ export type Database = {
           },
         ]
       }
+      profile_areas: {
+        Row: {
+          centroid: unknown
+          created_at: string
+          id: string
+          name: string
+          profile_id: string
+        }
+        Insert: {
+          centroid?: unknown
+          created_at?: string
+          id?: string
+          name: string
+          profile_id: string
+        }
+        Update: {
+          centroid?: unknown
+          created_at?: string
+          id?: string
+          name?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_areas_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_interests: {
+        Row: {
+          category: Database["public"]["Enums"]["cast_category"]
+          created_at: string
+          profile_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["cast_category"]
+          created_at?: string
+          profile_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["cast_category"]
+          created_at?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_interests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_private: {
         Row: {
           contact_preferences: Json
@@ -670,6 +737,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_windows: string[]
           avatar_path: string | null
           city: string | null
           created_at: string
@@ -679,6 +747,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          active_windows?: string[]
           avatar_path?: string | null
           city?: string | null
           created_at?: string
@@ -688,6 +757,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          active_windows?: string[]
           avatar_path?: string | null
           city?: string | null
           created_at?: string
@@ -838,6 +908,61 @@ export type Database = {
           starts_at: string
           statement: string
         }[]
+      }
+      hide_cast: {
+        Args: { not_relevant?: boolean; target_intent_id: string }
+        Returns: undefined
+      }
+      my_feed: {
+        Args: never
+        Returns: {
+          area: string
+          caster_first_name: string
+          caster_id: string
+          category: Database["public"]["Enums"]["cast_category"]
+          expires_at: string
+          intent_id: string
+          reason_text: string
+          score: number
+          signals: string[]
+          starts_at: string
+          statement: string
+        }[]
+      }
+      publish_cast: {
+        Args: {
+          area_latitude?: number
+          area_longitude?: number
+          area_name: string
+          cast_category: Database["public"]["Enums"]["cast_category"]
+          cast_coarse_window?: string
+          cast_expires_at: string
+          cast_radius_km: number
+          cast_starts_at?: string
+          cast_statement: string
+        }
+        Returns: {
+          broadcaster_id: string
+          category: Database["public"]["Enums"]["cast_category"]
+          created_at: string
+          expires_at: string
+          id: string
+          published_at: string | null
+          resolved_at: string | null
+          restricted_from: Database["public"]["Enums"]["intent_status"] | null
+          share_slug: string
+          slots_wanted: number | null
+          statement: string
+          status: Database["public"]["Enums"]["intent_status"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "intents"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {

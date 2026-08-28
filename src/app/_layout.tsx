@@ -13,6 +13,7 @@ import { AppState } from 'react-native';
 
 import { tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
+import { useProfileSync } from '@/features/me/use-profile-sync';
 import { restoreSession } from '@/features/auth/auth';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
@@ -22,6 +23,10 @@ export default function RootLayout() {
   const [fontsReady, setFontsReady] = useState(false);
   const me = useMe();
   const segments = useSegments();
+
+  // mirror this device's profile to the rows delivery reads, whenever
+  // they change. no-op without a backend.
+  useProfileSync();
 
   useEffect(() => {
     let isMounted = true;

@@ -17,7 +17,7 @@ import {
   type Category,
 } from '@/design-system/tokens';
 import { DEFAULT_RADIUS_KM, RADIUS_CHOICES } from '@/features/casts/domain/geo';
-import { addCast, clearDraft, setDraftArea, useDraftArea } from '@/features/casts/store';
+import { addCast, clearDraft, setDraftArea, useDraftArea, useDraftAreaPoint } from '@/features/casts/store';
 import { useMe } from '@/features/me/me-store';
 import { submit } from '@/infrastructure/net/submit';
 
@@ -44,6 +44,7 @@ export default function ComposeScreen() {
   const [sendError, setSendError] = useState<string | null>(null);
 
   const area = useDraftArea();
+  const areaPoint = useDraftAreaPoint();
   const me = useMe();
   // pre-fill area with the viewer's home area on mount so the row is
   // never empty; the /area picker still overrides it.
@@ -85,6 +86,14 @@ export default function ComposeScreen() {
         area: area.trim() || 'nearby',
         gone: goneLabel,
         radiusKm,
+        latitude: areaPoint?.latitude ?? null,
+        longitude: areaPoint?.longitude ?? null,
+        startsAt: when,
+        // the cast stays up until the plan starts, then hangs on a
+        // couple of hours — the same window the copy below promises.
+        expiresAt: when
+          ? new Date(when.getTime() + CAST_WINDOW_HOURS * 60 * 60 * 1000)
+          : new Date(Date.now() + 24 * 60 * 60 * 1000),
       }),
     );
     setCasting(false);

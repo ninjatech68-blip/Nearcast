@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Animated, FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,7 +10,17 @@ import { category as categoryTokens, fontFamily, tokens } from '@/design-system/
 import { NEVER_USED } from '@/features/casts/domain/delivery';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { type CastDetail } from '@/features/casts/fixtures';
-import { applyLens, setFilter, setQuery, skipCast, useFeedCasts, useFilter, useQuery } from '@/features/casts/store';
+import {
+  applyLens,
+  refreshFeed,
+  setFilter,
+  setQuery,
+  skipCast,
+  useFeedCasts,
+  useFilter,
+  useQuery,
+} from '@/features/casts/store';
+import { remoteEnabled } from '@/features/casts/remote';
 
 import { AvatarDot } from './avatar-dot';
 
@@ -39,8 +49,47 @@ export function FeedPage({
   const all = useFeedCasts();
   const filter = useFilter();
   const query = useQuery();
+  const [loadError, setLoadError] = useState(false);
+  const [loading, setLoading] = useState(remoteEnabled());
+  const [reloadKey, setReloadKey] = useState(0);
 
   const visible = useMemo(() => applyLens(all, filter, query), [all, filter, query]);
+
+  /**
+   * Pull the delivered feed on mount, and again on retry.
+   *
+   * The error state matters more here than anywhere else in the app:
+   * a feed that failed to load and a feed with nothing in it render
+   * identically unless we keep them apart, and "quiet." is a lie when
+   * the truth is that the request never came back.
+   *
+   * A reload counter rather than a callback because every state
+   * change has to land after the await — setting state in the body of
+   * an effect is what makes React cascade renders.
+   */
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      if (!remoteEnabled()) return;
+      try {
+        await refreshFeed();
+        if (!cancelled) setLoadError(false);
+      } catch {
+        if (!cancelled) setLoadError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadKey]);
+
+  function retry() {
+    setLoading(true);
+    setLoadError(false);
+    setReloadKey((key) => key + 1);
+  }
 
   function skip(id: string) {
     haptic('light');
@@ -78,7 +127,13 @@ export function FeedPage({
   if (visible.length === 0) {
     return (
       <View style={{ width, height }}>
-        <FeedEmpty filtered={lensOn} onClear={clearLens} />
+        <FeedEmpty
+          filtered={lensOn}
+          onClear={clearLens}
+          loading={loading}
+          failed={loadError}
+          onRetry={retry}
+        />
         {filterPill}
       </View>
     );
@@ -148,7 +203,19 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
   );
 }
 
-function FeedEmpty({ filtered, onClear }: { filtered: boolean; onClear?: () => void }) {
+function FeedEmpty({
+  filtered,
+  onClear,
+  loading,
+  failed,
+  onRetry,
+}: {
+  filtered: boolean;
+  onClear?: () => void;
+  loading?: boolean;
+  failed?: boolean;
+  onRetry?: () => void;
+}) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -158,13 +225,21 @@ function FeedEmpty({ filtered, onClear }: { filtered: boolean; onClear?: () => v
         <AvatarDot />
       </View>
       <View style={styles.emptyMiddle}>
-        <Text style={styles.emptyHead}>quiet.</Text>
+        <Text style={styles.emptyHead}>{failed ? "couldn't load." : loading ? 'loading…' : 'quiet.'}</Text>
         <Text style={styles.emptySub}>
-          {filtered ? 'nothing matches that right now.' : 'nothing cast near you right now.'}
+          {failed
+            ? "we couldn't reach the server. this isn't an empty feed — we don't know what's out there yet."
+            : loading
+              ? 'finding what was cast near you.'
+              : filtered
+                ? 'nothing matches that right now.'
+                : 'nothing cast near you right now.'}
         </Text>
       </View>
       <View style={{ paddingBottom: tokens.component.posterBottomReserve }}>
-        {filtered ? (
+        {failed ? (
+          <BarButton label="try again" variant="onOrange" onPress={onRetry ?? (() => undefined)} />
+        ) : loading ? null : filtered ? (
           <BarButton label="show everything" variant="onInk" onPress={onClear ?? (() => setFilter(null))} />
         ) : (
           <BarButton label="cast something" variant="onOrange" onPress={() => router.push('/compose')} />

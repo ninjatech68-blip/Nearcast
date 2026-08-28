@@ -35,7 +35,7 @@ insert into public.intent_deliveries (intent_id, recipient_id, reason_code, reas
 values (
   '10000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000002',
-  'adjacent_trust_connection', 'Shared through one trusted connection'
+  'one_trusted_link', 'one trusted link away'
 );
 
 set local role authenticated;

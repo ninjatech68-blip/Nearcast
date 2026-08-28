@@ -3,6 +3,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { category as categoryTokens, type Category } from '@/design-system/tokens';
 import { deliveryFor, type ViewerContext } from './domain/delivery';
 import { DEFAULT_RADIUS_KM } from './domain/geo';
+import { fetchFeed, publishCast, remoteEnabled } from './remote';
 import { matchesQuery } from './domain/search';
 import {
   casts as fixtureCasts,
@@ -457,14 +458,46 @@ function mutateCast(current: State, castId: string, transform: (cast: CastDetail
   };
 }
 
-export function addCast(input: {
+export type AddCastInput = {
   category: Category;
   text: string;
   area: string;
   gone: string;
   /** how far from `area` the caster wants it to travel. */
   radiusKm?: number;
-}): void {
+  /** the area's approximate centre, when the picker could place it */
+  latitude?: number | null;
+  longitude?: number | null;
+  /** when the plan starts, and when the cast stops being live */
+  startsAt?: Date | null;
+  expiresAt?: Date;
+};
+
+/**
+ * Publish a cast.
+ *
+ * With a backend configured this goes through `publish_cast` and then
+ * refreshes from the server, so what you see afterwards is what was
+ * actually stored rather than an optimistic copy that might not match.
+ * Without one it writes the local store, exactly as before. Callers
+ * already run this inside `submit`, which renders either outcome.
+ */
+export async function addCast(input: AddCastInput): Promise<void> {
+  if (remoteEnabled()) {
+    await publishCast({
+      category: input.category,
+      text: input.text,
+      area: input.area,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
+      radiusKm: input.radiusKm ?? DEFAULT_RADIUS_KM,
+      startsAt: input.startsAt ?? null,
+      expiresAt: input.expiresAt ?? defaultExpiry(),
+    });
+    await refreshFeed();
+    return;
+  }
+
   const id = `mine-${Date.now()}`;
   const radiusKm = input.radiusKm ?? DEFAULT_RADIUS_KM;
   const cast: CastDetail = {
@@ -504,6 +537,27 @@ export function addCast(input: {
   emit();
 }
 
+/** a cast with no explicit expiry stays up for a day. */
+function defaultExpiry(): Date {
+  return new Date(Date.now() + 24 * 60 * 60 * 1000);
+}
+
+/**
+ * Pull the delivered feed from the server and replace what is on
+ * screen with it.
+ *
+ * No-op without a backend: the fixture feed is derived at hydrate and
+ * there is nothing to fetch. A failure is left to the caller — a feed
+ * that silently swallows an error looks exactly like a feed with
+ * nothing in it, which is the one thing it must never look like.
+ */
+export async function refreshFeed(): Promise<void> {
+  if (!remoteEnabled()) return;
+  const delivered = await fetchFeed();
+  state = { ...state, feed: delivered };
+  emit();
+}
+
 /** test-only reset. clears the persisted record too. */
 export function resetCastStore(): void {
   skippedIds = [];
@@ -522,8 +576,9 @@ export function resetCastStore(): void {
  * compose draft: the area picker is its own screen (keyboard needs the
  * room), so it hands its answer back through here.
  */
-type Draft = { area: string };
-let draft: Draft = { area: '' };
+type DraftPoint = { latitude: number; longitude: number } | null;
+type Draft = { area: string; point: DraftPoint };
+let draft: Draft = { area: '', point: null };
 const draftListeners = new Set<() => void>();
 
 function subscribeDraft(listener: () => void): () => void {
@@ -535,8 +590,21 @@ export function useDraftArea(): string {
   return useSyncExternalStore(subscribeDraft, () => draft.area);
 }
 
-export function setDraftArea(area: string): void {
-  draft = { area };
+/**
+ * The pin the area picker resolved, or null when it could not place
+ * the name. Published casts carry it as the area's approximate centre
+ * — the server rounds it before storing, so no exact location can
+ * reach a discoverable row whatever the picker hands back.
+ *
+ * Returns the stored reference rather than a fresh object, because a
+ * new object every render would make useSyncExternalStore loop.
+ */
+export function useDraftAreaPoint(): DraftPoint {
+  return useSyncExternalStore(subscribeDraft, () => draft.point);
+}
+
+export function setDraftArea(area: string, point: DraftPoint = null): void {
+  draft = { area, point };
   draftListeners.forEach((listener) => listener());
 }
 

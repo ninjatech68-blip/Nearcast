@@ -179,7 +179,10 @@ export default function AreaScreen() {
 
   function choose(area: string) {
     haptic('success');
-    setDraftArea(area);
+    // the pin travels with the name: without it delivery can only
+    // match areas by string, which stops working the moment two people
+    // type the same place differently.
+    setDraftArea(area, pin ? { latitude: pin.latitude, longitude: pin.longitude } : null);
     router.back();
   }
 

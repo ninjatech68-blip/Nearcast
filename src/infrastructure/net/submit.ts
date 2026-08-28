@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import { isBackendConfigured } from '@/infrastructure/supabase/client';
 import {
   INITIAL_CONNECTIVITY,
   recordOutcome,
@@ -61,16 +62,26 @@ function report(outcome: 'success' | 'failure'): void {
   }
 }
 
-/** simulated round-trip latency, so loading states are actually visible. */
+/**
+ * Simulated round-trip latency, so loading states are visible in the
+ * fixture build. A real backend supplies its own; adding this on top
+ * of it would just make every write feel half a second worse.
+ */
 const LATENCY_MS = 450;
 
 /**
  * Run a write. Resolves with a tagged result rather than throwing,
  * because every caller has to render the failure — making it an
  * exception invites a bare try/catch that swallows it silently.
+ *
+ * `work` may be sync or async. The await matters: without it a
+ * rejected promise would sail past the catch and every screen would
+ * show success for a write that failed.
  */
-export async function submit<T>(work: () => T): Promise<SubmitResult<T>> {
-  await new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
+export async function submit<T>(work: () => T | Promise<T>): Promise<SubmitResult<Awaited<T>>> {
+  if (!isBackendConfigured()) {
+    await new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
+  }
 
   if (failureMode === 'always') {
     report('failure');
@@ -78,7 +89,7 @@ export async function submit<T>(work: () => T): Promise<SubmitResult<T>> {
   }
 
   try {
-    const value = work();
+    const value = await work();
     report('success');
     return { ok: true, value };
   } catch {
