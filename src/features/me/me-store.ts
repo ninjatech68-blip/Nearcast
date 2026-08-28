@@ -77,20 +77,26 @@ export function useMe(): State {
 }
 
 /** the read-only viewer view the delivery framework uses. */
+function buildViewerContext(from: State): ViewerContext {
+  return {
+    areas: from.approvedAreas,
+    // circles come from the trust store, not here — leaving as fixture
+    circleIds: ['badminton-gang', 'flat-4b', 'college-crew'],
+    adjacentCircleIds: ['kavya-friends', 'dev-music-people'],
+    interests: from.interests,
+    activeWindows: ['weekday-evening'],
+    blockedCasterIds: from.blocked,
+  };
+}
+
 export function useViewerContext(): ViewerContext {
   const me = useMe();
-  return useMemo(
-    () => ({
-      areas: me.approvedAreas,
-      // circles come from the trust store, not here — leaving as fixture
-      circleIds: ['badminton-gang', 'flat-4b', 'college-crew'],
-      adjacentCircleIds: ['kavya-friends', 'dev-music-people'],
-      interests: me.interests,
-      activeWindows: ['weekday-evening'],
-      blockedCasterIds: me.blocked,
-    }),
-    [me],
-  );
+  return useMemo(() => buildViewerContext(me), [me]);
+}
+
+/** non-reactive snapshot, for imperative callers (e.g. feed counts). */
+export function viewerContextSnapshot(): ViewerContext {
+  return buildViewerContext(state);
 }
 
 export function useMyPhoto(): string | null {

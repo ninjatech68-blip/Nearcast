@@ -369,7 +369,10 @@ describe('filter sheet', () => {
     await user.press(view.getByRole('button', { name: 'sports' }));
     expect(view.getByRole('button', { name: 'show 1 cast' })).toBeTruthy();
 
-    await user.press(view.getByRole('button', { name: 'music + nightlife' }));
+    // the count is the HONEST, gated count — it equals what the feed
+    // actually renders, so a second category with a deliverable cast
+    // takes it to 2 (music has none delivered, games does).
+    await user.press(view.getByRole('button', { name: 'games' }));
     expect(view.getByRole('button', { name: 'show 2 casts' })).toBeTruthy();
   });
 

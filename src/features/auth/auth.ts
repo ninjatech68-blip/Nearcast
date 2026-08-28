@@ -120,8 +120,10 @@ export async function completeAuthFromUrl(url: string): Promise<CallbackResult> 
   const hashIndex = url.indexOf('#');
   if (hashIndex >= 0) {
     for (const pair of url.slice(hashIndex + 1).split('&')) {
-      const [k, v] = pair.split('=');
-      if (k) params[k] = decodeURIComponent(v ?? '');
+      const eq = pair.indexOf('=');
+      const k = eq >= 0 ? pair.slice(0, eq) : pair;
+      const v = eq >= 0 ? pair.slice(eq + 1) : '';
+      if (k) params[k] = decodeURIComponent(v);
     }
   }
 

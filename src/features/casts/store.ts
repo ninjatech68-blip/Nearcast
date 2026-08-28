@@ -24,7 +24,7 @@ import {
   type CastDetail,
   type PendingJoin,
 } from './fixtures';
-import { useViewerContext } from '@/features/me/me-store';
+import { useViewerContext, viewerContextSnapshot } from '@/features/me/me-store';
 import {
   clearState,
   loadState,
@@ -117,6 +117,12 @@ function hydrate(): State {
 
   // derive the feed fresh from fixtures, then re-apply saved join
   // state and drop anything the viewer already skipped.
+  // backend mode: start empty and let the server refreshes fill these,
+  // so no fabricated fixture casts/joins ever render as real state.
+  if (remoteEnabled()) {
+    return { feed: [], myCasts: [], mine: [], sentJoins: [], filter: null, query: '' };
+  }
+
   const feed = deliverFeed(fixtureCasts)
     .filter((cast) => !skipped.has(cast.id))
     .map((cast) => (overlay[cast.id] ? { ...cast, ...overlay[cast.id] } : cast));
@@ -215,23 +221,38 @@ function isStale(expiry: string, now: Date = new Date()): boolean {
   return diff > 3;
 }
 
+/**
+ * The feed as it should render.
+ *
+ * In backend mode the rows come from my_feed(), already gated by the
+ * server and carrying the STORED delivery reason — so we must NOT
+ * re-run the local gate (that would drop legitimate casts and overwrite
+ * the server's reason with a device-computed one). We only drop anyone
+ * blocked on this device, as belt-and-suspenders.
+ *
+ * In fixture mode there is no server, so the local delivery framework
+ * IS the gate: re-derive it against the viewer context and rewrite the
+ * why/signals from the signals that fired.
+ */
+function gateFeed(base: readonly CastDetail[], ctx: ViewerContext): CastDetail[] {
+  if (remoteEnabled()) {
+    return base.filter((c) => !ctx.blockedCasterIds.includes(c.delivery.casterId));
+  }
+  const out: CastDetail[] = [];
+  for (const c of base) {
+    if (ctx.blockedCasterIds.includes(c.delivery.casterId)) continue;
+    if (isStale(c.expiry)) continue;
+    const result = deliveryFor(ctx, c.delivery);
+    if (!result.deliver) continue;
+    out.push({ ...c, why: result.reason, signals: result.signals });
+  }
+  return out;
+}
+
 export function useFeedCasts(): readonly CastDetail[] {
-  // re-derive delivery when the viewer context changes (interests,
-  // areas, blocked). the mutated base feed (pendingJoins, matched)
-  // carries through — delivery only rewrites the why + signals + gates.
   const base = useSyncExternalStore(subscribe, () => state.feed);
   const ctx = useViewerContext();
-  return useMemo(() => {
-    const out: CastDetail[] = [];
-    for (const c of base) {
-      if (ctx.blockedCasterIds.includes(c.delivery.casterId)) continue;
-      if (isStale(c.expiry)) continue;
-      const result = deliveryFor(ctx, c.delivery);
-      if (!result.deliver) continue;
-      out.push({ ...c, why: result.reason, signals: result.signals });
-    }
-    return out;
-  }, [base, ctx]);
+  return useMemo(() => gateFeed(base, ctx), [base, ctx]);
 }
 
 export function useMyCastDetails(): readonly CastDetail[] {
@@ -282,7 +303,9 @@ export function applyLens(
 
 /** honest count for the filter sheet's primary button. */
 export function feedCountFor(filter: readonly Category[] | null, query: string = ''): number {
-  return applyLens(state.feed, filter, query).length;
+  // count the same set the feed renders — gated first, then lensed —
+  // so the filter sheet's number never disagrees with the list.
+  return applyLens(gateFeed(state.feed, viewerContextSnapshot()), filter, query).length;
 }
 
 export function useMyCasts(): readonly ActivityItem[] {
@@ -442,7 +465,7 @@ export function getPendingJoin(castId: string, personId: string): PendingJoin | 
 /** joiner path: withdraw a join you sent. silent to the caster. */
 export async function withdrawJoin(castId: string, joinerId: string = 'me'): Promise<void> {
   if (remoteEnabled()) {
-    const sent = state.sentJoins.find((j) => j.castId === castId);
+    const sent = state.sentJoins.find((j) => j.castId === castId && j.status === 'pending');
     if (!sent) return;
     await withdrawResponse(sent.responseId);
     await refreshSentJoins();

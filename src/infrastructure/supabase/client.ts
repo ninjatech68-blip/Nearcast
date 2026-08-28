@@ -34,13 +34,23 @@ type Resolution = { client: NearcastClient | null; reason: string };
 let resolved: Resolution | null = null;
 
 function resolve(): Resolution {
+  // Parse the env FIRST, on its own. A parse failure means no backend is
+  // configured — the fixture build — which is the legitimate fall-through.
+  let env;
   try {
-    const env = parsePublicEnv({
+    env = parsePublicEnv({
       EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
       EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
       EXPO_PUBLIC_APP_ENV: process.env.EXPO_PUBLIC_APP_ENV,
     });
+  } catch {
+    return { client: null, reason: 'no EXPO_PUBLIC_SUPABASE_* config — running on local fixtures' };
+  }
 
+  // From here the backend IS configured. If client creation fails, that
+  // is a real error — surface it, and do NOT silently serve fabricated
+  // fixtures to a user who configured a real backend.
+  try {
     // Installs a localStorage polyfill backed by expo-sqlite, so the
     // auth session survives a restart the way our own stores do.
     // Deliberately required HERE and not imported at module scope:
@@ -78,8 +88,11 @@ function resolve(): Resolution {
     }
 
     return { client, reason: `connected to ${env.supabaseUrl}` };
-  } catch {
-    return { client: null, reason: 'no EXPO_PUBLIC_SUPABASE_* config — running on local fixtures' };
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    const message = `backend is configured but the client failed to start: ${detail}`;
+    console.error(`[nearcast] ${message}`);
+    return { client: null, reason: message };
   }
 }
 
