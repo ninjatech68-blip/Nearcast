@@ -1,5 +1,12 @@
 import { useSyncExternalStore } from 'react';
 
+import {
+  clearState,
+  loadState,
+  registerStoreReset,
+  saveState,
+  STORAGE_KEYS,
+} from '@/infrastructure/persistence/storage';
 import type { TrustGraph } from './domain/trust';
 
 /**
@@ -42,7 +49,7 @@ export const people: Record<string, Person> = {
 
 type State = { circles: readonly Circle[] };
 
-let state: State = {
+const SEED_STATE: State = {
   circles: [
     { id: 'badminton-gang', name: 'badminton gang', memberIds: ['aarav', 'riya', 'arjun'] },
     { id: 'flat-4b', name: 'flat 4b', memberIds: ['arjun'] },
@@ -50,12 +57,31 @@ let state: State = {
   ],
 };
 
+// circles persist in full — who you vouch for is the raw material the
+// trust graph runs on, and a vouch you made must outlive a restart.
+let state: State = loadState<State>(STORAGE_KEYS.circles, SEED_STATE);
+
 const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
+const emit = () => {
+  saveState(STORAGE_KEYS.circles, state);
+  listeners.forEach((l) => l());
+};
 const subscribe = (l: () => void) => {
   listeners.add(l);
   return () => listeners.delete(l);
 };
+
+registerStoreReset(() => {
+  state = SEED_STATE;
+  listeners.forEach((l) => l());
+});
+
+/** test-only reset. clears the persisted record too. */
+export function resetCirclesStore(): void {
+  clearState(STORAGE_KEYS.circles);
+  state = SEED_STATE;
+  listeners.forEach((l) => l());
+}
 
 export function useCircles(): readonly Circle[] {
   return useSyncExternalStore(subscribe, () => state.circles);

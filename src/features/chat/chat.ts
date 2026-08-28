@@ -1,5 +1,13 @@
 import { useSyncExternalStore } from 'react';
 
+import {
+  clearState,
+  loadState,
+  registerStoreReset,
+  saveState,
+  STORAGE_KEYS,
+} from '@/infrastructure/persistence/storage';
+
 /**
  * chat opens only after a match, and carries the earlier messages so a
  * conversation has context. session store for the frontend; supabase
@@ -45,7 +53,7 @@ export type Thread = {
 
 type State = { threads: Record<string, Thread> };
 
-let state: State = {
+const SEED_STATE: State = {
   threads: {
     'badminton-after-work': {
       id: 'badminton-after-work',
@@ -65,12 +73,24 @@ let state: State = {
   },
 };
 
+// threads persist in full — every message is user-authored content
+// that must survive a restart. an ended chat stays ended.
+let state: State = loadState<State>(STORAGE_KEYS.chat, SEED_STATE);
+
 const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
+const emit = () => {
+  saveState(STORAGE_KEYS.chat, state);
+  listeners.forEach((l) => l());
+};
 const subscribe = (l: () => void) => {
   listeners.add(l);
   return () => listeners.delete(l);
 };
+
+registerStoreReset(() => {
+  state = SEED_STATE;
+  listeners.forEach((l) => l());
+});
 
 export function useThread(id: string): Thread | undefined {
   return useSyncExternalStore(subscribe, () => state.threads[id]);
@@ -183,6 +203,9 @@ export function endChat(threadId: string): void {
   emit();
 }
 
+/** test-only reset. clears the persisted record too. */
 export function resetChat(): void {
-  emit();
+  clearState(STORAGE_KEYS.chat);
+  state = SEED_STATE;
+  listeners.forEach((l) => l());
 }

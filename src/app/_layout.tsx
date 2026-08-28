@@ -9,9 +9,11 @@ import { Stack, router, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
+import { flushWrites } from '@/infrastructure/persistence/storage';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -46,6 +48,16 @@ export default function RootLayout() {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  // persisted writes are debounced, so a change made in the last
+  // ~120ms before a force-quit would be lost. flush when the app
+  // leaves the foreground.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next !== 'active') flushWrites();
+    });
+    return () => sub.remove();
   }, []);
 
   // gate the shell on signed-in + onboarding-done, but only after

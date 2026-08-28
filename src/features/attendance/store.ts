@@ -1,6 +1,13 @@
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { outcomeFor, type Outcome, type PlanRecord, type PresenceReport } from '@/features/casts/domain/attendance';
+import {
+  clearState,
+  loadState,
+  registerStoreReset,
+  saveState,
+  STORAGE_KEYS,
+} from '@/infrastructure/persistence/storage';
 
 /**
  * attendance store: the session-only ledger of plans, presence reports,
@@ -68,14 +75,29 @@ const FIXTURE_PLANS: readonly StoredPlan[] = [
   },
 ];
 
-let state: State = { plans: FIXTURE_PLANS };
+/**
+ * plans persist in full. presence reports are FACTS people recorded —
+ * losing them on restart would silently erase receipts and flakes,
+ * which is exactly the thing the attendance domain exists to make
+ * durable. Date fields survive the round trip via the storage
+ * layer's ISO reviver.
+ */
+let state: State = loadState<State>(STORAGE_KEYS.attendance, { plans: FIXTURE_PLANS });
 
 const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
+const emit = () => {
+  saveState(STORAGE_KEYS.attendance, state);
+  listeners.forEach((l) => l());
+};
 const subscribe = (l: () => void) => {
   listeners.add(l);
   return () => listeners.delete(l);
 };
+
+registerStoreReset(() => {
+  state = { plans: FIXTURE_PLANS };
+  listeners.forEach((l) => l());
+});
 
 function daysAgo(days: number): Date {
   const date = new Date();
@@ -227,8 +249,9 @@ export function useSharedHistoryWith(
   }, [plans, personId, viewerId]);
 }
 
-/** test-only reset. */
+/** test-only reset. clears the persisted record too. */
 export function resetAttendanceStore(): void {
+  clearState(STORAGE_KEYS.attendance);
   state = { plans: FIXTURE_PLANS };
-  emit();
+  listeners.forEach((l) => l());
 }

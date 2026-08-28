@@ -2,13 +2,15 @@ import { useMemo, useSyncExternalStore } from 'react';
 
 import type { Category } from '@/design-system/tokens';
 import type { ViewerContext } from '@/features/casts/domain/delivery';
+import { clearAllState, loadState, saveState, STORAGE_KEYS } from '@/infrastructure/persistence/storage';
 
 /**
  * the me store: the source of truth for who I am on device — name,
  * home area, approved neighborhoods, interests, blocked casters, quiet
  * hours, photo, and the gates the shell reads (signed in? onboarded?
- * push granted?). session-only for the frontend build; supabase
- * profile + contact_preferences replace it, same shape.
+ * push granted?). PERSISTED, so a restart keeps you signed in and
+ * onboarded; supabase profile + contact_preferences replace it in the
+ * backend phase, same shape.
  *
  * production: profile row (RLS-scoped to the viewer) + a small
  * private_state table for blocked ids and push preferences.
@@ -44,10 +46,15 @@ const DEFAULT_STATE: State = {
   quietHours: { start: '10:00 pm', end: '7:00 am', on: true },
 };
 
-let state: State = DEFAULT_STATE;
+// hydrate synchronously at module load so the shell's signed-in /
+// onboarded gate reads the real value on the very first render.
+let state: State = { ...DEFAULT_STATE, ...loadState(STORAGE_KEYS.me, {}) };
 
 const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
+const emit = () => {
+  saveState(STORAGE_KEYS.me, state);
+  listeners.forEach((l) => l());
+};
 const subscribe = (l: () => void) => {
   listeners.add(l);
   return () => listeners.delete(l);
@@ -103,7 +110,14 @@ export function setOnboardingDone(): void {
   emit();
 }
 
+/**
+ * sign out wipes EVERY persisted store, not just this one. leaving a
+ * signed-out device holding the last person's casts, chats, receipts
+ * and circles would be a privacy failure — the next sign-in must
+ * start from nothing.
+ */
 export function signOut(): void {
+  clearAllState();
   state = { ...DEFAULT_STATE, signedIn: false, onboardingDone: false };
   emit();
 }

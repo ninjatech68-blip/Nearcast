@@ -11,6 +11,13 @@ import {
   type PendingJoin,
 } from './fixtures';
 import { useViewerContext } from '@/features/me/me-store';
+import {
+  clearState,
+  loadState,
+  registerStoreReset,
+  saveState,
+  STORAGE_KEYS,
+} from '@/infrastructure/persistence/storage';
 
 /**
  * in-memory session store so the loop closes on device: a cast you
@@ -43,16 +50,88 @@ type State = {
   filter: readonly Category[] | null;
 };
 
-let state: State = {
-  feed: deliverFeed(fixtureCasts),
-  myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
-  mine: fixtureYourCasts,
-  filter: null,
+/**
+ * What we persist, and why it is not simply `State`.
+ *
+ * `feed` is derived from FIXTURES. Persisting it whole would freeze
+ * the fixture set at first launch — add a cast to fixtures.ts and an
+ * existing install would never see it. So instead we persist:
+ *
+ *  - myCasts / mine: casts YOU authored. Nothing derives these, they
+ *    are yours, they persist in full.
+ *  - overlay: per-fixture-cast join state (pendingJoins, matched).
+ *    Re-applied over the freshly derived feed on load, so fixture
+ *    changes flow through while your join/accept history survives.
+ *  - skipped: ids you swiped past, so they stay gone.
+ *
+ * `filter` is deliberately absent — the session lens resets when you
+ * leave the feed, and that is a product rule, not an oversight.
+ */
+type CastOverlay = {
+  pendingJoins?: readonly PendingJoin[];
+  matched?: readonly string[];
+  slotsWanted?: number;
 };
+
+type PersistedCasts = {
+  myCasts: readonly CastDetail[];
+  mine: readonly ActivityItem[];
+  overlay: Record<string, CastOverlay>;
+  skipped: readonly string[];
+};
+
+function hydrate(): State {
+  const saved = loadState<Partial<PersistedCasts>>(STORAGE_KEYS.casts, {});
+  const overlay = saved.overlay ?? {};
+  const skipped = new Set(saved.skipped ?? []);
+
+  // derive the feed fresh from fixtures, then re-apply saved join
+  // state and drop anything the viewer already skipped.
+  const feed = deliverFeed(fixtureCasts)
+    .filter((cast) => !skipped.has(cast.id))
+    .map((cast) => (overlay[cast.id] ? { ...cast, ...overlay[cast.id] } : cast));
+
+  const savedMine = saved.myCasts;
+  return {
+    feed,
+    // a first launch seeds from fixtures; afterwards your own casts
+    // are whatever you actually have (including none, if you cancelled
+    // them all — which is why we check for the key, not truthiness).
+    myCasts: savedMine ?? fixtureCasts.filter((c) => c.byId === 'me'),
+    mine: saved.mine ?? fixtureYourCasts,
+    filter: null,
+  };
+}
+
+let state: State = hydrate();
+let skippedIds: string[] = loadState<Partial<PersistedCasts>>(STORAGE_KEYS.casts, {}).skipped?.slice() ?? [];
+
+function persist(): void {
+  const overlay: Record<string, CastOverlay> = {};
+  for (const cast of state.feed) {
+    const hasJoins = (cast.pendingJoins?.length ?? 0) > 0;
+    const hasMatched = (cast.matched?.length ?? 0) > 0;
+    if (hasJoins || hasMatched) {
+      overlay[cast.id] = {
+        pendingJoins: cast.pendingJoins,
+        matched: cast.matched,
+        slotsWanted: cast.slotsWanted,
+      };
+    }
+  }
+  const payload: PersistedCasts = {
+    myCasts: state.myCasts,
+    mine: state.mine,
+    overlay,
+    skipped: skippedIds,
+  };
+  saveState(STORAGE_KEYS.casts, payload);
+}
 
 const listeners = new Set<() => void>();
 
 function emit() {
+  persist();
   listeners.forEach((listener) => listener());
 }
 
@@ -60,6 +139,17 @@ function subscribe(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
+
+registerStoreReset(() => {
+  skippedIds = [];
+  state = {
+    feed: deliverFeed(fixtureCasts),
+    myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
+    mine: fixtureYourCasts,
+    filter: null,
+  };
+  listeners.forEach((listener) => listener());
+});
 
 /**
  * a cast whose plan has already passed no longer appears in the feed.
@@ -197,6 +287,7 @@ export function getCast(id: string): CastDetail | undefined {
 }
 
 export function skipCast(id: string): void {
+  if (!skippedIds.includes(id)) skippedIds = [...skippedIds, id];
   state = { ...state, feed: state.feed.filter((cast) => cast.id !== id) };
   emit();
 }
@@ -372,15 +463,17 @@ export function addCast(input: {
   emit();
 }
 
-/** test-only reset. */
+/** test-only reset. clears the persisted record too. */
 export function resetCastStore(): void {
+  skippedIds = [];
+  clearState(STORAGE_KEYS.casts);
   state = {
     feed: deliverFeed(fixtureCasts),
     myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
     mine: fixtureYourCasts,
     filter: null,
   };
-  emit();
+  listeners.forEach((listener) => listener());
 }
 
 /**
