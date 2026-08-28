@@ -16,7 +16,7 @@ export default function PrivacyScreen() {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.flex}>
         <Section h="what we NEVER store on a cast">
           <Item>your exact location or coordinates</Item>
-          <Item>your email address</Item>
+          <Item>your email, phone, or any contact detail</Item>
           <Item>your contacts</Item>
           <Item>who else you looked at before you cast</Item>
           <Item>what you typed before you cast</Item>
