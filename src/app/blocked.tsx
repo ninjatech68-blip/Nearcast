@@ -49,18 +49,18 @@ export default function BlockedScreen() {
               <View key={id} style={styles.row}>
                 <Face
                   photo={facePhotos[id]}
-                  initials={(person?.name ?? id).slice(0, 2).toUpperCase()}
+                  initials={(person?.name ?? 'B').slice(0, 2).toUpperCase()}
                   size={44}
-                  label={`photo of ${person?.name ?? id}`}
+                  label={`photo of ${person?.name ?? "a blocked person"}`}
                 />
                 <View style={styles.rowMid}>
-                  <Text style={styles.name}>{person?.name ?? id}</Text>
-                  <Text style={styles.area}>{person?.area ?? 'unknown area'}</Text>
+                  <Text style={styles.name}>{person?.name ?? "a blocked person"}</Text>
+                  <Text style={styles.area}>{person?.area ?? 'blocked — silent to them'}</Text>
                 </View>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel={`unblock ${person?.name ?? id}`}
-                  onPress={() => unblock(id, person?.name ?? id)}
+                  accessibilityLabel={`unblock ${person?.name ?? "this person"}`}
+                  onPress={() => unblock(id, person?.name ?? "this person")}
                   style={styles.unblockTap}
                 >
                   <Tag label="unblock" tone="line" />

@@ -8,6 +8,7 @@ import { Stamp } from '@/design-system/components/stamp';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { casters } from '@/features/casts/fixtures';
+import { usePersonFirstName } from '@/features/me/remote-profile';
 import { blockCaster } from '@/features/me/me-store';
 
 const REASONS = [
@@ -30,7 +31,8 @@ type Sent = 'idle' | 'sending' | 'sent';
 export default function ReportScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const person = casters.find((c) => c.id === id);
-  const name = person?.name ?? 'them';
+  const liveName = usePersonFirstName(id);
+  const name = liveName ?? person?.name ?? 'them';
 
   const [reason, setReason] = useState<string | null>(null);
   const [note, setNote] = useState('');

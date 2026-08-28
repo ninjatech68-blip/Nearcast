@@ -10,6 +10,7 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
+import { profilesEnabled, usePersonFirstName } from '@/features/me/remote-profile';
 import { addToCircle, useCircles } from '@/features/trust/circles';
 
 /**
@@ -19,7 +20,11 @@ import { addToCircle, useCircles } from '@/features/trust/circles';
  */
 export default function VouchScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const caster = casters.find((c) => c.id === id);
+  const fixtureCaster = casters.find((c) => c.id === id);
+  const liveName = usePersonFirstName(id);
+  // in a live app the person is a real user, not a fixture; resolve a
+  // name and proceed rather than falling to "not around".
+  const caster = fixtureCaster ?? (profilesEnabled() && id ? { id, name: liveName ?? 'this person' } : undefined);
   const circles = useCircles();
   const options = circles.filter((c) => !c.memberIds.includes(id ?? ''));
   const already = circles.filter((c) => c.memberIds.includes(id ?? ''));

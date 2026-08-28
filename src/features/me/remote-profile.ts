@@ -5,6 +5,8 @@
  * a fabricated count.
  */
 
+import { useEffect, useState } from 'react';
+
 import { getSupabase } from '@/infrastructure/supabase/client';
 
 export type PublicProfile = {
@@ -65,4 +67,28 @@ export function signalLit(receipts: number): number {
   if (receipts >= 4) return 3;
   if (receipts >= 1) return 2;
   return 1;
+}
+
+
+/**
+ * A person's first name for a title/label. In a live app it is fetched
+ * from the backend; in the fixture build the caller's local roster is
+ * the source, so this returns null and the caller falls back to it.
+ * Never blocks the screen — starts as null and fills in.
+ */
+export function usePersonFirstName(personId: string | undefined): string | null {
+  const [name, setName] = useState<string | null>(null);
+  useEffect(() => {
+    if (!profilesEnabled() || !personId) return;
+    let cancelled = false;
+    void fetchPublicProfile(personId)
+      .then((profile) => {
+        if (!cancelled && profile) setName(profile.firstName);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [personId]);
+  return name;
 }
