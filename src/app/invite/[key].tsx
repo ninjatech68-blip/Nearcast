@@ -83,7 +83,7 @@ export default function InviteScreen() {
         style: 'destructive',
         onPress: () => {
           haptic('light');
-          declineJoin(castId, personId);
+          void declineJoin(castId, personId);
           router.back();
         },
       },

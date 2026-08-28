@@ -3,7 +3,18 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { category as categoryTokens, type Category } from '@/design-system/tokens';
 import { deliveryFor, type ViewerContext } from './domain/delivery';
 import { DEFAULT_RADIUS_KM } from './domain/geo';
-import { fetchFeed, publishCast, remoteEnabled } from './remote';
+import { expiryLabel, fetchFeed, publishCast, remoteEnabled } from './remote';
+import {
+  acceptResponse,
+  declineResponse,
+  fetchMyCasts,
+  fetchPendingJoins,
+  fetchSentJoins,
+  respondToCast,
+  withdrawResponse,
+  type RemoteMyCast,
+  type RemotePendingJoin,
+} from './remote-responses';
 import { matchesQuery } from './domain/search';
 import {
   casts as fixtureCasts,
@@ -45,10 +56,23 @@ function deliverFeed(source: readonly CastDetail[], ctx: ViewerContext = viewer)
   return delivered;
 }
 
+/** a request I sent that is still open, read from the server. */
+export type SentJoin = {
+  responseId: string;
+  castId: string;
+  castTitle: string;
+  casterName: string;
+  casterId: string;
+  status: 'pending' | 'accepted';
+  sentAgo: string;
+};
+
 type State = {
   feed: readonly CastDetail[];
   myCasts: readonly CastDetail[];
   mine: readonly ActivityItem[];
+  /** server-derived, backend mode only: joins I have sent. */
+  sentJoins: readonly SentJoin[];
   /** session-only category lens. null = all. never trains delivery, never persists. */
   filter: readonly Category[] | null;
   /** session-only text lens, same rules as `filter`. narrows what you
@@ -105,6 +129,7 @@ function hydrate(): State {
     // them all — which is why we check for the key, not truthiness).
     myCasts: savedMine ?? fixtureCasts.filter((c) => c.byId === 'me'),
     mine: saved.mine ?? fixtureYourCasts,
+    sentJoins: [],
     filter: null,
     query: '',
   };
@@ -153,6 +178,7 @@ registerStoreReset(() => {
     feed: deliverFeed(fixtureCasts),
     myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
     mine: fixtureYourCasts,
+    sentJoins: [],
     filter: null,
     query: '',
   };
@@ -286,7 +312,7 @@ export function usePendingJoinsOnMyCasts(): readonly ActivityItem[] {
         items.push({
           id: `join-${cast.id}-${join.personId}`,
           personId: join.personId,
-          title: `${nameFor(join.personId)}'s in`,
+          title: `${join.displayName ?? nameFor(join.personId)}'s in`,
           sub: `"${join.note}" · ${join.sentAgo} · ${cast.text}`,
           tag: { label: 'decide', tone: 'hot' },
           castId: cast.id,
@@ -354,7 +380,12 @@ export function capacityFor(cast: CastDetail): { filled: number; capped: boolean
 }
 
 /** joiner path: send a note. lands as pending on the caster's cast. */
-export function submitJoin(castId: string, note: string, joinerId: string = 'me'): void {
+export async function submitJoin(castId: string, note: string, joinerId: string = 'me'): Promise<void> {
+  if (remoteEnabled()) {
+    await respondToCast(castId, note.trim());
+    await refreshSentJoins();
+    return;
+  }
   state = mutateCast(state, castId, (cast) => {
     const already = (cast.pendingJoins ?? []).some((j) => j.personId === joinerId);
     if (already) return cast;
@@ -364,8 +395,15 @@ export function submitJoin(castId: string, note: string, joinerId: string = 'me'
   emit();
 }
 
-/** caster path: yes → fills a slot, joiner enters chat. no-op if already full. */
-export function acceptJoin(castId: string, personId: string): void {
+/** caster path: yes → creates the match + chat, joiner is in. */
+export async function acceptJoin(castId: string, personId: string): Promise<void> {
+  if (remoteEnabled()) {
+    const responseId = getPendingJoin(castId, personId)?.responseId;
+    if (!responseId) throw new Error('no such request');
+    await acceptResponse(responseId);
+    await refreshMyCasts();
+    return;
+  }
   state = mutateCast(state, castId, (cast) => {
     if (capacityFor(cast).full) return cast;
     const pending = (cast.pendingJoins ?? []).filter((j) => j.personId !== personId);
@@ -380,7 +418,14 @@ export function acceptJoin(castId: string, personId: string): void {
 }
 
 /** caster path: no → pending vanishes. silent to the joiner (product law: no reason given). */
-export function declineJoin(castId: string, personId: string): void {
+export async function declineJoin(castId: string, personId: string): Promise<void> {
+  if (remoteEnabled()) {
+    const responseId = getPendingJoin(castId, personId)?.responseId;
+    if (!responseId) return;
+    await declineResponse(responseId);
+    await refreshMyCasts();
+    return;
+  }
   state = mutateCast(state, castId, (cast) => ({
     ...cast,
     pendingJoins: (cast.pendingJoins ?? []).filter((j) => j.personId !== personId),
@@ -395,7 +440,14 @@ export function getPendingJoin(castId: string, personId: string): PendingJoin | 
 }
 
 /** joiner path: withdraw a join you sent. silent to the caster. */
-export function withdrawJoin(castId: string, joinerId: string = 'me'): void {
+export async function withdrawJoin(castId: string, joinerId: string = 'me'): Promise<void> {
+  if (remoteEnabled()) {
+    const sent = state.sentJoins.find((j) => j.castId === castId);
+    if (!sent) return;
+    await withdrawResponse(sent.responseId);
+    await refreshSentJoins();
+    return;
+  }
   state = mutateCast(state, castId, (cast) => ({
     ...cast,
     pendingJoins: (cast.pendingJoins ?? []).filter((j) => j.personId !== joinerId),
@@ -425,8 +477,21 @@ export function useJoinsISent(): readonly {
   casterId: string;
   sentAgo: string;
 }[] {
-  const feed = useSyncExternalStore(subscribe, () => state.feed);
+  const snapshot = useSyncExternalStore(subscribe, () => state);
   return useMemo(() => {
+    // backend mode: the server is the truth for what I have sent, since
+    // my requests do not live on the feed casts.
+    if (remoteEnabled()) {
+      return snapshot.sentJoins
+        .filter((j) => j.status === 'pending')
+        .map((j) => ({
+          castId: j.castId,
+          castTitle: j.castTitle,
+          casterName: j.casterName,
+          casterId: j.casterId,
+          sentAgo: j.sentAgo,
+        }));
+    }
     const items: {
       castId: string;
       castTitle: string;
@@ -434,7 +499,7 @@ export function useJoinsISent(): readonly {
       casterId: string;
       sentAgo: string;
     }[] = [];
-    for (const cast of feed) {
+    for (const cast of snapshot.feed) {
       const mine = cast.pendingJoins?.find((j) => j.personId === 'me');
       if (mine) {
         items.push({
@@ -447,7 +512,7 @@ export function useJoinsISent(): readonly {
       }
     }
     return items;
-  }, [feed]);
+  }, [snapshot]);
 }
 
 function mutateCast(current: State, castId: string, transform: (cast: CastDetail) => CastDetail): State {
@@ -500,7 +565,7 @@ export async function addCast(input: AddCastInput): Promise<void> {
     // would publish a duplicate. refresh best-effort; the feed reloads
     // itself on next view anyway.
     try {
-      await refreshFeed();
+      await Promise.all([refreshFeed(), refreshMyCasts()]);
     } catch {
       // swallowed on purpose: see above.
     }
@@ -567,6 +632,99 @@ export async function refreshFeed(): Promise<void> {
   emit();
 }
 
+function isCategory(value: string): value is Category {
+  return Object.prototype.hasOwnProperty.call(categoryTokens, value);
+}
+
+/** a server "my cast" row + its pending requests → a CastDetail. */
+function buildMyCast(row: RemoteMyCast, pendings: readonly RemotePendingJoin[]): CastDetail {
+  const category = (isCategory(row.category) ? row.category : 'social') as Category;
+  const area = row.area ?? 'nearby';
+  const joins: PendingJoin[] = pendings.map((join) => ({
+    personId: join.joiner_id,
+    displayName: join.joiner_first_name ?? 'someone',
+    note: join.note,
+    sentAgo: 'recently',
+    responseId: join.response_id,
+  }));
+  return {
+    id: row.intent_id,
+    category,
+    text: row.statement,
+    area,
+    vouches: '',
+    expiry: expiryLabel(row.expires_at),
+    why: 'you cast this',
+    signals: ['you cast this'],
+    by: 'you',
+    byId: 'me',
+    byLine: `${area} · your cast`,
+    receipts: { lit: 0, line: '' },
+    body: row.statement,
+    delivery: {
+      casterId: 'me',
+      area,
+      category,
+      categoryLabel: categoryTokens[category].label,
+      window: null,
+      radiusKm: DEFAULT_RADIUS_KM,
+      casterCircleIds: [],
+    },
+    matched: [],
+    pendingJoins: joins,
+  };
+}
+
+/**
+ * Pull the caster's own casts and the requests waiting on them.
+ *
+ * `my_casts` returns the casts you authored; `pending_joins_on_my_casts`
+ * the open requests. They are stitched here so the existing activity
+ * hooks — which read pendingJoins off each cast — keep working unchanged.
+ */
+export async function refreshMyCasts(): Promise<void> {
+  if (!remoteEnabled()) return;
+  const [rows, pending] = await Promise.all([fetchMyCasts(), fetchPendingJoins()]);
+  const byCast = new Map<string, RemotePendingJoin[]>();
+  for (const join of pending) {
+    const list = byCast.get(join.intent_id) ?? [];
+    list.push(join);
+    byCast.set(join.intent_id, list);
+  }
+  const myCasts = rows.map((row) => buildMyCast(row, byCast.get(row.intent_id) ?? []));
+  const mine: ActivityItem[] = myCasts.map((cast) => ({
+    id: `mine-${cast.id}`,
+    title: cast.text,
+    sub: statusLine(cast),
+    castId: cast.id,
+  }));
+  state = { ...state, myCasts, mine };
+  emit();
+}
+
+/** pull the joins I have sent that are still open. */
+export async function refreshSentJoins(): Promise<void> {
+  if (!remoteEnabled()) return;
+  const rows = await fetchSentJoins();
+  const sentJoins: SentJoin[] = rows.map((row) => ({
+    responseId: row.response_id,
+    castId: row.intent_id,
+    castTitle: row.cast_statement,
+    casterName: row.caster_first_name ?? 'someone',
+    casterId: row.caster_id,
+    status: row.status === 'accepted' ? 'accepted' : 'pending',
+    sentAgo: 'recently',
+  }));
+  state = { ...state, sentJoins };
+  emit();
+}
+
+/** refresh both sides of the interaction loop; drives the activity page. */
+export async function refreshInteractions(): Promise<void> {
+  if (!remoteEnabled()) return;
+  await Promise.all([refreshMyCasts(), refreshSentJoins()]);
+}
+
 /** test-only reset. clears the persisted record too. */
 export function resetCastStore(): void {
   skippedIds = [];
@@ -575,6 +733,7 @@ export function resetCastStore(): void {
     feed: deliverFeed(fixtureCasts),
     myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
     mine: fixtureYourCasts,
+    sentJoins: [],
     filter: null,
     query: '',
   };

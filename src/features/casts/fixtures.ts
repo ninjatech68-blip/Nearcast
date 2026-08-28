@@ -13,6 +13,12 @@ export type PendingJoin = {
   note: string;
   /** display label, never a real timestamp (fixtures never call Date.now) */
   sentAgo: string;
+  /** server response id, set only in backend mode — maps this request
+   *  back to the row accept/decline act on. absent on fixtures. */
+  responseId?: string;
+  /** the joiner's first name, from the server. fixtures resolve names
+   *  locally, so this is only populated in backend mode. */
+  displayName?: string;
 };
 
 export type CastDetail = PosterData & {

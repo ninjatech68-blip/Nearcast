@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -13,6 +13,7 @@ import { facePhotos, isVerified } from '@/features/casts/faces';
 import { type ActivityItem } from '@/features/casts/fixtures';
 import {
   cancelCast,
+  refreshInteractions,
   useJoinsISent,
   useMyCasts,
   useMyCastDetails,
@@ -39,6 +40,12 @@ export function ActivityPage() {
   // decision the caster owes a joiner.
   const pendingJoins = usePendingJoinsOnMyCasts();
   const [dismissed, setDismissed] = useState<readonly string[]>([]);
+
+  // pull the interaction state from the server whenever this page opens:
+  // requests that arrived on your casts, and accepts on the ones you sent.
+  useEffect(() => {
+    void refreshInteractions();
+  }, []);
   const moveItems = pendingJoins.filter((item) => !dismissed.includes(item.id));
   const [archived, setArchived] = useState<ActivityItem | null>(null);
 
@@ -63,7 +70,7 @@ export function ActivityPage() {
         style: 'destructive',
         onPress: () => {
           haptic('light');
-          withdrawJoin(castId);
+          void withdrawJoin(castId);
         },
       },
     ]);

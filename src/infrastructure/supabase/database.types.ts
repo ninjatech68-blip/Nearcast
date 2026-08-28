@@ -888,6 +888,10 @@ export type Database = {
         Args: { as_of?: string; target_intent: string; target_profile: string }
         Returns: Database["public"]["Enums"]["attendance_result"]
       }
+      decline_response: {
+        Args: { target_response_id: string }
+        Returns: undefined
+      }
       get_public_intent: {
         Args: { requested_share_slug: string }
         Returns: {
@@ -913,6 +917,32 @@ export type Database = {
         Args: { not_relevant?: boolean; target_intent_id: string }
         Returns: undefined
       }
+      joins_i_sent: {
+        Args: never
+        Returns: {
+          cast_statement: string
+          caster_first_name: string
+          caster_id: string
+          created_at: string
+          intent_id: string
+          response_id: string
+          status: Database["public"]["Enums"]["response_status"]
+        }[]
+      }
+      my_casts: {
+        Args: never
+        Returns: {
+          area: string
+          category: Database["public"]["Enums"]["cast_category"]
+          expires_at: string
+          intent_id: string
+          matched_count: number
+          pending_count: number
+          starts_at: string
+          statement: string
+          status: Database["public"]["Enums"]["intent_status"]
+        }[]
+      }
       my_feed: {
         Args: never
         Returns: {
@@ -927,6 +957,18 @@ export type Database = {
           signals: string[]
           starts_at: string
           statement: string
+        }[]
+      }
+      pending_joins_on_my_casts: {
+        Args: never
+        Returns: {
+          cast_statement: string
+          created_at: string
+          intent_id: string
+          joiner_first_name: string
+          joiner_id: string
+          note: string
+          response_id: string
         }[]
       }
       publish_cast: {
@@ -963,6 +1005,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      respond_to_cast: {
+        Args: { note: string; target_intent_id: string }
+        Returns: string
+      }
+      withdraw_response: {
+        Args: { target_response_id: string }
+        Returns: undefined
       }
     }
     Enums: {

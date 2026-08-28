@@ -74,7 +74,7 @@ export function coarseWindow(startsAt: Date | null): string | null {
 }
 
 /** how "gone 10pm" style copy is rebuilt from a stored timestamp. */
-function expiryLabel(expiresAt: string): string {
+export function expiryLabel(expiresAt: string): string {
   const when = new Date(expiresAt);
   const hours = Math.round((when.getTime() - Date.now()) / 3_600_000);
   if (hours <= 0) return 'gone';
