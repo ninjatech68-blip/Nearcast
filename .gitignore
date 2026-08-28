@@ -50,3 +50,5 @@ supabase/.temp/
 /android
 /build/
 /work/
+
+/dist-android

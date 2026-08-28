@@ -16,6 +16,7 @@
       }
     },
     "android": {
+      "package": "com.piyushsharma.nearcast.dev",
       "adaptiveIcon": {
         "backgroundColor": "#FF4D00",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
