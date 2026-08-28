@@ -66,6 +66,14 @@ export default function OnboardingScreen() {
   const step1Ready = name.trim().length > 0;
   const step2Ready = me.homeArea.trim().length > 0;
 
+  const order: readonly Step[] = ['name', 'home', 'areas', 'interests', 'push'];
+
+  function back() {
+    haptic('selection');
+    const i = order.indexOf(step);
+    if (i > 0) setStep(order[i - 1]);
+  }
+
   function next() {
     haptic('selection');
     if (step === 'name') {
@@ -118,6 +126,19 @@ export default function OnboardingScreen() {
     <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: Math.max(insets.bottom, 12) }]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
         <View style={styles.top}>
+          {step === 'name' ? (
+            <View style={styles.backTap} />
+          ) : (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="back"
+              hitSlop={12}
+              onPress={back}
+              style={styles.backTap}
+            >
+              <Text style={styles.chevron}>‹</Text>
+            </Pressable>
+          )}
           <Text style={styles.wordmark}>NEARCAST · {stepLabel(step)}</Text>
           <Pressable
             accessibilityRole="button"
@@ -298,6 +319,8 @@ function isBefore(a: Step, b: Step): boolean {
 }
 
 const styles = StyleSheet.create({
+  backTap: { minWidth: 28, minHeight: 28, alignItems: 'flex-start', justifyContent: 'center' },
+  chevron: { fontFamily: fontFamily.display, fontSize: 30, lineHeight: 30, color: tokens.semantic.color.ink },
   pickRow: {
     minHeight: 56,
     marginTop: 18,

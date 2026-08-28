@@ -112,11 +112,16 @@ export default function RootLayout() {
     const inSignin = first === 'signin';
     const inOnboarding = first === 'onboarding';
     const inLegal = first === 'legal';
+    // the area picker is a step WITHIN onboarding (pick home / add a
+    // neighbourhood), reached as its own screen. without excusing it,
+    // the gate below sees "not in onboarding, not done" and yanks the
+    // stack back to /onboarding — which remounts it at the first step.
+    const inArea = first === 'area';
     if (!me.signedIn && !inSignin && !inLegal) {
       router.replace('/signin');
       return;
     }
-    if (me.signedIn && !me.onboardingDone && !inOnboarding && !inLegal) {
+    if (me.signedIn && !me.onboardingDone && !inOnboarding && !inLegal && !inArea) {
       router.replace('/onboarding');
     }
   }, [fontsReady, me.signedIn, me.onboardingDone, segments]);

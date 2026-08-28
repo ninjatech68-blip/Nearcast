@@ -490,6 +490,29 @@ describe('picking an area', () => {
     expect(view.getByText('indiranagar')).toBeTruthy();
   });
 
+  it('lets you step back through onboarding until it is done', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { resetMeStore } = require('./features/me/me-store');
+    resetMeStore();
+    const user = userEvent.setup();
+    const view = await render(<OnboardingScreen />);
+
+    // no back on the first step
+    expect(view.queryByLabelText('back')).toBeNull();
+
+    await user.type(view.getByLabelText('your first name'), 'Piyush');
+    await user.press(view.getByRole('button', { name: 'next' }));
+    expect(view.getByText('NEARCAST · HOME')).toBeTruthy();
+
+    // advance again, then back twice returns to the name step
+    await user.press(view.getByRole('button', { name: 'next' }));
+    expect(view.getByText('NEARCAST · AREAS')).toBeTruthy();
+    await user.press(view.getByLabelText('back'));
+    expect(view.getByText('NEARCAST · HOME')).toBeTruthy();
+    await user.press(view.getByLabelText('back'));
+    expect(view.getByText('NEARCAST · HELLO')).toBeTruthy();
+  });
+
   it('still offers the map as a way to change the home area', async () => {
     const user = userEvent.setup();
     const view = await render(<OnboardingScreen />);
