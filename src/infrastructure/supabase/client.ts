@@ -2,7 +2,7 @@ import 'react-native-url-polyfill/auto';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-import { parsePublicEnv } from '@/infrastructure/config/env';
+import { isLocalNetworkUrl, parsePublicEnv } from '@/infrastructure/config/env';
 import type { Database } from '@/infrastructure/supabase/database.types';
 
 /**
@@ -64,6 +64,19 @@ function resolve(): Resolution {
         flowType: 'pkce',
       },
     });
+
+    // A home-network Supabase URL is the usual cause of "works next to
+    // my Mac, dead everywhere else": the app can only reach it on that
+    // LAN. Keep it working for local dev, but make it impossible to miss.
+    if (isLocalNetworkUrl(env.supabaseUrl)) {
+      const warning =
+        `Supabase URL ${env.supabaseUrl} is a home-network address — the ` +
+        `app will only work on the same Wi-Fi. Point EXPO_PUBLIC_SUPABASE_URL ` +
+        `at your hosted https://<project-ref>.supabase.co and rebuild.`;
+      // eslint-disable-next-line no-console
+      console.warn(`[nearcast] ${warning}`);
+      return { client, reason: warning };
+    }
 
     return { client, reason: `connected to ${env.supabaseUrl}` };
   } catch {
