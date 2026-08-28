@@ -9,6 +9,18 @@ jest.mock('expo-font', () => ({
   loadAsync: (fontMap: unknown) => mockLoadAsync(fontMap),
 }));
 
+// the real SafeAreaProvider withholds children until it measures a
+// layout, which never happens under jest. Pass them through.
+jest.mock('react-native-safe-area-context', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const actual = jest.requireActual('react-native-safe-area-context') as Record<string, unknown>;
+  return {
+    ...actual,
+    SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
+    useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+  };
+});
+
 jest.mock('expo-splash-screen', () => ({
   hideAsync: () => mockHideAsync(),
   preventAutoHideAsync: () => mockPreventAutoHideAsync(),

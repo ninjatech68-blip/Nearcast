@@ -67,8 +67,16 @@ begin
   end if;
   area_name := coalesce(area_name, 'nearby');
 
+  -- a circle the tester owns. every demo caster below joins it, so
+  -- every seeded cast reaches the tester as "your circle vouches" —
+  -- delivered at ANY distance and regardless of which interests the
+  -- tester picked. that guarantees all ten are visible for testing,
+  -- rather than depending on the interest/area match a real cast needs.
+  insert into public.circles (id, owner_id, name) values (circle_id, tester, 'testers')
+  on conflict (id) do nothing;
+
   -- one demo caster + one live cast per category, pinned to the
-  -- tester's own area centroid so it is always in range.
+  -- tester's own area centroid so the "near you" signal fires too.
   foreach cat in array cats loop
     i := i + 1;
     demo_id := ('dddddddd-0000-0000-0000-' || lpad(i::text, 12, '0'))::uuid;
@@ -80,6 +88,11 @@ begin
 
     insert into public.profiles (id, display_name) values (demo_id, names[i])
     on conflict (id) do update set display_name = excluded.display_name;
+
+    -- put the caster in the tester's circle so the cast is guaranteed
+    -- to reach them (connected → any distance, any interest).
+    insert into public.circle_members (circle_id, member_id) values (circle_id, demo_id)
+    on conflict do nothing;
 
     -- skip if this demo already has a live cast (idempotent re-runs)
     if not exists (select 1 from public.intents where broadcaster_id = demo_id and status = 'live') then

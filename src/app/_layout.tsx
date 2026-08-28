@@ -11,6 +11,7 @@ import * as Linking from 'expo-linking';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Alert, AppState } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
@@ -129,7 +130,7 @@ export default function RootLayout() {
   if (!fontsReady) return null;
 
   return (
-    <>
+    <SafeAreaProvider>
       <StatusBar style="dark" />
       <Stack
       screenOptions={{
@@ -144,15 +145,15 @@ export default function RootLayout() {
       <Stack.Screen name="you" options={{ presentation: 'modal' }} />
       <Stack.Screen name="caster/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="filter" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="area" options={{ presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="area" options={{ presentation: 'card', gestureEnabled: false }} />
       <Stack.Screen name="circles" options={{ presentation: 'modal' }} />
       <Stack.Screen name="chat/[id]" options={{ presentation: 'card' }} />
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />
       <Stack.Screen name="reflect/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="invite/[key]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="vouch/[id]" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="signin" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
-      <Stack.Screen name="onboarding" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
+      <Stack.Screen name="signin" options={{ presentation: 'card', gestureEnabled: false, animation: 'fade' }} />
+      <Stack.Screen name="onboarding" options={{ presentation: 'card', gestureEnabled: false, animation: 'fade' }} />
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
       <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
@@ -162,6 +163,6 @@ export default function RootLayout() {
       <Stack.Screen name="legal/privacy" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/guidelines" options={{ presentation: 'modal' }} />
       </Stack>
-    </>
+    </SafeAreaProvider>
   );
 }
