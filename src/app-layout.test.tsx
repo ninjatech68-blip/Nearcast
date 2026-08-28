@@ -12,7 +12,6 @@ jest.mock('expo-font', () => ({
 // the real SafeAreaProvider withholds children until it measures a
 // layout, which never happens under jest. Pass them through.
 jest.mock('react-native-safe-area-context', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const actual = jest.requireActual('react-native-safe-area-context') as Record<string, unknown>;
   return {
     ...actual,
