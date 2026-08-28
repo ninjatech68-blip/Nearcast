@@ -494,7 +494,16 @@ export async function addCast(input: AddCastInput): Promise<void> {
       startsAt: input.startsAt ?? null,
       expiresAt: input.expiresAt ?? defaultExpiry(),
     });
-    await refreshFeed();
+    // the publish is the deliverable and it has already succeeded. a
+    // failed feed refresh must NOT report the publish as failed — that
+    // would show "try again" on a cast that went out, and tapping it
+    // would publish a duplicate. refresh best-effort; the feed reloads
+    // itself on next view anyway.
+    try {
+      await refreshFeed();
+    } catch {
+      // swallowed on purpose: see above.
+    }
     return;
   }
 

@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(29);
+select plan(31);
 
 -- ---------------------------------------------------------------
 -- shape
@@ -80,6 +80,7 @@ select throws_ok(
   '23514', 'expiry_in_the_past',
   'a cast that has already expired is refused'
 );
+
 
 select throws_ok(
   $$ select public.publish_cast('sports','too far.','indiranagar',
@@ -222,6 +223,25 @@ select throws_ok(
 );
 
 reset role;
+
+-- publishing must not depend on a profile already existing: the FK
+-- once turned a first-ever cast into a bare "try again". this user has
+-- an auth row but deliberately NO profile row.
+reset role;
+insert into auth.users (id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
+values ('00000000-0000-0000-0000-0000000000d9','00000000-0000-0000-0000-000000000000','authenticated','authenticated','fresh@nearcast.local','',now(),now());
+set local role authenticated;
+set local "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000000d9","role":"authenticated"}';
+select lives_ok(
+  $$ select public.publish_cast('food','anyone for dosa?','indiranagar',
+       5::smallint, now() + interval '1 day', 12.9784, 77.6408) $$,
+  'a caster with no profile row yet can still publish — publish_cast creates one'
+);
+reset role;
+select isnt_empty(
+  $$ select 1 from public.profiles where id = '00000000-0000-0000-0000-0000000000d9' $$,
+  'and the profile now exists for the cast to hang off'
+);
 
 select * from finish();
 rollback;

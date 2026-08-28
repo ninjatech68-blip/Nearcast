@@ -76,6 +76,9 @@ export default function AreaScreen() {
   const [pin, setPin] = useState<LatLng | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
+  // set when the search field is filled from a pick, so the typeahead
+  // effect below doesn't turn that address straight back into a search.
+  const skipNextSearch = useRef(false);
 
   useEffect(() => {
     void locate();
@@ -87,6 +90,10 @@ export default function AreaScreen() {
    * the list. cancelled if they keep typing.
    */
   useEffect(() => {
+    if (skipNextSearch.current) {
+      skipNextSearch.current = false;
+      return;
+    }
     const typed = query.trim();
     if (typed.length < 2) {
       // clear on the next tick so the effect body doesn't setState during commit
@@ -180,7 +187,14 @@ export default function AreaScreen() {
 
   async function tapSuggestion(s: AreaSuggestion) {
     haptic('selection');
-    setSelected(s.full || s.name);
+    // the SHORT name is what we store and pin and confirm — casts carry
+    // the neighbourhood, never a full street address. the field shows
+    // the full address so you can see what you picked; the button stays
+    // a fixed "use this area".
+    setSelected(s.name);
+    skipNextSearch.current = true;
+    setQuery(s.full || s.name);
+    setSuggestions([]);
     const coord = await resolveSuggestion(s);
     if (coord) {
       const next: Region = { ...coord, latitudeDelta: 0.03, longitudeDelta: 0.03 };
@@ -333,7 +347,7 @@ export default function AreaScreen() {
             onPress={() => choose(selected)}
             style={styles.useBtn}
           >
-            <Text style={styles.useText}>use {selected}</Text>
+            <Text style={styles.useText}>use this area</Text>
           </Pressable>
         ) : null}
 
