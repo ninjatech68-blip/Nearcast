@@ -1,46 +1,74 @@
+import { requireOptionalNativeModule } from 'expo-modules-core';
+import { Platform } from 'react-native';
+
 /**
- * Thin re-export of the local `nearcast-places` native module, with a
- * safe stub when the module hasn't been linked yet (e.g. before the
- * next prebuild+rebuild round). Keeps typecheck + jest green without
- * requiring the JS bundle to physically resolve the module.
+ * Bridge to the NearcastPlaces native module (MKLocalSearchCompleter).
+ *
+ * IMPORTANT: we look the module up in the NATIVE REGISTRY by its
+ * `Name("NearcastPlaces")` — we do NOT `require('nearcast-places')`.
+ *
+ * Local Expo modules under `modules/` are autolinked on the native
+ * side by directory scan (expo-modules-autolinking finds them via
+ * their expo-module.config.json). They are NOT npm packages, so
+ * Metro cannot resolve them by package name and any
+ * `require('nearcast-places')` throws at runtime — which is exactly
+ * how this silently fell back to the weak geocode path before.
+ *
+ * requireOptionalNativeModule returns null when the module isn't in
+ * the binary (Android, or an iOS build made before the module was
+ * added), so callers can fall back cleanly.
  */
 
-type NativeSuggestion = { id: string; primary: string; secondary: string };
-type NativeCoord = { latitude: number; longitude: number; formatted: string };
+export type NativeSuggestion = { id: string; primary: string; secondary: string };
+export type NativeCoord = { latitude: number; longitude: number; formatted: string };
 
 type NativeApi = {
   isAvailable(): boolean;
-  search(query: string, bias?: { latitude: number; longitude: number; span?: number }): Promise<readonly NativeSuggestion[]>;
+  search(
+    query: string,
+    biasLatitude: number | null,
+    biasLongitude: number | null,
+    biasSpan: number | null,
+  ): Promise<NativeSuggestion[]>;
   resolve(id: string): Promise<NativeCoord | null>;
 };
 
-const stub: NativeApi = {
-  isAvailable: () => false,
-  search: async () => [],
-  resolve: async () => null,
-};
+const native =
+  Platform.OS === 'ios' ? requireOptionalNativeModule<NativeApi>('NearcastPlaces') : null;
 
-/**
- * The wrapper — `nearcast-places` — is a locally-linked Expo module.
- * On a dev tree that hasn't run prebuild yet the require will fail
- * and we stay on the stub, so JS tests + typecheck still work.
- */
-
-// Metro resolves this at runtime after `npm install` links the local
-// module. Wrapping in try/catch means an unbuilt dev tree still runs.
-let api: NativeApi = stub;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mod = require('nearcast-places') as NativeApi;
-  if (mod && typeof mod.isAvailable === 'function') {
-    api = mod;
+export function isAvailable(): boolean {
+  if (!native) return false;
+  try {
+    return native.isAvailable();
+  } catch {
+    return false;
   }
-} catch {
-  // module not linked yet — stay on stub.
 }
 
-export const isAvailable = () => api.isAvailable();
-export const search = (query: string, bias?: { latitude: number; longitude: number; span?: number }) =>
-  api.search(query, bias);
-export const resolve = (id: string) => api.resolve(id);
-export type { NativeSuggestion, NativeCoord };
+export async function search(
+  query: string,
+  bias?: { latitude: number; longitude: number; span?: number },
+): Promise<readonly NativeSuggestion[]> {
+  if (!native) return [];
+  const trimmed = query.trim();
+  if (trimmed.length < 2) return [];
+  try {
+    return await native.search(
+      trimmed,
+      bias?.latitude ?? null,
+      bias?.longitude ?? null,
+      bias?.span ?? null,
+    );
+  } catch {
+    return [];
+  }
+}
+
+export async function resolve(id: string): Promise<NativeCoord | null> {
+  if (!native) return null;
+  try {
+    return await native.resolve(id);
+  } catch {
+    return null;
+  }
+}
