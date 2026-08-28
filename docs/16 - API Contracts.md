@@ -15,8 +15,8 @@ Authenticated functions derive the actor from the verified JWT and never accept 
 
 | Function | Input | Success | Atomic requirements |
 |---|---|---|---|
-| `publish-intent` | draft ID, expected version, reach/privacy, idempotency key | intent ID, share slug, `live`, version | Validate owner, expiry, required context; create reach and event |
-| `change-intent-reach` | intent ID, expected version, target level, disclosure confirmation | level, version | Reject implicit expansion; log old/new reach |
+| `publish-intent` | draft ID, expected version, radius/privacy, idempotency key | intent ID, share slug, `live`, version | Validate owner, expiry, required context; store the radius and event |
+| `change-intent-radius` | intent ID, expected version, target radius in km, confirmation | radius, version | Reject implicit widening; log old/new radius |
 | `submit-response` | intent ID, message, qualification, idempotency key | response ID, `pending` | Recheck delivery, eligibility, expiry, blocks, self-response |
 | `accept-response` | response ID, expected intent state | match ID, conversation ID, `matched` | Lock response/intent; create one match; idempotently return existing match |
 | `resolve-intent` | intent ID, expected state, outcome | `resolved`, version | Stop responses; append event and notification jobs |

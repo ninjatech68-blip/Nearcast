@@ -248,7 +248,7 @@ describe('compose', () => {
     });
   });
 
-  it('lands on details with reach defaulting to friends of circles', async () => {
+  it('lands on details with a casting radius already chosen, and never asks for a headcount', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
 
@@ -256,11 +256,30 @@ describe('compose', () => {
     await user.type(view.getByLabelText('your cast'), 'badminton after work. need two.');
     await user.press(view.getByRole('button', { name: 'next: add details' }));
 
-    expect(view.getByText('where, when, who?')).toBeTruthy();
-    await user.press(view.getByLabelText('who sees it'));
-    const adjacent = view.getByRole('radio', { name: 'friends of circles' });
-    expect(adjacent.props.accessibilityState).toMatchObject({ selected: true });
-    expect(view.getByText(/wider reach is a real choice, not the default/)).toBeTruthy();
+    // the default is a distance, picked for you — no decision to make
+    const five = view.getByRole('radio', { name: '5 km' });
+    expect(five.props.accessibilityState).toMatchObject({ selected: true });
+    expect(view.getByText(/a few neighbourhoods/)).toBeTruthy();
+
+    // and the ladder it replaced is gone, along with slots
+    expect(view.queryByRole('radio', { name: 'friends of circles' })).toBeNull();
+    expect(view.queryByText(/slot/i)).toBeNull();
+    expect(view.queryByText(/how many/i)).toBeNull();
+  });
+
+  it('widens the radius when a further choice is picked', async () => {
+    const user = userEvent.setup();
+    const view = await render(<ComposeScreen />);
+
+    await user.press(view.getByRole('radio', { name: 'games' }));
+    await user.type(view.getByLabelText('your cast'), 'chess in the park.');
+    await user.press(view.getByRole('button', { name: 'next: add details' }));
+
+    await user.press(view.getByRole('radio', { name: '25 km' }));
+    expect(view.getByRole('radio', { name: '25 km' }).props.accessibilityState).toMatchObject({
+      selected: true,
+    });
+    expect(view.getByText(/the whole city/)).toBeTruthy();
   });
 
   it('publishes the cast into the sent frame and the feed', async () => {

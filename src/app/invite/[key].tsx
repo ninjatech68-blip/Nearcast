@@ -9,14 +9,14 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
-import { acceptJoin, declineJoin, getCast, getPendingJoin, slotsFor } from '@/features/casts/store';
+import { acceptJoin, capacityFor, declineJoin, getCast, getPendingJoin } from '@/features/casts/store';
 import { people } from '@/features/trust/circles';
 import { submit } from '@/infrastructure/net/submit';
 
 /**
  * the invite sheet: shown to the caster when someone has asked to
- * join. accept → they enter the plan (a slot fills, chat opens with
- * the exact meeting spot revealed). decline → the request vanishes,
+ * join. accept → they enter the plan and the chat opens, which is
+ * where the details get settled. decline → the request vanishes,
  * silent to the joiner (product law: no reason given, no notification).
  *
  * routed as /invite/[key] where key = "castId__personId" so a single
@@ -45,11 +45,13 @@ export default function InviteScreen() {
 
   const person = people[personId] ?? { id: personId, name: personId, area: '' };
   const caster = casters.find((c) => c.id === personId);
-  const s = slotsFor(cast);
+  // slots are hidden everywhere, so only a cast that genuinely carries
+  // a cap (one the backend will enforce) can ever refuse a yes here.
+  const capacity = capacityFor(cast);
 
   async function accept() {
-    if (s.full) {
-      Alert.alert('already full', 'this plan is full. decline or extend slots first.', [{ text: 'ok' }]);
+    if (capacity.full) {
+      Alert.alert('already full', 'this plan has everyone it can take.', [{ text: 'ok' }]);
       return;
     }
     if (!cast) return;
@@ -114,7 +116,7 @@ export default function InviteScreen() {
         <Text style={styles.section}>YOUR PLAN</Text>
         <Text style={styles.planTitle}>{cast.text}</Text>
         <Text style={styles.planMeta}>
-          {cast.area} · {s.filled} in · {s.remaining} {s.remaining === 1 ? 'slot' : 'slots'} left · {cast.expiry}
+          {cast.area} · {cast.expiry}
         </Text>
 
         {caster ? (
@@ -128,7 +130,7 @@ export default function InviteScreen() {
           </Pressable>
         ) : null}
 
-        <SheetNote>{`accepting reveals the exact meeting spot to ${person.name} in chat. declining is silent — they see nothing change.`}</SheetNote>
+        <SheetNote>{`accepting opens a chat with ${person.name} — that is where you settle where and when. declining is silent — they see nothing change.`}</SheetNote>
       </ScrollView>
 
       <View style={styles.actions}>
@@ -137,7 +139,7 @@ export default function InviteScreen() {
           label={error ? 'try again' : `accept ${person.name}`}
           variant="onOrange"
           onPress={accept}
-          disabled={s.full || accepting}
+          disabled={capacity.full || accepting}
           loading={accepting}
           loadingLabel="accepting…"
         />

@@ -11,6 +11,8 @@
  * pure domain: no react, no supabase, no i/o.
  */
 
+import { DEFAULT_RADIUS_KM, withinRadius } from './geo';
+
 export type TrustDistance = 'shared-circle' | 'one-link' | 'context-only' | 'none';
 
 export type ViewerContext = {
@@ -36,7 +38,8 @@ export type DeliverableCast = {
   categoryLabel: string;
   /** coarse time window of the plan */
   window: string | null;
-  reach: 'origin_only' | 'adjacent_network' | 'nearby_relevant' | 'broader_approved';
+  /** how far from its area the caster wants this to travel, in km */
+  radiusKm?: number;
   casterCircleIds: readonly string[];
 };
 
@@ -67,28 +70,40 @@ function trustDistance(viewer: ViewerContext, cast: DeliverableCast): TrustDista
 }
 
 export function deliveryFor(viewer: ViewerContext, cast: DeliverableCast): Delivery {
-  // hard gates first: blocking always wins, then the reach the caster chose.
+  // blocking always wins, before anything else is considered.
   if (viewer.blockedCasterIds.includes(cast.casterId)) return { deliver: false };
 
   const distance = trustDistance(viewer, cast);
-  const areaMatch = viewer.areas.includes(cast.area);
+  const trusted = distance !== 'none';
+  const radiusKm = cast.radiusKm ?? DEFAULT_RADIUS_KM;
+  const inRange = withinRadius(cast.area, viewer.areas, radiusKm);
   const categoryMatch = viewer.interests.includes(cast.category);
   const windowMatch = cast.window !== null && viewer.activeWindows.includes(cast.window);
 
-  switch (cast.reach) {
-    case 'origin_only':
-      if (distance !== 'shared-circle') return { deliver: false };
-      break;
-    case 'adjacent_network':
-      if (distance === 'none') return { deliver: false };
-      break;
-    case 'nearby_relevant':
-      // strangers need BOTH place and a shared thread — never place alone.
-      if (distance === 'none' && (!areaMatch || !categoryMatch)) return { deliver: false };
-      break;
-    case 'broader_approved':
-      if (distance === 'none' && !areaMatch) return { deliver: false };
-      break;
+  /**
+   * The gate: DISTRIBUTE BY PLACE AND INTENT, DECIDE BY TRUST.
+   *
+   * Trust used to be the distribution filter, with a ladder whose
+   * default was "friends of circles". That quietly rebuilt the group
+   * chat the app exists to get past — the people it reached were the
+   * people you already had a way to reach.
+   *
+   * So the caster now picks a RADIUS, and the gate is:
+   *
+   *   someone you're connected to        -> always, at any distance.
+   *     a friend's plan across town is still your friend's plan.
+   *
+   *   a stranger inside the radius       -> only with a shared
+   *     interest. Place alone would make the feed a neighbourhood
+   *     noticeboard; the shared thread is what makes a stranger's
+   *     plan worth showing you at all.
+   *
+   * Trust has not gone anywhere. It moved to where it does more good:
+   * the caster sheet, where you decide whether to let someone in.
+   */
+  if (!trusted) {
+    if (!inRange) return { deliver: false };
+    if (!categoryMatch) return { deliver: false };
   }
 
   // score and reason come from the same signal list, so they can't diverge.
@@ -102,7 +117,7 @@ export function deliveryFor(viewer: ViewerContext, cast: DeliverableCast): Deliv
     score += 2;
     signals.push('one trusted link away');
   }
-  if (areaMatch) {
+  if (inRange) {
     score += 1;
     signals.push(`near you in ${cast.area}`);
   }

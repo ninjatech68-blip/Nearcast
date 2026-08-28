@@ -24,7 +24,12 @@ export type CastDetail = PosterData & {
   delivery: DeliverableCast;
   /** every delivery signal that fired, for the transparency tap */
   signals?: readonly string[];
-  /** how many joiners the caster wants. filled slots = matched.length. defaults to 2 in the store. */
+  /**
+   * how many joiners the caster wants. HIDDEN from the UI for now —
+   * the concept added friction to casting without earning its place,
+   * so the field stays (the schema and accept path still respect it)
+   * but nothing surfaces or asks about it.
+   */
   slotsWanted?: number;
   /** who has sent a note but not yet been accepted or declined */
   pendingJoins?: readonly PendingJoin[];
@@ -155,10 +160,9 @@ export const casts: readonly CastDetail[] = [
       category: 'games',
       categoryLabel: 'games',
       window: 'weekend-morning',
-      reach: 'adjacent_network',
+      radiusKm: 5,
       casterCircleIds: [],
     },
-    slotsWanted: 2,
     matched: [],
     pendingJoins: [
       { personId: 'riya', note: 'I play regularly. would love to join.', sentAgo: '4m ago' },
@@ -184,7 +188,7 @@ export const casts: readonly CastDetail[] = [
       category: 'sports',
       categoryLabel: 'sports',
       window: 'weekday-evening',
-      reach: 'adjacent_network',
+      radiusKm: 5,
       casterCircleIds: ['kavya-friends'],
     },
   },
@@ -207,7 +211,7 @@ export const casts: readonly CastDetail[] = [
       category: 'arts',
       categoryLabel: 'arts + making',
       window: 'weekend-morning',
-      reach: 'nearby_relevant',
+      radiusKm: 10,
       casterCircleIds: ['pottery-people'],
     },
   },
@@ -230,7 +234,7 @@ export const casts: readonly CastDetail[] = [
       category: 'music',
       categoryLabel: 'music + nightlife',
       window: 'weekday-evening',
-      reach: 'adjacent_network',
+      radiusKm: 5,
       casterCircleIds: ['dev-music-people'],
     },
   },
@@ -253,7 +257,7 @@ export const casts: readonly CastDetail[] = [
       category: 'social',
       categoryLabel: 'social',
       window: 'weekend-morning',
-      reach: 'origin_only',
+      radiusKm: 2,
       casterCircleIds: ['college-crew'],
     },
   },
@@ -276,7 +280,7 @@ export const casts: readonly CastDetail[] = [
       category: 'food',
       categoryLabel: 'food + drinks',
       window: 'weekday-evening',
-      reach: 'adjacent_network',
+      radiusKm: 5,
       casterCircleIds: ['kavya-friends'],
     },
   },
@@ -299,7 +303,7 @@ export const casts: readonly CastDetail[] = [
       category: 'travel',
       categoryLabel: 'travel + outdoors',
       window: 'weekend-morning',
-      reach: 'adjacent_network',
+      radiusKm: 5,
       casterCircleIds: ['dev-music-people'],
     },
   },
@@ -322,7 +326,7 @@ export const casts: readonly CastDetail[] = [
       category: 'games',
       categoryLabel: 'games',
       window: 'weekday-evening',
-      reach: 'adjacent_network',
+      radiusKm: 5,
       casterCircleIds: ['kavya-friends'],
     },
   },
@@ -345,7 +349,7 @@ export const casts: readonly CastDetail[] = [
       category: 'learning',
       categoryLabel: 'learning',
       window: 'weekday-evening',
-      reach: 'broader_approved',
+      radiusKm: 25,
       casterCircleIds: ['book-club'],
     },
   },
@@ -368,7 +372,7 @@ export const casts: readonly CastDetail[] = [
       category: 'networking',
       categoryLabel: 'networking',
       window: 'weekday-evening',
-      reach: 'broader_approved',
+      radiusKm: 25,
       casterCircleIds: ['product-collective'],
     },
   },
@@ -391,7 +395,7 @@ export const casts: readonly CastDetail[] = [
       category: 'help',
       categoryLabel: 'help + favors',
       window: 'weekend-morning',
-      reach: 'origin_only',
+      radiusKm: 2,
       casterCircleIds: ['flat-4b'],
     },
   },
@@ -429,7 +433,7 @@ export const yourCasts: readonly ActivityItem[] = [
   {
     id: 'badminton-mine',
     title: 'badminton after work',
-    sub: 'live · 2 in · gone 10pm',
+    sub: 'live · gone 10pm',
     castId: 'badminton-after-work',
   },
   {
@@ -460,19 +464,3 @@ export const recap = {
   why: "share it or don't. it's yours.",
 };
 
-export const reachLevels = [
-  { value: 'origin_only', title: 'your circles', sub: '24 people you trust' },
-  { value: 'adjacent_network', title: 'friends of circles', sub: 'one link away · your circles vouch for them' },
-  {
-    value: 'nearby_relevant',
-    title: 'same intent, nearby',
-    sub: 'strangers into the same thing in your area — the point of the app',
-  },
-  {
-    value: 'broader_approved',
-    title: 'approved neighborhoods',
-    sub: 'widest reach · everyone with an interest match in the areas you approved',
-  },
-] as const;
-
-export type ReachValue = (typeof reachLevels)[number]['value'];

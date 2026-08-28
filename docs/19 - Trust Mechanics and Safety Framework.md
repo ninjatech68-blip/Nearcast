@@ -8,11 +8,13 @@ Implemented in `domain/delivery.ts`. The product law is that every recommendatio
 
 **Hard gates (a cast is not delivered unless all pass):**
 1. The viewer has not blocked the caster. Blocking beats every other signal.
-2. The caster's chosen reach permits it: `origin_only` requires a shared circle; `adjacent_network` requires a shared circle or one trusted link; `nearby_relevant` requires, for strangers, BOTH an approved-area match AND a shared thread (topic overlap) — never place alone; `broader_approved` requires at least an approved-area match.
+2. **Distribute by place and intent, decide by trust.** The caster picks a **casting radius** in kilometres (default 5, see `domain/geo.ts`) and the gate is: someone the viewer is connected to reaches them at *any* distance — a friend's plan across town is still a friend's plan; a **stranger** reaches them only inside the radius AND with a shared thread (topic overlap), never place alone.
 3. At least one positive signal fired. No signal, no delivery — there is no filler feed.
 
+This replaced a four-level reach ladder (`origin_only` → `broader_approved`). The ladder's usable default was "friends of circles", which quietly rebuilt the group chat this app exists to get past: everyone it reached was already reachable. Trust did not go away — it moved to where it does more good, the caster deciding who to let in. Distance is measured between **area centroids only** (`domain/geo.ts`); nothing in that module is ever given a person's position, and an area we cannot place on the map falls back to name matching rather than silently reading as "far".
+
 **Signals (each adds to the score and contributes a reason fragment):**
-trust distance (shared circle > one link), approved-area match, topic overlap with the viewer's own joins and saves, and coarse time-window fit. The reason line shown on the poster is generated from the two strongest fired signals. Score and reason are derived from the same list, so they cannot diverge, and a reason can never cite a signal that didn't fire — this is asserted by test.
+trust distance (shared circle > one link), in-radius area match, topic overlap with the viewer's own joins and saves, and coarse time-window fit. The reason line shown on the poster is generated from the two strongest fired signals. Score and reason are derived from the same list, so they cannot diverge, and a reason can never cite a signal that didn't fire — this is asserted by test.
 
 **What delivery never reads (shown verbatim in-app on the why-tap):** exact location, contacts, messages, drafts typed before casting, and whose profiles the viewer looks at.
 
@@ -69,8 +71,18 @@ The app moves strangers toward real-world meetings, so it is designed against th
 
 **Escrowed honesty:** the plan room (doc 18, P0) is where reveal happens, and it is also the safety record — who agreed to meet whom, when, established by both sides. If something goes wrong, the report carries that context without the app ever having tracked anyone's location.
 
+## 6. Slots: hidden, and therefore uncapped
+
+A cast used to ask the caster how many joiners they wanted, defaulting to two. Nothing in the app asks any more, and no surface shows a headcount or a "1 slot left" line: the question was friction at the moment of casting, and the count turned asking into a race while making an empty plan read as a failure.
+
+The consequence is deliberate and enforced in both places: a cast with no stated ceiling has **no ceiling**. A hidden default of two would silently refuse the third yes, which is worse than the question that was removed. `slots_wanted` is nullable with no default (`intents`), `private.enforce_slot_limit()` and `accept_response()` both treat null as uncapped, and an uncapped cast never transitions to `matched` on an accept — it stays live until it expires or the caster takes it down. A cast that genuinely carries a cap is still enforced exactly as before, so the field survives for whatever surfaces it later.
+
+The caster's own row still shows how many people are *waiting on them*, because that is the thing they have to act on. That is a request count, not a plan size.
+
 ## Change Log
 
 | Date | Change |
 |---|---|
 | 2026-08-27 | Initial framework: delivery, flakes, verification, photos, threat model |
+| 2026-08-28 | Reach ladder replaced by a casting radius (§1); slots hidden and therefore uncapped (§6) |
+

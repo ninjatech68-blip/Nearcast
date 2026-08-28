@@ -16,7 +16,7 @@ import {
   tokens,
   type Category,
 } from '@/design-system/tokens';
-import { reachLevels, type ReachValue } from '@/features/casts/fixtures';
+import { DEFAULT_RADIUS_KM, RADIUS_CHOICES } from '@/features/casts/domain/geo';
 import { addCast, clearDraft, setDraftArea, useDraftArea } from '@/features/casts/store';
 import { useMe } from '@/features/me/me-store';
 import { submit } from '@/infrastructure/net/submit';
@@ -39,9 +39,7 @@ export default function ComposeScreen() {
   const [text, setText] = useState('');
   const [when, setWhen] = useState<Date | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
-  const [reachOpen, setReachOpen] = useState(false);
-  const [reach, setReach] = useState<ReachValue>('adjacent_network');
-  const [slots, setSlots] = useState(2);
+  const [radiusKm, setRadiusKm] = useState<number>(DEFAULT_RADIUS_KM);
   const [casting, setCasting] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
 
@@ -86,8 +84,7 @@ export default function ComposeScreen() {
         text: trimmed,
         area: area.trim() || 'nearby',
         gone: goneLabel,
-        reach: reachTitle(reach),
-        slotsWanted: slots,
+        radiusKm,
       }),
     );
     setCasting(false);
@@ -111,7 +108,7 @@ export default function ComposeScreen() {
           category: chosen,
           text: trimmed,
           area: area.trim() || 'nearby',
-          vouches: reachTitle(reach),
+          vouches: `${radiusKm} km`,
           expiry: goneLabel,
           why: '',
         }}
@@ -246,74 +243,40 @@ export default function ComposeScreen() {
                   </View>
                 ) : null}
 
-                <View style={styles.slotsBlock}>
-                  <Text style={styles.detailTitle}>how many joiners</Text>
+                {/* how far it travels. a distance, not a social ladder —
+                    the point is reaching people you have no other way
+                    to reach, and the default already does that. */}
+                <View style={styles.radiusBlock}>
+                  <Text style={styles.detailTitle}>how far should it go?</Text>
                   <Text style={styles.detailSub}>
-                    {slots} {slots === 1 ? 'slot' : 'slots'} · you can extend later
+                    {radiusKm} km around {area || 'your area'} · {subFor(radiusKm)}
                   </Text>
-                  <View accessibilityRole="radiogroup" style={styles.slotsRow}>
-                    {[1, 2, 3, 4, 5].map((n) => {
-                      const selected = slots === n;
+                  <View accessibilityRole="radiogroup" style={styles.radiusRow}>
+                    {RADIUS_CHOICES.map((choice) => {
+                      const selected = radiusKm === choice.km;
                       return (
                         <Pressable
-                          key={n}
+                          key={choice.km}
                           accessibilityRole="radio"
-                          accessibilityLabel={`${n} ${n === 1 ? 'slot' : 'slots'}`}
+                          accessibilityLabel={choice.label}
                           accessibilityState={{ selected }}
                           onPress={() => {
                             haptic('selection');
-                            setSlots(n);
+                            setRadiusKm(choice.km);
                           }}
-                          style={[styles.slotPill, selected && styles.slotPillOn]}
+                          style={[styles.radiusPill, selected && styles.radiusPillOn]}
                         >
-                          <Text style={[styles.slotPillText, selected && styles.slotPillTextOn]}>{n}</Text>
+                          <Text style={[styles.radiusPillText, selected && styles.radiusPillTextOn]}>
+                            {choice.label}
+                          </Text>
                         </Pressable>
                       );
                     })}
                   </View>
+                  <Text style={styles.radiusNote}>
+                    people you already know see it wherever they are. beyond that it reaches strangers nearby who are into the same thing.
+                  </Text>
                 </View>
-
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="who sees it"
-                  onPress={() => setReachOpen((open) => !open)}
-                  style={styles.detailRow}
-                >
-                  <View style={styles.flex}>
-                    <Text style={styles.detailTitle}>who sees it</Text>
-                    <Text style={styles.detailSub}>{reachTitle(reach)} · {reachSub(reach)}</Text>
-                  </View>
-                  <Text style={styles.detailAction}>{reachOpen ? 'DONE' : 'CHANGE'}</Text>
-                </Pressable>
-                {reachOpen ? (
-                  <View accessibilityRole="radiogroup" style={styles.reachInline}>
-                    {reachLevels.map((level) => {
-                      const selected = reach === level.value;
-                      return (
-                        <Pressable
-                          key={level.value}
-                          accessibilityRole="radio"
-                          accessibilityLabel={level.title}
-                          accessibilityState={{ selected }}
-                          onPress={() => {
-                            haptic('selection');
-                            setReach(level.value);
-                          }}
-                          style={styles.reachRow}
-                        >
-                          <View style={styles.flex}>
-                            <Text style={styles.reachRowTitle}>{level.title}</Text>
-                            <Text style={styles.reachRowSub}>{level.sub}</Text>
-                          </View>
-                          <View style={[styles.pick, selected && styles.pickOn]}>{selected ? <View style={styles.pickDot} /> : null}</View>
-                        </Pressable>
-                      );
-                    })}
-                    <Text style={styles.reachNote}>
-                      wider reach is a real choice, not the default. meeting people beyond your circle for the same plan is what this app is for.
-                    </Text>
-                  </View>
-                ) : null}
 
               </View>
             </ScrollView>
@@ -335,14 +298,8 @@ export default function ComposeScreen() {
   );
 }
 
-function reachTitle(reach: ReachValue): string {
-  const level = reachLevels.find((item) => item.value === reach);
-  return level ? level.title : 'your circles';
-}
-
-function reachSub(reach: ReachValue): string {
-  const level = reachLevels.find((item) => item.value === reach);
-  return level ? level.sub : 'one trusted link away';
+function subFor(km: number): string {
+  return RADIUS_CHOICES.find((choice) => choice.km === km)?.sub ?? 'nearby';
 }
 
 function defaultWhen(): Date {
@@ -423,15 +380,15 @@ const styles = StyleSheet.create({
   detailAction: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   expand: { paddingBottom: 18, gap: 12 },
   expandNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
-  slotsBlock: {
+  radiusBlock: {
     minHeight: 64,
     paddingTop: 16,
     paddingBottom: 12,
     borderTopWidth: 1,
     borderTopColor: tokens.semantic.color.hairlineOnCream,
   },
-  slotsRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
-  slotPill: {
+  radiusRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  radiusPill: {
     flex: 1,
     minHeight: 52,
     borderRadius: tokens.primitive.radius.control,
@@ -440,38 +397,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  slotPillOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
-  slotPillText: { fontFamily: fontFamily.display, fontSize: 24, color: tokens.semantic.color.ink },
-  slotPillTextOn: { color: tokens.semantic.color.cream },
+  radiusPillOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
+  radiusPillText: { fontFamily: fontFamily.displaySemi, fontSize: 16, color: tokens.semantic.color.ink },
+  radiusPillTextOn: { color: tokens.semantic.color.cream },
+  radiusNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 12 },
   preview: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
   swatch: { width: 18, height: 18, borderRadius: 4, borderWidth: 1 },
   previewText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, flex: 1 },
   previewName: { color: tokens.semantic.color.ink, fontFamily: fontFamily.monoSemi },
   saved: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
-  reachInline: { paddingBottom: 12 },
-  reachRow: {
-    minHeight: 66,
-    paddingVertical: 14,
-    borderTopWidth: 1,
-    borderTopColor: tokens.semantic.color.hairlineOnCream,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-  },
-  reachRowTitle: { fontFamily: fontFamily.displaySemi, fontSize: 16, color: tokens.semantic.color.ink },
-  reachRowSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 3 },
-  pick: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 1.5,
-    borderColor: tokens.semantic.color.hairlineOnCream,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pickOn: { borderColor: tokens.semantic.color.ink, backgroundColor: tokens.semantic.color.ink },
-  pickDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: tokens.semantic.color.accent },
-  reachNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
   detailsActions: { gap: 2, paddingBottom: 4 },
   sendError: {
     ...tokens.typography.metaSmall,

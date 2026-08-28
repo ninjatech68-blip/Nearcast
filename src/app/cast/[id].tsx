@@ -6,7 +6,7 @@ import { BarButton, QuietAction } from '@/design-system/components/button';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { cancelCast, extendSlots, getCast, slotsFor } from '@/features/casts/store';
+import { cancelCast, getCast } from '@/features/casts/store';
 
 /**
  * the detail sheet. receipts show at the decision moment:
@@ -43,7 +43,7 @@ export default function CastDetailScreen() {
           </View>
         </Pressable>
         <Text style={styles.body}>{cast.body}</Text>
-        <Text style={styles.slots}>{slotsLine(cast)}</Text>
+        <Text style={styles.reach}>{reachLine(cast)}</Text>
         <SheetNote>the exact place stays hidden until you&apos;re both in. chat is in-app — nobody exchanges numbers.</SheetNote>
       </ScrollView>
       <View style={styles.actions}>{renderActions()}</View>
@@ -55,42 +55,17 @@ export default function CastDetailScreen() {
     if (cast.byId === 'me') {
       return (
         <>
-          <BarButton label="extend slots" variant="onOrange" onPress={openExtend} />
+          <BarButton label="back" variant="onCream" onPress={() => router.back()} />
           <QuietAction label="cancel this cast" color={tokens.semantic.color.ink} onPress={openCancel} />
         </>
       );
     }
-    return slotsFor(cast).full ? (
-      <>
-        <BarButton label="full — no slots left" variant="onCream" disabled onPress={() => undefined} />
-        <QuietAction label="skip" color={tokens.semantic.color.ink} onPress={() => router.back()} />
-      </>
-    ) : (
+    return (
       <>
         <BarButton label="I'm in" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
         <QuietAction label="skip" color={tokens.semantic.color.ink} onPress={() => router.back()} />
       </>
     );
-  }
-
-  function openExtend() {
-    if (!cast) return;
-    const s = slotsFor(cast);
-    Alert.alert(
-      'extend slots',
-      `currently ${s.wanted} wanted · ${s.filled} in. widening lets more joiners in on this same plan.`,
-      [
-        { text: '+1 slot', onPress: () => bump(s.wanted + 1) },
-        { text: '+2 slots', onPress: () => bump(s.wanted + 2) },
-        { text: 'cancel', style: 'cancel' as const },
-      ],
-    );
-  }
-
-  function bump(next: number) {
-    if (!cast) return;
-    haptic('success');
-    extendSlots(cast.id, next);
   }
 
   function openCancel() {
@@ -110,11 +85,17 @@ export default function CastDetailScreen() {
   }
 }
 
-function slotsLine(cast: ReturnType<typeof getCast>): string {
+/**
+ * What a joiner is told about the shape of the plan.
+ *
+ * Deliberately NOT a headcount. A "1 of 3 slots left" line turns
+ * asking into a race and makes an empty plan look dead — it was
+ * friction on both sides of the ask. What actually helps someone
+ * decide is where it is and when, so that is all this says.
+ */
+function reachLine(cast: ReturnType<typeof getCast>): string {
   if (!cast) return '';
-  const s = slotsFor(cast);
-  if (s.full) return `full — ${s.filled} in`;
-  return `${s.filled} in · ${s.remaining} ${s.remaining === 1 ? 'slot' : 'slots'} left of ${s.wanted}`;
+  return `${cast.area} · ${cast.expiry}`;
 }
 
 const styles = StyleSheet.create({
@@ -129,7 +110,7 @@ const styles = StyleSheet.create({
     color: tokens.semantic.color.ink,
     marginTop: 16,
   },
-  slots: {
+  reach: {
     ...tokens.typography.meta,
     color: tokens.semantic.color.accent,
     marginTop: 14,

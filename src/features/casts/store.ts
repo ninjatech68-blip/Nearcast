@@ -2,6 +2,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 
 import { category as categoryTokens, type Category } from '@/design-system/tokens';
 import { deliveryFor, type ViewerContext } from './domain/delivery';
+import { DEFAULT_RADIUS_KM } from './domain/geo';
 import { matchesQuery } from './domain/search';
 import {
   casts as fixtureCasts,
@@ -308,15 +309,18 @@ function nameFor(personId: string): string {
   return names[personId] ?? personId;
 }
 
+/**
+ * The caster's own row for a cast they posted.
+ *
+ * No headcount and no capacity: "2 in · 1 left" made a plan read as a
+ * scoreboard, and an empty one read as a failure. What the caster
+ * actually needs from this row is whether anyone is waiting on them,
+ * so that — and only that — is what it adds to the live/expiry line.
+ */
 function statusLine(cast: CastDetail): string {
-  const filled = cast.matched?.length ?? 0;
-  const wanted = cast.slotsWanted ?? 2;
-  const remaining = Math.max(wanted - filled, 0);
   const pending = cast.pendingJoins?.length ?? 0;
-  const parts = [`live · ${filled} in`];
-  if (remaining > 0) parts.push(`${remaining} left`);
-  else parts.push('full');
-  if (pending > 0) parts.push(`${pending} pending`);
+  const parts = ['live'];
+  if (pending > 0) parts.push(pending === 1 ? '1 waiting on you' : `${pending} waiting on you`);
   parts.push(cast.expiry);
   return parts.join(' · ');
 }
@@ -331,12 +335,21 @@ export function skipCast(id: string): void {
   emit();
 }
 
-/** slots + fill counters read from the cast, defaults applied here. */
-export function slotsFor(cast: CastDetail): { wanted: number; filled: number; remaining: number; full: boolean } {
-  const wanted = cast.slotsWanted ?? 2;
+/**
+ * how many people are in, and whether the caster set a cap.
+ *
+ * Slots are hidden from the whole app: nothing asks for a number and
+ * nothing shows one. So a cast with no `slotsWanted` has NO ceiling —
+ * an invisible cap that silently refuses the third yes would be worse
+ * than the friction we removed. The field survives for casts that
+ * genuinely carry one (the schema and its trigger still enforce it),
+ * and only those can ever read as full.
+ */
+export function capacityFor(cast: CastDetail): { filled: number; capped: boolean; full: boolean } {
   const filled = cast.matched?.length ?? 0;
-  const remaining = Math.max(wanted - filled, 0);
-  return { wanted, filled, remaining, full: remaining === 0 };
+  const wanted = cast.slotsWanted;
+  if (wanted === undefined) return { filled, capped: false, full: false };
+  return { filled, capped: true, full: filled >= wanted };
 }
 
 /** joiner path: send a note. lands as pending on the caster's cast. */
@@ -353,8 +366,7 @@ export function submitJoin(castId: string, note: string, joinerId: string = 'me'
 /** caster path: yes → fills a slot, joiner enters chat. no-op if already full. */
 export function acceptJoin(castId: string, personId: string): void {
   state = mutateCast(state, castId, (cast) => {
-    const s = slotsFor(cast);
-    if (s.full) return cast;
+    if (capacityFor(cast).full) return cast;
     const pending = (cast.pendingJoins ?? []).filter((j) => j.personId !== personId);
     const alreadyMatched = (cast.matched ?? []).includes(personId);
     return {
@@ -397,15 +409,6 @@ export function cancelCast(castId: string): void {
     myCasts: state.myCasts.filter((c) => c.id !== castId),
     mine: state.mine.filter((row) => row.castId !== castId),
   };
-  emit();
-}
-
-/** caster path: change slotsWanted. never below the current filled count. */
-export function extendSlots(castId: string, nextWanted: number): void {
-  state = mutateCast(state, castId, (cast) => {
-    const filled = cast.matched?.length ?? 0;
-    return { ...cast, slotsWanted: Math.max(nextWanted, filled) };
-  });
   emit();
 }
 
@@ -459,17 +462,17 @@ export function addCast(input: {
   text: string;
   area: string;
   gone: string;
-  reach: string;
-  slotsWanted?: number;
+  /** how far from `area` the caster wants it to travel. */
+  radiusKm?: number;
 }): void {
   const id = `mine-${Date.now()}`;
-  const slotsWanted = Math.max(1, input.slotsWanted ?? 2);
+  const radiusKm = input.radiusKm ?? DEFAULT_RADIUS_KM;
   const cast: CastDetail = {
     id,
     category: input.category,
     text: input.text,
     area: input.area,
-    vouches: input.reach,
+    vouches: `${radiusKm} km`,
     expiry: input.gone,
     why: 'you cast this',
     signals: ['you cast this'],
@@ -484,10 +487,9 @@ export function addCast(input: {
       category: input.category,
       categoryLabel: categoryTokens[input.category].label,
       window: null,
-      reach: 'adjacent_network',
+      radiusKm,
       casterCircleIds: [],
     },
-    slotsWanted,
     matched: [],
     pendingJoins: [],
   };
@@ -495,7 +497,7 @@ export function addCast(input: {
     ...state,
     myCasts: [cast, ...state.myCasts],
     mine: [
-      { id, title: input.text, sub: `live · 0 in · ${slotsWanted} left · ${input.gone}`, castId: id },
+      { id, title: input.text, sub: `live · ${input.gone}`, castId: id },
       ...state.mine,
     ],
   };

@@ -17,7 +17,7 @@ const baseCast: DeliverableCast = {
   category: 'sports',
   categoryLabel: 'sports',
   window: 'weekday-evening',
-  reach: 'adjacent_network',
+  radiusKm: 5,
   casterCircleIds: ['kavya-friends'],
 };
 
@@ -27,18 +27,25 @@ describe('delivery framework', () => {
     expect(deliveryFor(viewer, cast)).toEqual({ deliver: false });
   });
 
-  it('origin_only never leaves the shared circle', () => {
-    const cast = { ...baseCast, reach: 'origin_only' as const };
-    expect(deliveryFor(viewer, cast).deliver).toBe(false);
-
-    const inCircle = { ...cast, casterCircleIds: ['badminton-gang'] };
-    expect(deliveryFor(viewer, inCircle).deliver).toBe(true);
+  it('delivers a connected caster at any distance, radius or not', () => {
+    // whitefield is ~15km from indiranagar; a 2km cast still reaches
+    // you, because a friend's plan across town is still your friend's.
+    const farFriend: DeliverableCast = {
+      ...baseCast,
+      area: 'whitefield',
+      radiusKm: 2,
+      casterCircleIds: ['badminton-gang'],
+    };
+    const result = deliveryFor(viewer, farFriend);
+    expect(result.deliver).toBe(true);
+    if (!result.deliver) return;
+    // and the reason does NOT claim proximity that did not fire
+    expect(result.signals).not.toContain('near you in whitefield');
   });
 
-  it('nearby_relevant needs place AND a shared thread for strangers, never place alone', () => {
+  it('needs place AND a shared thread for a stranger, never place alone', () => {
     const stranger: DeliverableCast = {
       ...baseCast,
-      reach: 'nearby_relevant',
       casterCircleIds: ['unknown-circle'],
       category: 'networking',
       categoryLabel: 'networking',
@@ -47,6 +54,25 @@ describe('delivery framework', () => {
 
     const sharedThread = { ...stranger, category: 'sports', categoryLabel: 'sports' };
     expect(deliveryFor(viewer, sharedThread).deliver).toBe(true);
+  });
+
+  it('does not deliver a stranger outside the radius, however good the match', () => {
+    const farStranger: DeliverableCast = {
+      ...baseCast,
+      area: 'whitefield',
+      radiusKm: 2,
+      casterCircleIds: ['unknown-circle'],
+    };
+    expect(deliveryFor(viewer, farStranger).deliver).toBe(false);
+
+    // widen the radius and the same cast now qualifies
+    expect(deliveryFor(viewer, { ...farStranger, radiusKm: 25 }).deliver).toBe(true);
+  });
+
+  it('falls back to the default radius when the cast carries none', () => {
+    const noRadius: DeliverableCast = { ...baseCast, casterCircleIds: ['unknown-circle'] };
+    delete noRadius.radiusKm;
+    expect(deliveryFor(viewer, noRadius).deliver).toBe(true);
   });
 
   it('generates the reason from matched signals only', () => {
@@ -67,18 +93,16 @@ describe('delivery framework', () => {
     expect(result.score).toBeGreaterThanOrEqual(6);
   });
 
-  it('does not deliver when no signal fires, even if reach allows it', () => {
-    const noSignal: DeliverableCast = {
+  it('does not deliver when no signal fires', () => {
+    const trueStranger: DeliverableCast = {
       casterId: 'x',
       area: 'whitefield',
       category: 'networking',
       categoryLabel: 'networking',
       window: 'weekend-morning',
-      reach: 'broader_approved',
-      casterCircleIds: ['kavya-friends'],
+      radiusKm: 25,
+      casterCircleIds: ['nobody'],
     };
-    // one-link fires here, so it delivers; strip that too:
-    const trueStranger = { ...noSignal, casterCircleIds: ['nobody'] };
     expect(deliveryFor(viewer, trueStranger).deliver).toBe(false);
   });
 
