@@ -6,70 +6,83 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { setSignedIn } from '@/features/me/me-store';
+import { requiresCode, sendCode, verifyCode, type AuthChannel } from '@/features/auth/auth';
 
 /**
- * signin. three ways in — apple, google, phone with OTP — plus a
- * fallback email link. every path lands the same place: signedIn
- * flips and the shell routes into onboarding.
+ * Signin: a one-time code, by phone or email. No passwords.
  *
- * production wiring:
- *   - apple: expo-apple-authentication → supabase auth (id_token)
- *   - google: expo-auth-session google provider → supabase auth
- *   - phone: supabase auth signInWithOtp({ phone })
- *   - email: supabase auth signInWithOtp({ email })
+ * Apple and Google buttons are deliberately NOT here. They need
+ * expo-apple-authentication and expo-auth-session — native modules
+ * that are not in the binary yet — so shipping buttons that cannot
+ * work would be worse than not showing them, especially with real
+ * testers about to hit this screen. They come back in the same
+ * rebuild round as expo-notifications.
  *
- * this fixture stubs all four so the flow shape is real on device.
+ * The screen does not know whether a backend is configured. When one
+ * is, sending a code really sends it and the code step appears; when
+ * none is, the address signs you straight in. The auth module makes
+ * both look the same here.
  */
+type Step = 'address' | 'code';
+
 export default function SigninScreen() {
   const insets = useSafeAreaInsets();
-  const [mode, setMode] = useState<'chooser' | 'phone' | 'email'>('chooser');
+  const [channel, setChannel] = useState<AuthChannel>('phone');
+  const [step, setStep] = useState<Step>('address');
   const [phone, setPhone] = useState('+91 ');
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
   const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const phoneValid = /^\+?\d[\d\s-]{7,}\d$/.test(phone.trim());
-  const otpValid = /^\d{4,8}$/.test(otp.trim());
-  const emailValid = /.+@.+\..+/.test(email.trim());
+  const address = channel === 'phone' ? phone : email;
+  const addressValid =
+    channel === 'phone' ? /^\+?\d[\d\s-]{7,}\d$/.test(phone.trim()) : /.+@.+\..+/.test(email.trim());
+  const codeValid = /^\d{4,8}$/.test(code.trim());
 
-  function proceed(id: string) {
+  async function send() {
+    if (!addressValid || busy) return;
+    setBusy(true);
+    setError(null);
+    const result = await sendCode(channel, address);
+    setBusy(false);
+
+    if (!result.ok) {
+      haptic('warning');
+      setError(result.message);
+      return;
+    }
     haptic('success');
-    setSignedIn(id);
+    if (result.needsCode) {
+      setStep('code');
+      return;
+    }
+    // local mode signed us in already
     router.replace('/onboarding');
   }
 
-  function withApple() {
+  async function verify() {
+    if (!codeValid || busy) return;
     setBusy(true);
-    setTimeout(() => proceed('apple:piyush'), 400);
+    setError(null);
+    const result = await verifyCode(channel, address, code);
+    setBusy(false);
+
+    if (!result.ok) {
+      haptic('warning');
+      setError(result.message);
+      return;
+    }
+    haptic('success');
+    router.replace('/onboarding');
   }
 
-  function withGoogle() {
-    setBusy(true);
-    setTimeout(() => proceed('google:piyush'), 400);
-  }
-
-  function sendPhoneOtp() {
-    if (!phoneValid) return;
-    setBusy(true);
-    setTimeout(() => {
-      haptic('success');
-      setOtpSent(true);
-      setBusy(false);
-    }, 500);
-  }
-
-  function verifyPhoneOtp() {
-    if (!otpValid) return;
-    setBusy(true);
-    setTimeout(() => proceed(`phone:${phone.trim()}`), 400);
-  }
-
-  function sendEmailLink() {
-    if (!emailValid) return;
-    setBusy(true);
-    setTimeout(() => proceed(email.trim()), 500);
+  function switchChannel(next: AuthChannel) {
+    haptic('selection');
+    setChannel(next);
+    setError(null);
+    setCode('');
+    setStep('address');
   }
 
   return (
@@ -82,91 +95,121 @@ export default function SigninScreen() {
           <Text style={styles.sub}>and let people you already trust — or one link away — say they&apos;re in.</Text>
         </View>
 
-        {mode === 'chooser' ? (
+        {step === 'address' ? (
           <View style={styles.form}>
-            <BarButton label=" continue with Apple" variant="onInk" onPress={withApple} disabled={busy} loading={busy} />
-            <BarButton label="continue with Google" variant="onCream" onPress={withGoogle} disabled={busy} />
-            <BarButton label="continue with phone" variant="onCream" onPress={() => setMode('phone')} disabled={busy} />
-            <QuietAction label="use email instead" color={tokens.semantic.color.ink} onPress={() => setMode('email')} />
-            <LegalRow />
-          </View>
-        ) : null}
+            <View style={styles.tabs}>
+              <Tab label="phone" on={channel === 'phone'} onPress={() => switchChannel('phone')} />
+              <Tab label="email" on={channel === 'email'} onPress={() => switchChannel('email')} />
+            </View>
 
-        {mode === 'phone' ? (
-          <View style={styles.form}>
-            <Text style={styles.label}>YOUR PHONE</Text>
-            <TextInput
-              accessibilityLabel="phone number"
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="+91 98765 43210"
-              placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-              selectionColor={tokens.semantic.color.accent}
-              style={styles.input}
-              keyboardType="phone-pad"
-              autoCorrect={false}
-              editable={!otpSent}
-              returnKeyType="next"
-              onSubmitEditing={sendPhoneOtp}
-            />
-
-            {otpSent ? (
-              <>
-                <Text style={styles.note}>we sent a 6-digit code. enter it below.</Text>
-                <Text style={styles.label}>CODE</Text>
-                <TextInput
-                  accessibilityLabel="otp code"
-                  value={otp}
-                  onChangeText={setOtp}
-                  placeholder="123456"
-                  placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                  selectionColor={tokens.semantic.color.accent}
-                  style={styles.input}
-                  keyboardType="number-pad"
-                  autoCorrect={false}
-                  autoFocus
-                  returnKeyType="go"
-                  onSubmitEditing={verifyPhoneOtp}
-                />
-                <BarButton label="verify" variant="onOrange" onPress={verifyPhoneOtp} disabled={!otpValid || busy} loading={busy} />
-                <QuietAction label="use a different number" color={tokens.semantic.color.ink} onPress={() => { setOtp(''); setOtpSent(false); }} />
-              </>
+            {channel === 'phone' ? (
+              <TextInput
+                accessibilityLabel="phone number"
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="+91 98765 43210"
+                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+                selectionColor={tokens.semantic.color.accent}
+                style={styles.input}
+                keyboardType="phone-pad"
+                autoCorrect={false}
+                returnKeyType="go"
+                onSubmitEditing={send}
+              />
             ) : (
-              <>
-                <Text style={styles.note}>we send a 6-digit code by sms. no password ever.</Text>
-                <BarButton label="send code" variant="onOrange" onPress={sendPhoneOtp} disabled={!phoneValid || busy} loading={busy} />
-                <QuietAction label="back" color={tokens.semantic.color.ink} onPress={() => setMode('chooser')} />
-              </>
+              <TextInput
+                accessibilityLabel="email"
+                value={email}
+                onChangeText={setEmail}
+                placeholder="you@somewhere.com"
+                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+                selectionColor={tokens.semantic.color.accent}
+                style={styles.input}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                returnKeyType="go"
+                onSubmitEditing={send}
+              />
             )}
+
+            <Text style={styles.note}>
+              {requiresCode()
+                ? channel === 'phone'
+                  ? 'we send a 6-digit code by sms. no password, nothing to remember.'
+                  : 'we send a 6-digit code by email. no password, nothing to remember.'
+                : 'no backend configured — this signs you straight in on fixture data.'}
+            </Text>
+
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+
+            <BarButton
+              label={requiresCode() ? 'send code' : 'continue'}
+              variant="onOrange"
+              onPress={send}
+              disabled={!addressValid || busy}
+              loading={busy}
+              loadingLabel="sending…"
+            />
             <LegalRow />
           </View>
-        ) : null}
-
-        {mode === 'email' ? (
+        ) : (
           <View style={styles.form}>
-            <Text style={styles.label}>YOUR EMAIL</Text>
+            <Text style={styles.label}>CODE SENT TO {address.trim().toUpperCase()}</Text>
             <TextInput
-              accessibilityLabel="email"
-              value={email}
-              onChangeText={setEmail}
-              placeholder="you@somewhere.com"
+              accessibilityLabel="verification code"
+              value={code}
+              onChangeText={setCode}
+              placeholder="123456"
               placeholderTextColor={tokens.semantic.color.hairlineOnCream}
               selectionColor={tokens.semantic.color.accent}
               style={styles.input}
-              autoCapitalize="none"
+              keyboardType="number-pad"
               autoCorrect={false}
-              keyboardType="email-address"
+              autoFocus
+              textContentType="oneTimeCode"
               returnKeyType="go"
-              onSubmitEditing={sendEmailLink}
+              onSubmitEditing={verify}
             />
-            <Text style={styles.note}>we send a link — nothing to remember. no password.</Text>
-            <BarButton label="send me a link" variant="onOrange" onPress={sendEmailLink} disabled={!emailValid || busy} loading={busy} />
-            <QuietAction label="back" color={tokens.semantic.color.ink} onPress={() => setMode('chooser')} />
+
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+
+            <BarButton
+              label="verify"
+              variant="onOrange"
+              onPress={verify}
+              disabled={!codeValid || busy}
+              loading={busy}
+              loadingLabel="checking…"
+            />
+            <QuietAction
+              label="use a different number or address"
+              color={tokens.semantic.color.ink}
+              onPress={() => {
+                setCode('');
+                setError(null);
+                setStep('address');
+              }}
+            />
             <LegalRow />
           </View>
-        ) : null}
+        )}
       </KeyboardAvoidingView>
     </View>
+  );
+}
+
+function Tab({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: on }}
+      onPress={onPress}
+      style={[styles.tab, on && styles.tabOn]}
+    >
+      <Text style={[styles.tabText, on && styles.tabTextOn]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -202,6 +245,18 @@ const styles = StyleSheet.create({
   },
   sub: { ...tokens.typography.body, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
   form: { gap: 10, paddingBottom: 12 },
+  tabs: { flexDirection: 'row', gap: 8, marginBottom: 4 },
+  tab: {
+    minHeight: 38,
+    paddingHorizontal: 18,
+    borderRadius: tokens.primitive.radius.pill,
+    borderWidth: 1,
+    borderColor: tokens.semantic.color.hairlineOnCream,
+    justifyContent: 'center',
+  },
+  tabOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
+  tabText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  tabTextOn: { color: tokens.semantic.color.cream },
   label: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   input: {
     minHeight: 56,
@@ -214,6 +269,7 @@ const styles = StyleSheet.create({
     color: tokens.semantic.color.ink,
   },
   note: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
+  error: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent },
   legalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 16 },
   legalLink: { fontFamily: fontFamily.displaySemi, fontSize: 13, color: tokens.semantic.color.textMutedOnCream, textDecorationLine: 'underline' },
   legalDot: { color: tokens.semantic.color.hairlineOnCream },

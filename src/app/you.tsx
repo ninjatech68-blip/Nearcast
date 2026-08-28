@@ -14,9 +14,11 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { casters, me as meFixture, recap } from '@/features/casts/fixtures';
-import { setMyPhoto, setQuietHours, signOut, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
+import { setMyPhoto, setQuietHours, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
+import { signOut } from '@/features/auth/auth';
 import { circlesVouchingForMe, vouchersOfMe } from '@/features/trust/circles';
 import { getFailureMode, setFailureMode } from '@/infrastructure/net/submit';
+import { backendStatus } from '@/infrastructure/supabase/client';
 
 export default function YouScreen() {
   const me = useMe();
@@ -186,6 +188,10 @@ export default function YouScreen() {
             onPress={() => router.push('/recap')}
           />
           {__DEV__ ? (
+            <Row title="backend" sub={backendStatus()} right={<Tag label="dev" tone="dim" />} />
+          ) : null}
+
+          {__DEV__ ? (
             <View style={styles.quietBlock}>
               <View style={styles.quietHead}>
                 <View style={{ flex: 1 }}>
@@ -227,8 +233,7 @@ export default function YouScreen() {
                   text: 'sign out',
                   style: 'destructive',
                   onPress: () => {
-                    signOut();
-                    router.replace('/signin');
+                    void signOut().finally(() => router.replace('/signin'));
                   },
                 },
               ])

@@ -13,6 +13,7 @@ import { AppState } from 'react-native';
 
 import { tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
+import { restoreSession } from '@/features/auth/auth';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
 void SplashScreen.preventAutoHideAsync();
@@ -27,14 +28,20 @@ export default function RootLayout() {
 
     async function prepareAppShell() {
       try {
-        await loadAsync({
-          BricolageGrotesque_400Regular,
-          BricolageGrotesque_600SemiBold,
-          BricolageGrotesque_800ExtraBold,
-          IBMPlexMono_400Regular,
-          IBMPlexMono_500Medium,
-          IBMPlexMono_600SemiBold,
-        });
+        await Promise.all([
+          loadAsync({
+            BricolageGrotesque_400Regular,
+            BricolageGrotesque_600SemiBold,
+            BricolageGrotesque_800ExtraBold,
+            IBMPlexMono_400Regular,
+            IBMPlexMono_500Medium,
+            IBMPlexMono_600SemiBold,
+          }),
+          // restore a remote session before the gate below runs, so a
+          // signed-in user never flashes the signin screen on launch.
+          // no-ops when no backend is configured.
+          restoreSession(),
+        ]);
       } finally {
         if (isMounted) {
           setFontsReady(true);
