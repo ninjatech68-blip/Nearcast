@@ -55,8 +55,13 @@ function resolve(): Resolution {
         storage: localStorage,
         autoRefreshToken: true,
         persistSession: true,
-        // there is no browser redirect in a native app
+        // magic links come back as a deep link the app opens itself, so
+        // there is no browser URL for the client to read — we hand it
+        // the code and exchange it manually. PKCE is required for that
+        // exchange, and stores the verifier in `storage` above so it
+        // survives the round-trip out to email and back.
         detectSessionInUrl: false,
+        flowType: 'pkce',
       },
     });
 

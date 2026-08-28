@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
- * The auth module has two modes and the screens must not be able to
- * tell them apart. These cover both: the local path that keeps the
- * fixture build usable, and the remote path with a mocked client.
+ * Magic-link auth has two modes the screen can't tell apart: the local
+ * path that keeps the fixture build usable, and the remote path with a
+ * mocked client. These cover sending the link and completing it from
+ * the callback URL — the two halves of the passwordless flow.
  */
 
 const mockGetSupabase = vi.fn();
@@ -20,7 +21,31 @@ vi.mock('@/features/me/me-store', () => ({
   signOut: () => mockClearLocal(),
 }));
 
-const { sendCode, verifyCode, restoreSession, signOut, requiresCode } = await import('./auth');
+// expo-linking: createURL builds the app deep link; parse splits query params.
+vi.mock('expo-linking', () => ({
+  createURL: (path: string) => `nearcast://${path}`,
+  parse: (url: string) => {
+    const q: Record<string, string> = {};
+    const qi = url.indexOf('?');
+    if (qi >= 0) {
+      for (const pair of url.slice(qi + 1).split('#')[0].split('&')) {
+        const [k, v] = pair.split('=');
+        if (k) q[k] = decodeURIComponent(v ?? '');
+      }
+    }
+    return { queryParams: q };
+  },
+}));
+
+const {
+  sendMagicLink,
+  completeAuthFromUrl,
+  isAuthCallbackUrl,
+  authRedirectUrl,
+  restoreSession,
+  signOut,
+  requiresLink,
+} = await import('./auth');
 
 function clientWith(auth: Record<string, unknown>) {
   return { auth };
@@ -35,19 +60,18 @@ beforeEach(() => {
 describe('auth — no backend configured', () => {
   beforeEach(() => mockGetSupabase.mockReturnValue(null));
 
-  it('signs in immediately and reports that no code is needed', async () => {
-    const result = await sendCode('email', ' piyush@example.com ');
-    expect(result).toEqual({ ok: true, needsCode: false });
-    // trimmed before it is stored
+  it('signs in immediately and reports that no link was sent', async () => {
+    const result = await sendMagicLink(' piyush@example.com ');
+    expect(result).toEqual({ ok: true, sent: false });
     expect(mockSetSignedIn).toHaveBeenCalledWith('piyush@example.com');
   });
 
-  it('says a code is not part of the flow', () => {
-    expect(requiresCode()).toBe(false);
+  it('says no link is part of the flow', () => {
+    expect(requiresLink()).toBe(false);
   });
 
-  it('restores nothing — the local store is already the truth', async () => {
-    expect(await restoreSession()).toBeNull();
+  it('treats a callback as a no-op success in local mode', async () => {
+    expect(await completeAuthFromUrl('nearcast://auth/callback?code=x')).toEqual({ ok: true });
   });
 
   it('still wipes local state on sign out', async () => {
@@ -57,14 +81,17 @@ describe('auth — no backend configured', () => {
 });
 
 describe('auth — backend configured', () => {
-  it('sends a code and reports that one is needed', async () => {
+  it('sends a magic link with the app deep link as the redirect', async () => {
     const signInWithOtp = vi.fn(async () => ({ error: null }));
     mockGetSupabase.mockReturnValue(clientWith({ signInWithOtp }));
 
-    const result = await sendCode('phone', '+91 98765 43210');
-    expect(result).toEqual({ ok: true, needsCode: true });
-    expect(signInWithOtp).toHaveBeenCalledWith({ phone: '+91 98765 43210' });
-    // sending is not signing in — that only happens on verify
+    const result = await sendMagicLink('a@b.com');
+    expect(result).toEqual({ ok: true, sent: true });
+    expect(signInWithOtp).toHaveBeenCalledWith({
+      email: 'a@b.com',
+      options: { emailRedirectTo: authRedirectUrl(), shouldCreateUser: true },
+    });
+    // sending is not signing in — that only happens on the callback
     expect(mockSetSignedIn).not.toHaveBeenCalled();
   });
 
@@ -72,36 +99,50 @@ describe('auth — backend configured', () => {
     mockGetSupabase.mockReturnValue(
       clientWith({ signInWithOtp: vi.fn(async () => ({ error: new Error('Email rate limit exceeded') })) }),
     );
-    const result = await sendCode('email', 'a@b.com');
+    const result = await sendMagicLink('a@b.com');
     expect(result.ok).toBe(false);
     expect(result.ok === false && result.message).toMatch(/too many tries/);
   });
 
-  it('signs in only when verification returns a session', async () => {
-    mockGetSupabase.mockReturnValue(
-      clientWith({ verifyOtp: vi.fn(async () => ({ data: { session: { user: {} } }, error: null })) }),
-    );
-    const result = await verifyCode('email', 'a@b.com', '123456');
+  it('exchanges the code for a session and signs in', async () => {
+    const exchangeCodeForSession = vi.fn(async () => ({
+      data: { session: { user: { email: 'a@b.com' } } },
+      error: null,
+    }));
+    mockGetSupabase.mockReturnValue(clientWith({ exchangeCodeForSession }));
+
+    const result = await completeAuthFromUrl('nearcast://auth/callback?code=abc123');
     expect(result).toEqual({ ok: true });
+    expect(exchangeCodeForSession).toHaveBeenCalledWith('abc123');
     expect(mockSetSignedIn).toHaveBeenCalledWith('a@b.com');
   });
 
-  it('does NOT sign in when verification returns no session', async () => {
-    // a success-shaped response with no session must not open the app
+  it('explains an expired link rather than echoing the raw error', async () => {
     mockGetSupabase.mockReturnValue(
-      clientWith({ verifyOtp: vi.fn(async () => ({ data: { session: null }, error: null })) }),
+      clientWith({ exchangeCodeForSession: vi.fn(async () => ({ data: { session: null }, error: new Error('Token has expired or is invalid') })) }),
     );
-    const result = await verifyCode('email', 'a@b.com', '123456');
-    expect(result.ok).toBe(false);
+    const result = await completeAuthFromUrl('nearcast://auth/callback?code=stale');
+    expect(result.ok === false && result.message).toMatch(/expired|no longer valid/);
     expect(mockSetSignedIn).not.toHaveBeenCalled();
   });
 
-  it('explains an expired code rather than echoing the raw error', async () => {
-    mockGetSupabase.mockReturnValue(
-      clientWith({ verifyOtp: vi.fn(async () => ({ data: { session: null }, error: new Error('Token has expired') })) }),
+  it('surfaces an error the link itself carried, without calling exchange', async () => {
+    const exchangeCodeForSession = vi.fn();
+    mockGetSupabase.mockReturnValue(clientWith({ exchangeCodeForSession }));
+    const result = await completeAuthFromUrl(
+      'nearcast://auth/callback?error=access_denied&error_description=Email+link+is+invalid+or+has+expired',
     );
-    const result = await verifyCode('phone', '+911', '000000');
-    expect(result.ok === false && result.message).toMatch(/expired/);
+    expect(result.ok).toBe(false);
+    expect(exchangeCodeForSession).not.toHaveBeenCalled();
+  });
+
+  it('does NOT sign in when the exchange returns no session', async () => {
+    mockGetSupabase.mockReturnValue(
+      clientWith({ exchangeCodeForSession: vi.fn(async () => ({ data: { session: null }, error: null })) }),
+    );
+    const result = await completeAuthFromUrl('nearcast://auth/callback?code=abc');
+    expect(result.ok).toBe(false);
+    expect(mockSetSignedIn).not.toHaveBeenCalled();
   });
 
   it('restores a session and prefers email, then phone, then id', async () => {
@@ -113,12 +154,19 @@ describe('auth — backend configured', () => {
   });
 
   it('wipes local state even when the remote sign-out throws', async () => {
-    // a device that could not reach the server must still not be left
-    // holding the last person's data
     mockGetSupabase.mockReturnValue(
       clientWith({ signOut: vi.fn(async () => { throw new Error('offline'); }) }),
     );
     await signOut();
     expect(mockClearLocal).toHaveBeenCalled();
+  });
+});
+
+describe('isAuthCallbackUrl', () => {
+  it('matches our callback path and any code/error carrier', () => {
+    expect(isAuthCallbackUrl('nearcast://auth/callback?code=x')).toBe(true);
+    expect(isAuthCallbackUrl('https://nearcast.app/auth/callback?code=x')).toBe(true);
+    expect(isAuthCallbackUrl('nearcast://cast/123')).toBe(false);
+    expect(isAuthCallbackUrl('')).toBe(false);
   });
 });

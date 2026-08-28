@@ -88,7 +88,7 @@ describe('realtime subscription', () => {
   });
 
   it('subscribes to inserts on the conversation and re-reads on wake', () => {
-    const handlers: Array<() => void> = [];
+    const handlers: (() => void)[] = [];
     const channel = {
       on: (_evt: string, _filter: unknown, cb: () => void) => {
         handlers.push(cb);

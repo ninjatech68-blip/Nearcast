@@ -7,14 +7,15 @@ import { IBMPlexMono_600SemiBold } from '@expo-google-fonts/ibm-plex-mono/600Sem
 import { loadAsync } from 'expo-font';
 import { Stack, router, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Linking from 'expo-linking';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { AppState } from 'react-native';
+import { Alert, AppState } from 'react-native';
 
 import { tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
 import { useProfileSync } from '@/features/me/use-profile-sync';
-import { restoreSession } from '@/features/auth/auth';
+import { completeAuthFromUrl, isAuthCallbackUrl, restoreSession } from '@/features/auth/auth';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
 void SplashScreen.preventAutoHideAsync();
@@ -68,6 +69,35 @@ export default function RootLayout() {
   useEffect(() => {
     const sub = AppState.addEventListener('change', (next) => {
       if (next !== 'active') flushWrites();
+    });
+    return () => sub.remove();
+  }, []);
+
+  // Magic-link callback. The link opens the app as a deep link
+  // (nearcast://auth/callback?code=…, or a Universal/App Link on the
+  // same path); we complete the PKCE exchange and the gate below routes
+  // to Home. Handles both a cold start (getInitialURL) and a warm app
+  // already open (the 'url' event). An expired or reused link surfaces a
+  // clear message with the signin screen's resend still one tap away.
+  useEffect(() => {
+    let handled = false;
+
+    async function handle(url: string | null) {
+      if (!url || handled || !isAuthCallbackUrl(url)) return;
+      handled = true;
+      const result = await completeAuthFromUrl(url);
+      if (!result.ok) {
+        handled = false; // let them try a fresh link
+        Alert.alert('sign-in link', result.message, [{ text: 'ok' }]);
+        router.replace('/signin');
+      }
+      // on success the gate effect routes to onboarding / home
+    }
+
+    void Linking.getInitialURL().then(handle);
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      handled = false;
+      void handle(url);
     });
     return () => sub.remove();
   }, []);

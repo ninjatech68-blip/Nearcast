@@ -13,7 +13,8 @@
         "light": "./assets/images/icon.png",
         "dark": "./assets/images/icon-dark.png",
         "tinted": "./assets/images/icon-tinted.png"
-      }
+      },
+      "_universalLinksNote": "To enable Universal Links: host apple-app-site-association at https://<domain>/.well-known/, then set \"associatedDomains\": [\"applinks:<domain>\"] here and add https://<domain>/auth/callback to Supabase Redirect URLs. Until then the nearcast:// scheme handles the callback."
     },
     "android": {
       "package": "com.piyushsharma.nearcast.dev",
@@ -23,7 +24,24 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "nearcast",
+              "host": "auth",
+              "pathPrefix": "/callback"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "output": "static",

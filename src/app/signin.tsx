@@ -15,49 +15,36 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { requiresCode, sendCode, verifyCode, type AuthChannel } from '@/features/auth/auth';
+import { requiresLink, sendMagicLink } from '@/features/auth/auth';
 
 /**
- * Signin: a one-time code, by email or phone. No passwords.
+ * Signin: a passwordless email magic link. No passwords, no codes.
  *
- * Email is the default because it works with nothing but the built-in
- * mailer. Phone needs an SMS provider wired up on the backend; until
- * one is, choosing phone gets an honest message rather than a raw
- * server string.
+ * Enter your email and we send a link; tapping it opens the app and
+ * signs you in. There is nothing to copy back. When no backend is
+ * configured the same button signs you straight in on fixture data —
+ * the screen can't tell the modes apart.
  *
- * Apple and Google buttons are deliberately NOT here. They need
- * expo-apple-authentication and expo-auth-session — native modules
- * not in the binary yet — so shipping buttons that cannot work would
- * be worse than not showing them. They come back in the same rebuild
- * round as expo-notifications.
- *
- * The screen does not know whether a backend is configured. When one
- * is, sending a code really sends it and the code step appears; when
- * none is, the address signs you straight in. The auth module makes
- * both look the same here.
+ * Apple / Google buttons are deliberately absent: they need native
+ * modules not in the binary yet, and shipping buttons that can't work
+ * would be worse than not showing them.
  */
-type Step = 'address' | 'code';
+type Step = 'email' | 'sent';
 
 export default function SigninScreen() {
   const insets = useSafeAreaInsets();
-  const [channel, setChannel] = useState<AuthChannel>('email');
-  const [step, setStep] = useState<Step>('address');
-  const [phone, setPhone] = useState('+91 ');
+  const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const address = channel === 'phone' ? phone : email;
-  const addressValid =
-    channel === 'phone' ? /^\+?\d[\d\s-]{7,}\d$/.test(phone.trim()) : /.+@.+\..+/.test(email.trim());
-  const codeValid = /^\d{4,8}$/.test(code.trim());
+  const emailValid = /.+@.+\..+/.test(email.trim());
 
-  async function send() {
-    if (!addressValid || busy) return;
+  async function sendLink() {
+    if (!emailValid || busy) return;
     setBusy(true);
     setError(null);
-    const result = await sendCode(channel, address);
+    const result = await sendMagicLink(email);
     setBusy(false);
 
     if (!result.ok) {
@@ -66,36 +53,12 @@ export default function SigninScreen() {
       return;
     }
     haptic('success');
-    if (result.needsCode) {
-      setStep('code');
+    // local mode signs in immediately; remote mode waits for the link
+    if (!result.sent) {
+      router.replace('/onboarding');
       return;
     }
-    // local mode signed us in already
-    router.replace('/onboarding');
-  }
-
-  async function verify() {
-    if (!codeValid || busy) return;
-    setBusy(true);
-    setError(null);
-    const result = await verifyCode(channel, address, code);
-    setBusy(false);
-
-    if (!result.ok) {
-      haptic('warning');
-      setError(result.message);
-      return;
-    }
-    haptic('success');
-    router.replace('/onboarding');
-  }
-
-  function switchChannel(next: AuthChannel) {
-    haptic('selection');
-    setChannel(next);
-    setError(null);
-    setCode('');
-    setStep('address');
+    setStep('sent');
   }
 
   return (
@@ -123,59 +86,36 @@ export default function SigninScreen() {
 
           <View style={styles.spacer} />
 
-          {step === 'address' ? (
+          {step === 'email' ? (
             <View style={styles.form}>
-              <View style={styles.tabs}>
-                <Tab label="email" on={channel === 'email'} onPress={() => switchChannel('email')} />
-                <Tab label="phone" on={channel === 'phone'} onPress={() => switchChannel('phone')} />
-              </View>
-
-              {channel === 'phone' ? (
-                <TextInput
-                  accessibilityLabel="phone number"
-                  value={phone}
-                  onChangeText={setPhone}
-                  placeholder="+91 98765 43210"
-                  placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                  selectionColor={tokens.semantic.color.accent}
-                  style={styles.input}
-                  keyboardType="phone-pad"
-                  autoCorrect={false}
-                  returnKeyType="go"
-                  onSubmitEditing={send}
-                />
-              ) : (
-                <TextInput
-                  accessibilityLabel="email"
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="you@somewhere.com"
-                  placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                  selectionColor={tokens.semantic.color.accent}
-                  style={styles.input}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  keyboardType="email-address"
-                  returnKeyType="go"
-                  onSubmitEditing={send}
-                />
-              )}
-
+              <TextInput
+                accessibilityLabel="email"
+                value={email}
+                onChangeText={setEmail}
+                placeholder="you@somewhere.com"
+                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+                selectionColor={tokens.semantic.color.accent}
+                style={styles.input}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                textContentType="emailAddress"
+                returnKeyType="go"
+                onSubmitEditing={sendLink}
+              />
               <Text style={styles.note}>
-                {requiresCode()
-                  ? channel === 'phone'
-                    ? 'we send a 6-digit code by sms. no password, nothing to remember.'
-                    : 'we send a 6-digit code by email. no password, nothing to remember.'
+                {requiresLink()
+                  ? 'we email you a link. tap it and you’re in — no password, no code to copy.'
                   : 'no backend configured — this signs you straight in on fixture data.'}
               </Text>
 
               {error ? <Text style={styles.error}>{error}</Text> : null}
 
               <BarButton
-                label={requiresCode() ? 'send code' : 'continue'}
+                label={requiresLink() ? 'send magic link' : 'continue'}
                 variant="onOrange"
-                onPress={send}
-                disabled={!addressValid || busy}
+                onPress={sendLink}
+                disabled={!emailValid || busy}
                 loading={busy}
                 loadingLabel="sending…"
               />
@@ -183,40 +123,28 @@ export default function SigninScreen() {
             </View>
           ) : (
             <View style={styles.form}>
-              <Text style={styles.label}>CODE SENT TO {address.trim().toUpperCase()}</Text>
-              <TextInput
-                accessibilityLabel="verification code"
-                value={code}
-                onChangeText={setCode}
-                placeholder="123456"
-                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                selectionColor={tokens.semantic.color.accent}
-                style={styles.input}
-                keyboardType="number-pad"
-                autoCorrect={false}
-                autoFocus
-                textContentType="oneTimeCode"
-                returnKeyType="go"
-                onSubmitEditing={verify}
-              />
+              <Text accessibilityRole="header" style={styles.sentTitle}>check your inbox.</Text>
+              <Text style={styles.note}>
+                we sent a link to {email.trim()}. tap &ldquo;verify &amp; continue&rdquo; and NearCast opens right
+                back here, signed in.
+              </Text>
+              <Text style={styles.noteDim}>the link expires shortly and works once. it can take a minute to arrive.</Text>
 
               {error ? <Text style={styles.error}>{error}</Text> : null}
 
               <BarButton
-                label="verify"
+                label="resend the link"
                 variant="onOrange"
-                onPress={verify}
-                disabled={!codeValid || busy}
+                onPress={sendLink}
                 loading={busy}
-                loadingLabel="checking…"
+                loadingLabel="sending…"
               />
               <QuietAction
-                label="use a different address"
+                label="use a different email"
                 color={tokens.semantic.color.ink}
                 onPress={() => {
-                  setCode('');
                   setError(null);
-                  setStep('address');
+                  setStep('email');
                 }}
               />
               <LegalRow />
@@ -225,20 +153,6 @@ export default function SigninScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
-  );
-}
-
-function Tab({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ selected: on }}
-      onPress={onPress}
-      style={[styles.tab, on && styles.tabOn]}
-    >
-      <Text style={[styles.tabText, on && styles.tabTextOn]}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -263,8 +177,6 @@ function LegalRow() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: tokens.semantic.color.cream, paddingHorizontal: 28 },
   flex: { flex: 1 },
-  // grows to fill the screen when there is room, so the form sits low;
-  // scrolls instead of colliding once the keyboard takes the space.
   scrollBody: { flexGrow: 1 },
   header: { marginTop: 24 },
   spacer: { flex: 1, minHeight: 28 },
@@ -277,20 +189,14 @@ const styles = StyleSheet.create({
     color: tokens.semantic.color.ink,
   },
   sub: { ...tokens.typography.body, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
-  form: { gap: 12 },
-  tabs: { flexDirection: 'row', gap: 8, marginBottom: 4 },
-  tab: {
-    minHeight: 40,
-    paddingHorizontal: 20,
-    borderRadius: tokens.primitive.radius.pill,
-    borderWidth: 1,
-    borderColor: tokens.semantic.color.hairlineOnCream,
-    justifyContent: 'center',
+  sentTitle: {
+    fontFamily: fontFamily.display,
+    fontSize: 30,
+    letterSpacing: -0.6,
+    color: tokens.semantic.color.ink,
+    marginBottom: 6,
   },
-  tabOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
-  tabText: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
-  tabTextOn: { color: tokens.semantic.color.cream },
-  label: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  form: { gap: 12 },
   input: {
     minHeight: 56,
     borderRadius: tokens.primitive.radius.control,
@@ -302,6 +208,7 @@ const styles = StyleSheet.create({
     color: tokens.semantic.color.ink,
   },
   note: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
+  noteDim: { ...tokens.typography.metaSmall, color: tokens.semantic.color.hairlineOnCream },
   error: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent },
   legalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 8 },
   legalLink: {

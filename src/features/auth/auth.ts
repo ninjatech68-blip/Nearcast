@@ -1,120 +1,148 @@
+import * as Linking from 'expo-linking';
+
 import { getSupabase, isBackendConfigured } from '@/infrastructure/supabase/client';
 import { setSignedIn, signOut as clearLocalSession } from '@/features/me/me-store';
 
 /**
- * Auth: one-time codes, by email or phone. No passwords, ever.
+ * Auth: passwordless email MAGIC LINK. No passwords, no codes to type.
  *
- * Two modes, decided by whether a backend is configured:
+ * The flow: enter email → Supabase emails a link → tapping it opens
+ * NearCast via a deep link → we complete a PKCE code exchange and the
+ * session is established and persisted. There is no OTP to copy.
  *
- *   CONFIGURED   — real supabase.auth.signInWithOtp / verifyOtp. A
- *                  code is genuinely sent and genuinely checked.
- *   UNCONFIGURED — the local path the app shipped with: entering an
- *                  address signs you in immediately. This keeps the
- *                  fixture build demoable while the stores are ported.
+ * Two modes, decided by whether a backend is configured, and the
+ * screen can't tell them apart:
  *
- * Callers never branch on the mode. They get the same tagged results
- * either way, so the signin screen has one code path and the
- * difference is invisible above this file.
+ *   CONFIGURED   — real supabase.auth.signInWithOtp (magic link) +
+ *                  exchangeCodeForSession on the callback.
+ *   UNCONFIGURED — the local path the fixture build ships with:
+ *                  entering an address signs you in immediately, so the
+ *                  app stays demoable with no backend.
  */
 
-export type AuthChannel = 'email' | 'phone';
+export type AuthChannel = 'email';
 
 export type SendResult =
-  | { ok: true; needsCode: boolean }
+  | { ok: true; sent: boolean } // sent:false = local mode signed in immediately
   | { ok: false; message: string };
 
-export type VerifyResult =
-  | { ok: true }
-  | { ok: false; message: string };
+export type CallbackResult = { ok: true } | { ok: false; message: string };
 
 /**
- * Supabase surfaces a lot of failure modes. Turning them into
- * something a person can act on is worth doing here rather than in
- * the screen, so every entry point says the same thing about the
- * same problem.
+ * The deep link the magic link comes back to. `createURL` yields the
+ * app's own scheme — `nearcast://auth/callback` in a native build — so
+ * the same code works whether the callback arrives over the custom
+ * scheme or a future Universal Link / App Link on the same path.
  */
-function readableError(error: unknown, channel: AuthChannel): string {
+export function authRedirectUrl(): string {
+  return Linking.createURL('auth/callback');
+}
+
+/** Supabase failure modes → something a person can act on. */
+function readableError(error: unknown): string {
   const raw = error instanceof Error ? error.message : String(error ?? '');
   const lowered = raw.toLowerCase();
 
   if (lowered.includes('rate') || lowered.includes('too many')) {
-    return 'too many tries. wait a minute and ask for a new code.';
-  }
-  // phone auth needs an SMS provider wired up on the backend. until one
-  // is, say so plainly instead of leaking "Unsupported phone provider".
-  if (
-    channel === 'phone' &&
-    (lowered.includes('provider') || lowered.includes('phone') || lowered.includes('sms'))
-  ) {
-    return 'phone sign-in isn\'t set up yet. use email for now.';
+    return 'too many tries. wait a minute, then ask for a new link.';
   }
   if (lowered.includes('expired')) {
-    return 'that code expired. ask for a new one.';
+    return 'that link expired. ask for a new one.';
   }
-  if (lowered.includes('invalid') && lowered.includes('token')) {
-    return "that code didn't match. check it and try again.";
-  }
-  if (lowered.includes('invalid') || lowered.includes('not valid')) {
-    return channel === 'phone'
-      ? "that number doesn't look right. include the country code."
-      : "that address doesn't look right.";
+  if (lowered.includes('invalid') || lowered.includes('not valid') || lowered.includes('otp')) {
+    return 'that link is no longer valid. ask for a new one.';
   }
   if (lowered.includes('network') || lowered.includes('fetch')) {
     return "couldn't reach the server. check your connection.";
   }
+  if (lowered.includes('email') && lowered.includes('valid')) {
+    return "that address doesn't look right.";
+  }
   return raw.trim().length > 0 ? raw : 'something went wrong. try again.';
 }
 
-/** send a one-time code. `needsCode` is false in local mode, where sending signs you straight in. */
-export async function sendCode(channel: AuthChannel, address: string): Promise<SendResult> {
+/**
+ * Send a magic link. In local mode there is no link to send — the
+ * address IS the sign-in — so `sent` comes back false and the caller
+ * routes straight on.
+ */
+export async function sendMagicLink(email: string): Promise<SendResult> {
   const client = getSupabase();
-  const value = address.trim();
+  const value = email.trim();
 
   if (!client) {
-    // local mode: no code to send, the address IS the sign-in
     setSignedIn(value);
-    return { ok: true, needsCode: false };
+    return { ok: true, sent: false };
   }
 
   try {
-    const { error } =
-      channel === 'email'
-        ? await client.auth.signInWithOtp({ email: value })
-        : await client.auth.signInWithOtp({ phone: value });
-    if (error) return { ok: false, message: readableError(error, channel) };
-    return { ok: true, needsCode: true };
+    const { error } = await client.auth.signInWithOtp({
+      email: value,
+      options: {
+        emailRedirectTo: authRedirectUrl(),
+        shouldCreateUser: true,
+      },
+    });
+    if (error) return { ok: false, message: readableError(error) };
+    return { ok: true, sent: true };
   } catch (error) {
-    return { ok: false, message: readableError(error, channel) };
+    return { ok: false, message: readableError(error) };
   }
 }
 
-/** check the code the user typed and open a session. */
-export async function verifyCode(
-  channel: AuthChannel,
-  address: string,
-  code: string,
-): Promise<VerifyResult> {
-  const client = getSupabase();
-  const value = address.trim();
+/**
+ * True when a URL is the auth callback we should try to complete.
+ * Matches our own callback path, and defensively any URL that already
+ * carries an auth code or error, so a link that lands slightly
+ * differently is still handled.
+ */
+export function isAuthCallbackUrl(url: string): boolean {
+  if (!url) return false;
+  if (url.includes('auth/callback')) return true;
+  return url.includes('code=') || url.includes('error=') || url.includes('access_token=');
+}
 
-  if (!client) {
-    setSignedIn(value);
-    return { ok: true };
+/**
+ * Complete auth from the callback URL: exchange the PKCE code for a
+ * session (the code_verifier was stored on this device when the link
+ * was requested), or surface an expired/invalid link clearly. On
+ * success the session is persisted by the client and the identity is
+ * written to the local store, so the shell's gate routes to Home.
+ */
+export async function completeAuthFromUrl(url: string): Promise<CallbackResult> {
+  const client = getSupabase();
+  if (!client) return { ok: true }; // local mode has no links to complete
+
+  // an errored link comes back with error params rather than a code
+  const parsed = Linking.parse(url);
+  const params = { ...(parsed.queryParams ?? {}) } as Record<string, string | undefined>;
+  // Supabase can put error/token in the fragment; parse that too
+  const hashIndex = url.indexOf('#');
+  if (hashIndex >= 0) {
+    for (const pair of url.slice(hashIndex + 1).split('&')) {
+      const [k, v] = pair.split('=');
+      if (k) params[k] = decodeURIComponent(v ?? '');
+    }
+  }
+
+  if (params.error || params.error_description) {
+    return { ok: false, message: readableError(params.error_description ?? params.error) };
+  }
+
+  const code = params.code;
+  if (!code) {
+    return { ok: false, message: 'that link is no longer valid. ask for a new one.' };
   }
 
   try {
-    const { data, error } =
-      channel === 'email'
-        ? await client.auth.verifyOtp({ email: value, token: code.trim(), type: 'email' })
-        : await client.auth.verifyOtp({ phone: value, token: code.trim(), type: 'sms' });
-
-    if (error) return { ok: false, message: readableError(error, channel) };
-    if (!data.session) return { ok: false, message: 'that code did not open a session. try again.' };
-
-    setSignedIn(value);
+    const { data, error } = await client.auth.exchangeCodeForSession(code);
+    if (error) return { ok: false, message: readableError(error) };
+    const user = data.session?.user;
+    if (!user) return { ok: false, message: 'that link did not open a session. ask for a new one.' };
+    setSignedIn(user.email ?? user.id);
     return { ok: true };
   } catch (error) {
-    return { ok: false, message: readableError(error, channel) };
+    return { ok: false, message: readableError(error) };
   }
 }
 
@@ -153,7 +181,7 @@ export async function signOut(): Promise<void> {
   clearLocalSession();
 }
 
-/** whether a code step is part of the flow at all. drives the signin copy. */
-export function requiresCode(): boolean {
+/** whether a real backend (and therefore a real emailed link) is in play. */
+export function requiresLink(): boolean {
   return isBackendConfigured();
 }
