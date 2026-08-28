@@ -109,6 +109,7 @@ export default function RootLayout() {
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
       <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />
       <Stack.Screen name="report/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/terms" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/privacy" options={{ presentation: 'modal' }} />

@@ -2,6 +2,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 
 import { category as categoryTokens, type Category } from '@/design-system/tokens';
 import { deliveryFor, type ViewerContext } from './domain/delivery';
+import { matchesQuery } from './domain/search';
 import {
   casts as fixtureCasts,
   viewer,
@@ -48,6 +49,9 @@ type State = {
   mine: readonly ActivityItem[];
   /** session-only category lens. null = all. never trains delivery, never persists. */
   filter: readonly Category[] | null;
+  /** session-only text lens, same rules as `filter`. narrows what you
+   *  were already delivered — never reaches past the delivery gates. */
+  query: string;
 };
 
 /**
@@ -100,6 +104,7 @@ function hydrate(): State {
     myCasts: savedMine ?? fixtureCasts.filter((c) => c.byId === 'me'),
     mine: saved.mine ?? fixtureYourCasts,
     filter: null,
+    query: '',
   };
 }
 
@@ -147,6 +152,7 @@ registerStoreReset(() => {
     myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
     mine: fixtureYourCasts,
     filter: null,
+    query: '',
   };
   listeners.forEach((listener) => listener());
 });
@@ -213,9 +219,42 @@ export function setFilter(filter: readonly Category[] | null): void {
   emit();
 }
 
-export function feedCountFor(filter: readonly Category[] | null): number {
-  if (!filter || filter.length === 0) return state.feed.length;
-  return state.feed.filter((cast) => filter.includes(cast.category)).length;
+export function useQuery(): string {
+  return useSyncExternalStore(subscribe, () => state.query);
+}
+
+export function setQuery(query: string): void {
+  state = { ...state, query };
+  emit();
+}
+
+/** the lens applied to an already-delivered feed: categories AND text. */
+export function applyLens(
+  casts: readonly CastDetail[],
+  filter: readonly Category[] | null,
+  query: string,
+): readonly CastDetail[] {
+  let out = casts;
+  if (filter && filter.length > 0) out = out.filter((cast) => filter.includes(cast.category));
+  if (query.trim().length > 0) {
+    out = out.filter((cast) =>
+      matchesQuery(
+        {
+          text: cast.text,
+          by: cast.by,
+          area: cast.area,
+          categoryLabel: categoryTokens[cast.category].label,
+        },
+        query,
+      ),
+    );
+  }
+  return out;
+}
+
+/** honest count for the filter sheet's primary button. */
+export function feedCountFor(filter: readonly Category[] | null, query: string = ''): number {
+  return applyLens(state.feed, filter, query).length;
 }
 
 export function useMyCasts(): readonly ActivityItem[] {
@@ -472,6 +511,7 @@ export function resetCastStore(): void {
     myCasts: fixtureCasts.filter((c) => c.byId === 'me'),
     mine: fixtureYourCasts,
     filter: null,
+    query: '',
   };
   listeners.forEach((listener) => listener());
 }

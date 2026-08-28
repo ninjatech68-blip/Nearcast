@@ -316,13 +316,26 @@ describe('filter sheet', () => {
     const view = await render(<FilterScreen />);
 
     expect(view.getByRole('button', { name: 'show everything' })).toBeTruthy();
-    expect(view.getByText('resets when you leave the feed. your feed never narrows silently.')).toBeTruthy();
+    expect(view.getByText(/resets when you leave the feed/)).toBeTruthy();
 
     await user.press(view.getByRole('button', { name: 'sports' }));
     expect(view.getByRole('button', { name: 'show 1 cast' })).toBeTruthy();
 
     await user.press(view.getByRole('button', { name: 'music + nightlife' }));
     expect(view.getByRole('button', { name: 'show 2 casts' })).toBeTruthy();
+  });
+
+  it('narrows the count by search text, and combines it with categories', async () => {
+    const user = userEvent.setup();
+    const view = await render(<FilterScreen />);
+
+    // typing narrows to the casts whose text/caster/area/category match
+    await user.type(view.getByLabelText('search casts'), 'badminton');
+    expect(view.getByRole('button', { name: 'show 1 cast' })).toBeTruthy();
+
+    // adding a category that the matched cast is NOT in empties the result
+    await user.press(view.getByRole('button', { name: 'music + nightlife' }));
+    expect(view.getByRole('button', { name: 'show 0 casts' })).toBeTruthy();
   });
 });
 

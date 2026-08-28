@@ -10,7 +10,7 @@ import { category as categoryTokens, fontFamily, tokens } from '@/design-system/
 import { NEVER_USED } from '@/features/casts/domain/delivery';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { type CastDetail } from '@/features/casts/fixtures';
-import { setFilter, skipCast, useFeedCasts, useFilter } from '@/features/casts/store';
+import { applyLens, setFilter, setQuery, skipCast, useFeedCasts, useFilter, useQuery } from '@/features/casts/store';
 
 import { AvatarDot } from './avatar-dot';
 
@@ -38,26 +38,38 @@ export function FeedPage({
   const insets = useSafeAreaInsets();
   const all = useFeedCasts();
   const filter = useFilter();
+  const query = useQuery();
 
-  const visible = useMemo(
-    () => (filter ? all.filter((cast) => filter.includes(cast.category)) : all),
-    [all, filter],
-  );
+  const visible = useMemo(() => applyLens(all, filter, query), [all, filter, query]);
 
   function skip(id: string) {
     haptic('light');
     skipCast(id);
   }
 
-  const filterPill = filter ? (
+  // the lens is on when either half of it is set. one pill clears both.
+  const lensOn = !!filter || query.trim().length > 0;
+  const lensLabel = [
+    query.trim().length > 0 ? `“${query.trim()}”` : null,
+    filter ? filter.map((id) => categoryTokens[id].label.split(' ')[0]).join(' · ') : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+  function clearLens() {
+    setFilter(null);
+    setQuery('');
+  }
+
+  const filterPill = lensOn ? (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel="clear filter"
-      onPress={() => setFilter(null)}
+      onPress={clearLens}
       style={[styles.filterPill, { top: insets.top + 62 }]}
     >
       <Text style={styles.filterPillText}>
-        {filter.map((id) => categoryTokens[id].label.split(' ')[0]).join(' · ')}
+        {lensLabel}
         <Text style={styles.filterPillClear}> · clear</Text>
       </Text>
     </Pressable>
@@ -66,7 +78,7 @@ export function FeedPage({
   if (visible.length === 0) {
     return (
       <View style={{ width, height }}>
-        <FeedEmpty filtered={!!filter} />
+        <FeedEmpty filtered={lensOn} onClear={clearLens} />
         {filterPill}
       </View>
     );
@@ -136,7 +148,7 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
   );
 }
 
-function FeedEmpty({ filtered }: { filtered: boolean }) {
+function FeedEmpty({ filtered, onClear }: { filtered: boolean; onClear?: () => void }) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -148,12 +160,12 @@ function FeedEmpty({ filtered }: { filtered: boolean }) {
       <View style={styles.emptyMiddle}>
         <Text style={styles.emptyHead}>quiet.</Text>
         <Text style={styles.emptySub}>
-          {filtered ? 'nothing cast in those categories right now.' : 'nothing cast near you right now.'}
+          {filtered ? 'nothing matches that right now.' : 'nothing cast near you right now.'}
         </Text>
       </View>
       <View style={{ paddingBottom: tokens.component.posterBottomReserve }}>
         {filtered ? (
-          <BarButton label="show everything" variant="onInk" onPress={() => setFilter(null)} />
+          <BarButton label="show everything" variant="onInk" onPress={onClear ?? (() => setFilter(null))} />
         ) : (
           <BarButton label="cast something" variant="onOrange" onPress={() => router.push('/compose')} />
         )}

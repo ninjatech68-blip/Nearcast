@@ -190,6 +190,11 @@ export default function YouScreen() {
         <SheetNote>{meFixture.privacy}</SheetNote>
         <View style={styles.signOut}>
           <QuietAction
+            label="delete account"
+            color={tokens.semantic.color.textMutedOnCream}
+            onPress={() => router.push('/delete-account')}
+          />
+          <QuietAction
             label="sign out"
             color={tokens.semantic.color.ink}
             onPress={() =>
