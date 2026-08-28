@@ -15,12 +15,12 @@ insert into public.profiles (id, display_name, city) values
 on conflict (id) do nothing;
 
 insert into public.intents (
-  id, broadcaster_id, primitive, statement, status, response_action, expires_at, published_at
+  id, broadcaster_id, category, statement, status, expires_at, published_at, slots_wanted
 ) values (
   '10000000-0000-0000-0000-000000000101',
   '00000000-0000-0000-0000-000000000101',
-  'request', 'Looking for one person to help sort donated books tomorrow morning.',
-  'live', 'Offer help', now() + interval '2 days', now()
+  'help', 'Looking for one person to help sort donated books tomorrow morning.',
+  'live', now() + interval '2 days', now(), 1
 ) on conflict (id) do nothing;
 
 insert into public.intent_context (intent_id, starts_at, approximate_place)
