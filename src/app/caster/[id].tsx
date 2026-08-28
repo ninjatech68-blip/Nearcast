@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
 import { BarButton } from '@/design-system/components/button';
@@ -11,6 +11,13 @@ import { Tag } from '@/design-system/components/tag';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
+import {
+  fetchPublicProfile,
+  profilesEnabled,
+  receiptsLine,
+  signalLit,
+  type PublicProfile,
+} from '@/features/me/remote-profile';
 import { useFeedCasts } from '@/features/casts/store';
 import { hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
 import { trustLink } from '@/features/trust/domain/trust';
@@ -24,7 +31,43 @@ import { blockCaster } from '@/features/me/me-store';
  */
 export default function CasterProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const caster = casters.find((person) => person.id === id);
+  const fixtureCaster = casters.find((person) => person.id === id);
+  const live = profilesEnabled();
+  const [remote, setRemote] = useState<PublicProfile | null>(null);
+  const [loading, setLoading] = useState(live);
+
+  // in a live app the person is a real user, not a fixture — fetch their
+  // public profile. in the fixture build this is a no-op and the roster
+  // above is the source.
+  useEffect(() => {
+    if (!live || !id) return;
+    let cancelled = false;
+    void fetchPublicProfile(id)
+      .then((profile) => {
+        if (!cancelled) setRemote(profile);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [live, id]);
+
+  // one view over either source, so the render below never branches.
+  const caster = live
+    ? remote
+      ? {
+          id: remote.id,
+          name: remote.firstName,
+          area: remote.area ?? 'nearby',
+          trustLine: remote.trustPhrase,
+          receipts: { lit: signalLit(remote.receipts), line: receiptsLine(remote.receipts, remote.flakes) },
+          vouchLine: '',
+        }
+      : undefined
+    : fixtureCaster;
   const feed = useFeedCasts();
   const circles = useCircles();
   const liveCasts = caster ? feed.filter((cast) => cast.byId === caster.id) : [];
@@ -35,7 +78,7 @@ export default function CasterProfileScreen() {
   // vouching gate: a receipt with them, OR they are already in one of
   // your circles (someone with a receipt already put them there — you
   // are adding to another, not starting a new vouch).
-  const metWith = caster ? hasReceiptWith(caster.id) : false;
+  const metWith = live ? (remote?.hasReceiptWithViewer ?? false) : caster ? hasReceiptWith(caster.id) : false;
   const canVouch = inCircles.length > 0 || metWith;
   // computed history from the attendance store — plans you've both
   // been in and their outcomes. hooks must run every render, so the
@@ -55,6 +98,16 @@ export default function CasterProfileScreen() {
     // distinction between "add to X" and "cancel". the sheet renders
     // the list as circle rows and puts cancel below as a quiet action.
     router.push(`/vouch/${caster.id}`);
+  }
+
+  if (live && loading) {
+    return (
+      <SheetShell title="…">
+        <View style={styles.actions}>
+          <ActivityIndicator color={tokens.semantic.color.accent} />
+        </View>
+      </SheetShell>
+    );
   }
 
   if (!caster) {
@@ -102,7 +155,7 @@ export default function CasterProfileScreen() {
           <SignalBars lit={caster.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
           <Text style={styles.receiptsLine}>{caster.receipts.line}</Text>
         </View>
-        <Text style={styles.vouch}>{caster.vouchLine}</Text>
+        {caster.vouchLine ? <Text style={styles.vouch}>{caster.vouchLine}</Text> : null}
 
         {shared.plans > 0 ? (
           <Text style={styles.withYou}>

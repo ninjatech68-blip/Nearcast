@@ -16,13 +16,32 @@ import { facePhotos } from '@/features/casts/faces';
 import { casters, me as meFixture, recap } from '@/features/casts/fixtures';
 import { setMyPhoto, setQuietHours, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
 import { signOut } from '@/features/auth/auth';
-import { circlesVouchingForMe, vouchersOfMe } from '@/features/trust/circles';
+import { circlesVouchingForMe, useCircles, vouchersOfMe } from '@/features/trust/circles';
+import { useMyPastPlans } from '@/features/attendance/store';
+import { profilesEnabled, signalLit } from '@/features/me/remote-profile';
 import { getFailureMode, setFailureMode } from '@/infrastructure/net/submit';
 import { backendStatus } from '@/infrastructure/supabase/client';
 
+function signalWord(lit: number): string {
+  return lit >= 5 ? 'trusted' : lit >= 4 ? 'strong' : lit >= 3 ? 'steady' : lit >= 2 ? 'building' : 'new';
+}
+
 export default function YouScreen() {
   const me = useMe();
-  const receipts = useCountUp(meFixture.receipts.count);
+  const live = profilesEnabled();
+  const pastPlans = useMyPastPlans();
+  const circles = useCircles();
+  // real attendance drives the profile in a live app; the fixture count
+  // is only for the no-backend demo build.
+  const realReceipts = pastPlans.filter((p) => p.outcome === 'receipt').length;
+  const receiptCount = live ? realReceipts : meFixture.receipts.count;
+  const signalBars = live ? signalLit(realReceipts) : meFixture.signal.lit;
+  const signalLabel = live ? signalWord(signalBars) : meFixture.signal.word;
+  const circleMembers = circles.reduce((n, c) => n + c.memberIds.length, 0);
+  const circlesSub = live
+    ? `${circles.length} ${circles.length === 1 ? 'circle' : 'circles'} · ${circleMembers} ${circleMembers === 1 ? 'person' : 'people'}`
+    : meFixture.circles;
+  const receipts = useCountUp(receiptCount);
   const photoUri = useMyPhoto();
   const quiet = useQuietHours();
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
@@ -55,7 +74,15 @@ export default function YouScreen() {
   const vouchers = vouchersOfMe()
     .map((id) => casters.find((c) => c.id === id)?.name ?? null)
     .filter(Boolean) as readonly string[];
-  const vouchNames = vouchers.length > 0 ? vouchers.join(', ') : 'nobody yet';
+  // in the live app we do not resolve voucher names client-side (they
+  // are private circle members); the count carries the meaning.
+  const vouchNames = live
+    ? vouchCount > 0
+      ? `${vouchCount} ${vouchCount === 1 ? 'person' : 'people'}`
+      : 'nobody yet'
+    : vouchers.length > 0
+      ? vouchers.join(', ')
+      : 'nobody yet';
   const line = `${me.homeArea} · ${vouchCount} ${vouchCount === 1 ? 'circle vouches' : 'circles vouch'} for you`;
   const areasLine = `${me.approvedAreas.join(', ')} · always approximate`;
   const blockedLine = me.blocked.length === 0 ? 'nobody' : `${me.blocked.length} ${me.blocked.length === 1 ? 'person' : 'people'}`;
@@ -76,9 +103,9 @@ export default function YouScreen() {
         </Text>
 
         <View style={styles.signalBlock}>
-          <SignalBars lit={meFixture.signal.lit} size="big" trackColor={tokens.semantic.color.ink} />
+          <SignalBars lit={signalBars} size="big" trackColor={tokens.semantic.color.ink} />
           <View style={styles.signalCopy}>
-            <Text style={styles.signalWord}>signal: {meFixture.signal.word}</Text>
+            <Text style={styles.signalWord}>signal: {signalLabel}</Text>
             <Text style={styles.signalVisibility}>signal + receipts are public · anyone on a cast can see this</Text>
           </View>
         </View>
@@ -86,13 +113,13 @@ export default function YouScreen() {
         <View style={styles.rows}>
           <Row
             title="receipts"
-            sub={`${receipts} plans made real · last: badminton, tuesday`}
+            sub={live ? `${receipts} plans made real` : `${receipts} plans made real · last: badminton, tuesday`}
             right={<Tag label="→" tone="line" />}
             onPress={() => router.push('/receipts')}
           />
           <Row
             title="circles"
-            sub={meFixture.circles}
+            sub={circlesSub}
             right={<Tag label="→" tone="line" />}
             onPress={() => router.push('/circles')}
           />

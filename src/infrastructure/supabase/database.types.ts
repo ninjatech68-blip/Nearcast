@@ -969,6 +969,19 @@ export type Database = {
           statement: string
         }[]
       }
+      get_public_profile: {
+        Args: { target: string }
+        Returns: {
+          area: string
+          first_name: string
+          flakes: number
+          has_receipt_with_viewer: boolean
+          id: string
+          member_since: string
+          receipts: number
+          trust_phrase: string
+        }[]
+      }
       hide_cast: {
         Args: { not_relevant?: boolean; target_intent_id: string }
         Returns: undefined
