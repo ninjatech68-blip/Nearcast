@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,12 +8,14 @@ import { haptic } from '@/design-system/haptics';
 import { CATEGORIES, category as categoryTokens, fontFamily, tokens, type Category } from '@/design-system/tokens';
 import {
   removeApprovedArea,
+  setHomeAreaFromOnboarding,
   setInterests,
   setName,
   setOnboardingDone,
   setPushGranted,
   useMe,
 } from '@/features/me/me-store';
+import { myCurrentArea } from '@/features/casts/area-lookup';
 
 type Step = 'name' | 'home' | 'areas' | 'interests' | 'push';
 
@@ -31,6 +33,35 @@ export default function OnboardingScreen() {
   const [step, setStep] = useState<Step>('name');
   const [name, setLocalName] = useState(me.name);
   const [interests, setLocalInterests] = useState<readonly Category[]>(me.interests);
+  // 'pending' doubles as the locating state — the effect's first
+  // setState lands only after the await, so nothing sets state
+  // synchronously inside the effect.
+  const [homeStatus, setHomeStatus] = useState<'pending' | 'located' | 'denied' | 'error'>('pending');
+
+  /**
+   * Entering the home step fetches the device location and fills the
+   * home area from it — the place you are standing in is almost always
+   * the answer, and making someone search a map for it is friction.
+   * The map stays one tap away to change it. A detected area replaces
+   * the demo seed, so nobody ships with another city's neighbourhoods.
+   */
+  useEffect(() => {
+    if (step !== 'home') return;
+    let cancelled = false;
+    void (async () => {
+      const result = await myCurrentArea();
+      if (cancelled) return;
+      if (result.ok) {
+        setHomeAreaFromOnboarding(result.name, { latitude: result.latitude, longitude: result.longitude });
+        setHomeStatus('located');
+      } else {
+        setHomeStatus(result.reason === 'permission' ? 'denied' : 'error');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [step]);
 
   const step1Ready = name.trim().length > 0;
   const step2Ready = me.homeArea.trim().length > 0;
@@ -137,21 +168,35 @@ export default function OnboardingScreen() {
             <>
               <Text accessibilityRole="header" style={styles.title}>where&apos;s home, roughly?</Text>
               <Text style={styles.hint}>
-                the neighborhood, not the address. pick it on the map so casts nearby can find you — a typed name
-                we can&apos;t place only ever matches itself.
+                the neighbourhood, not the address — we keep it approximate. we fill this in from your location; tap
+                to change it on the map.
               </Text>
-              {/* a picker, not a text field: delivery measures distance
-                  between area centres, and a name with no point behind
-                  it can only be matched as a string. */}
+              {/* auto-filled from the device, a picker to change it.
+                  delivery measures distance between area centres, so the
+                  point matters as much as the name — both come from the
+                  detected location or the map, never free text. */}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="your home area"
                 onPress={() => router.push('/area?target=home')}
                 style={styles.pickRow}
               >
-                <Text style={me.homeArea ? styles.pickValue : styles.pickPlaceholder}>
-                  {me.homeArea || 'choose your area'}
-                </Text>
+                <View style={styles.pickText}>
+                  <Text
+                    style={homeStatus === 'pending' && !me.homeArea ? styles.pickPlaceholder : styles.pickValue}
+                  >
+                    {homeStatus === 'pending' && !me.homeArea ? 'finding your area…' : me.homeArea || 'choose your area'}
+                  </Text>
+                  <Text style={styles.pickSub}>
+                    {homeStatus === 'located'
+                      ? 'from your location · tap to change'
+                      : homeStatus === 'denied'
+                        ? 'location is off — tap to choose on the map'
+                        : homeStatus === 'error'
+                          ? "couldn't detect — tap to choose on the map"
+                          : 'tap to choose on the map'}
+                  </Text>
+                </View>
                 <Text style={styles.pickChevron}>›</Text>
               </Pressable>
             </>
@@ -263,7 +308,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  pickText: { flex: 1 },
   pickValue: { fontFamily: fontFamily.displaySemi, fontSize: 20, color: tokens.semantic.color.ink },
+  pickSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
   pickPlaceholder: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 20,

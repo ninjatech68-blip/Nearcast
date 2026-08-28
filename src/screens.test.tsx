@@ -473,7 +473,24 @@ describe('picking an area', () => {
    * place differently. Every path that adds an area has to go through
    * the picker.
    */
-  it('sends the onboarding home step to the map, not a text field', async () => {
+  it('auto-fills the home area from the device on entering the step', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { resetMeStore } = require('./features/me/me-store');
+    resetMeStore();
+
+    const user = userEvent.setup();
+    const view = await render(<OnboardingScreen />);
+
+    await user.type(view.getByLabelText('your first name'), 'Piyush');
+    await user.press(view.getByRole('button', { name: 'next' }));
+
+    // the mocked location resolves to Indiranagar; the step fetches it
+    // rather than making the person search a map for where they stand.
+    expect(await view.findByText('from your location · tap to change')).toBeTruthy();
+    expect(view.getByText('indiranagar')).toBeTruthy();
+  });
+
+  it('still offers the map as a way to change the home area', async () => {
     const user = userEvent.setup();
     const view = await render(<OnboardingScreen />);
 

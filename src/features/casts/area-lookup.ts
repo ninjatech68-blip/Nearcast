@@ -205,6 +205,33 @@ export async function resolveSuggestion(
 
 export { makeSessionToken };
 
+/**
+ * Where am I, as a single area with its point.
+ *
+ * The onboarding home step uses this to fill the home area from the
+ * device rather than making someone search a map for the place they
+ * are standing in. It returns the CLOSEST neighbourhood name and the
+ * device coordinate to pin it — approximate by construction, and the
+ * point is rounded before it is ever stored.
+ */
+export async function myCurrentArea(): Promise<
+  | { ok: true; name: string; latitude: number; longitude: number }
+  | { ok: false; reason: 'permission' | 'not-found' | 'unavailable' }
+> {
+  try {
+    const permission = await Location.requestForegroundPermissionsAsync();
+    if (!permission.granted) return { ok: false, reason: 'permission' };
+
+    const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    const { latitude, longitude } = position.coords;
+    const names = await namesAround(latitude, longitude, 1);
+    if (names.length === 0) return { ok: false, reason: 'not-found' };
+    return { ok: true, name: names[0], latitude, longitude };
+  } catch {
+    return { ok: false, reason: 'unavailable' };
+  }
+}
+
 /** where am I → the neighborhoods around me, nearest first. */
 export async function areasNearMe(): Promise<AreaLookupResult> {
   try {
