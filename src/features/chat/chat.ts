@@ -8,6 +8,21 @@ import {
   STORAGE_KEYS,
 } from '@/infrastructure/persistence/storage';
 import { submit } from '@/infrastructure/net/submit';
+import {
+  chatEnabled,
+  fetchConversation,
+  fetchConversations,
+  fetchMessages,
+  markRead,
+  sendLocationShare,
+  sendText,
+  setMode,
+  subscribeToConversation,
+  type RemoteConversation,
+  type RemoteMessage,
+} from './remote-chat';
+
+export { chatEnabled } from './remote-chat';
 
 /**
  * chat opens only after a match, and carries the earlier messages so a
@@ -25,6 +40,10 @@ export type Message = {
   time: string;
   /** only meaningful for from: 'me'. system messages carry it as 'sent'. */
   status?: MessageStatus;
+  /** a location share carries an approximate pin and an optional label */
+  latitude?: number;
+  longitude?: number;
+  placeLabel?: string;
 };
 
 /**
@@ -52,7 +71,18 @@ export type Thread = {
   expiresLabel: string;
 };
 
-type State = { threads: Record<string, Thread> };
+export type ConversationSummary = {
+  conversationId: string;
+  castId: string;
+  castTitle: string;
+  withName: string;
+  withId: string;
+  lastMessage: string;
+  unread: number;
+  ended: boolean;
+};
+
+type State = { threads: Record<string, Thread>; list: readonly ConversationSummary[] };
 
 const SEED_STATE: State = {
   threads: {
@@ -72,6 +102,7 @@ const SEED_STATE: State = {
       ],
     },
   },
+  list: [],
 };
 
 // threads persist in full — every message is user-authored content
@@ -97,7 +128,126 @@ export function useThread(id: string): Thread | undefined {
   return useSyncExternalStore(subscribe, () => state.threads[id]);
 }
 
-export function sendMessage(threadId: string, text: string): void {
+function clockTime(iso: string): string {
+  const d = new Date(iso);
+  let h = d.getHours();
+  const m = d.getMinutes().toString().padStart(2, '0');
+  const ampm = h >= 12 ? 'pm' : 'am';
+  h = h % 12 || 12;
+  return `${h}:${m} ${ampm}`;
+}
+
+function expiresLabelFor(mode: ExpiryMode, expiresAt: string | null): string {
+  if (mode === 'ended') return 'ended';
+  if (mode === 'always') return 'no expiry';
+  if (!expiresAt) return 'expires in 24h';
+  const hours = Math.round((new Date(expiresAt).getTime() - Date.now()) / 3_600_000);
+  if (hours <= 0) return 'expired';
+  if (hours < 24) return `expires in ${hours}h`;
+  return `expires in ${Math.round(hours / 24)}d`;
+}
+
+/** a server message → the UI Message, with read state for my own. */
+function toMessage(row: RemoteMessage, otherLastRead: string | null): Message {
+  const from = row.is_system ? 'system' : row.is_mine ? 'me' : 'them';
+  const status: MessageStatus | undefined =
+    from === 'me'
+      ? otherLastRead && new Date(row.created_at) <= new Date(otherLastRead)
+        ? 'read'
+        : 'sent'
+      : undefined;
+  return {
+    id: row.id,
+    from,
+    text: row.body,
+    time: clockTime(row.created_at),
+    status,
+    ...(row.latitude !== null && row.longitude !== null
+      ? { latitude: row.latitude, longitude: row.longitude, placeLabel: row.place_label ?? undefined }
+      : {}),
+  };
+}
+
+function buildThread(meta: RemoteConversation, rows: readonly RemoteMessage[]): Thread {
+  return {
+    id: meta.conversation_id,
+    withName: meta.other_first_name ?? 'someone',
+    withId: meta.other_id,
+    castTitle: meta.cast_title,
+    mode: meta.mode,
+    expiresLabel: expiresLabelFor(meta.mode, meta.expires_at),
+    messages: rows.map((row) => toMessage(row, meta.other_last_read_at)),
+  };
+}
+
+function putThread(thread: Thread): void {
+  state = { ...state, threads: { ...state.threads, [thread.id]: thread } };
+  emit();
+}
+
+async function loadConversation(conversationId: string): Promise<void> {
+  const [meta, rows] = await Promise.all([
+    fetchConversation(conversationId),
+    fetchMessages(conversationId),
+  ]);
+  if (!meta) return;
+  putThread(buildThread(meta, rows));
+}
+
+/**
+ * Open a conversation: load it, mark it read, and subscribe to new
+ * messages. Returns an unsubscribe for the screen's cleanup. In local
+ * mode there is nothing to load or subscribe — the seed thread is
+ * already in the cache — so it is a no-op.
+ *
+ * Realtime is the accelerant; every wake re-reads through the RPC, so
+ * what renders is always what the database holds and RLS permits.
+ */
+export function useConversations(): readonly ConversationSummary[] {
+  return useSyncExternalStore(subscribe, () => state.list);
+}
+
+/** pull my chat list (backend mode); drives the activity CHATS section. */
+export async function refreshConversations(): Promise<void> {
+  if (!chatEnabled()) return;
+  const rows = await fetchConversations();
+  const list: ConversationSummary[] = rows.map((row) => ({
+    conversationId: row.conversation_id,
+    castId: row.intent_id,
+    castTitle: row.cast_title,
+    withName: row.other_first_name ?? 'someone',
+    withId: row.other_id,
+    lastMessage: row.last_message ?? 'say hi',
+    unread: row.unread_count,
+    ended: row.mode === 'ended',
+  }));
+  state = { ...state, list };
+  emit();
+}
+
+/** the conversation for a (cast, other person), if one exists yet. */
+export async function conversationIdFor(castId: string, otherId: string): Promise<string | null> {
+  if (!chatEnabled()) return castId;
+  const rows = await fetchConversations();
+  return rows.find((r) => r.intent_id === castId && r.other_id === otherId)?.conversation_id ?? null;
+}
+
+export function openConversation(conversationId: string): () => void {
+  if (!chatEnabled()) return () => undefined;
+  void loadConversation(conversationId).then(() => void markRead(conversationId));
+  const unsubscribe = subscribeToConversation(conversationId, () => {
+    void loadConversation(conversationId).then(() => void markRead(conversationId));
+  });
+  return unsubscribe;
+}
+
+export async function sendMessage(threadId: string, text: string): Promise<void> {
+  if (chatEnabled()) {
+    if (!text.trim()) return;
+    await sendText(threadId, text.trim());
+    await loadConversation(threadId);
+    return;
+  }
   const thread = state.threads[threadId];
   if (!thread || !text.trim()) return;
   // ended chats are read-only. drop silently rather than raise —
@@ -113,10 +263,26 @@ export function sendMessage(threadId: string, text: string): void {
     status: 'pending',
   };
   state = {
+    ...state,
     threads: { ...state.threads, [threadId]: { ...thread, messages: [...thread.messages, message] } },
   };
   emit();
   void deliverMessage(threadId, id);
+}
+
+/**
+ * share an approximate location into a chat. backend mode only —
+ * fixtures have no map round-trip. the pin is rounded server-side.
+ */
+export async function sendLocationMessage(
+  threadId: string,
+  latitude: number,
+  longitude: number,
+  label?: string,
+): Promise<void> {
+  if (!chatEnabled()) return;
+  await sendLocationShare(threadId, latitude, longitude, label);
+  await loadConversation(threadId);
 }
 
 /**
@@ -151,6 +317,7 @@ function promoteStatus(threadId: string, messageId: string, status: MessageStatu
   const thread = state.threads[threadId];
   if (!thread) return;
   state = {
+    ...state,
     threads: {
       ...state.threads,
       [threadId]: {
@@ -167,7 +334,12 @@ function promoteStatus(threadId: string, messageId: string, status: MessageStatu
  * to opt in; here we mock the shape by flipping the mode immediately
  * and appending a system message describing the transition.
  */
-export function extendChat(threadId: string, mode: 'day' | 'week' | 'always'): void {
+export async function extendChat(threadId: string, mode: 'day' | 'week' | 'always'): Promise<void> {
+  if (chatEnabled()) {
+    await setMode(threadId, mode);
+    await loadConversation(threadId);
+    return;
+  }
   const thread = state.threads[threadId];
   if (!thread || thread.mode === 'ended') return;
   const labels: Record<'day' | 'week' | 'always', string> = {
@@ -187,6 +359,7 @@ export function extendChat(threadId: string, mode: 'day' | 'week' | 'always'): v
     time: 'now',
   };
   state = {
+    ...state,
     threads: {
       ...state.threads,
       [threadId]: {
@@ -205,7 +378,12 @@ export function extendChat(threadId: string, mode: 'day' | 'week' | 'always'): v
  * thread becomes read-only, no reopen. one-way and one-tap is the
  * point — there is no "block the block".
  */
-export function endChat(threadId: string): void {
+export async function endChat(threadId: string): Promise<void> {
+  if (chatEnabled()) {
+    await setMode(threadId, 'ended');
+    await loadConversation(threadId);
+    return;
+  }
   const thread = state.threads[threadId];
   if (!thread || thread.mode === 'ended') return;
   const note: Message = {
@@ -215,6 +393,7 @@ export function endChat(threadId: string): void {
     time: 'now',
   };
   state = {
+    ...state,
     threads: {
       ...state.threads,
       [threadId]: {

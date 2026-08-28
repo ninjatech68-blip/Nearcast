@@ -21,6 +21,7 @@ import {
   withdrawJoin,
 } from '@/features/casts/store';
 import { usePendingReports } from '@/features/attendance/store';
+import { refreshConversations, useConversations } from '@/features/chat/chat';
 
 import { AvatarDot } from './avatar-dot';
 
@@ -39,12 +40,14 @@ export function ActivityPage() {
   // fixture yourMove is gone — every row here is a real accept/decline
   // decision the caster owes a joiner.
   const pendingJoins = usePendingJoinsOnMyCasts();
+  const chats = useConversations();
   const [dismissed, setDismissed] = useState<readonly string[]>([]);
 
   // pull the interaction state from the server whenever this page opens:
-  // requests that arrived on your casts, and accepts on the ones you sent.
+  // requests on your casts, accepts on the ones you sent, and your chats.
   useEffect(() => {
     void refreshInteractions();
+    void refreshConversations();
   }, []);
   const moveItems = pendingJoins.filter((item) => !dismissed.includes(item.id));
   const [archived, setArchived] = useState<ActivityItem | null>(null);
@@ -164,6 +167,36 @@ export function ActivityPage() {
                   right={<Tag label="pending" tone="dim" />}
                   onPress={() => router.push(`/cast/${j.castId}`)}
                   onLongPress={() => confirmWithdraw(j.castId, j.casterName)}
+                />
+              ))}
+            </>
+          ) : null}
+
+          {chats.length > 0 ? (
+            <>
+              <Text style={styles.sectionDim}>CHATS</Text>
+              {chats.map((chat) => (
+                <Row
+                  key={`chat-${chat.conversationId}`}
+                  title={chat.withName}
+                  sub={`"${chat.castTitle}" · ${chat.ended ? 'ended' : chat.lastMessage}`}
+                  left={
+                    <Face
+                      photo={facePhotos[chat.withId]}
+                      initials={chat.withName.slice(0, 2).toUpperCase()}
+                      size={44}
+                      label={`photo of ${chat.withName}`}
+                      verified={isVerified(chat.withId)}
+                    />
+                  }
+                  right={
+                    chat.unread > 0 ? (
+                      <Tag label={String(chat.unread)} tone="hot" />
+                    ) : (
+                      <Tag label="→" tone="line" />
+                    )
+                  }
+                  onPress={() => router.push(`/chat/${chat.conversationId}`)}
                 />
               ))}
             </>

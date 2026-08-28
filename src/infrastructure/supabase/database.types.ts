@@ -134,6 +134,39 @@ export type Database = {
           },
         ]
       }
+      conversation_reads: {
+        Row: {
+          conversation_id: string
+          last_read_at: string
+          profile_id: string
+        }
+        Insert: {
+          conversation_id: string
+          last_read_at?: string
+          profile_id: string
+        }
+        Update: {
+          conversation_id?: string
+          last_read_at?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_reads_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_reads_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           closed_at: string | null
@@ -520,6 +553,9 @@ export type Database = {
           created_at: string
           id: string
           is_system: boolean
+          latitude: number | null
+          longitude: number | null
+          place_label: string | null
           sender_id: string | null
         }
         Insert: {
@@ -528,6 +564,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_system?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          place_label?: string | null
           sender_id?: string | null
         }
         Update: {
@@ -536,6 +575,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_system?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          place_label?: string | null
           sender_id?: string | null
         }
         Relationships: [
@@ -888,6 +930,20 @@ export type Database = {
         Args: { as_of?: string; target_intent: string; target_profile: string }
         Returns: Database["public"]["Enums"]["attendance_result"]
       }
+      conversation_messages: {
+        Args: { target_conversation_id: string }
+        Returns: {
+          body: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          is_system: boolean
+          latitude: number
+          longitude: number
+          place_label: string
+          sender_id: string
+        }[]
+      }
       decline_response: {
         Args: { target_response_id: string }
         Returns: undefined
@@ -929,6 +985,10 @@ export type Database = {
           status: Database["public"]["Enums"]["response_status"]
         }[]
       }
+      mark_conversation_read: {
+        Args: { target_conversation_id: string }
+        Returns: undefined
+      }
       my_casts: {
         Args: never
         Returns: {
@@ -941,6 +1001,22 @@ export type Database = {
           starts_at: string
           statement: string
           status: Database["public"]["Enums"]["intent_status"]
+        }[]
+      }
+      my_conversations: {
+        Args: never
+        Returns: {
+          cast_title: string
+          conversation_id: string
+          expires_at: string
+          intent_id: string
+          last_at: string
+          last_message: string
+          mode: Database["public"]["Enums"]["conversation_mode"]
+          other_first_name: string
+          other_id: string
+          other_last_read_at: string
+          unread_count: number
         }[]
       }
       my_feed: {
@@ -1009,6 +1085,26 @@ export type Database = {
       respond_to_cast: {
         Args: { note: string; target_intent_id: string }
         Returns: string
+      }
+      send_location: {
+        Args: {
+          label?: string
+          share_latitude: number
+          share_longitude: number
+          target_conversation_id: string
+        }
+        Returns: string
+      }
+      send_message: {
+        Args: { message_body: string; target_conversation_id: string }
+        Returns: string
+      }
+      set_conversation_mode: {
+        Args: {
+          next_mode: Database["public"]["Enums"]["conversation_mode"]
+          target_conversation_id: string
+        }
+        Returns: undefined
       }
       withdraw_response: {
         Args: { target_response_id: string }

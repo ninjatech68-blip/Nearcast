@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useRef, useState } from 'react';
+import * as Location from 'expo-location';
+import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -10,6 +11,8 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -17,7 +20,17 @@ import { Face } from '@/design-system/components/face';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
-import { endChat, extendChat, retryMessage, sendMessage, useThread, type Message } from '@/features/chat/chat';
+import {
+  chatEnabled,
+  endChat,
+  extendChat,
+  openConversation,
+  retryMessage,
+  sendLocationMessage,
+  sendMessage,
+  useThread,
+  type Message,
+} from '@/features/chat/chat';
 import { connectivityNote } from '@/infrastructure/net/connectivity';
 import { useConnectivity } from '@/infrastructure/net/submit';
 
@@ -31,9 +44,30 @@ export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const thread = useThread(id ?? '');
   const [draft, setDraft] = useState('');
+  const [sendError, setSendError] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const connectivity = useConnectivity();
   const netNote = connectivityNote(connectivity);
+
+  // backend mode: load the conversation and subscribe to new messages.
+  // no-op on fixtures, where the seed thread is already in the cache.
+  useEffect(() => {
+    if (!id) return;
+    return openConversation(id);
+  }, [id]);
+
+  // while a real conversation is still loading, show a spinner rather
+  // than the "not open" state, which would flash on every open.
+  if (!thread && chatEnabled()) {
+    return (
+      <View style={[styles.screen, styles.center, { paddingTop: insets.top + 24 }]}>
+        <ActivityIndicator color={tokens.semantic.color.accent} />
+        <Pressable accessibilityRole="button" accessibilityLabel="back" hitSlop={12} onPress={() => router.back()}>
+          <Text style={styles.back}>back</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   if (!thread) {
     return (
@@ -46,12 +80,43 @@ export default function ChatScreen() {
     );
   }
 
-  function send() {
-    if (!draft.trim()) return;
+  async function send() {
+    const text = draft.trim();
+    if (!text) return;
     haptic('light');
-    sendMessage(thread!.id, draft);
+    setSendError(null);
     setDraft('');
-    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+    try {
+      await sendMessage(thread!.id, text);
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+    } catch {
+      // keep what they typed so nothing is lost to a dropped send
+      haptic('warning');
+      setDraft(text);
+      setSendError("that didn't send. tap send to try again.");
+    }
+  }
+
+  async function shareLocation() {
+    haptic('light');
+    setSendError(null);
+    try {
+      const permission = await Location.requestForegroundPermissionsAsync();
+      if (!permission.granted) {
+        setSendError('location is off. turn it on to share where you are.');
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      await sendLocationMessage(thread!.id, pos.coords.latitude, pos.coords.longitude);
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+    } catch {
+      setSendError("couldn't share your location. try again.");
+    }
+  }
+
+  function addEmoji(emoji: string) {
+    haptic('selection');
+    setDraft((d) => d + emoji);
   }
 
   function openExpiryMenu() {
@@ -148,27 +213,55 @@ export default function ChatScreen() {
             <Text style={styles.endedText}>this chat has ended. no new messages.</Text>
           </View>
         ) : (
-          <View style={[styles.composer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-            <TextInput
-              accessibilityLabel="message"
-              value={draft}
-              onChangeText={setDraft}
-              placeholder="message"
-              placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-              selectionColor={tokens.semantic.color.accent}
-              style={styles.input}
-              multiline
-            />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="send"
-              accessibilityState={{ disabled: draft.trim().length === 0 }}
-              disabled={draft.trim().length === 0}
-              onPress={send}
-              style={[styles.sendBtn, draft.trim().length === 0 && styles.sendDim]}
-            >
-              <Text style={styles.sendText}>↑</Text>
-            </Pressable>
+          <View style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
+            {sendError ? <Text style={styles.sendError}>{sendError}</Text> : null}
+            <View style={styles.emojiRow}>
+              {['👍', '🙌', '😅', '🎉', '🙏', '📍'].map((emoji) =>
+                emoji === '📍' ? (
+                  <Pressable
+                    key="loc"
+                    accessibilityRole="button"
+                    accessibilityLabel="share my location"
+                    onPress={shareLocation}
+                    style={styles.emojiChip}
+                  >
+                    <Text style={styles.emoji}>📍</Text>
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    key={emoji}
+                    accessibilityRole="button"
+                    accessibilityLabel={`add ${emoji}`}
+                    onPress={() => addEmoji(emoji)}
+                    style={styles.emojiChip}
+                  >
+                    <Text style={styles.emoji}>{emoji}</Text>
+                  </Pressable>
+                ),
+              )}
+            </View>
+            <View style={styles.composer}>
+              <TextInput
+                accessibilityLabel="message"
+                value={draft}
+                onChangeText={setDraft}
+                placeholder="message"
+                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+                selectionColor={tokens.semantic.color.accent}
+                style={styles.input}
+                multiline
+              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="send"
+                accessibilityState={{ disabled: draft.trim().length === 0 }}
+                disabled={draft.trim().length === 0}
+                onPress={send}
+                style={[styles.sendBtn, draft.trim().length === 0 && styles.sendDim]}
+              >
+                <Text style={styles.sendText}>↑</Text>
+              </Pressable>
+            </View>
           </View>
         )}
       </KeyboardAvoidingView>
@@ -179,7 +272,7 @@ export default function ChatScreen() {
 function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }) {
   if (message.from === 'system') {
     return (
-      <View style={styles.systemRow} accessibilityLabel="meeting spot">
+      <View style={styles.systemRow} accessibilityLabel="chat notice">
         <Text style={styles.systemText}>{message.text}</Text>
       </View>
     );
@@ -187,10 +280,30 @@ function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }
   const mine = message.from === 'me';
   const failed = mine && message.status === 'failed';
 
+  const hasLocation = message.latitude !== undefined && message.longitude !== undefined;
   const body = (
     <>
       <View style={[styles.bubble, mine ? styles.mine : styles.theirs, failed && styles.bubbleFailed]}>
-        <Text style={[styles.bubbleText, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
+        {hasLocation ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="open shared location in maps"
+            onPress={() =>
+              Linking.openURL(
+                Platform.OS === 'ios'
+                  ? `http://maps.apple.com/?ll=${message.latitude},${message.longitude}`
+                  : `geo:${message.latitude},${message.longitude}`,
+              )
+            }
+          >
+            <Text style={[styles.bubbleText, mine ? styles.mineText : styles.theirsText]}>
+              📍 {message.placeLabel ?? 'shared a location'}
+            </Text>
+            <Text style={[styles.locHint, mine ? styles.mineText : styles.theirsText]}>tap to open in maps · approximate</Text>
+          </Pressable>
+        ) : (
+          <Text style={[styles.bubbleText, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
+        )}
       </View>
       <View style={styles.metaRow}>
         <Text style={styles.time}>{failed ? 'not sent · tap to retry' : message.time}</Text>
@@ -224,6 +337,20 @@ function tickFor(status: NonNullable<Message['status']>): string {
 }
 
 const styles = StyleSheet.create({
+  sendError: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, paddingHorizontal: 4, paddingBottom: 6 },
+  emojiRow: { flexDirection: 'row', gap: 6, paddingBottom: 8, flexWrap: 'wrap' },
+  emojiChip: {
+    minWidth: 40,
+    height: 36,
+    borderRadius: tokens.primitive.radius.pill,
+    borderWidth: 1,
+    borderColor: tokens.semantic.color.hairlineOnCream,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  emoji: { fontSize: 18 },
+  locHint: { ...tokens.typography.metaSmall, marginTop: 4, opacity: 0.8 },
   screen: { flex: 1, backgroundColor: tokens.semantic.color.cream, paddingHorizontal: 18 },
   flex: { flex: 1 },
   center: { alignItems: 'center', justifyContent: 'center', gap: 12 },

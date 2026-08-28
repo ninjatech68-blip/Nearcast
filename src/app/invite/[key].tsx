@@ -10,6 +10,7 @@ import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { acceptJoin, capacityFor, declineJoin, getCast, getPendingJoin } from '@/features/casts/store';
+import { conversationIdFor } from '@/features/chat/chat';
 import { people } from '@/features/trust/circles';
 import { submit } from '@/infrastructure/net/submit';
 
@@ -71,8 +72,11 @@ export default function InviteScreen() {
       return;
     }
     haptic('success');
-    // land the caster on the chat so the plan room opens now
-    router.replace(`/chat/${cast.id}`);
+    // land the caster in the chat that the accept just opened. backend
+    // mode keys chat by conversation id; fixtures key it by cast id, and
+    // conversationIdFor returns the cast id there so both paths work.
+    const conversationId = await conversationIdFor(castId, personId);
+    router.replace(`/chat/${conversationId ?? cast.id}`);
   }
 
   function decline() {
