@@ -9,6 +9,9 @@
     "userInterfaceStyle": "light",
     "ios": {
       "bundleIdentifier": "com.piyushsharma.nearcast.dev",
+      "infoPlist": {
+        "CFBundleDisplayName": "TrvlAI Test"
+      },
       "icon": {
         "light": "./assets/images/icon.png",
         "dark": "./assets/images/icon-dark.png",
