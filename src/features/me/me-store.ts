@@ -47,7 +47,7 @@ const DEFAULT_STATE: State = {
   signedIn: false,
   onboardingDone: false,
   pushGranted: null,
-  name: 'Piyush',
+  name: '',
   email: '',
   homeArea: 'indiranagar',
   approvedAreas: ['indiranagar', 'koramangala', 'hsr'],

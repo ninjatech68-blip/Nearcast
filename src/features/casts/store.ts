@@ -235,13 +235,24 @@ function isStale(expiry: string, now: Date = new Date()): boolean {
  * IS the gate: re-derive it against the viewer context and rewrite the
  * why/signals from the signals that fired.
  */
-function gateFeed(base: readonly CastDetail[], ctx: ViewerContext): CastDetail[] {
+function gateFeed(
+  base: readonly CastDetail[],
+  ctx: ViewerContext,
+  askedCastIds: readonly string[] = [],
+): CastDetail[] {
+  // A cast you have already asked to join is not a decision you still owe.
+  // Leaving it in the feed invites a second request on the same plan and
+  // makes the feed feel stale; it lives under WAITING ON in activity now.
+  const asked = new Set(askedCastIds);
   if (remoteEnabled()) {
-    return base.filter((c) => !ctx.blockedCasterIds.includes(c.delivery.casterId));
+    return base.filter(
+      (c) => !ctx.blockedCasterIds.includes(c.delivery.casterId) && !asked.has(c.id),
+    );
   }
   const out: CastDetail[] = [];
   for (const c of base) {
     if (ctx.blockedCasterIds.includes(c.delivery.casterId)) continue;
+    if (asked.has(c.id)) continue;
     if (isStale(c.expiry)) continue;
     const result = deliveryFor(ctx, c.delivery);
     if (!result.deliver) continue;
@@ -252,8 +263,12 @@ function gateFeed(base: readonly CastDetail[], ctx: ViewerContext): CastDetail[]
 
 export function useFeedCasts(): readonly CastDetail[] {
   const base = useSyncExternalStore(subscribe, () => state.feed);
+  const sent = useSyncExternalStore(subscribe, () => state.sentJoins);
   const ctx = useViewerContext();
-  return useMemo(() => gateFeed(base, ctx), [base, ctx]);
+  return useMemo(
+    () => gateFeed(base, ctx, sent.map((j) => j.castId)),
+    [base, ctx, sent],
+  );
 }
 
 export function useMyCastDetails(): readonly CastDetail[] {

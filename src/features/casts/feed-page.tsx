@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Animated, FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Alert, Animated, FlatList, Pressable, RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
@@ -91,6 +91,20 @@ export function FeedPage({
     setReloadKey((key) => key + 1);
   }
 
+  // pull-to-refresh: the feed is delivered server-side, so a person who
+  // knows a plan just went out needs a way to ask for it now rather than
+  // waiting for the next mount.
+  const [refreshing, setRefreshing] = useState(false);
+  async function pullRefresh() {
+    setRefreshing(true);
+    try {
+      await refreshFeed();
+      setLoadError(false);
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
   function skip(id: string) {
     haptic('light');
     skipCast(id);
@@ -161,6 +175,13 @@ export function FeedPage({
         initialNumToRender={1}
         maxToRenderPerBatch={2}
         removeClippedSubviews
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={pullRefresh}
+            tintColor={tokens.semantic.color.accent}
+          />
+        }
         style={{ width }}
       />
       {filterPill}

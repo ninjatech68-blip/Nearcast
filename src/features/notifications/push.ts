@@ -88,7 +88,12 @@ export async function enablePush(): Promise<PushOutcome> {
     }
     if (!granted) return 'denied';
     await configureNotifications();
-    await registerToken();
+    // Register the token in the BACKGROUND. Awaiting it here blocks the
+    // caller on a network round-trip, which froze the onboarding screen
+    // after the person tapped Allow — nothing happened until the RPC
+    // returned. Permission is what the caller needs; the token can land
+    // a moment later, and refreshPushRegistration() retries at boot.
+    void registerToken();
     return 'granted';
   } catch {
     return 'denied';

@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton } from '@/design-system/components/button';
@@ -50,6 +50,18 @@ export function ActivityPage() {
     void refreshConversations();
     void refreshAttendance();
   }, []);
+
+  // same reason as the feed: requests and accepts land server-side, so
+  // give people a way to pull for them instead of leaving and returning.
+  const [refreshing, setRefreshing] = useState(false);
+  async function pullRefresh() {
+    setRefreshing(true);
+    try {
+      await Promise.all([refreshInteractions(), refreshConversations(), refreshAttendance()]);
+    } finally {
+      setRefreshing(false);
+    }
+  }
   const moveItems = pendingJoins.filter((item) => !dismissed.includes(item.id));
   const [archived, setArchived] = useState<ActivityItem | null>(null);
 
@@ -128,7 +140,17 @@ export function ActivityPage() {
           <Text style={styles.emptySub}>when someone&apos;s in, it lands here.</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ paddingBottom: tokens.component.posterBottomReserve }} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: tokens.component.posterBottomReserve }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={pullRefresh}
+              tintColor={tokens.semantic.color.accent}
+            />
+          }
+        >
           {pending.length > 0 ? (
             <>
               <Text style={styles.sectionHot}>HOW DID IT GO?</Text>
