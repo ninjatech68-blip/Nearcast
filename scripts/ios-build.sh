@@ -73,8 +73,21 @@ else
   DEST="generic/platform=iOS"   # no UDID needed — avoids "destination not found"
 fi
 
+# Code signing. A device build must be signed by an Apple development team.
+# Pass it non-interactively via DEVELOPMENT_TEAM, e.g.
+#   DEVELOPMENT_TEAM=ABCDE12345 npm run ios:build
+# (values have no spaces, so unquoted word-splitting into two args is safe.)
+# If it's unset, the team already saved in the Xcode project is used — set it
+# once in Xcode → target Nearcast → Signing & Capabilities → your Team.
+TEAM_ARGS=""
+if [ -n "${DEVELOPMENT_TEAM:-}" ]; then
+  TEAM_ARGS="DEVELOPMENT_TEAM=${DEVELOPMENT_TEAM} CODE_SIGN_STYLE=Automatic"
+  echo "==> signing with team ${DEVELOPMENT_TEAM}"
+fi
+
 echo "==> building $CONFIG for $MODE"
 echo "==> derived data: $DERIVED"
+mkdir -p "$ROOT/ios/build"
 set +e
 xcodebuild \
   -workspace "$WORKSPACE" \
@@ -83,8 +96,8 @@ xcodebuild \
   -destination "$DEST" \
   -derivedDataPath "$DERIVED" \
   -allowProvisioningUpdates \
-  build 2>&1 | tee "$ROOT/ios/build/last-build.log" | \
-  grep -E "error:|warning: .*(NearcastPlaces|deployment)|BUILD (SUCCEEDED|FAILED)|▸" || true
+  $TEAM_ARGS \
+  build 2>&1 | tee "$ROOT/ios/build/last-build.log"
 STATUS=${PIPESTATUS[0]}
 set -e
 
