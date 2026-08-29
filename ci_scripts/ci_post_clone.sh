@@ -6,20 +6,36 @@
 # (it's git-ignored). Xcode Cloud clones the repo, then runs THIS before
 # resolving dependencies — so here we install Node + JS deps, write the
 # .env the bundler inlines, generate the native iOS project (Podfile,
-# xcodeproj, shared "Nearcast" scheme), and install Pods. After this,
-# Xcode Cloud archives the scheme as usual and the RN build phase embeds
-# the JS bundle (a real, Metro-free Release).
+# xcodeproj, shared scheme), and install Pods. Xcode Cloud then archives
+# the scheme, and the RN build phase embeds the JS bundle — a real,
+# Metro-free Release.
 #
 # REQUIRED Xcode Cloud environment variables (set in the workflow):
 #   EXPO_PUBLIC_SUPABASE_URL              https://<ref>.supabase.co
 #   EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY  the anon/publishable key
-#   EXPO_PUBLIC_APP_ENV                   production   (optional)
-#   EXPO_PUBLIC_GOOGLE_PLACES_API_KEY     optional
-# Without the two SUPABASE vars the app builds but runs unconfigured.
+# OPTIONAL:
+#   EXPO_PUBLIC_APP_ENV                   defaults to production
+#   EXPO_PUBLIC_GOOGLE_PLACES_API_KEY
 # ===============================================================
 set -e
 
 cd "$CI_PRIMARY_REPOSITORY_PATH"
+
+echo "==> checking required environment variables"
+# Fail loudly rather than shipping a build that cannot reach the backend.
+missing=""
+[ -z "$EXPO_PUBLIC_SUPABASE_URL" ] && missing="$missing EXPO_PUBLIC_SUPABASE_URL"
+[ -z "$EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ] && missing="$missing EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+if [ -n "$missing" ]; then
+  echo "!! missing required environment variable(s):$missing" >&2
+  echo "!! set them on the Xcode Cloud workflow (Environment), then re-run." >&2
+  exit 1
+fi
+case "$EXPO_PUBLIC_SUPABASE_URL" in
+  http*) : ;;
+  *) echo "!! EXPO_PUBLIC_SUPABASE_URL must be a full https URL" >&2; exit 1 ;;
+esac
+echo "    supabase url: $EXPO_PUBLIC_SUPABASE_URL"
 
 echo "==> installing Node"
 brew install node || brew upgrade node || true
@@ -50,5 +66,12 @@ npx expo prebuild --platform ios --no-install
 echo "==> installing CocoaPods"
 cd ios
 pod install
+
+# Print what was generated: if the Xcode Cloud workflow references a
+# scheme name other than the one listed here, the build will fail to find
+# it — this line is what tells you so.
+echo "==> generated Xcode project + schemes:"
+ls -d *.xcodeproj *.xcworkspace 2>/dev/null || true
+ls *.xcodeproj/xcshareddata/xcschemes/ 2>/dev/null || true
 
 echo "==> post-clone complete"
