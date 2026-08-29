@@ -13,7 +13,8 @@ import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
-import { casters, me as meFixture, recap } from '@/features/casts/fixtures';
+import { casters, me as meFixture } from '@/features/casts/fixtures';
+import { useRecap } from '@/features/casts/use-recap';
 import { setMyPhoto, setQuietHours, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
 import { signOut } from '@/features/auth/auth';
 import { circlesVouchingForMe, refreshCircles, refreshVouchers, useCircles, vouchersOfMe } from '@/features/trust/circles';
@@ -40,6 +41,7 @@ function signalWord(lit: number): string {
 export default function YouScreen() {
   const me = useMe();
   const live = profilesEnabled();
+  const recap = useRecap();
 
   // real circles + vouchers in a live app; no-op offline.
   useEffect(() => {

@@ -462,10 +462,4 @@ export const me = {
   privacy: 'casts carry the neighbourhood, never an exact spot — the app never has one. sort out exactly where in chat; it lives in-app, numbers never change hands.',
 };
 
-export const recap = {
-  month: 'march',
-  headline: '6 plans made real.',
-  meta: "2 people you'd never met · tuesdays are your night",
-  why: "share it or don't. it's yours.",
-};
 
