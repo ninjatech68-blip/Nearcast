@@ -98,3 +98,34 @@ supabase functions logs send-push --project-ref <project-ref>
   them, so a ping can arrive inside a person's quiet window.
 - There is no receipt of delivery. `sent_at` records that the message
   was handed to Expo, not that a phone showed it.
+
+---
+
+# Ops — Chat Media
+
+`20260829170000_chat_media.sql` creates everything: the message
+columns, the `send_media` RPC, and a **private** `chat-media` bucket
+with policies that let only a conversation's two parties read or write
+under its `<conversation_id>/…` folder. `supabase db push` is the whole
+setup — there is no dashboard step.
+
+Two things worth knowing:
+
+- **Photos need a native rebuild.** The camera needs
+  `NSCameraUsageDescription`, which comes from the `expo-image-picker`
+  plugin config in `app.json`. Regenerate and rebuild:
+  `DEVELOPMENT_TEAM=<team-id> npm run ios:build -- prebuild`. The team
+  must be passed because `prebuild` regenerates the Xcode project and
+  the saved signing team goes with it.
+- **GIF search is not built.** The picker sends an animated GIF that is
+  already in the photo library, and iOS is asked for the asset as
+  stored so it is not flattened to a still. A Giphy/Tenor style *search*
+  picker needs a provider account and an API key, and shipping one means
+  sending a search term to a third party from inside a private chat —
+  that is a product decision, not a missing function.
+
+Verify on two devices: send a photo from the camera, a photo from the
+library, an animated GIF, and a location; check that
+`select media_kind, media_path from public.messages order by created_at desc limit 4;`
+shows paths under the conversation's folder, and that the bucket is
+listed as private in the dashboard.

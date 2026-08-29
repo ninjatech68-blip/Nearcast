@@ -72,7 +72,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Nearcast uses a photo you pick as your profile picture, shown at decision moments for trust."
+          "photosPermission": "Nearcast uses photos you pick for your profile picture and for pictures you send in a chat with someone you have matched with.",
+          "cameraPermission": "Nearcast uses the camera when you take a photo to send in a chat with someone you have matched with."
         }
       ],
       [

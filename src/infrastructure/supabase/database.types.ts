@@ -587,6 +587,10 @@ export type Database = {
           is_system: boolean
           latitude: number | null
           longitude: number | null
+          media_height: number | null
+          media_kind: string | null
+          media_path: string | null
+          media_width: number | null
           place_label: string | null
           sender_id: string | null
         }
@@ -598,6 +602,10 @@ export type Database = {
           is_system?: boolean
           latitude?: number | null
           longitude?: number | null
+          media_height?: number | null
+          media_kind?: string | null
+          media_path?: string | null
+          media_width?: number | null
           place_label?: string | null
           sender_id?: string | null
         }
@@ -609,6 +617,10 @@ export type Database = {
           is_system?: boolean
           latitude?: number | null
           longitude?: number | null
+          media_height?: number | null
+          media_kind?: string | null
+          media_path?: string | null
+          media_width?: number | null
           place_label?: string | null
           sender_id?: string | null
         }
@@ -1018,6 +1030,10 @@ export type Database = {
           is_system: boolean
           latitude: number
           longitude: number
+          media_height: number
+          media_kind: string
+          media_path: string
+          media_width: number
           place_label: string
           sender_id: string
         }[]
@@ -1235,6 +1251,17 @@ export type Database = {
           share_latitude: number
           share_longitude: number
           target_conversation_id: string
+        }
+        Returns: string
+      }
+      send_media: {
+        Args: {
+          caption?: string
+          height?: number
+          kind: string
+          path: string
+          target_conversation_id: string
+          width?: number
         }
         Returns: string
       }

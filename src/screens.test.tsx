@@ -486,6 +486,15 @@ describe('chat', () => {
 
     expect(await view.findByText('on my way')).toBeTruthy();
   });
+
+  it('offers one + for photos, GIFs and location, and no emoji row', async () => {
+    const view = await render(<ChatScreen />);
+
+    expect(view.getByRole('button', { name: 'send a photo, GIF or your location' })).toBeTruthy();
+    // the emoji chips are gone: the system keyboard already has them
+    expect(view.queryByRole('button', { name: 'add 👍' })).toBeNull();
+    expect(view.queryByRole('button', { name: 'share my location' })).toBeNull();
+  });
 });
 
 describe('circles', () => {

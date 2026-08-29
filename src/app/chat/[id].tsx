@@ -1,7 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
 import {
+  ActionSheetIOS,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -27,10 +30,13 @@ import {
   openConversation,
   retryMessage,
   sendLocationMessage,
+  sendMediaMessageToThread,
   sendMessage,
   useThread,
+  type LocalMedia,
   type Message,
 } from '@/features/chat/chat';
+import { useMediaUrl } from '@/features/chat/use-media-url';
 import { connectivityNote } from '@/infrastructure/net/connectivity';
 import { useConnectivity } from '@/infrastructure/net/submit';
 
@@ -45,6 +51,7 @@ export default function ChatScreen() {
   const thread = useThread(id ?? '');
   const [draft, setDraft] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const connectivity = useConnectivity();
   const netNote = connectivityNote(connectivity);
@@ -114,9 +121,86 @@ export default function ChatScreen() {
     }
   }
 
-  function addEmoji(emoji: string) {
-    haptic('selection');
-    setDraft((d) => d + emoji);
+  /**
+   * The + menu. Emoji live on the system keyboard, so the row of six
+   * emoji chips that used to sit above the composer was six taps of
+   * screen doing what the keyboard already does — it is gone, and this
+   * is what the space is for.
+   */
+  function openAttachMenu() {
+    haptic('light');
+    const options = ['take a photo', 'photo or GIF', 'share my location', 'cancel'];
+    const run = (index: number) => {
+      if (index === 0) void pickMedia('camera');
+      if (index === 1) void pickMedia('library');
+      if (index === 2) void shareLocation();
+    };
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        { options, cancelButtonIndex: 3, userInterfaceStyle: 'light' },
+        run,
+      );
+      return;
+    }
+    Alert.alert('send', undefined, [
+      { text: options[0], onPress: () => run(0) },
+      { text: options[1], onPress: () => run(1) },
+      { text: options[2], onPress: () => run(2) },
+      { text: 'cancel', style: 'cancel' },
+    ]);
+  }
+
+  async function pickMedia(source: 'camera' | 'library') {
+    setSendError(null);
+    try {
+      const permission =
+        source === 'camera'
+          ? await ImagePicker.requestCameraPermissionsAsync()
+          : await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        setSendError(
+          source === 'camera'
+            ? 'camera access is off. turn it on to take a photo.'
+            : 'photo access is off. turn it on to send a picture.',
+        );
+        return;
+      }
+      // NO allowsEditing: the cropper re-encodes, and a re-encoded GIF
+      // is a still frame. quality < 1 for the same reason it exists —
+      // a 12MP camera photo is not worth the upload on mobile data —
+      // but it does not apply to a GIF, which is copied as picked.
+      const result =
+        source === 'camera'
+          ? await ImagePicker.launchCameraAsync({ quality: 0.75, exif: false })
+          : await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              quality: 0.75,
+              exif: false,
+              // ask iOS for the asset AS STORED. transcoding a GIF to a
+              // "compatible" representation flattens it to one frame,
+              // which would make sending a GIF pointless.
+              preferredAssetRepresentationMode:
+                ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Current,
+            });
+      if (result.canceled) return;
+      const asset = result.assets[0];
+      if (!asset) return;
+      const media: LocalMedia = {
+        uri: asset.uri,
+        kind: isGif(asset.uri, asset.mimeType) ? 'gif' : 'image',
+        width: asset.width,
+        height: asset.height,
+        mimeType: asset.mimeType,
+      };
+      setSending(true);
+      await sendMediaMessageToThread(thread!.id, media);
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+    } catch {
+      haptic('warning');
+      setSendError("that didn't send. try again.");
+    } finally {
+      setSending(false);
+    }
   }
 
   function openExpiryMenu() {
@@ -220,32 +304,22 @@ export default function ChatScreen() {
         ) : (
           <View style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
             {sendError ? <Text style={styles.sendError}>{sendError}</Text> : null}
-            <View style={styles.emojiRow}>
-              {['👍', '🙌', '😅', '🎉', '🙏', '📍'].map((emoji) =>
-                emoji === '📍' ? (
-                  <Pressable
-                    key="loc"
-                    accessibilityRole="button"
-                    accessibilityLabel="share my location"
-                    onPress={shareLocation}
-                    style={styles.emojiChip}
-                  >
-                    <Text style={styles.emoji}>📍</Text>
-                  </Pressable>
-                ) : (
-                  <Pressable
-                    key={emoji}
-                    accessibilityRole="button"
-                    accessibilityLabel={`add ${emoji}`}
-                    onPress={() => addEmoji(emoji)}
-                    style={styles.emojiChip}
-                  >
-                    <Text style={styles.emoji}>{emoji}</Text>
-                  </Pressable>
-                ),
-              )}
-            </View>
             <View style={styles.composer}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="send a photo, GIF or your location"
+                accessibilityState={{ disabled: sending }}
+                disabled={sending}
+                onPress={openAttachMenu}
+                hitSlop={8}
+                style={[styles.plusBtn, sending && styles.sendDim]}
+              >
+                {sending ? (
+                  <ActivityIndicator color={tokens.semantic.color.ink} />
+                ) : (
+                  <Text style={styles.plusText}>+</Text>
+                )}
+              </Pressable>
               <TextInput
                 accessibilityLabel="message"
                 value={draft}
@@ -286,10 +360,25 @@ function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }
   const failed = mine && message.status === 'failed';
 
   const hasLocation = message.latitude !== undefined && message.longitude !== undefined;
+  const hasMedia = message.mediaPath !== undefined;
   const body = (
     <>
-      <View style={[styles.bubble, mine ? styles.mine : styles.theirs, failed && styles.bubbleFailed]}>
-        {hasLocation ? (
+      <View
+        style={[
+          styles.bubble,
+          mine ? styles.mine : styles.theirs,
+          failed && styles.bubbleFailed,
+          hasMedia && styles.bubbleMedia,
+        ]}
+      >
+        {hasMedia ? (
+          <>
+            <MediaBubble message={message} />
+            {message.text ? (
+              <Text style={[styles.caption, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
+            ) : null}
+          </>
+        ) : hasLocation ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="open shared location in maps"
@@ -337,24 +426,74 @@ function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }
   return <View style={[styles.bubbleRow, mine ? styles.rowMine : styles.rowTheirs]}>{body}</View>;
 }
 
+/**
+ * A photo or GIF inside a bubble.
+ *
+ * The bucket is private, so the URL is signed and short-lived and
+ * arrives a moment after the row does — until it lands, this holds the
+ * picture's own aspect ratio rather than collapsing and pushing the
+ * thread around when it appears.
+ *
+ * expo-image plays an animated GIF; React Native's own Image does not
+ * on every platform, which is the whole reason a GIF is stored as one.
+ */
+function MediaBubble({ message }: { message: Message }) {
+  const url = useMediaUrl(message.mediaPath);
+  const ratio =
+    message.mediaWidth && message.mediaHeight ? message.mediaWidth / message.mediaHeight : 1;
+
+  return (
+    <View style={[styles.media, { aspectRatio: ratio }]}>
+      {url ? (
+        <Image
+          source={{ uri: url }}
+          style={styles.mediaImage}
+          contentFit="cover"
+          transition={120}
+          accessibilityLabel={message.mediaKind === 'gif' ? 'a GIF' : 'a photo'}
+        />
+      ) : (
+        <View style={styles.mediaPending}>
+          <ActivityIndicator color={tokens.semantic.color.accent} />
+        </View>
+      )}
+    </View>
+  );
+}
+
+/** a GIF must not be re-encoded, so it has to be recognised as one. */
+function isGif(uri: string, mimeType?: string | null): boolean {
+  if (mimeType) return mimeType.toLowerCase() === 'image/gif';
+  return /\.gif($|\?)/i.test(uri);
+}
+
 function tickFor(status: NonNullable<Message['status']>): string {
   return { pending: '…', sent: '✓', delivered: '✓✓', read: '✓✓', failed: '!' }[status];
 }
 
 const styles = StyleSheet.create({
   sendError: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, paddingHorizontal: 4, paddingBottom: 6 },
-  emojiRow: { flexDirection: 'row', gap: 6, paddingBottom: 8, flexWrap: 'wrap' },
-  emojiChip: {
-    minWidth: 40,
-    height: 36,
+  plusBtn: {
+    width: 38,
+    height: 38,
     borderRadius: tokens.primitive.radius.pill,
     borderWidth: 1,
     borderColor: tokens.semantic.color.hairlineOnCream,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
   },
-  emoji: { fontSize: 18 },
+  plusText: { fontFamily: fontFamily.text, fontSize: 24, lineHeight: 26, color: tokens.semantic.color.ink },
+  bubbleMedia: { padding: 4, overflow: 'hidden' },
+  media: {
+    width: 220,
+    maxWidth: '100%',
+    borderRadius: tokens.primitive.radius.chip,
+    overflow: 'hidden',
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
+  mediaImage: { width: '100%', height: '100%' },
+  mediaPending: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  caption: { ...tokens.typography.meta, paddingHorizontal: 8, paddingTop: 8, paddingBottom: 4 },
   locHint: { ...tokens.typography.metaSmall, marginTop: 4, opacity: 0.8 },
   screen: { flex: 1, backgroundColor: tokens.semantic.color.cream, paddingHorizontal: 18 },
   flex: { flex: 1 },

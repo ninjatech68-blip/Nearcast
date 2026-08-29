@@ -15,14 +15,16 @@ import {
   fetchMessages,
   markRead,
   sendLocationShare,
+  sendMediaMessage,
   sendText,
   setMode,
   subscribeToConversation,
+  type LocalMedia,
   type RemoteConversation,
   type RemoteMessage,
 } from './remote-chat';
 
-export { chatEnabled } from './remote-chat';
+export { chatEnabled, signedMediaUrl, type LocalMedia } from './remote-chat';
 
 /**
  * chat opens only after a match, and carries the earlier messages so a
@@ -44,6 +46,16 @@ export type Message = {
   latitude?: number;
   longitude?: number;
   placeLabel?: string;
+  /**
+   * a photo or GIF. In backend mode this is an object PATH in the
+   * private chat-media bucket, resolved to a short-lived signed URL at
+   * render time; on fixtures it is the local file uri the picker gave
+   * us, which renders directly. Never a permanent public URL.
+   */
+  mediaPath?: string;
+  mediaKind?: 'image' | 'gif';
+  mediaWidth?: number;
+  mediaHeight?: number;
 };
 
 /**
@@ -164,6 +176,14 @@ function toMessage(row: RemoteMessage, otherLastRead: string | null): Message {
     status,
     ...(row.latitude !== null && row.longitude !== null
       ? { latitude: row.latitude, longitude: row.longitude, placeLabel: row.place_label ?? undefined }
+      : {}),
+    ...(row.media_path
+      ? {
+          mediaPath: row.media_path,
+          mediaKind: row.media_kind === 'gif' ? ('gif' as const) : ('image' as const),
+          mediaWidth: row.media_width ?? undefined,
+          mediaHeight: row.media_height ?? undefined,
+        }
       : {}),
   };
 }
@@ -287,6 +307,45 @@ export async function sendLocationMessage(
   if (!chatEnabled()) return;
   await sendLocationShare(threadId, latitude, longitude, label);
   await loadConversation(threadId);
+}
+
+/**
+ * send a photo or a GIF into a chat.
+ *
+ * Backend mode uploads to the private bucket and records the path;
+ * the fixture build keeps the local file uri so the demo still shows
+ * the picture, with no server to put it on.
+ */
+export async function sendMediaMessageToThread(
+  threadId: string,
+  media: LocalMedia,
+  caption?: string,
+): Promise<void> {
+  if (chatEnabled()) {
+    await sendMediaMessage(threadId, media, caption);
+    await loadConversation(threadId);
+    return;
+  }
+  const thread = state.threads[threadId];
+  if (!thread || thread.mode === 'ended') return;
+  const id = `m${thread.messages.length + 1}-media-${thread.messages.length}`;
+  const message: Message = {
+    id,
+    from: 'me',
+    text: caption?.trim() ?? '',
+    time: 'now',
+    status: 'pending',
+    mediaPath: media.uri,
+    mediaKind: media.kind,
+    mediaWidth: media.width,
+    mediaHeight: media.height,
+  };
+  state = {
+    ...state,
+    threads: { ...state.threads, [threadId]: { ...thread, messages: [...thread.messages, message] } },
+  };
+  emit();
+  void deliverMessage(threadId, id);
 }
 
 /**
