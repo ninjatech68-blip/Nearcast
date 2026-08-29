@@ -8,6 +8,14 @@ import {
   STORAGE_KEYS,
 } from '@/infrastructure/persistence/storage';
 import type { TrustGraph } from './domain/trust';
+import {
+  addToCircleRemote,
+  circlesEnabled,
+  createCircleRemote,
+  fetchMyCircles,
+  fetchVouchersOfMe,
+  removeFromCircleRemote,
+} from './remote-circles';
 
 /**
  * circles are named groups of people you trust. you build them by
@@ -23,6 +31,8 @@ export type Circle = {
   id: string;
   name: string;
   memberIds: readonly string[];
+  /** live-mode member details (name/area); absent in the fixture build */
+  members?: readonly { id: string; name: string; area: string }[];
 };
 
 export type Person = {
@@ -47,7 +57,12 @@ export const people: Record<string, Person> = {
   neha: { id: 'neha', name: 'Neha', area: 'indiranagar' },
 };
 
-type State = { circles: readonly Circle[] };
+type State = {
+  circles: readonly Circle[];
+  /** backend caches — filled by refreshCircles / refreshVouchers */
+  remoteCircles: readonly Circle[];
+  remoteVouchers: readonly string[];
+};
 
 const SEED_STATE: State = {
   circles: [
@@ -55,15 +70,17 @@ const SEED_STATE: State = {
     { id: 'flat-4b', name: 'flat 4b', memberIds: ['arjun'] },
     { id: 'college-crew', name: 'college crew', memberIds: ['kavya'] },
   ],
+  remoteCircles: [],
+  remoteVouchers: [],
 };
 
 // circles persist in full — who you vouch for is the raw material the
 // trust graph runs on, and a vouch you made must outlive a restart.
-let state: State = loadState<State>(STORAGE_KEYS.circles, SEED_STATE);
+let state: State = { ...SEED_STATE, ...loadState<State>(STORAGE_KEYS.circles, SEED_STATE) };
 
 const listeners = new Set<() => void>();
 const emit = () => {
-  saveState(STORAGE_KEYS.circles, state);
+  saveState(STORAGE_KEYS.circles, persistableState());
   listeners.forEach((l) => l());
 };
 const subscribe = (l: () => void) => {
@@ -76,6 +93,11 @@ registerStoreReset(() => {
   listeners.forEach((l) => l());
 });
 
+function persistableState(): State {
+  // never persist the server caches; they are re-fetched on load
+  return { ...state, remoteCircles: [], remoteVouchers: [] };
+}
+
 /** test-only reset. clears the persisted record too. */
 export function resetCirclesStore(): void {
   clearState(STORAGE_KEYS.circles);
@@ -84,11 +106,12 @@ export function resetCirclesStore(): void {
 }
 
 export function useCircles(): readonly Circle[] {
-  return useSyncExternalStore(subscribe, () => state.circles);
+  const snapshot = useSyncExternalStore(subscribe, () => state);
+  return circlesEnabled() ? snapshot.remoteCircles : snapshot.circles;
 }
 
 export function getCircles(): readonly Circle[] {
-  return state.circles;
+  return circlesEnabled() ? state.remoteCircles : state.circles;
 }
 
 /** the graph the trust functions run on: everyone's circle membership. */
@@ -115,8 +138,14 @@ export function circlesContaining(personId: string): readonly Circle[] {
   return state.circles.filter((c) => c.memberIds.includes(personId));
 }
 
-export function addToCircle(circleId: string, personId: string): void {
+export async function addToCircle(circleId: string, personId: string): Promise<void> {
+  if (circlesEnabled()) {
+    await addToCircleRemote(circleId, personId);
+    await refreshCircles();
+    return;
+  }
   state = {
+    ...state,
     circles: state.circles.map((c) =>
       c.id === circleId && !c.memberIds.includes(personId)
         ? { ...c, memberIds: [...c.memberIds, personId] }
@@ -126,8 +155,14 @@ export function addToCircle(circleId: string, personId: string): void {
   emit();
 }
 
-export function removeFromCircle(circleId: string, personId: string): void {
+export async function removeFromCircle(circleId: string, personId: string): Promise<void> {
+  if (circlesEnabled()) {
+    await removeFromCircleRemote(circleId, personId);
+    await refreshCircles();
+    return;
+  }
   state = {
+    ...state,
     circles: state.circles.map((c) =>
       c.id === circleId ? { ...c, memberIds: c.memberIds.filter((id) => id !== personId) } : c,
     ),
@@ -135,11 +170,48 @@ export function removeFromCircle(circleId: string, personId: string): void {
   emit();
 }
 
-export function createCircle(name: string): string {
+export async function createCircle(name: string): Promise<string> {
+  if (circlesEnabled()) {
+    const id = await createCircleRemote(name);
+    await refreshCircles();
+    return id;
+  }
   const id = `circle-${Date.now()}`;
-  state = { circles: [...state.circles, { id, name: name.trim().toLowerCase(), memberIds: [] }] };
+  state = { ...state, circles: [...state.circles, { id, name: name.trim().toLowerCase(), memberIds: [] }] };
   emit();
   return id;
+}
+
+/** pull my circles (with member names) from the server. no-op offline. */
+export async function refreshCircles(): Promise<void> {
+  if (!circlesEnabled()) return;
+  const rows = await fetchMyCircles();
+  const byId = new Map<string, Circle & { members: { id: string; name: string; area: string }[] }>();
+  for (const row of rows) {
+    let circle = byId.get(row.circle_id);
+    if (!circle) {
+      circle = { id: row.circle_id, name: row.name, memberIds: [], members: [] };
+      byId.set(row.circle_id, circle);
+    }
+    if (row.member_id) {
+      (circle.memberIds as string[]).push(row.member_id);
+      circle.members.push({
+        id: row.member_id,
+        name: row.member_first_name ?? 'someone',
+        area: row.member_area ?? '',
+      });
+    }
+  }
+  state = { ...state, remoteCircles: [...byId.values()] };
+  emit();
+}
+
+/** pull who vouches for me. no-op offline. */
+export async function refreshVouchers(): Promise<void> {
+  if (!circlesEnabled()) return;
+  const names = await fetchVouchersOfMe();
+  state = { ...state, remoteVouchers: names };
+  emit();
 }
 
 /**
@@ -160,11 +232,11 @@ const vouches: readonly Vouch[] = [
 ];
 
 export function circlesVouchingForMe(): number {
-  return vouches.length;
+  return circlesEnabled() ? state.remoteVouchers.length : vouches.length;
 }
 
 export function vouchersOfMe(): readonly string[] {
-  return vouches.map((v) => v.ownerId);
+  return circlesEnabled() ? state.remoteVouchers : vouches.map((v) => v.ownerId);
 }
 
 /**

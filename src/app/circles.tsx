@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BarButton } from '@/design-system/components/button';
@@ -10,7 +10,7 @@ import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
-import { createCircle, people, useCircles } from '@/features/trust/circles';
+import { createCircle, people, refreshCircles, useCircles } from '@/features/trust/circles';
 
 /**
  * circles: the named groups you build from people you have met. this is
@@ -21,13 +21,18 @@ export default function CirclesScreen() {
   const circles = useCircles();
   const [open, setOpen] = useState<string | null>(null);
 
+  // pull real circles (with member names) in a live app. no-op offline.
+  useEffect(() => {
+    void refreshCircles();
+  }, []);
+
   function newCircle() {
     // a real text-entry sheet lands with the create-circle flow; the
     // prompt keeps the fixture build honest without a stray input screen
     Alert.prompt?.('name the circle', 'e.g. climbing crew', (name?: string) => {
       if (name && name.trim()) {
         haptic('selection');
-        createCircle(name);
+        void createCircle(name);
       }
     });
   }
@@ -57,7 +62,8 @@ export default function CirclesScreen() {
                     <Text style={styles.empty}>no one here yet. add people from their profile.</Text>
                   ) : (
                     circle.memberIds.map((id) => {
-                      const person = people[id];
+                      const liveMember = circle.members?.find((m) => m.id === id);
+                      const person = liveMember ?? people[id];
                       if (!person) return null;
                       return (
                         <Pressable

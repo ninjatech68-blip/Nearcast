@@ -19,7 +19,7 @@ import {
   type PublicProfile,
 } from '@/features/me/remote-profile';
 import { useFeedCasts } from '@/features/casts/store';
-import { hasReceiptWith, trustGraph, useCircles } from '@/features/trust/circles';
+import { hasReceiptWith, refreshCircles, trustGraph, useCircles } from '@/features/trust/circles';
 import { trustLink } from '@/features/trust/domain/trust';
 import { refreshSharedHistory, useSharedHistoryWith } from '@/features/attendance/store';
 import { blockCaster } from '@/features/me/me-store';
@@ -73,7 +73,7 @@ export default function CasterProfileScreen() {
   const liveCasts = caster ? feed.filter((cast) => cast.byId === caster.id) : [];
 
   // the trust phrase is COMPUTED from the graph, never a fixture string
-  const link = caster ? trustLink(trustGraph(), 'me', caster.id) : null;
+  const link = !live && caster ? trustLink(trustGraph(), 'me', caster.id) : null;
   const inCircles = caster ? circles.filter((c) => c.memberIds.includes(caster.id)) : [];
   // vouching gate: a receipt with them, OR they are already in one of
   // your circles (someone with a receipt already put them there — you
@@ -89,7 +89,8 @@ export default function CasterProfileScreen() {
   // pull real shared-history counts from the server (no-op on fixtures).
   useEffect(() => {
     if (caster?.id) void refreshSharedHistory(caster.id);
-  }, [caster?.id]);
+    if (live) void refreshCircles();
+  }, [caster?.id, live]);
 
   function addTo() {
     if (!caster) return;

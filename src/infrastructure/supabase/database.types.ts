@@ -926,6 +926,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      add_to_circle: {
+        Args: { member: string; target_circle: string }
+        Returns: undefined
+      }
       attendance_outcome: {
         Args: { as_of?: string; target_intent: string; target_profile: string }
         Returns: Database["public"]["Enums"]["attendance_result"]
@@ -944,6 +948,7 @@ export type Database = {
           sender_id: string
         }[]
       }
+      create_circle: { Args: { circle_name: string }; Returns: string }
       decline_response: {
         Args: { target_response_id: string }
         Returns: undefined
@@ -1014,6 +1019,16 @@ export type Database = {
           starts_at: string
           statement: string
           status: Database["public"]["Enums"]["intent_status"]
+        }[]
+      }
+      my_circles: {
+        Args: never
+        Returns: {
+          circle_id: string
+          member_area: string
+          member_first_name: string
+          member_id: string
+          name: string
         }[]
       }
       my_conversations: {
@@ -1117,6 +1132,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      remove_from_circle: {
+        Args: { member: string; target_circle: string }
+        Returns: undefined
+      }
       report_presence: {
         Args: {
           report: Database["public"]["Enums"]["presence_report"]
@@ -1155,6 +1174,12 @@ export type Database = {
           flakes: number
           plans: number
           receipts: number
+        }[]
+      }
+      vouches_for_me: {
+        Args: never
+        Returns: {
+          voucher_first_name: string
         }[]
       }
       withdraw_response: {

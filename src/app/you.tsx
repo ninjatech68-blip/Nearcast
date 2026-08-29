@@ -16,7 +16,7 @@ import { facePhotos } from '@/features/casts/faces';
 import { casters, me as meFixture, recap } from '@/features/casts/fixtures';
 import { setMyPhoto, setQuietHours, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
 import { signOut } from '@/features/auth/auth';
-import { circlesVouchingForMe, useCircles, vouchersOfMe } from '@/features/trust/circles';
+import { circlesVouchingForMe, refreshCircles, refreshVouchers, useCircles, vouchersOfMe } from '@/features/trust/circles';
 import { useMyPastPlans } from '@/features/attendance/store';
 import { profilesEnabled, signalLit } from '@/features/me/remote-profile';
 import { getFailureMode, setFailureMode } from '@/infrastructure/net/submit';
@@ -29,6 +29,12 @@ function signalWord(lit: number): string {
 export default function YouScreen() {
   const me = useMe();
   const live = profilesEnabled();
+
+  // real circles + vouchers in a live app; no-op offline.
+  useEffect(() => {
+    void refreshCircles();
+    void refreshVouchers();
+  }, []);
   const pastPlans = useMyPastPlans();
   const circles = useCircles();
   // real attendance drives the profile in a live app; the fixture count

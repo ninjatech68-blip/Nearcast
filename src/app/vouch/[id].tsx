@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,7 +12,7 @@ import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { profilesEnabled, usePersonFirstName } from '@/features/me/remote-profile';
-import { addToCircle, useCircles } from '@/features/trust/circles';
+import { addToCircle, refreshCircles, useCircles } from '@/features/trust/circles';
 
 /**
  * vouch sheet: pick which of your circles to add a person to. one
@@ -29,6 +30,10 @@ export default function VouchScreen() {
   const options = circles.filter((c) => !c.memberIds.includes(id ?? ''));
   const already = circles.filter((c) => c.memberIds.includes(id ?? ''));
 
+  useEffect(() => {
+    void refreshCircles();
+  }, []);
+
   if (!caster) {
     return (
       <SheetShell title="not around.">
@@ -43,7 +48,7 @@ export default function VouchScreen() {
   function pick(circleId: string) {
     if (!id) return;
     haptic('success');
-    addToCircle(circleId, id);
+    void addToCircle(circleId, id).catch(() => undefined);
     router.back();
   }
 
