@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, ScrollView, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { Rail, type RailPage } from '@/design-system/components/rail';
 import { ActivityPage } from '@/features/casts/activity-page';
 import { FeedPage } from '@/features/casts/feed-page';
+import { onActivityRequested } from '@/features/notifications/routing';
 
 /**
  * the root: a two-page horizontal pager, feed ↔ activity, one rail over both.
@@ -25,6 +26,16 @@ export default function HomeScreen() {
     pagerRef.current?.scrollTo({ x: index * width, animated: true });
     setPage(index === 0 ? 'near' : 'activity');
   }
+
+  // a tapped push is always about a request or an accept, and both live
+  // on the activity page — so the pager follows the tap instead of
+  // leaving the person on the feed to find it themselves.
+  // re-subscribed only when the page width changes, because goTo scrolls
+  // by it — an empty dep array would keep scrolling to a stale offset
+  // after a rotation, and no array at all would churn the listener set
+  // on every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => onActivityRequested(() => goTo(1)), [width]);
 
   function handleFeedScroll(scrolling: boolean) {
     Animated.timing(railOpacity, {

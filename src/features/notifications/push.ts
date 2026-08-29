@@ -19,14 +19,22 @@ import { tokens } from '@/design-system/tokens';
 import { getSupabase } from '@/infrastructure/supabase/client';
 
 type PermissionResult = { status: string; granted?: boolean; canAskAgain?: boolean };
+type Subscription = { remove: () => void };
+type NotificationLike = { request?: { content?: { data?: Record<string, unknown> } } };
+type ResponseLike = { notification?: NotificationLike };
 type NotificationsLike = {
   getPermissionsAsync: () => Promise<PermissionResult>;
   requestPermissionsAsync: () => Promise<PermissionResult>;
   getExpoPushTokenAsync: (opts?: { projectId?: string }) => Promise<{ data: string }>;
   setNotificationHandler: (handler: unknown) => void;
   setNotificationChannelAsync: (id: string, channel: unknown) => Promise<unknown>;
+  addNotificationReceivedListener: (fn: (n: NotificationLike) => void) => Subscription;
+  addNotificationResponseReceivedListener: (fn: (r: ResponseLike) => void) => Subscription;
   AndroidImportance: { DEFAULT: number; HIGH: number };
 };
+
+/** what a push carries: a kind and ids, never any content. */
+export type PushPayload = { kind?: string; intentId?: string };
 
 let Notifications: NotificationsLike | null = null;
 try {
@@ -129,4 +137,36 @@ async function registerToken(): Promise<void> {
     // a missing projectId or a transient failure must not turn a granted
     // permission into a denial; the next launch re-tries registration.
   }
+}
+
+/**
+ * Subscribe to arriving notifications and to taps on them.
+ *
+ * Both handlers exist for the same reason: a push tells the person
+ * something changed on the server, and the screen they land on has to
+ * show that change rather than the state from before it. Returns an
+ * unsubscribe, and a no-op one when the native module is absent.
+ */
+export function addNotificationListeners(handlers: {
+  onReceived?: (payload: PushPayload) => void;
+  onTap?: (payload: PushPayload) => void;
+}): () => void {
+  if (!Notifications) return () => undefined;
+  const received = Notifications.addNotificationReceivedListener((notification) => {
+    handlers.onReceived?.(payloadOf(notification));
+  });
+  const tapped = Notifications.addNotificationResponseReceivedListener((response) => {
+    handlers.onTap?.(payloadOf(response?.notification));
+  });
+  return () => {
+    received.remove();
+    tapped.remove();
+  };
+}
+
+function payloadOf(notification: NotificationLike | undefined): PushPayload {
+  const data = notification?.request?.content?.data ?? {};
+  const kind = typeof data.kind === 'string' ? data.kind : undefined;
+  const intentId = typeof data.intentId === 'string' ? data.intentId : undefined;
+  return { kind, intentId };
 }

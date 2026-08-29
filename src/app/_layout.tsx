@@ -17,6 +17,7 @@ import { useMe } from '@/features/me/me-store';
 import { useProfileSync } from '@/features/me/use-profile-sync';
 import { restoreSession } from '@/features/auth/auth';
 import { configureNotifications, refreshPushRegistration } from '@/features/notifications/push';
+import { useNotificationRouting } from '@/features/notifications/routing';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
 // expo-router renders this instead of a blank white screen when a route
@@ -33,6 +34,10 @@ export default function RootLayout() {
   // mirror this device's profile to the rows delivery reads, whenever
   // they change. no-op without a backend.
   useProfileSync();
+
+  // a tapped push lands on activity with fresh rows; one that arrives
+  // while the app is open refreshes what is already on screen.
+  useNotificationRouting();
 
   useEffect(() => {
     let isMounted = true;
