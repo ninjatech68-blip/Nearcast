@@ -185,33 +185,43 @@ export async function createCircle(name: string): Promise<string> {
 /** pull my circles (with member names) from the server. no-op offline. */
 export async function refreshCircles(): Promise<void> {
   if (!circlesEnabled()) return;
-  const rows = await fetchMyCircles();
-  const byId = new Map<string, Circle & { members: { id: string; name: string; area: string }[] }>();
-  for (const row of rows) {
-    let circle = byId.get(row.circle_id);
-    if (!circle) {
-      circle = { id: row.circle_id, name: row.name, memberIds: [], members: [] };
-      byId.set(row.circle_id, circle);
+  try {
+    const rows = await fetchMyCircles();
+    const byId = new Map<string, Circle & { members: { id: string; name: string; area: string }[] }>();
+    for (const row of rows) {
+      let circle = byId.get(row.circle_id);
+      if (!circle) {
+        circle = { id: row.circle_id, name: row.name, memberIds: [], members: [] };
+        byId.set(row.circle_id, circle);
+      }
+      if (row.member_id) {
+        (circle.memberIds as string[]).push(row.member_id);
+        circle.members.push({
+          id: row.member_id,
+          name: row.member_first_name ?? 'someone',
+          area: row.member_area ?? '',
+        });
+      }
     }
-    if (row.member_id) {
-      (circle.memberIds as string[]).push(row.member_id);
-      circle.members.push({
-        id: row.member_id,
-        name: row.member_first_name ?? 'someone',
-        area: row.member_area ?? '',
-      });
-    }
+    state = { ...state, remoteCircles: [...byId.values()] };
+    emit();
+  } catch (error) {
+    // a background refresh must never crash the screen that fired it;
+    // leave the last-known circles in place and surface nothing.
+    console.warn('refreshCircles failed', error);
   }
-  state = { ...state, remoteCircles: [...byId.values()] };
-  emit();
 }
 
 /** pull who vouches for me. no-op offline. */
 export async function refreshVouchers(): Promise<void> {
   if (!circlesEnabled()) return;
-  const names = await fetchVouchersOfMe();
-  state = { ...state, remoteVouchers: names };
-  emit();
+  try {
+    const names = await fetchVouchersOfMe();
+    state = { ...state, remoteVouchers: names };
+    emit();
+  } catch (error) {
+    console.warn('refreshVouchers failed', error);
+  }
 }
 
 /**

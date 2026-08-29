@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { render as rawRender, userEvent } from '@testing-library/react-native';
+import { act, render as rawRender, userEvent } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const metrics = {
@@ -79,7 +79,7 @@ jest.mock('react-native-maps', () => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { resetCastStore } = require('./features/casts/store');
+const { resetCastStore, setDraftArea } = require('./features/casts/store');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { resetAttendanceStore } = require('./features/attendance/store');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -289,6 +289,22 @@ describe('compose', () => {
     expect(view.getByText(/the whole city/)).toBeTruthy();
   });
 
+  it('will not cast until an area is picked — nothing is auto-filled', async () => {
+    const user = userEvent.setup();
+    const view = await render(<ComposeScreen />);
+
+    await user.press(view.getByRole('radio', { name: 'games' }));
+    await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
+    await user.press(view.getByRole('button', { name: 'next: add details' }));
+
+    // the area starts empty (no auto-detect, no home-area prefill) and the
+    // cast button is gated until the caster picks one
+    expect(view.getByText('add approximate area')).toBeTruthy();
+    expect(view.getByRole('button', { name: 'cast it' }).props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+  });
+
   it('publishes the cast into the sent frame and the feed', async () => {
     const user = userEvent.setup();
     const view = await render(<ComposeScreen />);
@@ -296,6 +312,11 @@ describe('compose', () => {
     await user.press(view.getByRole('radio', { name: 'games' }));
     await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
     await user.press(view.getByRole('button', { name: 'next: add details' }));
+    // the caster picks an area manually — the /area screen sets it; here
+    // we set the draft directly to stand in for that pick.
+    await act(async () => {
+      setDraftArea('koramangala', { latitude: 12.9352, longitude: 77.6245 });
+    });
     await user.press(view.getByRole('button', { name: 'cast it' }));
 
     expect(await view.findByText('OUT')).toBeTruthy();
@@ -315,6 +336,9 @@ describe('compose', () => {
     await user.press(view.getByRole('radio', { name: 'games' }));
     await user.type(view.getByLabelText('your cast'), 'chess in the park sunday morning.');
     await user.press(view.getByRole('button', { name: 'next: add details' }));
+    await act(async () => {
+      setDraftArea('koramangala', { latitude: 12.9352, longitude: 77.6245 });
+    });
     await user.press(view.getByRole('button', { name: 'cast it' }));
 
     // the failure is stated, and the button becomes a retry

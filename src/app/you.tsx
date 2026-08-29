@@ -19,8 +19,6 @@ import { signOut } from '@/features/auth/auth';
 import { circlesVouchingForMe, refreshCircles, refreshVouchers, useCircles, vouchersOfMe } from '@/features/trust/circles';
 import { useMyPastPlans } from '@/features/attendance/store';
 import { profilesEnabled, signalLit } from '@/features/me/remote-profile';
-import { getFailureMode, setFailureMode } from '@/infrastructure/net/submit';
-import { backendStatus } from '@/infrastructure/supabase/client';
 
 function signalWord(lit: number): string {
   return lit >= 5 ? 'trusted' : lit >= 4 ? 'strong' : lit >= 3 ? 'steady' : lit >= 2 ? 'building' : 'new';
@@ -52,7 +50,6 @@ export default function YouScreen() {
   const quiet = useQuietHours();
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
   const [tempTime, setTempTime] = useState<Date | null>(null);
-  const [failing, setFailing] = useState(() => getFailureMode() === 'always');
 
   async function pickPhoto() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -219,31 +216,6 @@ export default function YouScreen() {
             right={<Tag label="→" tone="line" />}
             onPress={() => router.push('/recap')}
           />
-          {__DEV__ ? (
-            <Row title="backend" sub={backendStatus()} right={<Tag label="dev" tone="dim" />} />
-          ) : null}
-
-          {__DEV__ ? (
-            <View style={styles.quietBlock}>
-              <View style={styles.quietHead}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.rowTitle}>simulate failed sends</Text>
-                  <Text style={styles.rowSub}>dev only · makes every send fail so error states are reachable</Text>
-                </View>
-                <Switch
-                  accessibilityLabel="simulate failed sends"
-                  value={failing}
-                  onValueChange={(on) => {
-                    haptic('selection');
-                    setFailureMode(on ? 'always' : 'none');
-                    setFailing(on);
-                  }}
-                  trackColor={{ true: tokens.semantic.color.accent, false: tokens.semantic.color.hairlineOnCream }}
-                />
-              </View>
-            </View>
-          ) : null}
-
           <Row title="terms + privacy" sub="what stays private · how blocks work" right={<Tag label="→" tone="line" />} onPress={() => router.push('/legal/privacy')} />
           <Row title="community guidelines" sub="what gets you removed" right={<Tag label="→" tone="line" />} onPress={() => router.push('/legal/guidelines')} />
         </View>

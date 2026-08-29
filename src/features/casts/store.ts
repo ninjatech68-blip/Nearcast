@@ -650,9 +650,14 @@ function defaultExpiry(): Date {
  */
 export async function refreshFeed(): Promise<void> {
   if (!remoteEnabled()) return;
-  const delivered = await fetchFeed();
-  state = { ...state, feed: delivered };
-  emit();
+  try {
+    const delivered = await fetchFeed();
+    state = { ...state, feed: delivered };
+    emit();
+  } catch (error) {
+    // background refresh: never throw into the screen that fired it.
+    console.warn('refreshFeed failed', error);
+  }
 }
 
 function isCategory(value: string): value is Category {
@@ -707,39 +712,47 @@ function buildMyCast(row: RemoteMyCast, pendings: readonly RemotePendingJoin[]):
  */
 export async function refreshMyCasts(): Promise<void> {
   if (!remoteEnabled()) return;
-  const [rows, pending] = await Promise.all([fetchMyCasts(), fetchPendingJoins()]);
-  const byCast = new Map<string, RemotePendingJoin[]>();
-  for (const join of pending) {
-    const list = byCast.get(join.intent_id) ?? [];
-    list.push(join);
-    byCast.set(join.intent_id, list);
+  try {
+    const [rows, pending] = await Promise.all([fetchMyCasts(), fetchPendingJoins()]);
+    const byCast = new Map<string, RemotePendingJoin[]>();
+    for (const join of pending) {
+      const list = byCast.get(join.intent_id) ?? [];
+      list.push(join);
+      byCast.set(join.intent_id, list);
+    }
+    const myCasts = rows.map((row) => buildMyCast(row, byCast.get(row.intent_id) ?? []));
+    const mine: ActivityItem[] = myCasts.map((cast) => ({
+      id: `mine-${cast.id}`,
+      title: cast.text,
+      sub: statusLine(cast),
+      castId: cast.id,
+    }));
+    state = { ...state, myCasts, mine };
+    emit();
+  } catch (error) {
+    console.warn('refreshMyCasts failed', error);
   }
-  const myCasts = rows.map((row) => buildMyCast(row, byCast.get(row.intent_id) ?? []));
-  const mine: ActivityItem[] = myCasts.map((cast) => ({
-    id: `mine-${cast.id}`,
-    title: cast.text,
-    sub: statusLine(cast),
-    castId: cast.id,
-  }));
-  state = { ...state, myCasts, mine };
-  emit();
 }
 
 /** pull the joins I have sent that are still open. */
 export async function refreshSentJoins(): Promise<void> {
   if (!remoteEnabled()) return;
-  const rows = await fetchSentJoins();
-  const sentJoins: SentJoin[] = rows.map((row) => ({
-    responseId: row.response_id,
-    castId: row.intent_id,
-    castTitle: row.cast_statement,
-    casterName: row.caster_first_name ?? 'someone',
-    casterId: row.caster_id,
-    status: row.status === 'accepted' ? 'accepted' : 'pending',
-    sentAgo: 'recently',
-  }));
-  state = { ...state, sentJoins };
-  emit();
+  try {
+    const rows = await fetchSentJoins();
+    const sentJoins: SentJoin[] = rows.map((row) => ({
+      responseId: row.response_id,
+      castId: row.intent_id,
+      castTitle: row.cast_statement,
+      casterName: row.caster_first_name ?? 'someone',
+      casterId: row.caster_id,
+      status: row.status === 'accepted' ? 'accepted' : 'pending',
+      sentAgo: 'recently',
+    }));
+    state = { ...state, sentJoins };
+    emit();
+  } catch (error) {
+    console.warn('refreshSentJoins failed', error);
+  }
 }
 
 /** refresh both sides of the interaction loop; drives the activity page. */

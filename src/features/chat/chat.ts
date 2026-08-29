@@ -210,19 +210,23 @@ export function useConversations(): readonly ConversationSummary[] {
 /** pull my chat list (backend mode); drives the activity CHATS section. */
 export async function refreshConversations(): Promise<void> {
   if (!chatEnabled()) return;
-  const rows = await fetchConversations();
-  const list: ConversationSummary[] = rows.map((row) => ({
-    conversationId: row.conversation_id,
-    castId: row.intent_id,
-    castTitle: row.cast_title,
-    withName: row.other_first_name ?? 'someone',
-    withId: row.other_id,
-    lastMessage: row.last_message ?? 'say hi',
-    unread: row.unread_count,
-    ended: row.mode === 'ended',
-  }));
-  state = { ...state, list };
-  emit();
+  try {
+    const rows = await fetchConversations();
+    const list: ConversationSummary[] = rows.map((row) => ({
+      conversationId: row.conversation_id,
+      castId: row.intent_id,
+      castTitle: row.cast_title,
+      withName: row.other_first_name ?? 'someone',
+      withId: row.other_id,
+      lastMessage: row.last_message ?? 'say hi',
+      unread: row.unread_count,
+      ended: row.mode === 'ended',
+    }));
+    state = { ...state, list };
+    emit();
+  } catch (error) {
+    console.warn('refreshConversations failed', error);
+  }
 }
 
 /** the conversation for a (cast, other person), if one exists yet. */

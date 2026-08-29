@@ -17,8 +17,7 @@ import {
   type Category,
 } from '@/design-system/tokens';
 import { DEFAULT_RADIUS_KM, RADIUS_CHOICES } from '@/features/casts/domain/geo';
-import { addCast, clearDraft, setDraftArea, useDraftArea, useDraftAreaPoint } from '@/features/casts/store';
-import { useMe } from '@/features/me/me-store';
+import { addCast, clearDraft, useDraftArea, useDraftAreaPoint } from '@/features/casts/store';
 import { submit } from '@/infrastructure/net/submit';
 
 type Step = 'write' | 'details' | 'sent';
@@ -45,16 +44,11 @@ export default function ComposeScreen() {
 
   const area = useDraftArea();
   const areaPoint = useDraftAreaPoint();
-  const me = useMe();
-  // pre-fill area with the viewer's home area on mount so the row is
-  // never empty; the /area picker still overrides it.
-  useEffect(() => {
-    // the point travels with it: a prefilled area with no centroid
-    // would publish a cast nobody outside an exact name match can see.
-    if (!area) setDraftArea(me.homeArea, me.areaPoints[me.homeArea] ?? null);
-    return clearDraft;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // the caster picks the area themselves — nothing is pre-filled or
+  // auto-detected. the /area picker sets both the name and its
+  // approximate centroid, so a cast always carries a point to be
+  // delivered by. the draft clears on unmount.
+  useEffect(() => clearDraft, []);
 
   const trimmed = text.trim();
   const chosen = pick ?? 'social';
@@ -79,6 +73,9 @@ export default function ComposeScreen() {
    * connection is the worst thing this screen could do.
    */
   async function castIt() {
+    // an area is required — casts are delivered by place, so a cast with
+    // no area (and no centroid behind it) could reach no one.
+    if (!area.trim()) return;
     setCasting(true);
     setSendError(null);
     const result = await submit(() =>
@@ -293,12 +290,16 @@ export default function ComposeScreen() {
             </ScrollView>
             <View style={styles.detailsActions}>
               {sendError ? <Text style={styles.sendError}>{sendError}</Text> : null}
+              {!area.trim() ? (
+                <Text style={styles.sendError}>pick an area first — tap “add approximate area” above.</Text>
+              ) : null}
               <BarButton
                 label={sendError ? 'try again' : 'cast it'}
                 variant="onOrange"
                 onPress={castIt}
                 loading={casting}
                 loadingLabel="casting…"
+                disabled={!area.trim()}
               />
               <QuietAction label="back" color={tokens.semantic.color.ink} onPress={() => setStep('write')} />
             </View>

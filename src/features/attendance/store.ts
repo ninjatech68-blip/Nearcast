@@ -297,6 +297,7 @@ export function useSharedHistoryWith(
  */
 export async function refreshAttendance(): Promise<void> {
   if (!attendanceEnabled()) return;
+  try {
   const [pending, past] = await Promise.all([fetchPlansToReport(), fetchReceipts()]);
 
   const byPlan = new Map<string, StoredPlan>();
@@ -340,14 +341,21 @@ export async function refreshAttendance(): Promise<void> {
 
   state = { ...state, remotePending: [...byPlan.values()], remotePast };
   emit();
+  } catch (error) {
+    console.warn('refreshAttendance failed', error);
+  }
 }
 
 /** shared-history counts with one person; caches by id. no-op on fixtures. */
 export async function refreshSharedHistory(personId: string): Promise<void> {
   if (!attendanceEnabled() || !personId || personId === '__none__') return;
-  const history = await fetchSharedHistory(personId);
-  state = { ...state, sharedHistory: { ...state.sharedHistory, [personId]: history } };
-  emit();
+  try {
+    const history = await fetchSharedHistory(personId);
+    state = { ...state, sharedHistory: { ...state.sharedHistory, [personId]: history } };
+    emit();
+  } catch (error) {
+    console.warn('refreshSharedHistory failed', error);
+  }
 }
 
 /** test-only reset. clears the persisted record too. */
