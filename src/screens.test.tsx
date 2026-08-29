@@ -139,6 +139,15 @@ describe('home pager', () => {
     expect(view.getByRole('button', { name: 'activity' })).toBeTruthy();
   });
 
+  it('never shows one particular tester’s initials on everyone’s avatar', async () => {
+    const view = await render(<HomeScreen />);
+
+    // the dot was hard-coded to "PS" for every user on every screen
+    // one on the poster, one on the activity header — neither is "PS"
+    expect(view.getAllByRole('button', { name: 'you' }).length).toBeGreaterThanOrEqual(1);
+    expect(view.queryByText('PS')).toBeNull();
+  });
+
   it('lands the activity page on chats, with yours and requests after it', async () => {
     const view = await render(<HomeScreen />);
 
@@ -513,7 +522,23 @@ describe('chat', () => {
     expect(view.getByRole('button', { name: 'send a photo, GIF or your location' })).toBeTruthy();
     // the emoji chips are gone: the system keyboard already has them
     expect(view.queryByRole('button', { name: 'add 👍' })).toBeNull();
-    expect(view.queryByRole('button', { name: 'share my location' })).toBeNull();
+  });
+
+  it('opens the attachment tray in the chat, not a platform dialog', async () => {
+    const user = userEvent.setup();
+    const view = await render(<ChatScreen />);
+    const plus = view.getByRole('button', { name: 'send a photo, GIF or your location' });
+
+    expect(view.queryByRole('button', { name: 'camera' })).toBeNull();
+
+    await user.press(plus);
+    expect(view.getByRole('button', { name: 'camera' })).toBeTruthy();
+    expect(view.getByRole('button', { name: 'photo or GIF' })).toBeTruthy();
+    expect(view.getByRole('button', { name: 'location' })).toBeTruthy();
+
+    // the + is a toggle: pressing it again puts the tray away
+    await user.press(plus);
+    expect(view.queryByRole('button', { name: 'camera' })).toBeNull();
   });
 });
 

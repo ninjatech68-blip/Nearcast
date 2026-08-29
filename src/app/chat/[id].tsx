@@ -4,7 +4,6 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActionSheetIOS,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -15,8 +14,12 @@ import {
   TextInput,
   View,
   ActivityIndicator,
+  Animated,
+  Keyboard,
   Linking,
+  RefreshControl,
 } from 'react-native';
+import { SymbolView, type SFSymbol } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Face } from '@/design-system/components/face';
@@ -28,6 +31,7 @@ import {
   endChat,
   extendChat,
   openConversation,
+  refreshConversationMessages,
   retryMessage,
   sendLocationMessage,
   sendMediaMessageToThread,
@@ -37,6 +41,7 @@ import {
   type Message,
 } from '@/features/chat/chat';
 import { useMediaUrl } from '@/features/chat/use-media-url';
+import { useRefresher } from '@/infrastructure/net/use-refresher';
 import { connectivityNote } from '@/infrastructure/net/connectivity';
 import { useConnectivity } from '@/infrastructure/net/submit';
 
@@ -52,6 +57,7 @@ export default function ChatScreen() {
   const [draft, setDraft] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [attachOpen, setAttachOpen] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const connectivity = useConnectivity();
   const netNote = connectivityNote(connectivity);
@@ -62,6 +68,10 @@ export default function ChatScreen() {
     if (!id) return;
     return openConversation(id);
   }, [id]);
+
+  const { refreshing, onRefresh } = useRefresher(async () => {
+    if (id) await refreshConversationMessages(id);
+  });
 
   // while a real conversation is still loading, show a spinner rather
   // than the "not open" state, which would flash on every open.
@@ -91,6 +101,7 @@ export default function ChatScreen() {
     const text = draft.trim();
     if (!text) return;
     haptic('light');
+    setAttachOpen(false);
     setSendError(null);
     setDraft('');
     try {
@@ -122,32 +133,32 @@ export default function ChatScreen() {
   }
 
   /**
-   * The + menu. Emoji live on the system keyboard, so the row of six
-   * emoji chips that used to sit above the composer was six taps of
-   * screen doing what the keyboard already does — it is gone, and this
-   * is what the space is for.
+   * The + menu.
+   *
+   * It was the platform action sheet, which on this OS version draws a
+   * centred dialog of stacked capsules — it read as an error alert
+   * interrupting the chat rather than as a tray belonging to it. This
+   * is an in-app tray instead: it opens between the thread and the
+   * composer, the way every messaging app does it, so the conversation
+   * stays visible behind what you are about to add to it.
+   *
+   * Deliberately NOT a native Modal: presenting the camera or photo
+   * picker while a modal is dismissing is a known way to get nothing at
+   * all on iOS, and an in-line tray has no dismissal to race.
    */
-  function openAttachMenu() {
+  function toggleAttachTray() {
     haptic('light');
-    const options = ['take a photo', 'photo or GIF', 'share my location', 'cancel'];
-    const run = (index: number) => {
-      if (index === 0) void pickMedia('camera');
-      if (index === 1) void pickMedia('library');
-      if (index === 2) void shareLocation();
-    };
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        { options, cancelButtonIndex: 3, userInterfaceStyle: 'light' },
-        run,
-      );
+    Keyboard.dismiss();
+    setAttachOpen((open) => !open);
+  }
+
+  function chooseAttachment(kind: 'camera' | 'library' | 'location') {
+    setAttachOpen(false);
+    if (kind === 'location') {
+      void shareLocation();
       return;
     }
-    Alert.alert('send', undefined, [
-      { text: options[0], onPress: () => run(0) },
-      { text: options[1], onPress: () => run(1) },
-      { text: options[2], onPress: () => run(2) },
-      { text: 'cancel', style: 'cancel' },
-    ]);
+    void pickMedia(kind);
   }
 
   async function pickMedia(source: 'camera' | 'library') {
@@ -287,6 +298,15 @@ export default function ChatScreen() {
           keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
           onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+          refreshControl={
+            // realtime delivers new messages, but a thread that missed a
+            // wake should not need closing and reopening to catch up.
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={tokens.semantic.color.accent}
+            />
+          }
         >
           <Text style={styles.matchedNote}>you matched. earlier messages are here for context.</Text>
           {thread.messages.map((message) => (
@@ -311,20 +331,23 @@ export default function ChatScreen() {
         ) : (
           <View style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
             {sendError ? <Text style={styles.sendError}>{sendError}</Text> : null}
+            {attachOpen ? <AttachTray onChoose={chooseAttachment} /> : null}
             <View style={styles.composer}>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="send a photo, GIF or your location"
-                accessibilityState={{ disabled: sending }}
+                accessibilityState={{ disabled: sending, expanded: attachOpen }}
                 disabled={sending}
-                onPress={openAttachMenu}
+                onPress={toggleAttachTray}
                 hitSlop={8}
-                style={[styles.plusBtn, sending && styles.sendDim]}
+                style={[styles.plusBtn, attachOpen && styles.plusBtnOn, sending && styles.sendDim]}
               >
                 {sending ? (
                   <ActivityIndicator color={tokens.semantic.color.ink} />
                 ) : (
-                  <Text style={styles.plusText}>+</Text>
+                  <Text style={[styles.plusText, attachOpen && styles.plusTextOn]}>
+                    {attachOpen ? '×' : '+'}
+                  </Text>
                 )}
               </Pressable>
               <TextInput
@@ -434,6 +457,62 @@ function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }
 }
 
 /**
+ * The attachment tray: three tiles, between the thread and the composer.
+ *
+ * SF Symbols on iOS, a mono glyph everywhere else — no emoji. The emoji
+ * row that used to sit here was removed for a reason, and putting 📷
+ * back in a circle would have walked it straight back in.
+ */
+function AttachTray({ onChoose }: { onChoose: (kind: 'camera' | 'library' | 'location') => void }) {
+  const [rise] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    Animated.timing(rise, { toValue: 1, duration: 160, useNativeDriver: true }).start();
+  }, [rise]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.tray,
+        {
+          opacity: rise,
+          transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }],
+        },
+      ]}
+    >
+      <AttachTile label="camera" symbol="camera.fill" glyph="◉" onPress={() => onChoose('camera')} />
+      <AttachTile label="photo or GIF" symbol="photo.on.rectangle" glyph="▣" onPress={() => onChoose('library')} />
+      <AttachTile label="location" symbol="location.fill" glyph="◈" onPress={() => onChoose('location')} />
+    </Animated.View>
+  );
+}
+
+function AttachTile({
+  label,
+  symbol,
+  glyph,
+  onPress,
+}: {
+  label: string;
+  symbol: SFSymbol;
+  glyph: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={styles.tile}>
+      <View style={styles.tileDisc}>
+        {Platform.OS === 'ios' ? (
+          <SymbolView name={symbol} size={24} tintColor={tokens.semantic.color.cream} resizeMode="scaleAspectFit" />
+        ) : (
+          <Text style={styles.tileGlyph}>{glyph}</Text>
+        )}
+      </View>
+      <Text style={styles.tileLabel}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/**
  * A photo or GIF inside a bubble.
  *
  * The bucket is private, so the URL is signed and short-lived and
@@ -490,6 +569,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   plusText: { fontFamily: fontFamily.text, fontSize: 24, lineHeight: 26, color: tokens.semantic.color.ink },
+  plusBtnOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
+  plusTextOn: { color: tokens.semantic.color.cream },
+  tray: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 18,
+    marginBottom: 8,
+    borderRadius: tokens.primitive.radius.control,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
+  tile: { alignItems: 'center', gap: 8, minWidth: 84 },
+  tileDisc: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: tokens.semantic.color.accent,
+  },
+  tileGlyph: { fontFamily: fontFamily.monoSemi, fontSize: 22, color: tokens.semantic.color.cream },
+  tileLabel: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
   bubbleMedia: { padding: 4, overflow: 'hidden' },
   media: {
     width: 220,

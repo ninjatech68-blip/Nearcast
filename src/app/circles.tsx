@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BarButton } from '@/design-system/components/button';
 import { Face } from '@/design-system/components/face';
@@ -11,6 +11,7 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { createCircle, people, refreshCircles, useCircles } from '@/features/trust/circles';
+import { useRefresher } from '@/infrastructure/net/use-refresher';
 
 /**
  * circles: the named groups you build from people you have met. this is
@@ -25,6 +26,7 @@ export default function CirclesScreen() {
   useEffect(() => {
     void refreshCircles();
   }, []);
+  const { refreshing, onRefresh } = useRefresher(refreshCircles);
 
   function newCircle() {
     // a real text-entry sheet lands with the create-circle flow; the
@@ -41,7 +43,13 @@ export default function CirclesScreen() {
 
   return (
     <SheetShell title="circles">
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.scroll}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={tokens.semantic.color.accent} />
+        }
+      >
         <Text style={styles.lead}>
           {circles.length} circles · {total} people you trust
         </Text>

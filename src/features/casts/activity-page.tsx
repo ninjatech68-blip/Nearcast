@@ -23,6 +23,9 @@ import {
 import { refreshAttendance, usePendingReports } from '@/features/attendance/store';
 import { refreshConversations, useConversations } from '@/features/chat/chat';
 
+import { Refreshing } from '@/design-system/components/refreshing';
+import { useRefresher } from '@/infrastructure/net/use-refresher';
+
 import { AvatarDot } from './avatar-dot';
 
 type Tab = 'chats' | 'yours' | 'requests';
@@ -72,15 +75,9 @@ export function ActivityPage() {
 
   // same reason as the feed: requests and accepts land server-side, so
   // give people a way to pull for them instead of leaving and returning.
-  const [refreshing, setRefreshing] = useState(false);
-  async function pullRefresh() {
-    setRefreshing(true);
-    try {
-      await Promise.all([refreshInteractions(), refreshConversations(), refreshAttendance()]);
-    } finally {
-      setRefreshing(false);
-    }
-  }
+  const { refreshing, onRefresh: pullRefresh } = useRefresher(() =>
+    Promise.all([refreshInteractions(), refreshConversations(), refreshAttendance()]),
+  );
   const moveItems = pendingJoins.filter((item) => !dismissed.includes(item.id));
   const [archived, setArchived] = useState<ActivityItem | null>(null);
 
@@ -204,6 +201,12 @@ export function ActivityPage() {
             />
           </View>
 
+          <View style={styles.listWrap}>
+          {/* over the list, not over the header: the platform spinner
+              sits behind the rows and is easy to miss. */}
+          <View style={styles.refreshSlot} pointerEvents="none">
+            <Refreshing visible={refreshing} />
+          </View>
           <ScrollView
             contentContainerStyle={{ paddingBottom: tokens.component.posterBottomReserve }}
             showsVerticalScrollIndicator={false}
@@ -341,6 +344,7 @@ export function ActivityPage() {
               </>
             ) : null}
           </ScrollView>
+          </View>
         </>
       )}
     </View>
@@ -395,6 +399,8 @@ const styles = StyleSheet.create({
     letterSpacing: tokens.typography.screenTitle.letterSpacing,
     color: tokens.semantic.color.ink,
   },
+  listWrap: { flex: 1 },
+  refreshSlot: { position: 'absolute', left: 0, right: 0, top: 8, alignItems: 'center', zIndex: 20 },
   pinned: { marginTop: 6 },
   tabs: { flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 4 },
   tab: {

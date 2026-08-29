@@ -15,24 +15,12 @@ import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos } from '@/features/casts/faces';
 import { casters, me as meFixture } from '@/features/casts/fixtures';
 import { useRecap } from '@/features/casts/use-recap';
+import { initialsFor } from '@/features/me/initials';
 import { setMyPhoto, setQuietHours, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
 import { signOut } from '@/features/auth/auth';
 import { circlesVouchingForMe, refreshCircles, refreshVouchers, useCircles, vouchersOfMe } from '@/features/trust/circles';
 import { useMyPastPlans } from '@/features/attendance/store';
 import { profilesEnabled, signalLit } from '@/features/me/remote-profile';
-
-/**
- * Initials for the avatar, from whatever name the person actually gave.
- * Onboarding asks for a first name only, so "Piyush" -> "PI" and
- * "Piyush Sharma" -> "PS". Never hard-code: the placeholder used to read
- * "PS" for everyone, which showed one tester another tester's initials.
- */
-function initialsFor(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
 
 function signalWord(lit: number): string {
   return lit >= 5 ? 'trusted' : lit >= 4 ? 'strong' : lit >= 3 ? 'steady' : lit >= 2 ? 'building' : 'new';

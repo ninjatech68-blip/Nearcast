@@ -273,6 +273,19 @@ export function openConversation(conversationId: string): () => void {
   return unsubscribe;
 }
 
+/**
+ * Re-read one thread on demand — what pull-to-refresh calls.
+ *
+ * Realtime is the accelerant, not the source of truth, so a thread that
+ * missed a wake should not need closing and reopening to catch up. A
+ * no-op on fixtures, where the seed thread is already the whole truth.
+ */
+export async function refreshConversationMessages(conversationId: string): Promise<void> {
+  if (!chatEnabled()) return;
+  await loadConversation(conversationId);
+  await markRead(conversationId);
+}
+
 export async function sendMessage(threadId: string, text: string): Promise<void> {
   if (chatEnabled()) {
     if (!text.trim()) return;

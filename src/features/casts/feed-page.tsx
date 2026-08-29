@@ -3,6 +3,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, Animated, FlatList, Pressable, RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Refreshing } from '@/design-system/components/refreshing';
+import { useRefresher } from '@/infrastructure/net/use-refresher';
+
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { Poster } from '@/design-system/components/poster';
 import { haptic } from '@/design-system/haptics';
@@ -93,17 +96,12 @@ export function FeedPage({
 
   // pull-to-refresh: the feed is delivered server-side, so a person who
   // knows a plan just went out needs a way to ask for it now rather than
-  // waiting for the next mount.
-  const [refreshing, setRefreshing] = useState(false);
-  async function pullRefresh() {
-    setRefreshing(true);
-    try {
-      await refreshFeed();
-      setLoadError(false);
-    } finally {
-      setRefreshing(false);
-    }
-  }
+  // waiting for the next mount. useRefresher holds the state long enough
+  // for the indicator to actually be seen — see its own note.
+  const { refreshing, onRefresh: pullRefresh } = useRefresher(async () => {
+    await refreshFeed();
+    setLoadError(false);
+  });
 
   function skip(id: string) {
     haptic('light');
@@ -184,6 +182,11 @@ export function FeedPage({
         }
         style={{ width }}
       />
+      {/* the platform spinner is drawn behind a full-bleed poster and
+          lands on whatever colour that category is. this rides on top. */}
+      <View style={[styles.refreshSlot, { top: insets.top + 60 }]} pointerEvents="none">
+        <Refreshing visible={refreshing} label="looking for casts…" />
+      </View>
       {filterPill}
     </View>
   );
@@ -277,6 +280,7 @@ function FeedEmpty({
 }
 
 const styles = StyleSheet.create({
+  refreshSlot: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   empty: { flex: 1, backgroundColor: tokens.semantic.color.cream, paddingHorizontal: 24 },
   emptyTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 36 },
   wordmark: { ...tokens.typography.tag, color: tokens.semantic.color.textMutedOnCream },

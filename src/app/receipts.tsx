@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BarButton } from '@/design-system/components/button';
 import { Face } from '@/design-system/components/face';
@@ -10,6 +10,7 @@ import { Tag } from '@/design-system/components/tag';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { refreshAttendance, useMyPastPlans } from '@/features/attendance/store';
+import { useRefresher } from '@/infrastructure/net/use-refresher';
 import { people } from '@/features/trust/circles';
 import type { Outcome } from '@/features/casts/domain/attendance';
 
@@ -23,13 +24,22 @@ export default function ReceiptsScreen() {
   useEffect(() => {
     void refreshAttendance();
   }, []);
+  // the ledger is server-side in a live app, so it gets the same pull
+  // every other list has — and the same visible answer that it worked.
+  const { refreshing, onRefresh } = useRefresher(refreshAttendance);
   const past = useMyPastPlans();
   const receipts = past.filter((p) => p.outcome === 'receipt').length;
   const flakes = past.filter((p) => p.outcome === 'flake').length;
 
   return (
     <SheetShell title="receipts">
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.flex}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.flex}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={tokens.semantic.color.accent} />
+        }
+      >
         <Text style={styles.summary}>
           {receipts} {receipts === 1 ? 'plan' : 'plans'} made real{flakes > 0 ? ` · ${flakes} ${flakes === 1 ? 'flake' : 'flakes'}` : ''}
         </Text>
