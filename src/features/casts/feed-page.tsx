@@ -155,6 +155,12 @@ export function FeedPage({
         onScrollBeginDrag={() => onScrollStateChange?.(true)}
         onMomentumScrollEnd={() => onScrollStateChange?.(false)}
         windowSize={3}
+        // one full-screen poster per page: render exactly what is on
+        // screen, keep one neighbour warm, and let RN detach the rest so
+        // offscreen posters stop costing memory and layout work.
+        initialNumToRender={1}
+        maxToRenderPerBatch={2}
+        removeClippedSubviews
         style={{ width }}
       />
       {filterPill}

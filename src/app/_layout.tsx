@@ -19,6 +19,10 @@ import { restoreSession } from '@/features/auth/auth';
 import { configureNotifications, refreshPushRegistration } from '@/features/notifications/push';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
+// expo-router renders this instead of a blank white screen when a route
+// throws. Exported from the root layout so it covers every segment.
+export { ErrorBoundary } from '@/design-system/components/error-boundary';
+
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

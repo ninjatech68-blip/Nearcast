@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -53,15 +53,32 @@ export function ActivityPage() {
   const moveItems = pendingJoins.filter((item) => !dismissed.includes(item.id));
   const [archived, setArchived] = useState<ActivityItem | null>(null);
 
+  // the undo line clears itself after 4s. that is long enough for the
+  // person to swipe back to the feed first, so the timer is tracked and
+  // cleared on unmount — otherwise it fires setState on a gone component
+  // and keeps the row's closure alive until it does.
+  const archiveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (archiveTimer.current) clearTimeout(archiveTimer.current);
+    },
+    [],
+  );
+
   function archive(item: ActivityItem) {
     haptic('light');
     setDismissed((current) => [...current, item.id]);
     setArchived(item);
-    setTimeout(() => setArchived((held) => (held?.id === item.id ? null : held)), 4000);
+    if (archiveTimer.current) clearTimeout(archiveTimer.current);
+    archiveTimer.current = setTimeout(
+      () => setArchived((held) => (held?.id === item.id ? null : held)),
+      4000,
+    );
   }
 
   function undo() {
     if (!archived) return;
+    if (archiveTimer.current) clearTimeout(archiveTimer.current);
     setDismissed((current) => current.filter((id) => id !== archived.id));
     setArchived(null);
   }
