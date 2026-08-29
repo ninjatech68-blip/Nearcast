@@ -1,92 +1,94 @@
 #!/usr/bin/env bash
 #
-# Build-and-install for iOS — RELEASE by default.
+# Local iOS build + install — RELEASE by default.
 #
 # WHY RELEASE MATTERS
-# A Debug build does NOT contain the JavaScript. It downloads the JS from
-# the Metro dev server on the Mac at every launch, so the app only works
-# while the phone is on the same Wi-Fi as the Mac. A Release build embeds
-# the JS bundle in the app, so it runs anywhere, offline from the Mac,
-# forever. If the app "only runs on the Mac's Wi-Fi", it is a Debug build
-# — reinstall Release with this script and that goes away.
-#
-# Xcode also keeps a lock on build.db inside DerivedData; two builders on
-# the same DerivedData fail with "database is locked" / "unable to
-# initiate PIF transfer session". This script clears every holder of that
-# lock and builds into a project-local DerivedData nothing else touches.
+# A Debug build does NOT contain the JavaScript. It fetches the JS from the
+# Metro dev server on this Mac at every launch, so the app only runs while the
+# phone is on the same Wi-Fi — and dies at the splash screen otherwise. A
+# Release build embeds the bundle, so the app runs anywhere, offline from the
+# Mac, forever. Xcode's Run button defaults to DEBUG, which is how a Debug
+# build ends up on the phone by accident. This script always builds Release
+# unless you explicitly ask for debug, and it FAILS if the JS bundle did not
+# get embedded — the check that catches the problem before the phone does.
 #
 # Usage:
-#   npm run ios:build            # RELEASE build + install on the connected device
-#   npm run ios:build -- debug   # Debug build (needs Metro / same Wi-Fi) — rarely wanted
-#   npm run ios:build -- sim     # Debug build for the simulator
+#   npm run ios:build                 # Release, build + install on the device
+#   npm run ios:build -- prebuild     # regenerate ios/ from app.json first
+#   npm run ios:build -- debug        # Debug (needs Metro + same Wi-Fi)
+#   npm run ios:build -- sim          # Debug for the simulator
+#
+# Signing: pass your Apple team id if the project has none saved yet:
+#   DEVELOPMENT_TEAM=ABCDE12345 npm run ios:build
 set -euo pipefail
 
 ARG="${1:-device}"
 CONFIG="Release"
 MODE="device"
+PREBUILD="auto"
 case "$ARG" in
-  sim)   MODE="sim";   CONFIG="Debug" ;;   # simulator uses Metro; Debug is fine
-  debug) MODE="device"; CONFIG="Debug" ;;
-  device|release) MODE="device"; CONFIG="Release" ;;
+  sim)      MODE="sim";    CONFIG="Debug" ;;
+  debug)    MODE="device"; CONFIG="Debug" ;;
+  prebuild) MODE="device"; CONFIG="Release"; PREBUILD="force" ;;
+  device|release) : ;;
 esac
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IOS_DIR="$ROOT/ios"
 DERIVED="$ROOT/ios/build/DerivedData"
+cd "$ROOT"
 
-if [ ! -d "$IOS_DIR" ]; then
-  echo "no ios/ directory — run: npx expo prebuild --platform ios" >&2
-  exit 1
+# ---- 1. regenerate the native project when asked, or when missing ----
+if [ "$PREBUILD" = "force" ] || [ ! -d "$IOS_DIR" ]; then
+  echo "==> regenerating ios/ from app.json (expo prebuild)"
+  npx expo prebuild --platform ios --clean
 fi
 
-echo "==> releasing any build locks"
+# ---- 2. find the workspace + scheme (name comes from app.json) -------
+WORKSPACE="$(/usr/bin/find "$IOS_DIR" -maxdepth 1 -name '*.xcworkspace' | head -1)"
+if [ -z "$WORKSPACE" ]; then
+  echo "!! no .xcworkspace in ios/ — run: npm run ios:build -- prebuild" >&2
+  exit 1
+fi
+SCHEME="$(basename "$WORKSPACE" .xcworkspace)"
+echo "==> workspace: $(basename "$WORKSPACE")"
+echo "==> scheme:    $SCHEME"
+
+# ---- 3. release any build locks (shared DerivedData deadlocks) -------
+echo "==> releasing build locks"
 osascript -e 'quit app "Xcode"' 2>/dev/null || true
 pkill -9 xcodebuild 2>/dev/null || true
 pkill -9 XCBBuildService 2>/dev/null || true
 pkill -9 SWBBuildService 2>/dev/null || true
 sleep 2
-
-still_running="$(pgrep -l 'xcodebuild|XCBBuildService|SWBBuildService' || true)"
-if [ -n "$still_running" ]; then
-  echo "!! build processes still alive after kill:" >&2
-  echo "$still_running" >&2
-  echo "   reboot, or kill these PIDs by hand, then re-run." >&2
-  exit 1
-fi
-echo "    clear"
-
-echo "==> clearing stale derived data"
 rm -rf "$DERIVED"
-rm -rf "$HOME/Library/Developer/Xcode/DerivedData"/Nearcast-* 2>/dev/null || true
+rm -rf "$HOME/Library/Developer/Xcode/DerivedData"/"$SCHEME"-* 2>/dev/null || true
 
-SCHEME="Nearcast"
-WORKSPACE="$IOS_DIR/Nearcast.xcworkspace"
-
-if [ ! -d "$WORKSPACE" ]; then
-  echo "no $WORKSPACE — run: cd ios && pod install" >&2
-  exit 1
+# ---- 4. signing team ------------------------------------------------
+TEAM="${DEVELOPMENT_TEAM:-}"
+if [ -z "$TEAM" ]; then
+  # reuse whatever the generated project already has, if anything
+  TEAM="$(grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]\{10\}' "$IOS_DIR/$SCHEME.xcodeproj/project.pbxproj" 2>/dev/null | awk '{print $3}' || true)"
+fi
+TEAM_ARGS=()
+if [ -n "$TEAM" ]; then
+  echo "==> signing with team $TEAM"
+  TEAM_ARGS=("DEVELOPMENT_TEAM=$TEAM" "CODE_SIGN_STYLE=Automatic")
+else
+  echo "!! no DEVELOPMENT_TEAM found. If signing fails, re-run as:" >&2
+  echo "   DEVELOPMENT_TEAM=<your 10-char team id> npm run ios:build" >&2
+  echo "   (find it: Xcode > Settings > Accounts > your team, or" >&2
+  echo "    security find-identity -v -p codesigning)" >&2
 fi
 
 if [ "$MODE" = "sim" ]; then
   DEST="platform=iOS Simulator,name=iPhone 16"
 else
-  DEST="generic/platform=iOS"   # no UDID needed — avoids "destination not found"
+  DEST="generic/platform=iOS"   # no UDID: avoids "destination not found"
 fi
 
-# Code signing. A device build must be signed by an Apple development team.
-# Pass it non-interactively via DEVELOPMENT_TEAM, e.g.
-#   DEVELOPMENT_TEAM=ABCDE12345 npm run ios:build
-# (values have no spaces, so unquoted word-splitting into two args is safe.)
-# If it's unset, the team already saved in the Xcode project is used — set it
-# once in Xcode → target Nearcast → Signing & Capabilities → your Team.
-TEAM_ARGS=""
-if [ -n "${DEVELOPMENT_TEAM:-}" ]; then
-  TEAM_ARGS="DEVELOPMENT_TEAM=${DEVELOPMENT_TEAM} CODE_SIGN_STYLE=Automatic"
-  echo "==> signing with team ${DEVELOPMENT_TEAM}"
-fi
-
+# ---- 5. build -------------------------------------------------------
 echo "==> building $CONFIG for $MODE"
-echo "==> derived data: $DERIVED"
 mkdir -p "$ROOT/ios/build"
 set +e
 xcodebuild \
@@ -96,31 +98,49 @@ xcodebuild \
   -destination "$DEST" \
   -derivedDataPath "$DERIVED" \
   -allowProvisioningUpdates \
-  $TEAM_ARGS \
+  "${TEAM_ARGS[@]}" \
   build 2>&1 | tee "$ROOT/ios/build/last-build.log"
 STATUS=${PIPESTATUS[0]}
 set -e
 
-echo
 if [ "$STATUS" -ne 0 ]; then
+  echo
   echo "BUILD FAILED (exit $STATUS) — full log at ios/build/last-build.log"
   grep -E "error:" "$ROOT/ios/build/last-build.log" | tail -40 || true
   exit "$STATUS"
 fi
-echo "BUILD SUCCEEDED ($CONFIG) — full log at ios/build/last-build.log"
+echo "BUILD SUCCEEDED ($CONFIG)"
 
 if [ "$MODE" = "sim" ]; then
-  echo "simulator build done; open ios/Nearcast.xcworkspace and Run on a simulator."
+  echo "simulator build done; open $(basename "$WORKSPACE") and Run."
   exit 0
 fi
 
-# ---- install the Release app onto the connected device --------------
+# ---- 6. locate the app ----------------------------------------------
 APP="$(/usr/bin/find "$DERIVED/Build/Products/${CONFIG}-iphoneos" -maxdepth 1 -name '*.app' 2>/dev/null | head -1)"
 if [ -z "$APP" ]; then
-  echo "!! built, but no .app found under ${CONFIG}-iphoneos — install from Xcode (Run)." >&2
-  exit 0
+  echo "!! built, but no .app under ${CONFIG}-iphoneos" >&2
+  exit 1
+fi
+echo "==> app: $APP"
+
+# ---- 7. PROVE the JS bundle is embedded -----------------------------
+# This is the whole point of a Release build. Without main.jsbundle the app
+# falls back to Metro and dies at the splash screen off-network.
+if [ "$CONFIG" = "Release" ]; then
+  if [ ! -f "$APP/main.jsbundle" ]; then
+    echo >&2
+    echo "!! FAIL: main.jsbundle is NOT in the app bundle." >&2
+    echo "!! This build would still need Metro and would crash at the splash" >&2
+    echo "!! screen off your Mac's network. Not installing it." >&2
+    echo "!! Fix: npm run ios:build -- prebuild   (regenerates the RN bundle phase)" >&2
+    exit 1
+  fi
+  SIZE="$(du -h "$APP/main.jsbundle" | awk '{print $1}')"
+  echo "==> JS bundle embedded: main.jsbundle ($SIZE)  <-- runs without Metro"
 fi
 
+# ---- 8. install on the connected device ------------------------------
 echo "==> finding a connected device"
 DEV_JSON="$ROOT/ios/build/devices.json"
 xcrun devicectl list devices --json-output "$DEV_JSON" >/dev/null 2>&1 || true
@@ -137,14 +157,13 @@ DEVICE_ID="$(node -e '
 ' "$DEV_JSON" 2>/dev/null || true)"
 
 if [ -z "$DEVICE_ID" ]; then
-  echo "!! no connected device found. Plug in + unlock the iPhone (Trust + Developer Mode)," >&2
+  echo "!! no connected device. Plug in + unlock the iPhone (Trust + Developer Mode)," >&2
   echo "   then: xcrun devicectl device install app --device <UDID> \"$APP\"" >&2
-  echo "   or open ios/Nearcast.xcworkspace, pick the device, and Run." >&2
   exit 0
 fi
 
 echo "==> installing on device $DEVICE_ID"
 xcrun devicectl device install app --device "$DEVICE_ID" "$APP"
 echo
-echo "INSTALLED ($CONFIG). This build embeds the JS bundle — it runs with Metro OFF"
-echo "and off the Mac's network. You can quit Metro and disconnect."
+echo "INSTALLED ($CONFIG) with the JS bundle embedded."
+echo "Quit Metro, unplug, leave this Mac's Wi-Fi — the app keeps working."
