@@ -25,17 +25,25 @@ import { refreshConversations, useConversations } from '@/features/chat/chat';
 
 import { AvatarDot } from './avatar-dot';
 
-type Tab = 'needs' | 'chats' | 'yours';
+type Tab = 'chats' | 'yours' | 'requests';
 
 /**
- * activity: three tabs, because one scroll held five stacked sections —
- * reflect prompts, requests to decide, requests you sent, chats and your
- * own casts — and testers could not find anything in it. The split is by
- * WHOSE MOVE IT IS, not by object type:
+ * activity: three tabs, ordered by how often a person actually needs
+ * them rather than by urgency.
  *
- *   needs you — the decisions and reflections you owe someone
- *   chats     — the plans that already matched
- *   yours     — what you started: casts you posted, requests you sent
+ *   chats    — the plans that already matched. the default, because a
+ *              live conversation is what people come back for, several
+ *              times a day; a request is a once-in-a-while event.
+ *   yours    — what you started: casts you posted, requests you sent
+ *   requests — people asking to join your casts. last, but it carries a
+ *              count, so it is loud when it has something and silent
+ *              when it does not.
+ *
+ * REFLECT PROMPTS ARE NOT IN A TAB. "how did it go?" is rare and
+ * time-critical — receipts and flakes cannot settle until it is
+ * answered — so it is pinned above the tabs where it cannot be missed.
+ * A fourth tab for it would be empty almost always and hiding an
+ * obligation the rest of the time.
  *
  * tap a row opens its cast. long-press archives with a 4s undo line.
  */
@@ -52,7 +60,7 @@ export function ActivityPage() {
   const pendingJoins = usePendingJoinsOnMyCasts();
   const chats = useConversations();
   const [dismissed, setDismissed] = useState<readonly string[]>([]);
-  const [tab, setTab] = useState<Tab>('needs');
+  const [tab, setTab] = useState<Tab>('chats');
 
   // pull the interaction state from the server whenever this page opens:
   // requests on your casts, accepts on the ones you sent, and your chats.
@@ -136,10 +144,15 @@ export function ActivityPage() {
 
   // the badge is a count of things WAITING ON YOU. chats carry unread,
   // "yours" carries nothing to act on, so neither invents a number.
-  const needsCount = pending.length + moveItems.length;
+  const requestCount = moveItems.length;
   const unreadCount = chats.reduce((n, chat) => n + chat.unread, 0);
   const nothingAtAll =
-    needsCount === 0 && !archived && chats.length === 0 && joinsISent.length === 0 && yourCasts.length === 0;
+    requestCount === 0 &&
+    pending.length === 0 &&
+    !archived &&
+    chats.length === 0 &&
+    joinsISent.length === 0 &&
+    yourCasts.length === 0;
 
   return (
     <View style={[styles.page, { width, paddingTop: insets.top + 24 }]}>
@@ -162,10 +175,33 @@ export function ActivityPage() {
         </>
       ) : (
         <>
+          {/* pinned, above the tabs: nothing else settles until this is
+              answered, and it is rare enough that a tab of its own would
+              sit empty. */}
+          {pending.length > 0 ? (
+            <View style={styles.pinned}>
+              <Text style={styles.sectionHot}>HOW DID IT GO?</Text>
+              {pending.map((plan) => (
+                <Row
+                  key={plan.id}
+                  title={plan.title}
+                  sub={`${plan.area} · reflect so receipts and flakes can settle`}
+                  right={<Tag label="reflect" tone="hot" />}
+                  onPress={() => router.push(`/reflect/${plan.id}`)}
+                />
+              ))}
+            </View>
+          ) : null}
+
           <View style={styles.tabs}>
-            <TabButton label="needs you" badge={needsCount} active={tab === 'needs'} onPress={() => setTab('needs')} />
             <TabButton label="chats" badge={unreadCount} active={tab === 'chats'} onPress={() => setTab('chats')} />
             <TabButton label="yours" badge={0} active={tab === 'yours'} onPress={() => setTab('yours')} />
+            <TabButton
+              label="requests"
+              badge={requestCount}
+              active={tab === 'requests'}
+              onPress={() => setTab('requests')}
+            />
           </View>
 
           <ScrollView
@@ -179,23 +215,8 @@ export function ActivityPage() {
               />
             }
           >
-            {tab === 'needs' ? (
+            {tab === 'requests' ? (
               <>
-                {pending.length > 0 ? (
-                  <>
-                    <Text style={styles.sectionHot}>HOW DID IT GO?</Text>
-                    {pending.map((plan) => (
-                      <Row
-                        key={plan.id}
-                        title={plan.title}
-                        sub={`${plan.area} · reflect so receipts and flakes can settle`}
-                        right={<Tag label="reflect" tone="hot" />}
-                        onPress={() => router.push(`/reflect/${plan.id}`)}
-                      />
-                    ))}
-                  </>
-                ) : null}
-
                 {moveItems.length > 0 ? <Text style={styles.sectionHot}>ASKED TO JOIN</Text> : null}
                 {archived ? (
                   <Row title="archived" sub="tap to undo" onPress={undo} right={<Tag label="undo" tone="dim" />} />
@@ -231,10 +252,10 @@ export function ActivityPage() {
                   />
                 ))}
 
-                {needsCount === 0 && !archived ? (
+                {requestCount === 0 && !archived ? (
                   <View style={styles.quietBlock}>
                     <Text style={styles.quietText}>
-                      nothing waiting on you. when someone asks to join, it lands here.
+                      no one is waiting on you. when someone asks to join a cast, it lands here.
                     </Text>
                   </View>
                 ) : null}
@@ -374,7 +395,8 @@ const styles = StyleSheet.create({
     letterSpacing: tokens.typography.screenTitle.letterSpacing,
     color: tokens.semantic.color.ink,
   },
-  tabs: { flexDirection: 'row', gap: 8, marginTop: 8, marginBottom: 4 },
+  pinned: { marginTop: 6 },
+  tabs: { flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 4 },
   tab: {
     flexDirection: 'row',
     alignItems: 'center',

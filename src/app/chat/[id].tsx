@@ -251,9 +251,16 @@ export default function ChatScreen() {
             style={styles.who}
           >
             <Face photo={facePhotos[thread.withId]} initials={thread.withName.slice(0, 2).toUpperCase()} size={32} label="" verified={isVerified(thread.withId)} />
-            <View>
-              <Text style={styles.name}>{thread.withName}</Text>
-              <Text style={styles.sub}>{thread.castTitle}</Text>
+            {/* minWidth 0 is what actually lets these truncate: without
+                it a flex child refuses to shrink below its content, so
+                a long cast title ran on underneath the expiry pill. */}
+            <View style={styles.whoCopy}>
+              <Text style={styles.name} numberOfLines={1}>
+                {thread.withName}
+              </Text>
+              <Text style={styles.sub} numberOfLines={1}>
+                {thread.castTitle}
+              </Text>
             </View>
           </Pressable>
           <Pressable
@@ -509,9 +516,10 @@ const styles = StyleSheet.create({
     borderBottomColor: tokens.semantic.color.hairlineOnCream,
     paddingBottom: 8,
   },
-  backTap: { minWidth: 40, minHeight: 44, justifyContent: 'center' },
-  chevron: { fontFamily: fontFamily.text, fontSize: 32, lineHeight: 34, color: tokens.semantic.color.ink },
-  who: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  backTap: { width: 30, minHeight: 44, justifyContent: 'center' },
+  chevron: { fontFamily: fontFamily.text, fontSize: 30, lineHeight: 32, color: tokens.semantic.color.ink },
+  who: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 },
+  whoCopy: { flex: 1, minWidth: 0 },
   name: { fontFamily: fontFamily.displaySemi, fontSize: 16, color: tokens.semantic.color.ink },
   sub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
   thread: { paddingVertical: 16, gap: 10 },
@@ -590,14 +598,15 @@ const styles = StyleSheet.create({
   expiryTap: {
     alignItems: 'flex-end',
     minHeight: 44,
-    paddingHorizontal: 8,
     justifyContent: 'center',
+    // never squeezed by the name beside it, and never squeezing it
+    flexShrink: 0,
   },
   expiryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 10,
+    gap: 5,
+    paddingHorizontal: 9,
     paddingVertical: 5,
     borderRadius: tokens.primitive.radius.pill,
     borderWidth: 1,

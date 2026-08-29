@@ -42,7 +42,7 @@ export default function InviteScreen() {
   const local = people[personId];
   const person = {
     id: personId,
-    name: join?.displayName ?? live?.firstName ?? local?.name ?? 'someone',
+    name: firstNonBlank(join?.displayName, live?.firstName, local?.name) ?? 'someone',
     area: live?.area ?? local?.area ?? '',
   };
   const caster = casters.find((c) => c.id === personId);
@@ -171,6 +171,14 @@ export default function InviteScreen() {
       </View>
     </SheetShell>
   );
+}
+
+/** the first of these that is actually a name, not '' or undefined. */
+function firstNonBlank(...values: (string | undefined | null)[]): string | undefined {
+  for (const value of values) {
+    if (value && value.trim()) return value.trim();
+  }
+  return undefined;
 }
 
 const styles = StyleSheet.create({

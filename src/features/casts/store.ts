@@ -694,7 +694,10 @@ function buildMyCast(row: RemoteMyCast, pendings: readonly RemotePendingJoin[]):
   const area = row.area ?? 'nearby';
   const joins: PendingJoin[] = pendings.map((join) => ({
     personId: join.joiner_id,
-    displayName: join.joiner_first_name ?? 'someone',
+    // a blank display_name is not a name. `?? 'someone'` only catches
+    // null, and split_part on an empty profile name returns '', which
+    // then rendered as an empty title with nothing in it.
+    displayName: join.joiner_first_name?.trim() || 'someone',
     note: join.note,
     sentAgo: 'recently',
     responseId: join.response_id,

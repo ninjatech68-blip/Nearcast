@@ -104,7 +104,7 @@ const SEED_STATE: State = {
       withId: 'riya',
       castTitle: 'badminton after work',
       mode: 'day' as const,
-      expiresLabel: 'expires in 22h',
+      expiresLabel: '22h left',
       messages: [
         { id: 'm1', from: 'them', text: 'saw your cast — i’m in', time: '5:02 pm' },
         { id: 'm2', from: 'me', text: 'nice. court’s booked 7–8', time: '5:04 pm', status: 'read' },
@@ -149,14 +149,22 @@ function clockTime(iso: string): string {
   return `${h}:${m} ${ampm}`;
 }
 
+/**
+ * The chat window, short enough to sit in a header pill.
+ *
+ * It used to read "expires in 24h", which at 14 characters pushed the
+ * pill wide enough to sit on top of the other person's name. The
+ * meaning is in the number, not in the word "expires" — the pill is
+ * tappable and the menu behind it spells the whole thing out.
+ */
 function expiresLabelFor(mode: ExpiryMode, expiresAt: string | null): string {
   if (mode === 'ended') return 'ended';
-  if (mode === 'always') return 'no expiry';
-  if (!expiresAt) return 'expires in 24h';
+  if (mode === 'always') return 'open';
+  if (!expiresAt) return '24h left';
   const hours = Math.round((new Date(expiresAt).getTime() - Date.now()) / 3_600_000);
   if (hours <= 0) return 'expired';
-  if (hours < 24) return `expires in ${hours}h`;
-  return `expires in ${Math.round(hours / 24)}d`;
+  if (hours < 24) return `${hours}h left`;
+  return `${Math.round(hours / 24)}d left`;
 }
 
 /** a server message → the UI Message, with read state for my own. */
@@ -406,8 +414,8 @@ export async function extendChat(threadId: string, mode: 'day' | 'week' | 'alway
   const thread = state.threads[threadId];
   if (!thread || thread.mode === 'ended') return;
   const labels: Record<'day' | 'week' | 'always', string> = {
-    day: 'expires in 24h',
-    week: 'expires in 7 days',
+    day: '24h left',
+    week: '7d left',
     always: 'no expiry · you both agreed to keep it open',
   };
   const noteText: Record<'day' | 'week' | 'always', string> = {

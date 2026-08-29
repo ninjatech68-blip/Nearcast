@@ -154,7 +154,12 @@ export default function YouScreen() {
             <View style={styles.quietHead}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.rowTitle}>quiet hours</Text>
-                <Text style={styles.rowSub}>{quiet.start} to {quiet.end}</Text>
+                {/* the times are right below when this is on, so repeating
+                    them here was the same fact twice. say what the switch
+                    DOES instead. */}
+                <Text style={styles.rowSub}>
+                  {quiet.on ? 'nothing pings you between these hours' : 'a ping can arrive at any hour'}
+                </Text>
               </View>
               <Switch
                 accessibilityLabel="quiet hours"
@@ -171,8 +176,8 @@ export default function YouScreen() {
               // tappable pill and opens its editor in a popover that dismisses
               // itself — there is no persistent picker to sit in "edit mode".
               <View style={styles.quietTimes}>
-                <View style={styles.timeChip}>
-                  <Text style={styles.timeLabel}>start</Text>
+                <View style={styles.timeRow}>
+                  <Text style={styles.timeLabel}>from</Text>
                   <DateTimePicker
                     accessibilityLabel="quiet hours start"
                     mode="time"
@@ -186,8 +191,8 @@ export default function YouScreen() {
                     }}
                   />
                 </View>
-                <View style={styles.timeChip}>
-                  <Text style={styles.timeLabel}>end</Text>
+                <View style={[styles.timeRow, styles.timeRowLast]}>
+                  <Text style={styles.timeLabel}>to</Text>
                   <DateTimePicker
                     accessibilityLabel="quiet hours end"
                     mode="time"
@@ -215,9 +220,9 @@ export default function YouScreen() {
                     setTempTime(timeToDate(quiet.start));
                     setOpenPicker('start');
                   }}
-                  style={styles.timeChip}
+                  style={styles.timeRow}
                 >
-                  <Text style={styles.timeLabel}>start</Text>
+                  <Text style={styles.timeLabel}>from</Text>
                   <Text style={styles.timeValue}>{quiet.start}</Text>
                 </Pressable>
                 <Pressable
@@ -227,9 +232,9 @@ export default function YouScreen() {
                     setTempTime(timeToDate(quiet.end));
                     setOpenPicker('end');
                   }}
-                  style={styles.timeChip}
+                  style={[styles.timeRow, styles.timeRowLast]}
                 >
-                  <Text style={styles.timeLabel}>end</Text>
+                  <Text style={styles.timeLabel}>to</Text>
                   <Text style={styles.timeValue}>{quiet.end}</Text>
                 </Pressable>
               </View>
@@ -359,16 +364,27 @@ const styles = StyleSheet.create({
     borderTopColor: tokens.semantic.color.hairlineOnCream,
   },
   quietHead: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  quietTimes: { flexDirection: 'row', gap: 10, marginTop: 12 },
-  timeChip: {
-    minHeight: 44,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+  // two full-width rows rather than two side-by-side chips: the native
+  // compact picker is already a filled pill, so wrapping it in a filled
+  // chip put a box inside a box, and side by side the pair could not
+  // hold their values on a narrow phone.
+  quietTimes: {
+    marginTop: 12,
     borderRadius: tokens.primitive.radius.control,
     backgroundColor: tokens.semantic.color.backgroundSubtle,
+    paddingHorizontal: 14,
   },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: tokens.semantic.color.hairlineOnCream,
+  },
+  timeRowLast: { borderBottomWidth: 0 },
   timeLabel: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
-  timeValue: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.ink },
+  timeValue: { fontFamily: fontFamily.displaySemi, fontSize: 16, color: tokens.semantic.color.ink },
   pickerBlock: {
     marginTop: 8,
     borderRadius: tokens.primitive.radius.control,

@@ -139,6 +139,18 @@ describe('home pager', () => {
     expect(view.getByRole('button', { name: 'activity' })).toBeTruthy();
   });
 
+  it('lands the activity page on chats, with yours and requests after it', async () => {
+    const view = await render(<HomeScreen />);
+
+    const chats = view.getByRole('tab', { name: 'chats' });
+    expect(chats.props.accessibilityState).toMatchObject({ selected: true });
+    expect(view.getByRole('tab', { name: 'yours' })).toBeTruthy();
+    // the label carries its count when it has one: "requests, 2"
+    expect(view.getByRole('tab', { name: /^requests/ })).toBeTruthy();
+    // renamed: "needs you" was the old first tab
+    expect(view.queryByRole('tab', { name: 'needs you' })).toBeNull();
+  });
+
   it('opens the detail sheet from the headline and the join sheet from the bar', async () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
@@ -485,6 +497,14 @@ describe('chat', () => {
     await user.press(view.getByRole('button', { name: 'send' }));
 
     expect(await view.findByText('on my way')).toBeTruthy();
+  });
+
+  it('keeps the chat window label short enough to sit beside a name', async () => {
+    const view = await render(<ChatScreen />);
+
+    // "expires in 22h" pushed the pill wide enough to overlap the name
+    expect(view.getByText('22h left')).toBeTruthy();
+    expect(view.queryByText('expires in 22h')).toBeNull();
   });
 
   it('offers one + for photos, GIFs and location, and no emoji row', async () => {
