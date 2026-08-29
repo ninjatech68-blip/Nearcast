@@ -16,6 +16,7 @@ import { tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
 import { useProfileSync } from '@/features/me/use-profile-sync';
 import { restoreSession } from '@/features/auth/auth';
+import { configureNotifications, refreshPushRegistration } from '@/features/notifications/push';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
 void SplashScreen.preventAutoHideAsync();
@@ -62,6 +63,15 @@ export default function RootLayout() {
       isMounted = false;
     };
   }, []);
+
+  // notification presentation is set once at boot; when a signed-in
+  // person already granted push, re-register their token (tokens rotate).
+  useEffect(() => {
+    void configureNotifications();
+  }, []);
+  useEffect(() => {
+    if (me.signedIn) void refreshPushRegistration();
+  }, [me.signedIn]);
 
   // persisted writes are debounced, so a change made in the last
   // ~120ms before a force-quit would be lost. flush when the app

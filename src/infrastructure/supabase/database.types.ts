@@ -202,6 +202,35 @@ export type Database = {
           },
         ]
       }
+      device_push_tokens: {
+        Row: {
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          platform?: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_push_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intent_confirmations: {
         Row: {
           confirmer_id: string
@@ -640,6 +669,48 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "notification_jobs_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_outbox: {
+        Row: {
+          created_at: string
+          id: string
+          intent_id: string | null
+          kind: string
+          recipient_id: string
+          sent_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intent_id?: string | null
+          kind: string
+          recipient_id: string
+          sent_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intent_id?: string | null
+          kind?: string
+          recipient_id?: string
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_outbox_intent_id_fkey"
+            columns: ["intent_id"]
+            isOneToOne: false
+            referencedRelation: "intents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_outbox_recipient_id_fkey"
             columns: ["recipient_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -1136,6 +1207,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      register_push_token: {
+        Args: { platform: string; token: string }
+        Returns: undefined
       }
       remove_from_circle: {
         Args: { member: string; target_circle: string }

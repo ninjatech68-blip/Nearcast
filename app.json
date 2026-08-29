@@ -69,6 +69,12 @@
         {
           "photosPermission": "Nearcast uses a photo you pick as your profile picture, shown at decision moments for trust."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#FF4D00"
+        }
       ]
     ],
     "experiments": {

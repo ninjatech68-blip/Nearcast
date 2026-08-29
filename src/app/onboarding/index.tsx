@@ -16,6 +16,7 @@ import {
   useMe,
 } from '@/features/me/me-store';
 import { myCurrentArea } from '@/features/casts/area-lookup';
+import { enablePush } from '@/features/notifications/push';
 
 type Step = 'name' | 'home' | 'areas' | 'interests' | 'push';
 
@@ -101,12 +102,11 @@ export default function OnboardingScreen() {
   }
 
   async function askPush() {
-    // stub: the real call is
-    //   const { status } = await Notifications.requestPermissionsAsync();
-    // we can't add the module here (network install blocked in this
-    // env); the store field is set so the shape is real and the flow
-    // is complete.
-    setPushGranted(true);
+    // real permission prompt + token registration; degrades to a no-op
+    // when the native module isn't in the binary. push is a convenience,
+    // never a gate — whatever the outcome, onboarding completes.
+    const outcome = await enablePush();
+    setPushGranted(outcome === 'granted');
     setOnboardingDone();
     router.replace('/');
   }
@@ -280,10 +280,10 @@ export default function OnboardingScreen() {
 
           {step === 'push' ? (
             <>
-              <Text accessibilityRole="header" style={styles.title}>can we tap you when a plan lands?</Text>
+              <Text accessibilityRole="header" style={styles.title}>want a nudge when it matters?</Text>
               <Text style={styles.hint}>
-                push notifications for accepted joins, new casts that match, and reflection prompts after a plan. never message
-                text, never a coordinate — only the id. you can turn it off anytime.
+                we’ll ping you when someone asks to join your plan, and when a plan you asked to join says yes. never the
+                message, never a location — just enough to open Nearcast. turn it off anytime.
               </Text>
             </>
           ) : null}
