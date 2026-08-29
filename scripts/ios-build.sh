@@ -20,6 +20,14 @@
 #
 # Signing: pass your Apple team id if the project has none saved yet:
 #   DEVELOPMENT_TEAM=ABCDE12345 npm run ios:build
+#
+# NEW DEVICE (e.g. a second tester phone): a build for the generic iOS
+# destination does NOT register a device with the team, so its provisioning
+# profile omits it and the install fails with
+#   "This provisioning profile cannot be installed on this device."
+# Target the device explicitly and Xcode registers it and reissues the profile:
+#   IOS_DEVICE_UDID=<udid> npm run ios:build
+# The build then installs to that exact device rather than the first one found.
 set -euo pipefail
 
 ARG="${1:-device}"
@@ -81,8 +89,14 @@ else
   echo "    security find-identity -v -p codesigning)" >&2
 fi
 
+TARGET_UDID="${IOS_DEVICE_UDID:-}"
 if [ "$MODE" = "sim" ]; then
   DEST="platform=iOS Simulator,name=iPhone 16"
+elif [ -n "$TARGET_UDID" ]; then
+  # building AT a specific device is what makes automatic signing register
+  # it with the team and reissue a profile that includes it.
+  DEST="id=$TARGET_UDID"
+  echo "==> targeting device $TARGET_UDID (registers it for signing)"
 else
   DEST="generic/platform=iOS"   # no UDID: avoids "destination not found"
 fi
@@ -141,6 +155,15 @@ if [ "$CONFIG" = "Release" ]; then
 fi
 
 # ---- 8. install on the connected device ------------------------------
+if [ -n "$TARGET_UDID" ]; then
+  echo "==> installing on the targeted device $TARGET_UDID"
+  xcrun devicectl device install app --device "$TARGET_UDID" "$APP"
+  echo
+  echo "INSTALLED ($CONFIG) on $TARGET_UDID with the JS bundle embedded."
+  echo "Quit Metro, unplug, leave this Mac's Wi-Fi — the app keeps working."
+  exit 0
+fi
+
 echo "==> finding a connected device"
 DEV_JSON="$ROOT/ios/build/devices.json"
 xcrun devicectl list devices --json-output "$DEV_JSON" >/dev/null 2>&1 || true
