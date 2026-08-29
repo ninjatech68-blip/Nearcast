@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Nearcast",
+    "name": "TrvlAI Test",
     "slug": "nearcast",
     "version": "0.1.1",
     "orientation": "portrait",
@@ -8,9 +8,9 @@
     "scheme": "nearcast",
     "userInterfaceStyle": "light",
     "ios": {
-      "bundleIdentifier": "com.piyushsharma.nearcast.dev",
+      "bundleIdentifier": "com.piyushsharma.trvlai.test",
       "infoPlist": {
-        "CFBundleDisplayName": "TrvlAI Test"
+        "ITSAppUsesNonExemptEncryption": false
       },
       "icon": {
         "light": "./assets/images/icon.png",
@@ -83,6 +83,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a6eb46e6-6211-4965-9de5-129f13d573ae"
+      }
+    },
+    "owner": "ps2109"
   }
 }

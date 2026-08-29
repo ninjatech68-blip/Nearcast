@@ -27,7 +27,14 @@ node --version
 npm --version
 
 echo "==> installing JS dependencies"
-npm ci
+# `npm ci` is the reproducible path and requires the lockfile to match
+# package.json exactly. If a dependency was added to package.json but its
+# lockfile entries have not landed yet, npm ci fails hard — fall back to
+# `npm install` so a build is never blocked on lockfile drift.
+npm ci || {
+  echo "!! npm ci failed (lockfile out of sync) — falling back to npm install"
+  npm install
+}
 
 echo "==> writing .env for the bundler"
 cat > .env <<EOF
