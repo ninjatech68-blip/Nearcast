@@ -324,7 +324,9 @@ describe('compose', () => {
 
     const feed = await render(<HomeScreen />);
     // your own casts never appear in the feed (the feed is decisions to
-    // make — yours aren't). they surface as an activity row.
+    // make — yours aren't). they surface under the activity page's
+    // "yours" tab, which is where what you started lives.
+    await user.press(feed.getByRole('tab', { name: 'yours' }));
     expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(1);
   });
 
