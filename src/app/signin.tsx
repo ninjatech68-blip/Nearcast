@@ -112,7 +112,7 @@ export default function SigninScreen() {
               {error ? <Text style={styles.error}>{error}</Text> : null}
 
               <BarButton
-                label={requiresLink() ? 'send magic link' : 'continue'}
+                label={requiresLink() ? 'email me a sign-in link' : 'continue'}
                 variant="onOrange"
                 onPress={sendLink}
                 disabled={!emailValid || busy}
@@ -124,9 +124,14 @@ export default function SigninScreen() {
           ) : (
             <View style={styles.form}>
               <Text accessibilityRole="header" style={styles.sentTitle}>check your inbox.</Text>
+              <Text style={styles.note}>we sent a sign-in link to</Text>
+              <View style={styles.emailChip}>
+                <Text style={styles.emailChipText} numberOfLines={1}>
+                  {email.trim()}
+                </Text>
+              </View>
               <Text style={styles.note}>
-                we sent a link to {email.trim()}. tap &ldquo;verify &amp; continue&rdquo; and NearCast opens right
-                back here, signed in.
+                tap &ldquo;verify &amp; continue&rdquo; and NearCast opens right back here, signed in.
               </Text>
               <Text style={styles.noteDim}>the link expires shortly and works once. it can take a minute to arrive.</Text>
 
@@ -208,6 +213,17 @@ const styles = StyleSheet.create({
     color: tokens.semantic.color.ink,
   },
   note: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
+  emailChip: {
+    alignSelf: 'flex-start',
+    maxWidth: '100%',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: tokens.primitive.radius.control,
+    borderWidth: 1.5,
+    borderColor: tokens.semantic.color.accent,
+    backgroundColor: tokens.semantic.color.cream,
+  },
+  emailChipText: { fontFamily: fontFamily.displaySemi, fontSize: 16, color: tokens.semantic.color.ink },
   noteDim: { ...tokens.typography.metaSmall, color: tokens.semantic.color.hairlineOnCream },
   error: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent },
   legalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 8 },
