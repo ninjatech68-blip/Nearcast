@@ -61,6 +61,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "pretypecheck": "rm -rf .expo/types",
     "typecheck": "tsc --noEmit",
     "check:native": "node scripts/check-native-modules.mjs",
     "ios:build": "bash scripts/ios-build.sh",
