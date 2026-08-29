@@ -156,6 +156,7 @@ export default function RootLayout() {
       <Stack.Screen name="auth/callback" options={{ presentation: 'card', gestureEnabled: false, animation: 'fade' }} />
       <Stack.Screen name="onboarding" options={{ presentation: 'card', gestureEnabled: false, animation: 'fade' }} />
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="profile-edit" options={{ presentation: 'modal' }} />
       <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
       <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
       <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />

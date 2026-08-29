@@ -202,7 +202,7 @@ export function ActivityPage() {
               {joinsISent.map((j) => (
                 <Row
                   key={`sent-${j.castId}`}
-                  title={`${j.casterName} decides`}
+                  title={`waiting on ${j.casterName}`}
                   sub={
                     j.note
                       ? `you said “${j.note}” · long-press to withdraw`

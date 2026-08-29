@@ -179,8 +179,13 @@ export default function ChatScreen() {
             onPress={openExpiryMenu}
             style={styles.expiryTap}
           >
-            <Text style={styles.expiryLabel}>{thread.expiresLabel}</Text>
-            <Text style={styles.expiryChevron}>⋯</Text>
+            {/* the window is the whole point of the chat — a muted 11pt
+                label in the corner was missed by every tester. it reads
+                as an accent pill now, at the same tap target. */}
+            <View style={styles.expiryPill}>
+              <Text style={styles.expiryLabel}>{thread.expiresLabel}</Text>
+              <Text style={styles.expiryChevron}>⋯</Text>
+            </View>
           </Pressable>
         </View>
 
@@ -449,16 +454,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     justifyContent: 'center',
   },
+  expiryPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: tokens.primitive.radius.pill,
+    borderWidth: 1,
+    borderColor: tokens.semantic.color.accent,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
   expiryLabel: {
     ...tokens.typography.tagSmall,
-    color: tokens.semantic.color.textMutedOnCream,
+    color: tokens.semantic.color.accent,
   },
   expiryChevron: {
     fontFamily: fontFamily.text,
-    fontSize: 18,
-    lineHeight: 18,
-    color: tokens.semantic.color.textMutedOnCream,
-    marginTop: 2,
+    fontSize: 16,
+    lineHeight: 16,
+    color: tokens.semantic.color.accent,
   },
   endedRow: {
     paddingTop: 12,

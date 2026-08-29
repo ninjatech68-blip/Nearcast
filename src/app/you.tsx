@@ -128,6 +128,12 @@ export default function YouScreen() {
 
         <View style={styles.rows}>
           <Row
+            title="name & email"
+            sub={me.email ? `${me.name} · ${me.email}` : me.name}
+            right={<Tag label="→" tone="line" />}
+            onPress={() => router.push('/profile-edit')}
+          />
+          <Row
             title="receipts"
             sub={live ? `${receipts} plans made real` : `${receipts} plans made real · last: badminton, tuesday`}
             right={<Tag label="→" tone="line" />}

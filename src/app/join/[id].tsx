@@ -54,7 +54,7 @@ export default function JoinScreen() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
-      <SheetShell title={`tell ${name}`}>
+      <SheetShell title={`ask ${name}`}>
         <View style={styles.fieldHolder}>
           <Field
             value={note}
@@ -77,7 +77,7 @@ export default function JoinScreen() {
             <>
               {error ? <Text style={styles.error}>{error}</Text> : null}
               <BarButton
-                label={error ? 'try again' : 'send it'}
+                label={error ? 'try again' : 'send request'}
                 variant="onOrange"
                 onPress={send}
                 loading={state === 'sending'}

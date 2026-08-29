@@ -146,7 +146,7 @@ describe('home pager', () => {
     await user.press(view.getByRole('button', { name: 'Open cast: badminton after work. need two.' }));
     expect(mockPush).toHaveBeenCalledWith('/cast/badminton-after-work');
 
-    await user.press(view.getAllByRole('button', { name: "I'm in" })[0]);
+    await user.press(view.getAllByRole('button', { name: 'ask to join' })[0]);
     expect(mockPush).toHaveBeenCalledWith('/join/badminton-after-work');
   });
 
@@ -209,10 +209,10 @@ describe('join sheet', () => {
   it('keeps send dead until a note exists and discloses exactly what is shared', async () => {
     const view = await render(<JoinScreen />);
 
-    expect(view.getByText('tell Aarav')).toBeTruthy();
+    expect(view.getByText('ask Aarav')).toBeTruthy();
     expect(view.getByText('Aarav gets your first name + this note. nothing else.')).toBeTruthy();
 
-    const send = view.getByRole('button', { name: 'send it' });
+    const send = view.getByRole('button', { name: 'send request' });
     expect(send.props.accessibilityState).toMatchObject({ disabled: true });
   });
 });

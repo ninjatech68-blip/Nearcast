@@ -351,7 +351,7 @@ export function usePendingJoinsOnMyCasts(): readonly ActivityItem[] {
         items.push({
           id: `join-${cast.id}-${join.personId}`,
           personId: join.personId,
-          title: `${join.displayName ?? nameFor(join.personId)}'s in`,
+          title: `${join.displayName ?? nameFor(join.personId)} asked to join`,
           sub: `"${join.note}" · ${join.sentAgo} · ${cast.text}`,
           tag: { label: 'decide', tone: 'hot' },
           castId: cast.id,
@@ -392,7 +392,11 @@ function statusLine(cast: CastDetail): string {
 }
 
 export function getCast(id: string): CastDetail | undefined {
-  return state.feed.find((c) => c.id === id) ?? state.myCasts.find((c) => c.id === id);
+  // YOUR OWN casts win the lookup. The delivery pass already excludes a
+  // caster from their own cast, but if one ever did land in the feed the
+  // feed copy carries the caster's real id instead of 'me' — and the
+  // detail sheet would offer the caster the join button on their own plan.
+  return state.myCasts.find((c) => c.id === id) ?? state.feed.find((c) => c.id === id);
 }
 
 export function skipCast(id: string): void {

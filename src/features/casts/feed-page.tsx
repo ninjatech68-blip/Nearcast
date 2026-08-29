@@ -220,7 +220,7 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
         onWordmarkPress={() => router.push('/filter')}
       >
         <BarButton
-          label="I'm in"
+          label="ask to join"
           variant={fg === tokens.semantic.color.cream ? 'onCream' : 'onInk'}
           onPress={() => router.push(`/join/${cast.id}`)}
         />

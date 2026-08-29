@@ -6,7 +6,7 @@ import { BarButton, QuietAction } from '@/design-system/components/button';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { cancelCast, getCast } from '@/features/casts/store';
+import { cancelCast, getCast, useJoinsISent, withdrawJoin } from '@/features/casts/store';
 
 /**
  * the detail sheet. receipts show at the decision moment:
@@ -15,6 +15,12 @@ import { cancelCast, getCast } from '@/features/casts/store';
 export default function CastDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const cast = getCast(id ?? '');
+  // A cast you have ALREADY asked to join must not offer the ask again.
+  // It did: opening one from "waiting on" put the note sheet back up, so
+  // the same request could be sent twice and the screen read as though
+  // nothing had happened.
+  const sent = useJoinsISent();
+  const asked = sent.find((join) => join.castId === (id ?? ''));
 
   if (!cast) {
     return (
@@ -60,12 +66,37 @@ export default function CastDetailScreen() {
         </>
       );
     }
+    if (asked) {
+      return (
+        <>
+          <Text style={styles.askedLine}>{`you asked to join. ${cast.by.toLowerCase()} decides — you'll hear in activity.`}</Text>
+          <BarButton label="back" variant="onCream" onPress={() => router.back()} />
+          <QuietAction label="withdraw request" color={tokens.semantic.color.ink} onPress={openWithdraw} />
+        </>
+      );
+    }
     return (
       <>
-        <BarButton label="I'm in" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
+        <BarButton label="ask to join" variant="onOrange" onPress={() => router.push(`/join/${cast.id}`)} />
         <QuietAction label="skip" color={tokens.semantic.color.ink} onPress={() => router.back()} />
       </>
     );
+  }
+
+  function openWithdraw() {
+    if (!cast) return;
+    Alert.alert(`withdraw from ${cast.by}'s plan?`, "they see nothing change. they'll never know you'd asked.", [
+      { text: 'never mind' },
+      {
+        text: 'withdraw',
+        style: 'destructive',
+        onPress: () => {
+          haptic('light');
+          void withdrawJoin(cast.id);
+          router.back();
+        },
+      },
+    ]);
   }
 
   function openCancel() {
@@ -116,5 +147,6 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
+  askedLine: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginBottom: 10 },
   actions: { marginTop: 18, gap: 2 },
 });
