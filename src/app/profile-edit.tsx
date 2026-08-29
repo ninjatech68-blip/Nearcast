@@ -21,6 +21,11 @@ import { setName, useMe } from '@/features/me/me-store';
  * address, so changing it means re-verifying the new one before the
  * old one stops working — a real flow, not a text field. Saying so is
  * better than offering a field that silently locks someone out.
+ *
+ * The note says only that, and stops. It used to end "write in and
+ * we'll move it across", which promised a support channel that does
+ * not exist — an offer nobody could act on is worse than the plain
+ * "not yet".
  */
 export default function ProfileEditScreen() {
   const me = useMe();
@@ -61,8 +66,8 @@ export default function ProfileEditScreen() {
             <Text style={styles.readonlyText}>{me.email || 'not set'}</Text>
           </View>
           <SheetNote>
-            your email is how you sign in — we send the link there. changing it needs the new address verified
-            first, so write in and we&apos;ll move it across.
+            this is where your sign-in link is sent. moving it to another address means verifying that one first,
+            so it can&apos;t be changed here yet.
           </SheetNote>
         </ScrollView>
         <View style={styles.actions}>

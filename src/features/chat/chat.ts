@@ -17,6 +17,7 @@ import {
   sendLocationShare,
   sendMediaMessage,
   sendText,
+  respondToModeProposal,
   setMode,
   subscribeToConversation,
   type LocalMedia,
@@ -81,6 +82,12 @@ export type Thread = {
   mode: ExpiryMode;
   /** display label for the current expiry — kept as a string so the store stays deterministic without a clock */
   expiresLabel: string;
+  /**
+   * an open request for a LONGER window. A longer window is more
+   * exposure for both people, so one side asks and the other agrees;
+   * `mine` says which side of that this viewer is on.
+   */
+  pending?: { mode: 'week' | 'always'; mine: boolean };
 };
 
 export type ConversationSummary = {
@@ -198,6 +205,9 @@ function toMessage(row: RemoteMessage, otherLastRead: string | null): Message {
 
 function buildThread(meta: RemoteConversation, rows: readonly RemoteMessage[]): Thread {
   return {
+    ...(meta.proposed_mode
+      ? { pending: { mode: meta.proposed_mode, mine: meta.proposed_by_me === true } }
+      : {}),
     id: meta.conversation_id,
     withName: meta.other_first_name ?? 'someone',
     withId: meta.other_id,
@@ -414,10 +424,25 @@ function promoteStatus(threadId: string, messageId: string, status: MessageStatu
 }
 
 /**
- * extend the chat's window. in production, "always" needs both sides
- * to opt in; here we mock the shape by flipping the mode immediately
- * and appending a system message describing the transition.
+ * Change the chat's window.
+ *
+ * A LONGER window is more exposure for both people, so it is asked for,
+ * not taken: this records the request and the other side has to agree.
+ * The same or shorter applies at once — pulling your own exposure in
+ * never needs someone else's permission.
+ *
+ * The fixture build models the same two steps rather than flipping the
+ * mode outright. It used to write "both of you agreed to keep this chat
+ * open" after one person tapped it, which was the app claiming a
+ * consent nobody had given.
  */
+const MODE_RANK: Record<'ended' | 'day' | 'week' | 'always', number> = {
+  ended: 0,
+  day: 1,
+  week: 2,
+  always: 3,
+};
+
 export async function extendChat(threadId: string, mode: 'day' | 'week' | 'always'): Promise<void> {
   if (chatEnabled()) {
     await setMode(threadId, mode);
@@ -426,15 +451,35 @@ export async function extendChat(threadId: string, mode: 'day' | 'week' | 'alway
   }
   const thread = state.threads[threadId];
   if (!thread || thread.mode === 'ended') return;
+
+  const longer = MODE_RANK[mode] > MODE_RANK[thread.mode];
+  if (longer && (mode === 'week' || mode === 'always')) {
+    const ask: Message = {
+      id: `sys-ask-${thread.messages.length + 1}`,
+      from: 'system',
+      text:
+        mode === 'always'
+          ? 'a request to keep this chat open with no expiry. it changes when you both agree.'
+          : 'a request to extend this chat to 7 days. it changes when you both agree.',
+      time: 'now',
+    };
+    putThread({
+      ...thread,
+      pending: { mode, mine: true },
+      messages: [...thread.messages, ask],
+    });
+    return;
+  }
+
   const labels: Record<'day' | 'week' | 'always', string> = {
     day: '24h left',
     week: '7d left',
-    always: 'no expiry · you both agreed to keep it open',
+    always: 'open',
   };
   const noteText: Record<'day' | 'week' | 'always', string> = {
-    day: 'chat window reset to 24h.',
-    week: 'chat window reset to 7 days.',
-    always: 'both of you agreed to keep this chat open. no expiry now.',
+    day: 'chat window set to 24h.',
+    week: 'chat window set to 7 days.',
+    always: 'you both agreed to keep this chat open. no expiry now.',
   };
   const note: Message = {
     id: `sys-extend-${thread.messages.length + 1}`,
@@ -442,19 +487,47 @@ export async function extendChat(threadId: string, mode: 'day' | 'week' | 'alway
     text: noteText[mode],
     time: 'now',
   };
-  state = {
-    ...state,
-    threads: {
-      ...state.threads,
-      [threadId]: {
-        ...thread,
-        mode,
-        expiresLabel: labels[mode],
-        messages: [...thread.messages, note],
-      },
-    },
+  const { pending: _dropped, ...rest } = thread;
+  putThread({
+    ...rest,
+    mode,
+    expiresLabel: labels[mode],
+    messages: [...thread.messages, note],
+  });
+}
+
+/**
+ * Answer an open request for a longer window.
+ *
+ * Accepting is the OTHER side's move — that is what makes "you both
+ * agreed" true. Either side may clear it with `accept: false`: from the
+ * person who asked that is a withdrawal, from the other a decline.
+ */
+export async function answerWindowRequest(threadId: string, accept: boolean): Promise<void> {
+  if (chatEnabled()) {
+    await respondToModeProposal(threadId, accept);
+    await loadConversation(threadId);
+    return;
+  }
+  const thread = state.threads[threadId];
+  if (!thread?.pending) return;
+  const wanted = thread.pending.mode;
+  const { pending: _cleared, ...rest } = thread;
+  const note: Message = {
+    id: `sys-answer-${thread.messages.length + 1}`,
+    from: 'system',
+    text: accept
+      ? wanted === 'always'
+        ? 'you both agreed to keep this chat open. no expiry now.'
+        : 'you both agreed to a 7 day window.'
+      : 'the chat window stays as it is.',
+    time: 'now',
   };
-  emit();
+  putThread({
+    ...rest,
+    ...(accept ? { mode: wanted, expiresLabel: wanted === 'always' ? 'open' : '7d left' } : {}),
+    messages: [...thread.messages, note],
+  });
 }
 
 /**

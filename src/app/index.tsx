@@ -5,6 +5,7 @@ import { Animated, ScrollView, View, useWindowDimensions, type NativeScrollEvent
 import { Rail, type RailPage } from '@/design-system/components/rail';
 import { ActivityPage } from '@/features/casts/activity-page';
 import { FeedPage } from '@/features/casts/feed-page';
+import { useActivityCount } from '@/features/casts/use-activity-count';
 import { onActivityRequested } from '@/features/notifications/routing';
 
 /**
@@ -16,6 +17,7 @@ export default function HomeScreen() {
   const pagerRef = useRef<ScrollView>(null);
   const [railOpacity] = useState(() => new Animated.Value(1));
   const [page, setPage] = useState<RailPage>('near');
+  const activityCount = useActivityCount();
 
   function handlePageSettle(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const index = Math.round(event.nativeEvent.contentOffset.x / width);
@@ -60,6 +62,7 @@ export default function HomeScreen() {
       </ScrollView>
       <Rail
         current={page}
+        activityCount={activityCount}
         opacity={railOpacity}
         onNear={() => goTo(0)}
         onCast={() => router.push('/compose')}

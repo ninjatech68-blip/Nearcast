@@ -26,6 +26,9 @@ export type RemoteConversation = {
   last_at: string;
   unread_count: number;
   other_last_read_at: string | null;
+  /** an open request for a LONGER window, waiting on the other side */
+  proposed_mode: 'week' | 'always' | null;
+  proposed_by_me: boolean | null;
 };
 
 export type RemoteMessage = {
@@ -193,6 +196,23 @@ function cryptoId(): string {
   const g = globalThis as { crypto?: { randomUUID?: () => string } };
   if (g.crypto?.randomUUID) return g.crypto.randomUUID();
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+/**
+ * Answer an open request for a longer window.
+ *
+ * `accept` from the other party is what actually changes it; `accept:
+ * false` from either party clears it — from the proposer that is a
+ * withdrawal, from the other side a decline.
+ */
+export async function respondToModeProposal(conversationId: string, accept: boolean): Promise<void> {
+  const c = getSupabase();
+  if (!c) throw new Error('no backend configured');
+  const { error } = await c.rpc('respond_to_mode_proposal', {
+    target_conversation_id: conversationId,
+    accept,
+  });
+  if (error) throw new Error(error.message);
 }
 
 export async function markRead(conversationId: string): Promise<void> {

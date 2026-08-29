@@ -54,13 +54,38 @@ export default function YouScreen() {
   const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
   const [tempTime, setTempTime] = useState<Date | null>(null);
 
-  async function pickPhoto() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.9,
-    });
+  /**
+   * A profile photo, from the camera or the library.
+   *
+   * The camera is the one the product actually wants: a face shown at a
+   * decision moment means more when it was taken now than when it was
+   * chosen from a roll. Both are offered because a person may not be
+   * anywhere they want to be photographed, and a square crop is asked
+   * for either way so the avatar is never a stretched rectangle.
+   */
+  async function pickPhoto(source: 'camera' | 'library') {
+    const permission =
+      source === 'camera'
+        ? await ImagePicker.requestCameraPermissionsAsync()
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert(
+        source === 'camera' ? 'camera is off' : 'photos are off',
+        source === 'camera'
+          ? 'turn on camera access to take a profile photo.'
+          : 'turn on photo access to pick a profile photo.',
+        [{ text: 'ok' }],
+      );
+      return;
+    }
+    const options = { allowsEditing: true, aspect: [1, 1] as [number, number], quality: 0.9 };
+    const result =
+      source === 'camera'
+        ? await ImagePicker.launchCameraAsync(options)
+        : await ImagePicker.launchImageLibraryAsync({
+            ...options,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          });
     if (!result.canceled && result.assets[0]) {
       haptic('success');
       setMyPhoto(result.assets[0].uri);
@@ -69,7 +94,8 @@ export default function YouScreen() {
 
   function changePhoto() {
     Alert.alert('profile photo', undefined, [
-      { text: 'choose from library', onPress: pickPhoto },
+      { text: 'take a photo', onPress: () => void pickPhoto('camera') },
+      { text: 'choose from library', onPress: () => void pickPhoto('library') },
       photoUri ? { text: 'remove photo', style: 'destructive' as const, onPress: () => setMyPhoto(null) } : null,
       { text: 'cancel', style: 'cancel' as const },
     ].filter(Boolean) as Parameters<typeof Alert.alert>[2]);

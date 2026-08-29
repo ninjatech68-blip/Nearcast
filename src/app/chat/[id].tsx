@@ -27,6 +27,7 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import {
+  answerWindowRequest,
   chatEnabled,
   endChat,
   extendChat,
@@ -222,11 +223,11 @@ export default function ChatScreen() {
     }
     Alert.alert(
       'chat window',
-      `currently ${thread.expiresLabel}. keep it open for as long as you both want, then end it.`,
+      `currently ${thread.expiresLabel}. a longer window is more exposure for both of you, so it takes you both — asking sends the request, and it changes when they agree. a shorter one takes effect now.`,
       [
-        { text: '24 hours', onPress: () => extendChat(thread.id, 'day') },
-        { text: '7 days', onPress: () => extendChat(thread.id, 'week') },
-        { text: 'keep open forever', onPress: () => extendChat(thread.id, 'always') },
+        { text: '24 hours', onPress: () => void extendChat(thread.id, 'day') },
+        { text: 'ask for 7 days', onPress: () => void extendChat(thread.id, 'week') },
+        { text: 'ask to keep it open', onPress: () => void extendChat(thread.id, 'always') },
         {
           text: 'end chat',
           style: 'destructive',
@@ -317,6 +318,18 @@ export default function ChatScreen() {
             />
           ))}
         </ScrollView>
+
+        {thread.pending ? (
+          <WindowRequest
+            mode={thread.pending.mode}
+            mine={thread.pending.mine}
+            withName={thread.withName}
+            onAnswer={(accept) => {
+              haptic('light');
+              void answerWindowRequest(thread!.id, accept);
+            }}
+          />
+        ) : null}
 
         {netNote ? (
           <View style={styles.netBanner} accessibilityLabel="connection status">
@@ -457,6 +470,59 @@ function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }
 }
 
 /**
+ * An open request to make the chat window longer.
+ *
+ * Both sides see it, because both sides carry the consequence. The
+ * person who asked sees that they are waiting and can take it back; the
+ * other sees what was asked and answers it. Nothing about the window
+ * changes until they do.
+ */
+function WindowRequest({
+  mode,
+  mine,
+  withName,
+  onAnswer,
+}: {
+  mode: 'week' | 'always';
+  mine: boolean;
+  withName: string;
+  onAnswer: (accept: boolean) => void;
+}) {
+  const what = mode === 'always' ? 'keeping this chat open with no expiry' : 'a 7 day window';
+
+  return (
+    <View style={styles.request}>
+      <Text style={styles.requestText}>
+        {mine
+          ? `you asked for ${what}. it changes when ${withName.toLowerCase()} agrees.`
+          : `${withName} asked for ${what}. it changes when you agree.`}
+      </Text>
+      <View style={styles.requestActions}>
+        {mine ? (
+          <Pressable accessibilityRole="button" accessibilityLabel="take back the request" onPress={() => onAnswer(false)}>
+            <Text style={styles.requestNo}>take it back</Text>
+          </Pressable>
+        ) : (
+          <>
+            <Pressable accessibilityRole="button" accessibilityLabel="not now" onPress={() => onAnswer(false)}>
+              <Text style={styles.requestNo}>not now</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="agree to the longer window"
+              onPress={() => onAnswer(true)}
+              style={styles.requestYesTap}
+            >
+              <Text style={styles.requestYes}>agree</Text>
+            </Pressable>
+          </>
+        )}
+      </View>
+    </View>
+  );
+}
+
+/**
  * The attachment tray: three tiles, between the thread and the composer.
  *
  * SF Symbols on iOS, a mono glyph everywhere else — no emoji. The emoji
@@ -569,6 +635,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   plusText: { fontFamily: fontFamily.text, fontSize: 24, lineHeight: 26, color: tokens.semantic.color.ink },
+  request: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    borderRadius: tokens.primitive.radius.control,
+    borderWidth: 1,
+    borderColor: tokens.semantic.color.accent,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
+  requestText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.ink, flex: 1, lineHeight: 18 },
+  requestActions: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  requestNo: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
+  requestYesTap: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: tokens.primitive.radius.pill,
+    backgroundColor: tokens.semantic.color.accent,
+  },
+  requestYes: { ...tokens.typography.tagSmall, color: tokens.semantic.color.ink },
   plusBtnOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
   plusTextOn: { color: tokens.semantic.color.cream },
   tray: {

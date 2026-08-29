@@ -113,6 +113,8 @@ const AreaScreen = require('./app/area').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ChatScreen = require('./app/chat/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+const { answerWindowRequest, extendChat } = require('./features/chat/chat');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const CirclesScreen = require('./app/circles').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const OnboardingScreen = require('./app/onboarding/index').default;
@@ -136,7 +138,16 @@ describe('home pager', () => {
     // multiple casts can legitimately share a top-2 reason string, so match all.
     expect(view.getAllByText('why you: one trusted link away · near you in indiranagar ›').length).toBeGreaterThanOrEqual(1);
     expect(view.getByRole('button', { name: 'cast' })).toBeTruthy();
-    expect(view.getByRole('button', { name: 'activity' })).toBeTruthy();
+    // the rail carries a real count of things waiting behind it
+    expect(view.getByRole('button', { name: /^activity/ })).toBeTruthy();
+  });
+
+  it('counts what is waiting on the rail, and says so out loud', async () => {
+    const view = await render(<HomeScreen />);
+
+    // the fixture viewer has requests and unread chats waiting
+    const activity = view.getByRole('button', { name: /^activity, \d+ waiting$/ });
+    expect(activity).toBeTruthy();
   });
 
   it('never shows one particular tester’s initials on everyone’s avatar', async () => {
@@ -522,6 +533,30 @@ describe('chat', () => {
     expect(view.getByRole('button', { name: 'send a photo, GIF or your location' })).toBeTruthy();
     // the emoji chips are gone: the system keyboard already has them
     expect(view.queryByRole('button', { name: 'add 👍' })).toBeNull();
+  });
+
+  it('asks the other side before a longer window, and does not extend on its own', async () => {
+    const view = await render(<ChatScreen />);
+
+    // the seed thread is a 24h window with nothing pending
+    expect(view.getByText('22h left')).toBeTruthy();
+    expect(view.queryByRole('button', { name: 'agree to the longer window' })).toBeNull();
+
+    await act(async () => {
+      await extendChat('badminton-after-work', 'always');
+    });
+
+    // asked, not done: the window is unchanged and the ask is on screen
+    expect(view.getByText('22h left')).toBeTruthy();
+    expect(view.getByText(/it changes when riya agrees/)).toBeTruthy();
+    // the person who asked cannot also agree — only take it back
+    expect(view.queryByRole('button', { name: 'agree to the longer window' })).toBeNull();
+    expect(view.getByRole('button', { name: 'take back the request' })).toBeTruthy();
+
+    await act(async () => {
+      await answerWindowRequest('badminton-after-work', true);
+    });
+    expect(view.getByText('open')).toBeTruthy();
   });
 
   it('opens the attachment tray in the chat, not a platform dialog', async () => {

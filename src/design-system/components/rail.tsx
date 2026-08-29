@@ -15,12 +15,15 @@ export function Rail({
   onCast,
   onActivity,
   opacity,
+  activityCount = 0,
 }: {
   current: RailPage;
   onNear: () => void;
   onCast: () => void;
   onActivity: () => void;
   opacity?: Animated.Value;
+  /** things actually waiting on you behind ACTIVITY. 0 shows nothing. */
+  activityCount?: number;
 }) {
   const insets = useSafeAreaInsets();
 
@@ -36,8 +39,23 @@ export function Rail({
         <Pressable accessibilityRole="button" accessibilityLabel="cast" hitSlop={10} onPress={onCast} style={styles.cast}>
           <Text style={styles.castPlus}>+</Text>
         </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel="activity" hitSlop={10} onPress={onActivity} style={styles.item}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={activityCount > 0 ? `activity, ${activityCount} waiting` : 'activity'}
+          hitSlop={10}
+          onPress={onActivity}
+          style={styles.item}
+        >
           <Text style={[styles.label, current === 'activity' && styles.on]}>ACTIVITY</Text>
+          {/* a count, not a dot: "something happened" is not as useful
+              as "three things happened", and it is a real number — see
+              useActivityCount. absent at zero, because a permanent 0
+              reads as a failure. */}
+          {activityCount > 0 ? (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{activityCount > 9 ? '9+' : activityCount}</Text>
+            </View>
+          ) : null}
         </Pressable>
       </View>
     </Animated.View>
@@ -56,6 +74,24 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   item: { minHeight: tokens.component.minTarget, justifyContent: 'center' },
+  badge: {
+    position: 'absolute',
+    top: 6,
+    right: -10,
+    minWidth: 16,
+    height: 16,
+    paddingHorizontal: 4,
+    borderRadius: 8,
+    backgroundColor: tokens.semantic.color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    fontFamily: fontFamily.monoSemi,
+    fontSize: 9,
+    lineHeight: 12,
+    color: tokens.semantic.color.ink,
+  },
   label: { ...tokens.typography.tagSmall, color: tokens.primitive.color.cream45, textTransform: 'uppercase' },
   on: { color: tokens.semantic.color.accent },
   cast: {

@@ -175,6 +175,9 @@ export type Database = {
           id: string
           match_id: string
           mode: Database["public"]["Enums"]["conversation_mode"]
+          proposed_at: string | null
+          proposed_by: string | null
+          proposed_mode: Database["public"]["Enums"]["conversation_mode"] | null
         }
         Insert: {
           closed_at?: string | null
@@ -183,6 +186,10 @@ export type Database = {
           id?: string
           match_id: string
           mode?: Database["public"]["Enums"]["conversation_mode"]
+          proposed_at?: string | null
+          proposed_by?: string | null
+          proposed_mode?:
+            Database["public"]["Enums"]["conversation_mode"] | null
         }
         Update: {
           closed_at?: string | null
@@ -191,6 +198,10 @@ export type Database = {
           id?: string
           match_id?: string
           mode?: Database["public"]["Enums"]["conversation_mode"]
+          proposed_at?: string | null
+          proposed_by?: string | null
+          proposed_mode?:
+            Database["public"]["Enums"]["conversation_mode"] | null
         }
         Relationships: [
           {
@@ -198,6 +209,13 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: true
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_proposed_by_fkey"
+            columns: ["proposed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1135,6 +1153,8 @@ export type Database = {
           other_first_name: string
           other_id: string
           other_last_read_at: string
+          proposed_by_me: boolean
+          proposed_mode: Database["public"]["Enums"]["conversation_mode"]
           unread_count: number
         }[]
       }
@@ -1244,6 +1264,10 @@ export type Database = {
       respond_to_cast: {
         Args: { note: string; target_intent_id: string }
         Returns: string
+      }
+      respond_to_mode_proposal: {
+        Args: { accept: boolean; target_conversation_id: string }
+        Returns: undefined
       }
       send_location: {
         Args: {
