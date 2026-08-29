@@ -435,6 +435,7 @@ export type Database = {
           published_at: string | null
           resolved_at: string | null
           restricted_from: Database["public"]["Enums"]["intent_status"] | null
+          seed_demo: boolean
           share_slug: string
           slots_wanted: number | null
           statement: string
@@ -451,6 +452,7 @@ export type Database = {
           published_at?: string | null
           resolved_at?: string | null
           restricted_from?: Database["public"]["Enums"]["intent_status"] | null
+          seed_demo?: boolean
           share_slug?: string
           slots_wanted?: number | null
           statement: string
@@ -467,6 +469,7 @@ export type Database = {
           published_at?: string | null
           resolved_at?: string | null
           restricted_from?: Database["public"]["Enums"]["intent_status"] | null
+          seed_demo?: boolean
           share_slug?: string
           slots_wanted?: number | null
           statement?: string
@@ -1118,6 +1121,7 @@ export type Database = {
           published_at: string | null
           resolved_at: string | null
           restricted_from: Database["public"]["Enums"]["intent_status"] | null
+          seed_demo: boolean
           share_slug: string
           slots_wanted: number | null
           statement: string
