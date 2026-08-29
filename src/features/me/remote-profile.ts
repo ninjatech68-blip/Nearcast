@@ -71,6 +71,28 @@ export function signalLit(receipts: number): number {
 
 
 /**
+ * A person's whole public profile, for a screen that shows more than a
+ * name. Null until it arrives, and null forever without a backend —
+ * the caller renders what it knows locally rather than blocking.
+ */
+export function usePublicProfile(personId: string | undefined): PublicProfile | null {
+  const [profile, setProfile] = useState<PublicProfile | null>(null);
+  useEffect(() => {
+    if (!profilesEnabled() || !personId) return;
+    let cancelled = false;
+    void fetchPublicProfile(personId)
+      .then((found) => {
+        if (!cancelled) setProfile(found);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [personId]);
+  return profile;
+}
+
+/**
  * A person's first name for a title/label. In a live app it is fetched
  * from the backend; in the fixture build the caller's local roster is
  * the source, so this returns null and the caller falls back to it.

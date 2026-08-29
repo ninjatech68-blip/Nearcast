@@ -3,14 +3,23 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 
 import { SignalBars } from '@/design-system/components/bars';
 import { BarButton, QuietAction } from '@/design-system/components/button';
+import { Face } from '@/design-system/components/face';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
+import { facePhotos, isVerified } from '@/features/casts/faces';
 import { cancelCast, getCast, useJoinsISent, withdrawJoin } from '@/features/casts/store';
 
 /**
  * the detail sheet. receipts show at the decision moment:
  * attendance facts, never a rating.
+ *
+ * THE PLAN IS THE SUBJECT. This sheet used to open with the caster's
+ * name as its title and a full-width pressable block of their line and
+ * signal bars underneath, so tapping the cast landed people on a
+ * profile they had not asked for. The caster is now a single compact
+ * capsule, and that capsule is the ONLY thing here that navigates to
+ * their profile — the same rule the feed poster follows.
  */
 export default function CastDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,22 +43,41 @@ export default function CastDetailScreen() {
   }
 
   return (
-    <SheetShell title={`${cast.by} cast this`}>
+    <SheetShell title={cast.text}>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
+        <Text style={styles.reach}>{reachLine(cast)}</Text>
+
+        {/* the one route to the profile. everything else on this sheet
+            is about the plan, and tapping it stays on the plan. */}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`about ${cast.by}`}
           onPress={() => router.push(`/caster/${cast.byId}`)}
-          hitSlop={8}
+          hitSlop={6}
+          style={styles.casterPill}
         >
-          <Text style={styles.byLine}>{cast.byLine} ›</Text>
-          <View style={styles.receipts}>
-            <SignalBars lit={cast.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
-            <Text style={styles.receiptsLine}>{cast.receipts.line}</Text>
-          </View>
+          <Face
+            photo={facePhotos[cast.byId]}
+            initials={cast.by.slice(0, 2).toUpperCase()}
+            size={28}
+            label=""
+            verified={isVerified(cast.byId)}
+          />
+          <Text style={styles.casterText} numberOfLines={1}>
+            {cast.by} ›
+          </Text>
+          {cast.receipts.line ? (
+            <>
+              <SignalBars lit={cast.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
+              <Text style={styles.receiptsLine} numberOfLines={1}>
+                {cast.receipts.line}
+              </Text>
+            </>
+          ) : null}
         </Pressable>
-        <Text style={styles.body}>{cast.body}</Text>
-        <Text style={styles.reach}>{reachLine(cast)}</Text>
+
+        {cast.body !== cast.text ? <Text style={styles.body}>{cast.body}</Text> : null}
+        {cast.why ? <Text style={styles.why}>why you: {cast.why}</Text> : null}
         <SheetNote>casts show the neighbourhood, never an exact spot. you sort out exactly where in chat — it&apos;s in-app, nobody swaps numbers.</SheetNote>
       </ScrollView>
       <View style={styles.actions}>{renderActions()}</View>
@@ -126,14 +154,28 @@ export default function CastDetailScreen() {
  */
 function reachLine(cast: ReturnType<typeof getCast>): string {
   if (!cast) return '';
-  return `${cast.area} · ${cast.expiry}`;
+  // the distance when the server measured one, the place name when it
+  // could not — never both, and never a guessed number.
+  return `${cast.distance ?? cast.area} · ${cast.expiry}`;
 }
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  byLine: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
-  receipts: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 },
-  receiptsLine: { ...tokens.typography.meta, color: tokens.semantic.color.ink },
+  casterPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    alignSelf: 'flex-start',
+    minHeight: 44,
+    paddingLeft: 4,
+    paddingRight: 12,
+    marginTop: 14,
+    borderRadius: tokens.primitive.radius.pill,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+  },
+  casterText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.ink, flexShrink: 1 },
+  receiptsLine: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, flexShrink: 1 },
+  why: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
   body: {
     fontFamily: fontFamily.text,
     fontSize: 17,
@@ -144,7 +186,7 @@ const styles = StyleSheet.create({
   reach: {
     ...tokens.typography.meta,
     color: tokens.semantic.color.accent,
-    marginTop: 14,
+    marginTop: 10,
   },
   goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
   askedLine: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginBottom: 10 },

@@ -185,10 +185,23 @@ describe('cast detail sheet', () => {
   it('shows receipts at the decision moment, never a rating', async () => {
     const view = await render(<CastDetailScreen />);
 
-    expect(view.getByText('Aarav cast this')).toBeTruthy();
+    // the PLAN is the title; the caster is a capsule beside it
+    expect(view.getByText('badminton after work. need two.')).toBeTruthy();
     expect(view.getByText('31 plans made real · 0 flakes')).toBeTruthy();
     expect(view.getByLabelText('signal: 4 of 5')).toBeTruthy();
     expect(view.getByText(/casts show the neighbourhood, never an exact spot\./)).toBeTruthy();
+  });
+
+  it('opens the caster profile only from the caster capsule', async () => {
+    const user = userEvent.setup();
+    const view = await render(<CastDetailScreen />);
+
+    // tapping the plan's own copy must not navigate anywhere
+    await user.press(view.getByText('badminton after work. need two.'));
+    expect(mockPush).not.toHaveBeenCalled();
+
+    await user.press(view.getByRole('button', { name: 'about Aarav' }));
+    expect(mockPush).toHaveBeenCalledWith('/caster/aarav');
   });
 
   it('renders the gone state for an expired or unknown cast', async () => {

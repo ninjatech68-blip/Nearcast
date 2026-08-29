@@ -1129,6 +1129,7 @@ export type Database = {
           caster_first_name: string
           caster_id: string
           category: Database["public"]["Enums"]["cast_category"]
+          distance_m: number
           expires_at: string
           intent_id: string
           reason_text: string

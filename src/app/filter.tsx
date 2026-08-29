@@ -35,10 +35,19 @@ export default function FilterScreen() {
     router.back();
   }
 
+  /**
+   * Clear empties the SELECTION, it does not leave the sheet. It used
+   * to close the search outright, so the only way to drop one of three
+   * picked categories was to close, reopen and start again. It also
+   * drops the applied lens straight away, so the feed behind is
+   * unfiltered whether or not the person then hits the primary button.
+   */
   function clear() {
+    haptic('light');
+    setPicked([]);
+    setText('');
     setFilter(null);
     setQuery('');
-    router.back();
   }
 
   const count = feedCountFor(picked.length > 0 ? picked : null, text);
@@ -110,7 +119,13 @@ export default function FilterScreen() {
           variant="onOrange"
           onPress={apply}
         />
-        <QuietAction label="clear" color={tokens.semantic.color.ink} onPress={clear} />
+        {/* nothing to clear when nothing is picked, and a dead control
+            reads as a broken one. */}
+        {narrowed ? (
+          <QuietAction label="clear selection" color={tokens.semantic.color.ink} onPress={clear} />
+        ) : (
+          <QuietAction label="close" color={tokens.semantic.color.ink} onPress={() => router.back()} />
+        )}
       </View>
       </KeyboardAvoidingView>
     </SheetShell>

@@ -11,6 +11,7 @@ import { facePhotos, isVerified } from '@/features/casts/faces';
 import { casters } from '@/features/casts/fixtures';
 import { acceptJoin, capacityFor, declineJoin, getCast, getPendingJoin } from '@/features/casts/store';
 import { conversationIdFor } from '@/features/chat/chat';
+import { usePublicProfile } from '@/features/me/remote-profile';
 import { people } from '@/features/trust/circles';
 import { submit } from '@/infrastructure/net/submit';
 
@@ -33,6 +34,27 @@ export default function InviteScreen() {
   const cast = castId ? getCast(castId) : undefined;
   const join = castId && personId ? getPendingJoin(castId, personId) : undefined;
 
+  // The joiner's name comes off the REQUEST first. `people` is the
+  // fixture roster keyed by short ids, so a real user id missed it
+  // entirely and the sheet greeted the caster with a raw uuid — as did
+  // the avatar initials, and the accept button.
+  const live = usePublicProfile(personId);
+  const local = people[personId];
+  const person = {
+    id: personId,
+    name: join?.displayName ?? live?.firstName ?? local?.name ?? 'someone',
+    area: live?.area ?? local?.area ?? '',
+  };
+  const caster = casters.find((c) => c.id === personId);
+  // what we can honestly say about them: the server's trust phrase and
+  // receipt count in a live app, the fixture roster's line offline,
+  // and nothing at all when neither knows.
+  const trustLine = live?.trustPhrase ?? caster?.trustLine ?? null;
+  const receiptsLine = live ? `${live.receipts} ${live.receipts === 1 ? 'plan' : 'plans'} made real` : null;
+  const meta = [person.area || null, trustLine, receiptsLine, join?.sentAgo ?? null]
+    .filter(Boolean)
+    .join(' · ');
+
   if (!cast || !join) {
     return (
       <SheetShell title="not around.">
@@ -44,8 +66,6 @@ export default function InviteScreen() {
     );
   }
 
-  const person = people[personId] ?? { id: personId, name: personId, area: '' };
-  const caster = casters.find((c) => c.id === personId);
   // slots are hidden everywhere, so only a cast that genuinely carries
   // a cap (one the backend will enforce) can ever refuse a yes here.
   const capacity = capacityFor(cast);
@@ -96,7 +116,7 @@ export default function InviteScreen() {
 
   return (
     <SheetShell
-      title={`${person.name} wants in`}
+      title={`${person.name} asked to join`}
       accessory={
         <Face
           photo={facePhotos[personId]}
@@ -108,14 +128,14 @@ export default function InviteScreen() {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
-        <Text style={styles.meta}>
-          {person.area || 'nearby'} · {caster?.trustLine ?? 'not in your network'} · {join.sentAgo}
-        </Text>
-
-        <Text style={styles.section}>THEIR NOTE</Text>
+        {/* WHAT THEY SAID comes first. It is the only thing the caster
+            has to decide on, and it used to sit below a meta line and a
+            section label where testers missed it. */}
         <View style={styles.noteCard}>
           <Text style={styles.noteText}>{join.note}</Text>
+          <Text style={styles.noteWho}>— {person.name}</Text>
         </View>
+        {meta ? <Text style={styles.meta}>{meta}</Text> : null}
 
         <Text style={styles.section}>YOUR PLAN</Text>
         <Text style={styles.planTitle}>{cast.text}</Text>
@@ -155,14 +175,18 @@ export default function InviteScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  meta: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
+  meta: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
+  noteWho: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
   section: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 22, marginBottom: 6 },
   noteCard: {
-    padding: 14,
+    padding: 16,
+    marginTop: 16,
     borderRadius: tokens.primitive.radius.control,
+    borderLeftWidth: 3,
+    borderLeftColor: tokens.semantic.color.accent,
     backgroundColor: tokens.semantic.color.backgroundSubtle,
   },
-  noteText: { ...tokens.typography.meta, color: tokens.semantic.color.ink, lineHeight: 24 },
+  noteText: { fontFamily: fontFamily.text, fontSize: 18, lineHeight: 26, color: tokens.semantic.color.ink },
   planTitle: { fontFamily: fontFamily.displaySemi, fontSize: 20, letterSpacing: -0.3, color: tokens.semantic.color.ink },
   planMeta: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 6 },
   aboutRow: { minHeight: 44, justifyContent: 'center', marginTop: 12 },

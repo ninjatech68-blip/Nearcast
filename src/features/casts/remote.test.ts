@@ -28,6 +28,7 @@ const row = {
   reason_text: "near you in indiranagar · you're into sports",
   signals: ['near you in indiranagar', "you're into sports"],
   score: 2,
+  distance_m: 1250,
 };
 
 beforeEach(() => mockGetSupabase.mockReset());
@@ -61,6 +62,15 @@ describe('toCastDetail', () => {
 
   it('drops a row whose category we do not know instead of guessing', () => {
     expect(toCastDetail({ ...row, category: 'crypto' })).toBeNull();
+  });
+
+  it('phrases the distance the server measured', () => {
+    expect(toCastDetail(row)!.distance).toBe('1.3 km away');
+  });
+
+  it('leaves the distance unset when the server could not measure one', () => {
+    // the poster then falls back to the place name rather than guessing
+    expect(toCastDetail({ ...row, distance_m: null })!.distance).toBeUndefined();
   });
 });
 

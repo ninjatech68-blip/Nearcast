@@ -24,6 +24,7 @@ import { category as categoryTokens, type Category } from '@/design-system/token
 import { getSupabase } from '@/infrastructure/supabase/client';
 import type { CastDetail } from './fixtures';
 import { DEFAULT_RADIUS_KM } from './domain/geo';
+import { distanceLabel } from './domain/distance';
 
 export type RemoteFeedRow = {
   intent_id: string;
@@ -37,6 +38,8 @@ export type RemoteFeedRow = {
   reason_text: string | null;
   signals: string[] | null;
   score: number | null;
+  /** metres from the viewer's nearest approved area, rounded to 50 m server-side */
+  distance_m: number | null;
 };
 
 export type PublishInput = {
@@ -105,6 +108,7 @@ export function toCastDetail(row: RemoteFeedRow): CastDetail | null {
     vouches: '',
     expiry: expiryLabel(row.expires_at),
     why: row.reason_text ?? '',
+    distance: distanceLabel(row.distance_m) ?? undefined,
   };
   return {
     ...poster,

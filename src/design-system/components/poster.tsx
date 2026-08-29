@@ -10,6 +10,13 @@ export type PosterData = {
   category: Category;
   text: string;
   area: string;
+  /**
+   * "1.2 km away", when the server could measure it. Preferred over the
+   * place name on the poster: a neighbourhood name a person has never
+   * heard of does not tell them whether they can get there. Absent when
+   * there is no distance to state — the name is then the honest answer.
+   */
+  distance?: string;
   vouches: string;
   expiry: string;
   why: string;
@@ -51,7 +58,7 @@ export function Poster({
   const fg = spec.fg;
   const poles = polesFor(cast.category);
   const muted = fg === tokens.semantic.color.cream ? 'rgba(244,239,228,0.62)' : 'rgba(20,18,14,0.62)';
-  const meta = [cast.area, cast.vouches, cast.expiry].filter(Boolean).join(' · ');
+  const meta = [cast.distance ?? cast.area, cast.vouches, cast.expiry].filter(Boolean).join(' · ');
 
   const headline = (
     <View>
