@@ -30,21 +30,26 @@ import { requiresLink, sendMagicLink } from '@/features/auth/auth';
  * would be worse than not showing them.
  */
 type Step = 'email' | 'sent';
+type Mode = 'signup' | 'login';
 
 export default function SigninScreen() {
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState<Step>('email');
+  const [mode, setMode] = useState<Mode>('signup');
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const emailValid = /.+@.+\..+/.test(email.trim());
+  const link = requiresLink();
 
   async function sendLink() {
     if (!emailValid || busy) return;
     setBusy(true);
     setError(null);
-    const result = await sendMagicLink(email);
+    // sign up creates the account if it's new; log in only sends a link
+    // when an account already exists.
+    const result = await sendMagicLink(email, { createUser: mode === 'signup' });
     setBusy(false);
 
     if (!result.ok) {
@@ -88,6 +93,35 @@ export default function SigninScreen() {
 
           {step === 'email' ? (
             <View style={styles.form}>
+              {/* login / signup — the same email link either way, but sign
+                  up creates an account and log in expects an existing one. */}
+              <View style={styles.segment}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="sign up"
+                  accessibilityState={{ selected: mode === 'signup' }}
+                  onPress={() => {
+                    setMode('signup');
+                    setError(null);
+                  }}
+                  style={[styles.segmentTab, mode === 'signup' && styles.segmentTabOn]}
+                >
+                  <Text style={[styles.segmentText, mode === 'signup' && styles.segmentTextOn]}>sign up</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="log in"
+                  accessibilityState={{ selected: mode === 'login' }}
+                  onPress={() => {
+                    setMode('login');
+                    setError(null);
+                  }}
+                  style={[styles.segmentTab, mode === 'login' && styles.segmentTabOn]}
+                >
+                  <Text style={[styles.segmentText, mode === 'login' && styles.segmentTextOn]}>log in</Text>
+                </Pressable>
+              </View>
+
               <TextInput
                 accessibilityLabel="email"
                 value={email}
@@ -104,15 +138,25 @@ export default function SigninScreen() {
                 onSubmitEditing={sendLink}
               />
               <Text style={styles.note}>
-                {requiresLink()
-                  ? 'we email you a link. tap it and you’re in — no password, no code to copy.'
-                  : 'no backend configured — this signs you straight in on fixture data.'}
+                {!link
+                  ? 'no backend configured — this signs you straight in on fixture data.'
+                  : mode === 'signup'
+                    ? 'we email you a link to set up your account — no password, no code to copy.'
+                    : 'we email a link to your account — no password, no code to copy.'}
               </Text>
 
               {error ? <Text style={styles.error}>{error}</Text> : null}
 
               <BarButton
-                label={requiresLink() ? 'email me a sign-in link' : 'continue'}
+                label={
+                  !link
+                    ? mode === 'signup'
+                      ? 'create account'
+                      : 'log in'
+                    : mode === 'signup'
+                      ? 'email me a sign-up link'
+                      : 'email me a sign-in link'
+                }
                 variant="onOrange"
                 onPress={sendLink}
                 disabled={!emailValid || busy}
@@ -184,7 +228,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   scrollBody: { flexGrow: 1 },
   header: { marginTop: 24 },
-  spacer: { flex: 1, minHeight: 28 },
+  spacer: { height: 36 },
   wordmark: { ...tokens.typography.tag, color: tokens.semantic.color.textMutedOnCream, marginBottom: 16 },
   title: {
     fontFamily: fontFamily.display,
@@ -202,6 +246,23 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   form: { gap: 12 },
+  segment: {
+    flexDirection: 'row',
+    padding: 4,
+    borderRadius: tokens.primitive.radius.control,
+    backgroundColor: tokens.semantic.color.hairlineOnCream,
+    gap: 4,
+  },
+  segmentTab: {
+    flex: 1,
+    minHeight: 40,
+    borderRadius: tokens.primitive.radius.control - 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  segmentTabOn: { backgroundColor: tokens.semantic.color.cream },
+  segmentText: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.textMutedOnCream },
+  segmentTextOn: { color: tokens.semantic.color.ink },
   input: {
     minHeight: 56,
     borderRadius: tokens.primitive.radius.control,
@@ -212,7 +273,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: tokens.semantic.color.ink,
   },
-  note: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
+  note: {
+    fontFamily: fontFamily.text,
+    fontSize: 14,
+    lineHeight: 20,
+    color: tokens.semantic.color.textMutedOnCream,
+  },
   emailChip: {
     alignSelf: 'flex-start',
     maxWidth: '100%',
@@ -225,7 +291,7 @@ const styles = StyleSheet.create({
   },
   emailChipText: { fontFamily: fontFamily.displaySemi, fontSize: 16, color: tokens.semantic.color.ink },
   noteDim: { ...tokens.typography.metaSmall, color: tokens.semantic.color.hairlineOnCream },
-  error: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent },
+  error: { fontFamily: fontFamily.text, fontSize: 14, lineHeight: 20, color: tokens.semantic.color.accent },
   legalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 8 },
   legalLink: {
     fontFamily: fontFamily.displaySemi,

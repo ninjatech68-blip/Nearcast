@@ -49,6 +49,14 @@ function readableError(error: unknown): string {
   if (lowered.includes('expired')) {
     return 'that link expired. ask for a new one.';
   }
+  // login mode against an address with no account yet
+  if (
+    lowered.includes('signups not allowed') ||
+    lowered.includes('user not found') ||
+    lowered.includes('no user')
+  ) {
+    return 'no account with that email yet. switch to sign up to create one.';
+  }
   if (lowered.includes('invalid') || lowered.includes('not valid') || lowered.includes('otp')) {
     return 'that link is no longer valid. ask for a new one.';
   }
@@ -58,6 +66,11 @@ function readableError(error: unknown): string {
   if (lowered.includes('email') && lowered.includes('valid')) {
     return "that address doesn't look right.";
   }
+  // the built-in email service refused / failed to send (usually SMTP not
+  // configured, or a rate cap) — do not echo the raw provider string.
+  if (lowered.includes('sending') || (lowered.includes('email') && lowered.includes('error'))) {
+    return "we couldn't send the link right now. try again in a moment.";
+  }
   return raw.trim().length > 0 ? raw : 'something went wrong. try again.';
 }
 
@@ -66,9 +79,15 @@ function readableError(error: unknown): string {
  * address IS the sign-in — so `sent` comes back false and the caller
  * routes straight on.
  */
-export async function sendMagicLink(email: string): Promise<SendResult> {
+export async function sendMagicLink(
+  email: string,
+  opts: { createUser?: boolean } = {},
+): Promise<SendResult> {
   const client = getSupabase();
   const value = email.trim();
+  // sign up creates the account if new; log in only sends a link when an
+  // account already exists (so an unknown email is told to sign up).
+  const shouldCreateUser = opts.createUser ?? true;
 
   if (!client) {
     setSignedIn(value);
@@ -80,7 +99,7 @@ export async function sendMagicLink(email: string): Promise<SendResult> {
       email: value,
       options: {
         emailRedirectTo: authRedirectUrl(),
-        shouldCreateUser: true,
+        shouldCreateUser,
       },
     });
     if (error) return { ok: false, message: readableError(error) };
@@ -135,7 +154,17 @@ export async function completeAuthFromUrl(url: string): Promise<CallbackResult> 
   if (!code) {
     return { ok: false, message: 'that link is no longer valid. ask for a new one.' };
   }
+  return exchangeAuthCode(code);
+}
 
+/**
+ * Exchange a PKCE `code` for a session. The callback route calls this
+ * directly with the `code` query param expo-router hands it, so the
+ * whole flow lands on a real screen instead of an unmatched route.
+ */
+export async function exchangeAuthCode(code: string): Promise<CallbackResult> {
+  const client = getSupabase();
+  if (!client) return { ok: true };
   try {
     const { data, error } = await client.auth.exchangeCodeForSession(code);
     if (error) return { ok: false, message: readableError(error) };

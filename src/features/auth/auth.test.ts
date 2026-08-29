@@ -95,6 +95,26 @@ describe('auth — backend configured', () => {
     expect(mockSetSignedIn).not.toHaveBeenCalled();
   });
 
+  it('log in mode does not create an account (shouldCreateUser: false)', async () => {
+    const signInWithOtp = vi.fn(async () => ({ error: null }));
+    mockGetSupabase.mockReturnValue(clientWith({ signInWithOtp }));
+
+    await sendMagicLink('a@b.com', { createUser: false });
+    expect(signInWithOtp).toHaveBeenCalledWith({
+      email: 'a@b.com',
+      options: { emailRedirectTo: authRedirectUrl(), shouldCreateUser: false },
+    });
+  });
+
+  it('tells a log-in with no account to sign up instead', async () => {
+    mockGetSupabase.mockReturnValue(
+      clientWith({ signInWithOtp: vi.fn(async () => ({ error: new Error('Signups not allowed for otp') })) }),
+    );
+    const result = await sendMagicLink('new@b.com', { createUser: false });
+    expect(result.ok).toBe(false);
+    expect(result.ok === false && result.message).toMatch(/sign up/);
+  });
+
   it('turns a rate-limit error into something a person can act on', async () => {
     mockGetSupabase.mockReturnValue(
       clientWith({ signInWithOtp: vi.fn(async () => ({ error: new Error('Email rate limit exceeded') })) }),
