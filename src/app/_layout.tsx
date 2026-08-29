@@ -145,7 +145,14 @@ export default function RootLayout() {
       <Stack.Screen name="you" options={{ presentation: 'modal' }} />
       <Stack.Screen name="caster/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="filter" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="area" options={{ presentation: 'card', gestureEnabled: false }} />
+      {/* area is opened FROM modals (compose is a fullScreenModal, areas is
+          a modal) as well as from the onboarding card. A `card` pushed while
+          a modal is on top lands behind that modal on iOS — invisible, yet
+          top of the stack, so the caller's own X then pops the hidden area
+          instead of closing. Presenting area modally puts it above whatever
+          opened it in every case. gestureEnabled:false keeps the X the only
+          way out (no pull-to-dismiss onto the wrong screen). */}
+      <Stack.Screen name="area" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="circles" options={{ presentation: 'modal' }} />
       <Stack.Screen name="chat/[id]" options={{ presentation: 'card' }} />
       <Stack.Screen name="recap" options={{ presentation: 'fullScreenModal' }} />

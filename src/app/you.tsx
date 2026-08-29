@@ -2,7 +2,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Animated, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
 import { QuietAction } from '@/design-system/components/button';
@@ -145,7 +145,47 @@ export default function YouScreen() {
                 trackColor={{ true: tokens.semantic.color.accent, false: tokens.semantic.color.hairlineOnCream }}
               />
             </View>
-            {quiet.on ? (
+            {quiet.on && Platform.OS === 'ios' ? (
+              // iOS: Apple's own compact time field. It shows the value as a
+              // tappable pill and opens its editor in a popover that dismisses
+              // itself — there is no persistent picker to sit in "edit mode".
+              <View style={styles.quietTimes}>
+                <View style={styles.timeChip}>
+                  <Text style={styles.timeLabel}>start</Text>
+                  <DateTimePicker
+                    accessibilityLabel="quiet hours start"
+                    mode="time"
+                    display="compact"
+                    minuteInterval={5}
+                    value={timeToDate(quiet.start)}
+                    themeVariant="light"
+                    accentColor={tokens.semantic.color.accent}
+                    onChange={(_, date) => {
+                      if (date) setQuietHours({ start: dateToTime(date) });
+                    }}
+                  />
+                </View>
+                <View style={styles.timeChip}>
+                  <Text style={styles.timeLabel}>end</Text>
+                  <DateTimePicker
+                    accessibilityLabel="quiet hours end"
+                    mode="time"
+                    display="compact"
+                    minuteInterval={5}
+                    value={timeToDate(quiet.end)}
+                    themeVariant="light"
+                    accentColor={tokens.semantic.color.accent}
+                    onChange={(_, date) => {
+                      if (date) setQuietHours({ end: dateToTime(date) });
+                    }}
+                  />
+                </View>
+              </View>
+            ) : null}
+            {quiet.on && Platform.OS !== 'ios' ? (
+              // Android: a compact field opens a dialog as soon as it mounts,
+              // so keep tap-to-open — the value shows as a chip, tapping it
+              // brings up the picker, which commits and closes on "done".
               <View style={styles.quietTimes}>
                 <Pressable
                   accessibilityRole="button"
@@ -173,7 +213,7 @@ export default function YouScreen() {
                 </Pressable>
               </View>
             ) : null}
-            {openPicker ? (
+            {Platform.OS !== 'ios' && openPicker ? (
               <View style={styles.pickerBlock}>
                 <View style={styles.pickerHead}>
                   <Text style={styles.pickerTitle}>quiet hours · {openPicker}</Text>
@@ -201,7 +241,6 @@ export default function YouScreen() {
                   themeVariant="light"
                   accentColor={tokens.semantic.color.accent}
                   onChange={(_, date) => {
-                    // spin freely — the change only commits when you tap done
                     if (date) setTempTime(date);
                   }}
                 />

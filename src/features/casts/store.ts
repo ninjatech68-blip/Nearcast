@@ -63,6 +63,7 @@ export type SentJoin = {
   castTitle: string;
   casterName: string;
   casterId: string;
+  note: string;
   status: 'pending' | 'accepted';
   sentAgo: string;
 };
@@ -498,6 +499,7 @@ export function useJoinsISent(): readonly {
   castTitle: string;
   casterName: string;
   casterId: string;
+  note: string;
   sentAgo: string;
 }[] {
   const snapshot = useSyncExternalStore(subscribe, () => state);
@@ -512,6 +514,7 @@ export function useJoinsISent(): readonly {
           castTitle: j.castTitle,
           casterName: j.casterName,
           casterId: j.casterId,
+          note: j.note,
           sentAgo: j.sentAgo,
         }));
     }
@@ -520,6 +523,7 @@ export function useJoinsISent(): readonly {
       castTitle: string;
       casterName: string;
       casterId: string;
+      note: string;
       sentAgo: string;
     }[] = [];
     for (const cast of snapshot.feed) {
@@ -530,6 +534,7 @@ export function useJoinsISent(): readonly {
           castTitle: cast.text,
           casterName: cast.by,
           casterId: cast.byId,
+          note: mine.note ?? '',
           sentAgo: mine.sentAgo,
         });
       }
@@ -745,6 +750,7 @@ export async function refreshSentJoins(): Promise<void> {
       castTitle: row.cast_statement,
       casterName: row.caster_first_name ?? 'someone',
       casterId: row.caster_id,
+      note: row.note ?? '',
       status: row.status === 'accepted' ? 'accepted' : 'pending',
       sentAgo: 'recently',
     }));

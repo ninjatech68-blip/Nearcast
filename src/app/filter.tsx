@@ -55,6 +55,9 @@ export default function FilterScreen() {
           placeholder="search casts, people, areas"
           placeholderTextColor={tokens.semantic.color.hairlineOnCream}
           selectionColor={tokens.semantic.color.accent}
+          // centre the placeholder when empty; left-align once typing, so
+          // the search box reads as a search box and the caret sits naturally.
+          textAlign={text.length > 0 ? 'left' : 'center'}
           style={styles.search}
           autoCapitalize="none"
           autoCorrect={false}

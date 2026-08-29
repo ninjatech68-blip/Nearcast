@@ -40,6 +40,7 @@ export type RemoteSentJoin = {
   cast_statement: string;
   caster_id: string;
   caster_first_name: string | null;
+  note: string | null;
   status: string;
   created_at: string;
 };

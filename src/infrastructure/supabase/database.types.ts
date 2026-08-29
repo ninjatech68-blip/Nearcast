@@ -1002,6 +1002,7 @@ export type Database = {
           caster_id: string
           created_at: string
           intent_id: string
+          note: string
           response_id: string
           status: Database["public"]["Enums"]["response_status"]
         }[]

@@ -164,7 +164,11 @@ export function ActivityPage() {
                 <Row
                   key={`sent-${j.castId}`}
                   title={`${j.casterName} decides`}
-                  sub={`"${j.castTitle}" · sent ${j.sentAgo} · long-press to withdraw`}
+                  sub={
+                    j.note
+                      ? `you said “${j.note}” · long-press to withdraw`
+                      : `"${j.castTitle}" · long-press to withdraw`
+                  }
                   right={<Tag label="pending" tone="dim" />}
                   onPress={() => router.push(`/cast/${j.castId}`)}
                   onLongPress={() => confirmWithdraw(j.castId, j.casterName)}
