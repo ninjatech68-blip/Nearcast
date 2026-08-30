@@ -20,6 +20,34 @@ ready: the Expo account that owns the EAS project, an Apple Developer
 account, the Firebase project, and the Supabase project ref plus its
 service-role key.
 
+## Running the checks — read this first
+
+**Every SQL check in this runbook is about the HOSTED project.** None of
+them mean anything run locally, and `supabase db query` defaults to the
+LOCAL database, so a check run without a target reports on a database
+that has nothing to do with what you just deployed:
+
+```
+error: relation "public.notification_outbox" does not exist
+```
+
+That message means you queried the wrong database, not that the deploy
+failed. Always pass `--linked` (after `supabase link --project-ref`):
+
+```bash
+supabase db query --linked "select 1;"
+```
+
+For multi-statement checks, put the SQL in a file and use `-f`:
+
+```bash
+supabase db query --linked -f /tmp/check.sql
+```
+
+The one exception is step 4, which is run in the **Supabase SQL editor**
+in the browser — deliberately, because it carries the service-role key
+and that should not go through shell history.
+
 ---
 
 ## Step 0 — get the schema onto the hosted project
@@ -37,7 +65,7 @@ supabase db push                 # applies what is missing, in order
 **`supabase db push` only applies migrations. `supabase db reset` DROPS
 THE DATABASE — never run it against a hosted project.**
 
-**Check:**
+**Check** — against the hosted project (`supabase db query --linked -f ...`):
 
 ```sql
 select count(*) from public.notification_outbox;      -- 0, not an error
@@ -135,7 +163,8 @@ The drain reads its URL and key out of Vault at run time so no secret is
 ever written into `cron.job`. Until both exist, the schedule migration
 is a deliberate no-op.
 
-In the Supabase SQL editor:
+In the **Supabase SQL editor** in the browser — not the CLI, because
+this carries the service-role key and should not enter shell history:
 
 ```sql
 select vault.create_secret(
@@ -147,7 +176,7 @@ select vault.create_secret('<service-role-key>', 'send_push_service_key');
 Then re-run `20260829150000_push_schedule.sql` (it is idempotent), or
 execute its `DO` block by hand.
 
-**Check:**
+**Check** — `supabase db query --linked "select jobname, schedule, active from cron.job;"`
 
 ```sql
 select jobname, schedule, active from cron.job;
@@ -172,7 +201,7 @@ npx eas build --profile development --platform android
 
 Install, sign in, and accept the notification prompt.
 
-**Check:**
+**Check** — hosted, `--linked`:
 
 ```sql
 select platform, device_model, app_build, invalidated_at
@@ -195,7 +224,7 @@ Within a minute B should get *"a new message / they wrote back. yours to
 read."*, tapping it should open that conversation, and the app icon
 should carry a badge.
 
-Follow it in the database:
+Follow it in the hosted database — `supabase db query --linked -f ...`:
 
 ```sql
 -- did the trigger queue it?
