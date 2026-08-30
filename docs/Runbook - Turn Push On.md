@@ -253,18 +253,34 @@ supabase secrets set EXPO_ACCESS_TOKEN=<token> --project-ref <project-ref>
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected by Supabase;
 do not set them yourself.
 
-**Check** — invoke it by hand with an empty outbox. It should answer
-without doing anything:
+**Check** — invoke it by hand. It should answer without doing anything:
 
 ```bash
 curl -s -X POST "https://<project-ref>.supabase.co/functions/v1/send-push" \
-  -H "Authorization: Bearer <service-role-key>" \
+  -H "Authorization: Bearer $EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY" \
   -H "Content-Type: application/json" -d '{}'
-# {"ok":true,"receipts":{...},"sends":{"attempted":0,...}}
+# {"ok":true,"receipts":{...},"sends":{"attempted":0,...,"retrying":0}}
 ```
 
-`"ok": true` here proves the function deployed, booted, and can reach
-the database. It is the first time this code has ever executed.
+**Use the anon / publishable key, not the service-role key.** The
+gateway only needs *a* valid JWT to let the request through; the
+function does its own privileged work with the `SUPABASE_SERVICE_ROLE_KEY`
+that Supabase injects into its environment, never with the caller's
+token. The anon key is public — it ships in the app — so it belongs in
+a shell in a way the service-role key does not.
+
+Without any header you get `UNAUTHORIZED_NO_AUTH_HEADER`, which means
+the gateway rejected you, not that the function is broken.
+
+`"ok": true` proves the function deployed, booted, and can reach the
+database. A `"retrying"` field inside `sends` proves it is the CURRENT
+build rather than an older one still running.
+
+**You may not need this check at all.** Once the cron drain from step 4
+is active it invokes the function every minute using the key from Vault,
+so a fresh end-to-end test (step 6) proves the deploy took *and* proves
+delivery, in one observation. Reach for the curl when you want to
+separate "did it deploy" from "does it deliver".
 
 ---
 
