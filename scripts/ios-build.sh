@@ -75,8 +75,15 @@ rm -rf "$HOME/Library/Developer/Xcode/DerivedData"/"$SCHEME"-* 2>/dev/null || tr
 # ---- 4. signing team ------------------------------------------------
 TEAM="${DEVELOPMENT_TEAM:-}"
 if [ -z "$TEAM" ]; then
-  # reuse whatever the generated project already has, if anything
-  TEAM="$(grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]\{10\}' "$IOS_DIR/$SCHEME.xcodeproj/project.pbxproj" 2>/dev/null | awk '{print $3}' || true)"
+  # Reuse whatever the generated project already has. Xcode writes the id
+  # either bare or quoted — DEVELOPMENT_TEAM = ABCDE12345; and
+  # DEVELOPMENT_TEAM = "ABCDE12345"; are both normal — so match both. The
+  # bare-only pattern this used to have silently found nothing on a
+  # project that did carry a team, and sent people hunting for an id the
+  # file was already holding.
+  TEAM="$(sed -nE 's/.*DEVELOPMENT_TEAM = "?([A-Z0-9]{10})"?;.*/\1/p' \
+    "$IOS_DIR/$SCHEME.xcodeproj/project.pbxproj" 2>/dev/null | head -1 || true)"
+  [ -n "$TEAM" ] && echo "==> reusing the team already in the project"
 fi
 TEAM_ARGS=()
 if [ -n "$TEAM" ]; then
@@ -87,6 +94,8 @@ else
   echo "   DEVELOPMENT_TEAM=<your 10-char team id> npm run ios:build" >&2
   echo "   (find it: Xcode > Settings > Accounts > your team, or" >&2
   echo "    security find-identity -v -p codesigning)" >&2
+  echo "   note: a fresh 'prebuild' writes a project with NO team, so" >&2
+  echo "   the first build after one always needs the variable." >&2
 fi
 
 TARGET_UDID="${IOS_DEVICE_UDID:-}"
@@ -112,7 +121,7 @@ xcodebuild \
   -destination "$DEST" \
   -derivedDataPath "$DERIVED" \
   -allowProvisioningUpdates \
-  "${TEAM_ARGS[@]}" \
+  ${TEAM_ARGS[@]+"${TEAM_ARGS[@]}"} \
   build 2>&1 | tee "$ROOT/ios/build/last-build.log"
 STATUS=${PIPESTATUS[0]}
 set -e
