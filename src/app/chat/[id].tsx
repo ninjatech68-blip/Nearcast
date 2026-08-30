@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -17,6 +16,7 @@ import {
   Keyboard,
   Linking,
   RefreshControl,
+  FlatList,
 } from 'react-native';
 import { SymbolView, type SFSymbol } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,6 +31,7 @@ import {
   chatEnabled,
   endChat,
   extendChat,
+  loadOlderConversationMessages,
   openConversation,
   refreshConversationMessages,
   retryMessage,
@@ -39,7 +40,7 @@ import {
   type LocalMedia,
   type Message,
 } from '@/features/chat/chat';
-import { useMediaUrl } from '@/features/chat/use-media-url';
+import { preferredMediaPath, useMediaUrl } from '@/features/chat/use-media-url';
 import { usePoll } from '@/infrastructure/net/use-poll';
 import { setPendingMedia } from '@/features/chat/pending-media';
 import { countdownLabel, countdownTickMs } from '@/features/chat/countdown';
@@ -59,9 +60,12 @@ export default function ChatScreen() {
   const [draft, setDraft] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
   const [attachOpen, setAttachOpen] = useState(false);
-  const scrollRef = useRef<ScrollView>(null);
+  const listRef = useRef<FlatList<Message>>(null);
+  const loadingOlderRef = useRef(false);
+  const pinnedToBottomRef = useRef(true);
   const connectivity = useConnectivity();
   const netNote = connectivityNote(connectivity);
+  const [loadingOlder, setLoadingOlder] = useState(false);
 
   // backend mode: load the conversation and subscribe to new messages.
   // no-op on fixtures, where the seed thread is already in the cache.
@@ -81,7 +85,7 @@ export default function ChatScreen() {
     () => {
       if (id) void refreshConversationMessages(id);
     },
-    1000,
+    2500,
     chatEnabled() && !!id,
   );
 
@@ -102,6 +106,18 @@ export default function ChatScreen() {
   }, [expiresAt, chatMode]);
   const expiryText = thread ? countdownLabel(thread.mode, thread.expiresAt) : '';
   void tick;
+
+  async function loadEarlier() {
+    if (!id || loadingOlderRef.current) return;
+    loadingOlderRef.current = true;
+    setLoadingOlder(true);
+    try {
+      await loadOlderConversationMessages(id);
+    } finally {
+      loadingOlderRef.current = false;
+      setLoadingOlder(false);
+    }
+  }
 
   // while a real conversation is still loading, show a spinner rather
   // than the "not open" state, which would flash on every open.
@@ -136,7 +152,7 @@ export default function ChatScreen() {
     setDraft('');
     try {
       await sendMessage(thread!.id, text);
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
     } catch {
       // keep what they typed so nothing is lost to a dropped send
       haptic('warning');
@@ -320,32 +336,54 @@ export default function ChatScreen() {
           </Pressable>
         </View>
 
-        <ScrollView
-          ref={scrollRef}
+        <FlatList
+          ref={listRef}
+          data={thread.messages as Message[]}
+          keyExtractor={(message) => message.id}
+          renderItem={({ item }) => <Bubble message={item} onRetry={() => retryMessage(thread.id, item.id)} />}
           style={styles.flex}
           contentContainerStyle={styles.thread}
           keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
-          onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+          onScroll={(event) => {
+            const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+            pinnedToBottomRef.current =
+              contentSize.height - (contentOffset.y + layoutMeasurement.height) < 80;
+          }}
+          scrollEventThrottle={16}
+          onContentSizeChange={() => {
+            if (loadingOlderRef.current) return;
+            if (pinnedToBottomRef.current) listRef.current?.scrollToEnd({ animated: false });
+          }}
           refreshControl={
-            // realtime delivers new messages, but a thread that missed a
-            // wake should not need closing and reopening to catch up.
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={tokens.semantic.color.accent}
             />
           }
-        >
-          <Text style={styles.matchedNote}>you matched. earlier messages are here for context.</Text>
-          {thread.messages.map((message) => (
-            <Bubble
-              key={message.id}
-              message={message}
-              onRetry={() => retryMessage(thread.id, message.id)}
-            />
-          ))}
-        </ScrollView>
+          ListHeaderComponent={
+            <>
+              {thread.hasOlderMessages ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="load earlier messages"
+                  accessibilityState={{ disabled: loadingOlder }}
+                  disabled={loadingOlder}
+                  onPress={() => void loadEarlier()}
+                  style={[styles.olderBtn, loadingOlder && styles.olderBtnDim]}
+                >
+                  {loadingOlder ? (
+                    <ActivityIndicator color={tokens.semantic.color.accent} />
+                  ) : (
+                    <Text style={styles.olderText}>load earlier messages</Text>
+                  )}
+                </Pressable>
+              ) : null}
+              <Text style={styles.matchedNote}>you matched. earlier messages are here for context.</Text>
+            </>
+          }
+        />
 
         {thread.pending ? (
           <WindowRequest
@@ -617,7 +655,14 @@ function AttachTile({
  * on every platform, which is the whole reason a GIF is stored as one.
  */
 function MediaBubble({ message }: { message: Message }) {
-  const url = useMediaUrl(message.mediaPath);
+  const variant =
+    message.mediaKind === 'image'
+      ? ({ kind: 'image', width: 480, height: 480 } as const)
+      : ({ kind: 'original' } as const);
+  const url = useMediaUrl(
+    preferredMediaPath(message.mediaPath, message.mediaThumbPath, variant),
+    variant,
+  );
   const ratio =
     message.mediaWidth && message.mediaHeight ? message.mediaWidth / message.mediaHeight : 1;
 
@@ -735,6 +780,20 @@ const styles = StyleSheet.create({
   sub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream },
   thread: { paddingVertical: 16, gap: 10 },
   matchedNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, textAlign: 'center', marginBottom: 8 },
+  olderBtn: {
+    alignSelf: 'center',
+    minHeight: 36,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginBottom: 10,
+    borderRadius: tokens.primitive.radius.pill,
+    borderWidth: 1,
+    borderColor: tokens.semantic.color.hairlineOnCream,
+    backgroundColor: tokens.semantic.color.backgroundSubtle,
+    justifyContent: 'center',
+  },
+  olderBtnDim: { opacity: 0.7 },
+  olderText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.ink },
   systemRow: {
     alignSelf: 'center',
     maxWidth: '90%',

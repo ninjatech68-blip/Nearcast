@@ -92,12 +92,38 @@ is failing at Expo or APNs (step 1) — check the function logs:
 supabase functions logs send-push --project-ref <project-ref>
 ```
 
+## Token mapping
+
+Do not test against "the newest iOS token" and assume it belongs to the
+phone in your hand. A person can have multiple devices, reinstall the
+app, or sign in on more than one handset.
+
+Use the token rows with the profile and device metadata together:
+
+```sql
+select
+  p.display_name,
+  d.platform,
+  d.device_label,
+  d.device_model,
+  d.app_build,
+  left(d.token, 25) as token_prefix,
+  d.updated_at
+from public.device_push_tokens d
+join public.profiles p on p.id = d.user_id
+order by p.display_name, d.updated_at desc;
+```
+
+Send a direct Expo test only after matching the intended person and the
+intended device row.
+
 ## Known limits
 
 - Quiet hours are a local preference; the sender does not yet consult
   them, so a ping can arrive inside a person's quiet window.
-- There is no receipt of delivery. `sent_at` records that the message
-  was handed to Expo, not that a phone showed it.
+- Expo tickets and receipts are tracked, and dead tokens are
+  invalidated automatically. Even so, a receipt only means the vendor
+  accepted the notification, not that a human definitely saw a banner.
 
 ---
 
