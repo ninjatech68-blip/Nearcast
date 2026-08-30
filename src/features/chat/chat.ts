@@ -459,8 +459,8 @@ export async function extendChat(threadId: string, mode: 'day' | 'week' | 'alway
       from: 'system',
       text:
         mode === 'always'
-          ? 'a request to keep this chat open with no expiry. it changes when you both agree.'
-          : 'a request to extend this chat to 7 days. it changes when you both agree.',
+          ? 'this could stay open with no expiry. it takes you both.'
+          : 'this could run 7 days. it takes you both.',
       time: 'now',
     };
     putThread({
@@ -477,9 +477,9 @@ export async function extendChat(threadId: string, mode: 'day' | 'week' | 'alway
     always: 'open',
   };
   const noteText: Record<'day' | 'week' | 'always', string> = {
-    day: 'chat window set to 24h.',
-    week: 'chat window set to 7 days.',
-    always: 'you both agreed to keep this chat open. no expiry now.',
+    day: 'the window is 24h now.',
+    week: 'the window is 7 days now.',
+    always: 'you both said yes. this one stays open.',
   };
   const note: Message = {
     id: `sys-extend-${thread.messages.length + 1}`,
@@ -518,9 +518,9 @@ export async function answerWindowRequest(threadId: string, accept: boolean): Pr
     from: 'system',
     text: accept
       ? wanted === 'always'
-        ? 'you both agreed to keep this chat open. no expiry now.'
-        : 'you both agreed to a 7 day window.'
-      : 'the chat window stays as it is.',
+        ? 'you both said yes. this one stays open.'
+        : 'you both said yes. 7 days.'
+      : 'the window stays as it is.',
     time: 'now',
   };
   putThread({
@@ -546,7 +546,7 @@ export async function endChat(threadId: string): Promise<void> {
   const note: Message = {
     id: `sys-end-${thread.messages.length + 1}`,
     from: 'system',
-    text: 'this chat is ended. no new messages.',
+    text: 'this chat is closed. nothing more comes through.',
     time: 'now',
   };
   state = {

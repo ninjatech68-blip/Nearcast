@@ -21,15 +21,31 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
 
-// Branded copy per event. Lowercase, warm, content-free — the app's voice.
+// The copy, in the app's own voice: lowercase, plain, content-free.
+//
+// Two rules it has to hold at once.
+//
+// It must name the REAL state change — a notification that says
+// "something happened, open the app" wastes the one glance a person
+// gives a lock screen, and is the same sentence for every product on
+// earth. So each line says what actually changed and what is now true.
+//
+// And it must give away nothing. No note, no plan, no name, no place.
+// "they left you a line" tells you there is something to read without
+// telling the room you are standing in what it says — which is the
+// point of a notification you can act on and a lock screen you can
+// leave face-up.
+//
+// No "open Nearcast to…" tail. Tapping it opens the app; saying so is
+// filler in the space where the useful half of the sentence goes.
 const COPY: Record<string, { title: string; body: string }> = {
   join_request: {
     title: 'someone wants in',
-    body: 'a person asked to join one of your plans — open Nearcast to decide.',
+    body: 'they left you a line. yours to say yes or no.',
   },
   join_accepted: {
     title: "you're in",
-    body: 'your request got a yes — open Nearcast to say hi.',
+    body: "the chat's open. sort out where and when.",
   },
 };
 

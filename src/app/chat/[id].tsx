@@ -223,7 +223,7 @@ export default function ChatScreen() {
     }
     Alert.alert(
       'chat window',
-      `currently ${thread.expiresLabel}. a longer window is more exposure for both of you, so it takes you both — asking sends the request, and it changes when they agree. a shorter one takes effect now.`,
+      `currently ${thread.expiresLabel}. longer takes you both: you ask, they agree. shorter takes effect now.`,
       [
         { text: '24 hours', onPress: () => void extendChat(thread.id, 'day') },
         { text: 'ask for 7 days', onPress: () => void extendChat(thread.id, 'week') },
@@ -488,14 +488,14 @@ function WindowRequest({
   withName: string;
   onAnswer: (accept: boolean) => void;
 }) {
-  const what = mode === 'always' ? 'keeping this chat open with no expiry' : 'a 7 day window';
+  const what = mode === 'always' ? 'no expiry' : '7 days';
 
   return (
     <View style={styles.request}>
       <Text style={styles.requestText}>
         {mine
-          ? `you asked for ${what}. it changes when ${withName.toLowerCase()} agrees.`
-          : `${withName} asked for ${what}. it changes when you agree.`}
+          ? `you asked for ${what}. waiting on ${withName.toLowerCase()}.`
+          : `${withName} asked for ${what}. it takes you both.`}
       </Text>
       <View style={styles.requestActions}>
         {mine ? (

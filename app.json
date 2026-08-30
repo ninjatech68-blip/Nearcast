@@ -18,7 +18,7 @@
         "tinted": "./assets/images/icon-tinted.png"
       },
       "_universalLinksNote": "To enable Universal Links: host apple-app-site-association at https://<domain>/.well-known/, then set \"associatedDomains\": [\"applinks:<domain>\"] here and add https://<domain>/auth/callback to Supabase Redirect URLs. Until then the nearcast:// scheme handles the callback.",
-      "buildNumber": "5"
+      "buildNumber": "6"
     },
     "android": {
       "package": "com.piyushsharma.nearcast.dev",
@@ -46,7 +46,7 @@
           ]
         }
       ],
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "output": "static",

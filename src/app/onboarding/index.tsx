@@ -280,10 +280,11 @@ export default function OnboardingScreen() {
 
           {step === 'push' ? (
             <>
-              <Text accessibilityRole="header" style={styles.title}>want a nudge when it matters?</Text>
+              <Text accessibilityRole="header" style={styles.title}>two pings. that&apos;s it.</Text>
               <Text style={styles.hint}>
-                we’ll ping you when someone asks to join your plan, and when a plan you asked to join says yes. never the
-                message, never a location — just enough to open Nearcast. turn it off anytime.
+                when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever.
+                a ping never carries the note, the place, or who it&apos;s from — that stays in the app. off whenever
+                you like.
               </Text>
             </>
           ) : null}

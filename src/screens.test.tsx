@@ -548,7 +548,7 @@ describe('chat', () => {
 
     // asked, not done: the window is unchanged and the ask is on screen
     expect(view.getByText('22h left')).toBeTruthy();
-    expect(view.getByText(/it changes when riya agrees/)).toBeTruthy();
+    expect(view.getByText(/you asked for no expiry\. waiting on riya\./)).toBeTruthy();
     // the person who asked cannot also agree — only take it back
     expect(view.queryByRole('button', { name: 'agree to the longer window' })).toBeNull();
     expect(view.getByRole('button', { name: 'take back the request' })).toBeTruthy();
