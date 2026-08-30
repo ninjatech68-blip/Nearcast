@@ -5,6 +5,7 @@ work, and none of the reasons are code:
 
 | # | What is missing | Without it |
 | --- | --- | --- |
+| 0 | The schema on the hosted project | Every table and function below is missing |
 | 1 | An APNs key on the Expo project | iOS tokens register, nothing is ever delivered |
 | 2 | FCM credentials for Android | Android tokens cannot be issued at all |
 | 3 | `send-push` deployed | The outbox fills and nothing drains it |
@@ -18,6 +19,35 @@ Everything below needs credentials only the project owner has. Have
 ready: the Expo account that owns the EAS project, an Apple Developer
 account, the Firebase project, and the Supabase project ref plus its
 service-role key.
+
+---
+
+## Step 0 — get the schema onto the hosted project
+
+36 migrations exist in the repository. Everything in this runbook
+assumes they have been applied to the Supabase project; on a project
+that has not seen this branch, none of them have.
+
+```bash
+supabase link --project-ref <project-ref>
+supabase migration list          # LOOK at this before going further
+supabase db push                 # applies what is missing, in order
+```
+
+**`supabase db push` only applies migrations. `supabase db reset` DROPS
+THE DATABASE — never run it against a hosted project.**
+
+**Check:**
+
+```sql
+select count(*) from public.notification_outbox;      -- 0, not an error
+select count(*) from public.conversation_presence;    -- 0, not an error
+select proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+ where n.nspname = 'public'
+   and proname in ('claim_notification_batch','record_notification_failure',
+                   'my_unread_badge','conversation_summary');
+-- expect all four
+```
 
 ---
 
