@@ -1050,6 +1050,22 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      change_intent_reach: {
+        Args: {
+          disclosure_confirmed?: boolean
+          expected_level: Database["public"]["Enums"]["reach_level"]
+          target_intent: string
+          target_level: Database["public"]["Enums"]["reach_level"]
+        }
+        Returns: {
+          intent_version: number
+          level: Database["public"]["Enums"]["reach_level"]
+        }[]
+      }
+      generate_deliveries: {
+        Args: { target_intent: string }
+        Returns: number
+      }
       home_feed: {
         Args: { page_size?: number }
         Returns: {

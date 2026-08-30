@@ -40,11 +40,34 @@ ranking is a judgement, and mixing them would make it impossible to test either.
 
 ## Task 2: Reach Expansion
 
-**Files:** `src/features/reach/`, `supabase/functions/change-intent-reach/`
+**Files:** `src/features/reach/`, `public.change_intent_reach`
 
-- [ ] Test no expansion without a matching current level, explicit target, and disclosure confirmation.
-- [ ] Implement ReachSelector with audience delta and privacy impact.
-- [ ] Log old/new reach and actor; keep reduction immediately available.
+- [x] Test no expansion without a matching current level, explicit target, and disclosure confirmation.
+- [x] Implement ReachSelector with audience delta and privacy impact.
+- [x] Log old/new reach and actor; keep reduction immediately available.
+
+Widening is gated three ways: the caller must name the level they believe is
+current, name the level they want, and confirm they have seen what the change
+discloses. Any of the three missing is an implicit expansion, which the product
+rules forbid. The expected-level check is what stops a stale screen widening
+reach a second time without anyone intending it.
+
+Narrowing needs none of that and is offered in one tap. Requiring a confirmation
+to reduce exposure would make the safer action the harder one, which is the
+wrong incentive to build in.
+
+The audience delta is named, never counted. A number would be a fabricated
+activity figure: the app cannot know how many people a level reaches without
+querying a graph it must not expose, and a confident-looking count would imply
+precision that does not exist. A test sweeps every delta string for digits.
+
+The privacy impact is stated before the action, and it is honest about the limit
+of a reduction: fewer people will see it from now on, but anyone who already saw
+it may still remember it. Claiming otherwise would promise something the product
+cannot deliver.
+
+An expansion materialises the deliveries it authorises in the same transaction.
+An expansion that reached nobody new would be a promise unkept.
 
 ## Task 3: Explainable Delivery
 
@@ -105,3 +128,4 @@ Every feed card has a valid explanation, blocked users never receive each other'
 | 2026-08-24 | Created discovery and controlled reach implementation plan |
 | 2026-08-31 | Completed approximate geography, coarse distance bands, and eligibility filtering |
 | 2026-08-31 | Completed explainable delivery, ranking, and the finite Home feed |
+| 2026-08-31 | Completed controlled reach expansion with a three-way gate and immediate reduction |

@@ -73,3 +73,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-30 | Added the broadcaster inbox and atomic acceptance, closing the loop from publish to coordination room |
 | 2026-08-31 | Added approximate geography and coarse distance bands for discovery eligibility |
 | 2026-08-31 | Added explainable delivery and the finite Home feed, so a published intent can now reach a real recipient |
+| 2026-08-31 | Added controlled reach expansion, so an intent widens only through an informed action |
