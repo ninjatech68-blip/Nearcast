@@ -39,7 +39,36 @@ set conversation_id = c.id
 from public.conversations c
 where c.match_id = m.id and m.conversation_id is null;
 
--- one chat per pair, once every row is backfilled
+-- MERGE duplicate-pair conversations before enforcing one-per-pair.
+-- Testing created two separate chats between the same two people (one per
+-- cast); keep the oldest as the single thread and fold the rest into it,
+-- so the unique index below can be created. Idempotent: with no
+-- duplicates (a fresh DB) this changes nothing.
+do $$
+declare
+  keeper uuid;
+  loser uuid;
+begin
+  for keeper, loser in
+    select first_value(id) over w, id
+    from public.conversations
+    where person_low is not null
+    window w as (partition by person_low, person_high order by created_at, id)
+  loop
+    if keeper is null or loser = keeper then
+      continue;
+    end if;
+    -- fold the losing chat's plans and messages into the keeper
+    update public.matches set conversation_id = keeper where conversation_id = loser;
+    update public.messages set conversation_id = keeper where conversation_id = loser;
+    -- read state is per (conversation, reader); drop the loser's rather
+    -- than risk a primary-key clash on repoint. it re-creates on next open.
+    delete from public.conversation_reads where conversation_id = loser;
+    delete from public.conversations where id = loser;
+  end loop;
+end $$;
+
+-- one chat per pair, now that duplicates are merged
 create unique index if not exists conversations_pair_uq
   on public.conversations (person_low, person_high);
 create index if not exists matches_conversation_idx on public.matches (conversation_id);
