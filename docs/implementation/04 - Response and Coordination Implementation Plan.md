@@ -10,11 +10,35 @@
 
 ## Task 1: Contextual Response
 
-**Files:** `src/features/responses/`, `supabase/functions/submit-response/`
+**Files:** `src/features/responses/`, `public.submit_response`
 
-- [ ] Test self-response, missing delivery, duplicate response, blocked pair, expiry, retry, and valid submission.
-- [ ] Implement singular ResponseCTA, qualification fields, and disclosure preview.
-- [ ] Queue a generic response notification in the same transaction.
+- [x] Test self-response, missing delivery, duplicate response, blocked pair, expiry, retry, and valid submission.
+- [x] Implement singular ResponseCTA, qualification fields, and disclosure preview.
+- [x] Queue a generic response notification in the same transaction.
+
+`public.submit_response` is a `security definer` function, matching the
+precedent set by the other server mutations. One transaction writes the
+response and queues the broadcaster's notification, so a response can never
+exist that nobody is told about, and a notification can never point at a
+response that was rolled back.
+
+Eligibility is delivery: an intent reaches a person through the reach graph, and
+someone it never reached has no standing to respond. Self-response is refused
+because responding to your own intent would be fabricating interest.
+
+A second response from the same person returns their original rather than
+refusing, so a retry does not read as a rejection, while the unique constraint
+keeps one response per person per intent. A replayed idempotency key returns the
+original; the same key with a different message conflicts.
+
+The notification carries object identifiers and an event type only. The table
+has no column for message text, so a payload cannot leak the response body even
+by mistake, and the suite asserts that rather than assuming it.
+
+Qualification stores only what the respondent claimed. An unchecked box is an
+absence of a claim, not a claim of absence, so `false` is never stored: a screen
+must not be able to render "does not have transport" as though it had been
+asserted. The sheet shows one CTA and no view of anyone else's reply.
 
 ## Task 2: Broadcaster Inbox
 
@@ -70,3 +94,4 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 |---|---|
 | 2026-08-24 | Created response, acceptance, coordination, and notification implementation plan |
 | 2026-08-30 | Completed temporary messaging on Gifted Chat with room expiry and a send-message database function |
+| 2026-08-30 | Completed contextual response with delivery-based eligibility and a transactional notification |

@@ -1044,6 +1044,18 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      submit_response: {
+        Args: {
+          request_key?: string
+          response_message: string
+          response_qualification?: Json
+          target_intent: string
+        }
+        Returns: {
+          response_id: string
+          response_status: Database["public"]["Enums"]["response_status"]
+        }[]
+      }
       send_message: {
         Args: {
           message_body: string

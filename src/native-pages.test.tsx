@@ -9,6 +9,7 @@ jest.mock('expo-router', () => ({
     back: () => mockBack(),
     push: (...args: unknown[]) => mockPush(...args),
   },
+  useLocalSearchParams: () => ({ id: 'intent-1', firstName: 'Dev' }),
   Redirect: ({ href }: { href: string }) => `Redirect:${href}`,
 }));
 
@@ -39,6 +40,10 @@ jest.mock('@/infrastructure/supabase/client', () => ({
 
 jest.mock('@/features/messages/data/messages-repository', () => ({
   fetchConversationSummaries: async () => [],
+}));
+
+jest.mock('@/features/responses/data/responses-repository', () => ({
+  submitResponse: async () => ({ responseId: 'response-1', status: 'pending' }),
 }));
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -89,13 +94,14 @@ describe('native page set', () => {
     expect(view.queryByText('followers')).toBeNull();
   });
 
-  it('uses a bottom sheet style request screen with disclosure', async () => {
+  it('uses a bottom sheet style response screen with disclosure', async () => {
     const view = await render(<RequestSheetScreen />);
 
-    expect(view.getByText('Request to join')).toBeTruthy();
-    expect(view.getByText('Aarav will see your first name and response.')).toBeTruthy();
-    expect(view.getByText('Exact contact details stay hidden')).toBeTruthy();
-    expect(view.getByPlaceholderText('Add a short note')).toBeTruthy();
+    // The sheet is now data-backed; its behaviour is covered in
+    // response-sheet.test.tsx. This keeps the shell assertion: it is reachable
+    // and it states the disclosure before anything is sent.
+    expect(view.getByLabelText('Your note')).toBeTruthy();
+    expect(view.getByLabelText('What they will see')).toBeTruthy();
   });
 
   it('shows minimal activity and messages tabs', async () => {
