@@ -25,17 +25,53 @@ import { addNotificationListeners } from './push';
 type Listener = () => void;
 const activityListeners = new Set<Listener>();
 
+/**
+ * A request nobody was around to hear is kept, not dropped.
+ *
+ * The tap handler calls this immediately after `router.navigate('/')`,
+ * but navigate only SCHEDULES the move — the home pager does not exist
+ * yet, so a plain event fires into an empty listener set and vanishes,
+ * and the pager then renders its default page. The person taps a
+ * notification about a request and lands on the feed.
+ *
+ * Tapping from a closed app makes it certain rather than likely: the
+ * whole app boots, fonts load and the session restores before that
+ * pager mounts, long after this was called.
+ *
+ * So the ask is remembered until something can act on it — but not
+ * forever. A request left unclaimed is stale within seconds; honouring
+ * a minutes-old one would jump someone to activity when they later
+ * opened the app for their own reasons.
+ */
+const REQUEST_GOES_STALE_MS = 30_000;
+let requestedAt: number | null = null;
+
 /** ask the home pager to show the activity page. */
 export function requestActivityPage(): void {
+  if (activityListeners.size === 0) {
+    requestedAt = Date.now();
+    return;
+  }
+  requestedAt = null;
   for (const listener of activityListeners) listener();
 }
 
 /** the home pager subscribes; returns its unsubscribe. */
 export function onActivityRequested(listener: Listener): () => void {
   activityListeners.add(listener);
+  if (requestedAt !== null && Date.now() - requestedAt < REQUEST_GOES_STALE_MS) {
+    requestedAt = null;
+    listener();
+  }
   return () => {
     activityListeners.delete(listener);
   };
+}
+
+/** test-only: forget any unclaimed request. */
+export function resetActivityRequest(): void {
+  requestedAt = null;
+  activityListeners.clear();
 }
 
 /** mounted once in the app shell. */
