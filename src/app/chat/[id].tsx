@@ -73,11 +73,15 @@ export default function ChatScreen() {
   // the WhatsApp floor: even if the realtime socket never connects, poll
   // this thread while it is open and the app is foregrounded, so new
   // messages land in a couple of seconds without a manual pull.
+  // 1s floor: realtime delivers instantly when the socket is up; when it
+  // is not, a once-a-second re-read of the open thread keeps chat feeling
+  // live. lower than this buys little — each tick is a real round-trip —
+  // and it stops the moment the app backgrounds (see usePoll).
   usePoll(
     () => {
       if (id) void refreshConversationMessages(id);
     },
-    2500,
+    1000,
     chatEnabled() && !!id,
   );
 
