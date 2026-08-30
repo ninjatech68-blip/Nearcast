@@ -12,21 +12,24 @@ import {
   chatEnabled,
   fetchConversation,
   fetchConversations,
-  fetchMessages,
+  fetchMessagesAfter,
+  fetchMessagesPage,
+  markConversationDelivered,
   markRead,
-  sendLocationShare,
+  sendLocationShareWithClientId,
   sendMediaMessage,
-  sendText,
+  sendTextWithClientId,
   respondToModeProposal,
   setMode,
   subscribeToConversation,
   subscribeToMyActivity,
   type LocalMedia,
+  type MessageCursor,
   type RemoteConversation,
   type RemoteMessage,
 } from './remote-chat';
 
-export { chatEnabled, signedMediaUrl, type LocalMedia } from './remote-chat';
+export { chatEnabled, signedMediaUrl, type LocalMedia, type SignedMediaVariant } from './remote-chat';
 
 /**
  * chat opens only after a match, and carries the earlier messages so a
@@ -39,6 +42,8 @@ export type MessageStatus = 'pending' | 'sent' | 'delivered' | 'read' | 'failed'
 
 export type Message = {
   id: string;
+  clientMessageId?: string;
+  createdAt?: string;
   from: 'me' | 'them' | 'system';
   text: string;
   time: string;
@@ -55,6 +60,7 @@ export type Message = {
    * us, which renders directly. Never a permanent public URL.
    */
   mediaPath?: string;
+  mediaThumbPath?: string;
   mediaKind?: 'image' | 'gif';
   mediaWidth?: number;
   mediaHeight?: number;
@@ -97,6 +103,7 @@ export type Thread = {
    * `mine` says which side of that this viewer is on.
    */
   pending?: { mode: 'week' | 'always'; mine: boolean };
+  hasOlderMessages: boolean;
 };
 
 export type ConversationSummary = {
@@ -124,6 +131,7 @@ const SEED_STATE: State = {
       mode: 'day' as const,
       expiresLabel: '22h left',
       expiresAt: new Date(Date.now() + 22 * 3_600_000).toISOString(),
+      hasOlderMessages: false,
       planCount: 1,
       messages: [
         { id: 'm1', from: 'them', text: 'saw your cast, i’m in', time: '5:02 pm' },
@@ -192,12 +200,20 @@ function toMessage(row: RemoteMessage, otherLastRead: string | null): Message {
   const from = row.is_system ? 'system' : row.is_mine ? 'me' : 'them';
   const status: MessageStatus | undefined =
     from === 'me'
-      ? otherLastRead && new Date(row.created_at) <= new Date(otherLastRead)
+      ? row.remote_status === 'read'
         ? 'read'
-        : 'sent'
+        : row.remote_status === 'delivered'
+          ? 'delivered'
+          : row.remote_status === 'sent'
+            ? 'sent'
+            : otherLastRead && new Date(row.created_at) <= new Date(otherLastRead)
+              ? 'read'
+              : 'sent'
       : undefined;
   return {
     id: row.id,
+    clientMessageId: row.client_message_id ?? undefined,
+    createdAt: row.created_at,
     from,
     text: row.body,
     time: clockTime(row.created_at),
@@ -208,6 +224,7 @@ function toMessage(row: RemoteMessage, otherLastRead: string | null): Message {
     ...(row.media_path
       ? {
           mediaPath: row.media_path,
+          mediaThumbPath: row.media_thumb_path ?? row.media_path,
           mediaKind: row.media_kind === 'gif' ? ('gif' as const) : ('image' as const),
           mediaWidth: row.media_width ?? undefined,
           mediaHeight: row.media_height ?? undefined,
@@ -216,7 +233,11 @@ function toMessage(row: RemoteMessage, otherLastRead: string | null): Message {
   };
 }
 
-function buildThread(meta: RemoteConversation, rows: readonly RemoteMessage[]): Thread {
+function buildThread(
+  meta: RemoteConversation,
+  rows: readonly RemoteMessage[],
+  hasOlderMessages: boolean,
+): Thread {
   return {
     ...(meta.proposed_mode
       ? { pending: { mode: meta.proposed_mode, mine: meta.proposed_by_me === true } }
@@ -228,6 +249,7 @@ function buildThread(meta: RemoteConversation, rows: readonly RemoteMessage[]): 
     mode: meta.mode,
     expiresLabel: expiresLabelFor(meta.mode, meta.expires_at),
     expiresAt: meta.mode === 'always' ? null : meta.expires_at,
+    hasOlderMessages,
     planCount: meta.plan_count ?? 1,
     messages: rows.map((row) => toMessage(row, meta.other_last_read_at)),
   };
@@ -239,12 +261,84 @@ function putThread(thread: Thread): void {
 }
 
 async function loadConversation(conversationId: string): Promise<void> {
-  const [meta, rows] = await Promise.all([
+  const [meta, page] = await Promise.all([
     fetchConversation(conversationId),
-    fetchMessages(conversationId),
+    fetchMessagesPage(conversationId),
   ]);
   if (!meta) return;
-  putThread(buildThread(meta, rows));
+  putThread(buildThread(meta, page.messages, page.hasOlder));
+}
+
+function cursorOf(message: Message | undefined): MessageCursor | null {
+  if (!message?.createdAt) return null;
+  return { id: message.id, createdAt: message.createdAt };
+}
+
+function mergeMessages(existing: readonly Message[], incoming: readonly Message[]): readonly Message[] {
+  if (incoming.length === 0) return existing;
+  const merged = new Map(existing.map((message) => [message.id, message]));
+  const byClientId = new Map(
+    existing
+      .filter((message) => message.clientMessageId)
+      .map((message) => [message.clientMessageId as string, message.id]),
+  );
+  for (const message of incoming) {
+    const existingId = message.clientMessageId ? byClientId.get(message.clientMessageId) : undefined;
+    if (existingId) merged.delete(existingId);
+    merged.set(message.id, message);
+  }
+  return [...merged.values()].sort((left, right) => {
+    const at = left.createdAt ?? '';
+    const bt = right.createdAt ?? '';
+    if (at !== bt) return at.localeCompare(bt);
+    return left.id.localeCompare(right.id);
+  });
+}
+
+async function syncConversationMessages(conversationId: string): Promise<void> {
+  const thread = state.threads[conversationId];
+  if (!thread) {
+    await loadConversation(conversationId);
+    return;
+  }
+
+  const meta = await fetchConversation(conversationId);
+  if (!meta) return;
+  const after = cursorOf(thread.messages[thread.messages.length - 1]);
+  if (!after) {
+    putThread(buildThread(meta, [], thread.hasOlderMessages));
+    return;
+  }
+
+  const incoming = await fetchMessagesAfter(conversationId, after);
+  const merged = mergeMessages(thread.messages, incoming.map((row) => toMessage(row, meta.other_last_read_at)));
+  putThread({
+    ...buildThread(meta, [], thread.hasOlderMessages),
+    messages: merged,
+  });
+}
+
+export async function loadOlderConversationMessages(conversationId: string): Promise<void> {
+  if (!chatEnabled()) return;
+  const thread = state.threads[conversationId];
+  if (!thread?.hasOlderMessages) return;
+
+  const before = cursorOf(thread.messages[0]);
+  if (!before) return;
+  const page = await fetchMessagesPage(conversationId, before);
+  if (page.messages.length === 0) {
+    putThread({ ...thread, hasOlderMessages: false });
+    return;
+  }
+
+  const meta = await fetchConversation(conversationId);
+  if (!meta) return;
+  const older = page.messages.map((row) => toMessage(row, meta.other_last_read_at));
+  putThread({
+    ...buildThread(meta, [], page.hasOlder),
+    messages: mergeMessages(older, thread.messages),
+    hasOlderMessages: page.hasOlder,
+  });
 }
 
 /**
@@ -332,11 +426,12 @@ export function openConversation(conversationId: string): () => void {
   if (!chatEnabled()) return () => undefined;
   const read = () => {
     clearListUnread(conversationId);
+    void markConversationDelivered(conversationId);
     void markRead(conversationId);
   };
   void loadConversation(conversationId).then(read);
   const unsubscribe = subscribeToConversation(conversationId, () => {
-    void loadConversation(conversationId).then(read);
+    void syncConversationMessages(conversationId).then(read);
   });
   return unsubscribe;
 }
@@ -350,16 +445,17 @@ export function openConversation(conversationId: string): () => void {
  */
 export async function refreshConversationMessages(conversationId: string): Promise<void> {
   if (!chatEnabled()) return;
-  await loadConversation(conversationId);
+  await syncConversationMessages(conversationId);
   clearListUnread(conversationId);
+  await markConversationDelivered(conversationId);
   await markRead(conversationId);
 }
 
 export async function sendMessage(threadId: string, text: string): Promise<void> {
   if (chatEnabled()) {
     if (!text.trim()) return;
-    await sendText(threadId, text.trim());
-    await loadConversation(threadId);
+    await sendTextWithClientId(threadId, text.trim(), cryptoMessageId());
+    await syncConversationMessages(threadId);
     return;
   }
   const thread = state.threads[threadId];
@@ -395,8 +491,8 @@ export async function sendLocationMessage(
   label?: string,
 ): Promise<void> {
   if (!chatEnabled()) return;
-  await sendLocationShare(threadId, latitude, longitude, label);
-  await loadConversation(threadId);
+  await sendLocationShareWithClientId(threadId, latitude, longitude, label, cryptoMessageId());
+  await syncConversationMessages(threadId);
 }
 
 /**
@@ -412,8 +508,8 @@ export async function sendMediaMessageToThread(
   caption?: string,
 ): Promise<void> {
   if (chatEnabled()) {
-    await sendMediaMessage(threadId, media, caption);
-    await loadConversation(threadId);
+    await sendMediaMessage(threadId, media, caption, cryptoMessageId());
+    await syncConversationMessages(threadId);
     return;
   }
   const thread = state.threads[threadId];
@@ -426,6 +522,7 @@ export async function sendMediaMessageToThread(
     time: 'now',
     status: 'pending',
     mediaPath: media.uri,
+    mediaThumbPath: media.uri,
     mediaKind: media.kind,
     mediaWidth: media.width,
     mediaHeight: media.height,
@@ -480,6 +577,12 @@ function promoteStatus(threadId: string, messageId: string, status: MessageStatu
     },
   };
   emit();
+}
+
+function cryptoMessageId(): string {
+  const g = globalThis as { crypto?: { randomUUID?: () => string } };
+  if (g.crypto?.randomUUID) return `msg-${g.crypto.randomUUID()}`;
+  return `msg-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 /**

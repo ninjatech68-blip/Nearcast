@@ -32,16 +32,27 @@ type NotificationsLike = {
   addNotificationResponseReceivedListener: (fn: (r: ResponseLike) => void) => Subscription;
   AndroidImportance: { DEFAULT: number; HIGH: number };
 };
+type DeviceLike = {
+  deviceName?: string | null;
+  modelName?: string | null;
+};
 
 /** what a push carries: a kind and ids, never any content. */
 export type PushPayload = { kind?: string; intentId?: string };
 
 let Notifications: NotificationsLike | null = null;
+let Device: DeviceLike | null = null;
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   Notifications = require('expo-notifications') as NotificationsLike;
 } catch {
   Notifications = null;
+}
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Device = require('expo-device') as DeviceLike;
+} catch {
+  Device = null;
 }
 
 /** true when the native module is in the binary. */
@@ -53,6 +64,24 @@ function projectId(): string | undefined {
   const extra = (Constants.expoConfig?.extra ?? {}) as { eas?: { projectId?: string } };
   const eas = (Constants as unknown as { easConfig?: { projectId?: string } }).easConfig;
   return extra.eas?.projectId ?? eas?.projectId;
+}
+
+function appBuild(): string | undefined {
+  const ios = Constants.expoConfig?.ios?.buildNumber;
+  const android = Constants.expoConfig?.android?.versionCode;
+  return ios ?? (typeof android === 'number' ? String(android) : undefined);
+}
+
+function deviceLabel(): string | undefined {
+  const raw = Device?.deviceName?.trim();
+  if (!raw) return undefined;
+  return raw;
+}
+
+function deviceModel(): string | undefined {
+  const raw = Device?.modelName?.trim();
+  if (!raw) return undefined;
+  return raw;
 }
 
 /**
@@ -132,7 +161,13 @@ async function registerToken(): Promise<void> {
       pid ? { projectId: pid } : undefined,
     );
     if (!token) return;
-    await client.rpc('register_push_token', { token, platform: Platform.OS });
+    await client.rpc('register_push_token', {
+      token,
+      platform: Platform.OS,
+      device_label: deviceLabel() ?? null,
+      device_model: deviceModel() ?? null,
+      app_build: appBuild() ?? null,
+    });
   } catch {
     // a missing projectId or a transient failure must not turn a granted
     // permission into a denial; the next launch re-tries registration.

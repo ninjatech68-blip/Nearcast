@@ -1,8 +1,9 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(6);
+select plan(8);
 
 select has_column('public', 'messages', 'media_path', 'messages carry a media path');
+select has_column('public', 'messages', 'media_thumb_path', 'messages carry a thumbnail path');
 select has_function('public', 'send_media', 'the media send path exists');
 
 -- two parties in a conversation, plus an outsider
@@ -43,6 +44,12 @@ select is(
   (select media_kind from public.conversation_messages('88888888-0000-0000-0000-0000000000a1')
     where media_path = '88888888-0000-0000-0000-0000000000a1/one.jpg'),
   'image', 'the reader returns the media kind');
+
+select is(
+  (select media_thumb_path from public.conversation_messages('88888888-0000-0000-0000-0000000000a1')
+    where media_path = '88888888-0000-0000-0000-0000000000a1/one.jpg'),
+  '88888888-0000-0000-0000-0000000000a1/one.jpg',
+  'legacy calls still resolve to an in-conversation thumbnail path');
 
 -- a path outside this conversation's folder is refused: the storage
 -- policies key on that folder, so the row must never disagree with them
