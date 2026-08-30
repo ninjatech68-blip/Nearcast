@@ -473,6 +473,72 @@ export type Database = {
           },
         ]
       }
+      invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          issued_by: string | null
+          note: string | null
+          redeemed_at: string | null
+          redeemed_by: string | null
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_issued_by_fkey"
+            columns: ["issued_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_redeemed_by_fkey"
+            columns: ["redeemed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invite_attempts: {
+        Row: {
+          attempted_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          attempted_at?: string
+          id?: never
+          user_id: string
+        }
+        Update: {
+          attempted_at?: string
+          id?: never
+          user_id?: string
+        }
+        Relationships: []
+      }
       match_disclosures: {
         Row: {
           field_name: string
@@ -767,57 +833,6 @@ export type Database = {
           },
         ]
       }
-      invitations: {
-        Row: {
-          created_at: string
-          expires_at: string
-          id: string
-          issued_by: string | null
-          note: string | null
-          redeemed_at: string | null
-          redeemed_by: string | null
-          token_hash: string
-        }
-        Insert: {
-          created_at?: string
-          expires_at: string
-          id?: string
-          issued_by?: string | null
-          note?: string | null
-          redeemed_at?: string | null
-          redeemed_by?: string | null
-          token_hash: string
-        }
-        Update: {
-          created_at?: string
-          expires_at?: string
-          id?: string
-          issued_by?: string | null
-          note?: string | null
-          redeemed_at?: string | null
-          redeemed_by?: string | null
-          token_hash?: string
-        }
-        Relationships: []
-      }
-      invite_attempts: {
-        Row: {
-          attempted_at: string
-          id: number
-          user_id: string
-        }
-        Insert: {
-          attempted_at?: string
-          id?: never
-          user_id: string
-        }
-        Update: {
-          attempted_at?: string
-          id?: never
-          user_id?: string
-        }
-        Relationships: []
-      }
       request_idempotency: {
         Row: {
           actor_id: string
@@ -906,38 +921,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      close_expired_conversations: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      redeem_invite: {
-        Args: {
-          chosen_display_name: string
-          invite_token: string
-        }
-        Returns: {
-          member_display_name: string | null
-          member_id: string | null
-          outcome: string
-        }[]
-      }
-      send_message: {
-        Args: {
-          message_body: string
-          reply_to?: string
-          request_key?: string
-          target_conversation: string
-        }
-        Returns: {
-          body: string
-          conversation_id: string
-          created_at: string
-          id: string
-          is_system: boolean
-          reply_to_id: string | null
-          sender_id: string | null
-        }
-      }
       accept_response: {
         Args: {
           expected_intent_status: Database["public"]["Enums"]["intent_status"]
@@ -959,6 +942,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      close_expired_conversations: { Args: never; Returns: number }
       get_public_intent: {
         Args: { requested_share_slug: string }
         Returns: {
@@ -978,6 +962,37 @@ export type Database = {
           starts_at: string
           statement: string
         }[]
+      }
+      redeem_invite: {
+        Args: { chosen_display_name: string; invite_token: string }
+        Returns: {
+          member_display_name: string
+          member_id: string
+          outcome: string
+        }[]
+      }
+      send_message: {
+        Args: {
+          message_body: string
+          reply_to?: string
+          request_key?: string
+          target_conversation: string
+        }
+        Returns: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_system: boolean
+          reply_to_id: string | null
+          sender_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "messages"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
