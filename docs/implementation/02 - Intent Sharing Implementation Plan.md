@@ -10,12 +10,28 @@
 
 ## Task 1: Invitation And Authentication
 
-**Files:** `src/features/auth/`, `src/app/invite/[token].tsx`, `src/app/sign-in.tsx`, `supabase/functions/redeem-invite/`
+**Files:** `src/features/auth/`, `src/app/invite/[token].tsx`, `src/app/sign-in.tsx`, `public.redeem_invite`
 
-- [ ] Test expired, used, valid, and rate-limited invitation tokens.
-- [ ] Implement OTP sign-in and create a minimal profile only after invite redemption.
-- [ ] Use generic authentication errors and secure session persistence.
-- [ ] Verify sign-out removes local session and protected routes redirect.
+- [x] Test expired, used, valid, and rate-limited invitation tokens.
+- [x] Implement OTP sign-in and create a minimal profile only after invite redemption.
+- [x] Use generic authentication errors and secure session persistence.
+- [x] Verify sign-out removes local session and protected routes redirect.
+
+Redemption is `public.redeem_invite`, a `security definer` function rather than
+an Edge Function, matching the `accept_response` and `send_message` precedent.
+The client insert policy on `profiles` was removed, so redemption is the only
+path that creates a profile and membership cannot be self-granted.
+
+Two decisions worth carrying forward. Raw invitation tokens are never stored,
+only a SHA-256 hash, so a database disclosure hands out no working invitations.
+And redemption reports an outcome instead of raising for recoverable failures:
+`raise exception` aborts the whole call, which would roll back the attempt row
+written moments earlier and leave the rate limit permanently at zero. Missing,
+expired and already-redeemed tokens share one outcome so a caller cannot probe
+which invitations exist.
+
+Authentication is email one-time codes per the amended MUST-001; Google and
+Apple sign-in are deferred to MUST-001a.
 
 ## Task 2: Draft And Review
 
@@ -61,3 +77,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created intent creation and sharing implementation plan |
+| 2026-08-30 | Completed invitation-gated email one-time-code authentication |

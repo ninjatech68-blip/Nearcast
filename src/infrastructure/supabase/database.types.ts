@@ -767,6 +767,57 @@ export type Database = {
           },
         ]
       }
+      invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          issued_by: string | null
+          note: string | null
+          redeemed_at: string | null
+          redeemed_by: string | null
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          token_hash?: string
+        }
+        Relationships: []
+      }
+      invite_attempts: {
+        Row: {
+          attempted_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          attempted_at?: string
+          id?: never
+          user_id: string
+        }
+        Update: {
+          attempted_at?: string
+          id?: never
+          user_id?: string
+        }
+        Relationships: []
+      }
       request_idempotency: {
         Row: {
           actor_id: string
@@ -858,6 +909,17 @@ export type Database = {
       close_expired_conversations: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      redeem_invite: {
+        Args: {
+          chosen_display_name: string
+          invite_token: string
+        }
+        Returns: {
+          member_display_name: string | null
+          member_id: string | null
+          outcome: string
+        }[]
       }
       send_message: {
         Args: {

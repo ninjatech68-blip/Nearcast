@@ -64,3 +64,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded native minimal design-system exploration checkpoint |
 | 2026-08-25 | Recorded native minimal page implementation checkpoint |
 | 2026-08-30 | Built the temporary coordination room on Gifted Chat with room expiry, a send-message database function, and a real Messages list |
+| 2026-08-30 | Added invitation-gated email one-time-code authentication and protected-route redirects |

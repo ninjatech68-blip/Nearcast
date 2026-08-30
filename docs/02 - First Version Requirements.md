@@ -15,7 +15,8 @@
 
 ## Accounts And Identity
 
-- **MUST-001:** Users must authenticate with Google or Apple during private alpha.
+- **MUST-001:** Users must authenticate with a one-time code sent to their email during closed alpha. Accounts are invite-only: a verified identity is not membership, and a profile exists only after an invitation is redeemed.
+- **MUST-001a:** Google and Apple sign-in are deferred, not dropped, and must ship before public beta. Offering third-party sign-in on iOS obliges Nearcast to offer Sign in with Apple, which requires a paid Apple Developer Program membership; email codes carry no such obligation and no external dependency, so closed alpha does not pay that cost to prove the product.
 - **MUST-002:** Every user must have a stable internal identifier independent of email or phone.
 - **MUST-003:** Profiles must support display name, avatar, approximate home area, interests, verification state, and contextual reliability summaries.
 - **MUST-004:** Users must be able to delete their account and request deletion of associated personal data.
@@ -128,3 +129,4 @@ The MVP passes functional acceptance when an invited user can create an intent, 
 |---|---|
 | 2026-08-24 | Defined closed-alpha functional and non-functional requirements |
 | 2026-08-30 | Defined the coordination channel lifetime and its read-only state after close |
+| 2026-08-30 | Changed closed-alpha authentication to invite-gated email one-time codes and deferred Google and Apple sign-in to MUST-001a |

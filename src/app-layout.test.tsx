@@ -14,6 +14,8 @@ jest.mock('expo-splash-screen', () => ({
   preventAutoHideAsync: () => mockPreventAutoHideAsync(),
 }));
 
+const mockReplace = jest.fn();
+
 jest.mock('expo-router', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { Text, View } = require('react-native');
@@ -26,8 +28,18 @@ jest.mock('expo-router', () => {
     return <Text>{name}</Text>;
   };
 
-  return { Stack };
+  return {
+    Stack,
+    useRouter: () => ({ replace: (href: string) => mockReplace(href) }),
+    useSegments: () => ['sign-in'],
+  };
 });
+
+// The layout resolves membership on mount; this keeps that off the network.
+jest.mock('@/features/auth/data/auth-repository', () => ({
+  fetchMembershipFacts: async () => ({ hasSession: false, hasProfile: false }),
+  subscribeToAuthChanges: () => () => undefined,
+}));
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const RootLayout = require('./app/_layout').default;
