@@ -164,7 +164,7 @@ describe('home pager', () => {
 
     const chats = view.getByRole('tab', { name: 'chats' });
     expect(chats.props.accessibilityState).toMatchObject({ selected: true });
-    expect(view.getByRole('tab', { name: 'yours' })).toBeTruthy();
+    expect(view.getByRole('tab', { name: 'your plans' })).toBeTruthy();
     // the label carries its count when it has one: "requests, 2"
     expect(view.getByRole('tab', { name: /^requests/ })).toBeTruthy();
     // renamed: "needs you" was the old first tab
@@ -371,7 +371,7 @@ describe('compose', () => {
     // your own casts never appear in the feed (the feed is decisions to
     // make — yours aren't). they surface under the activity page's
     // "yours" tab, which is where what you started lives.
-    await user.press(feed.getByRole('tab', { name: 'yours' }));
+    await user.press(feed.getByRole('tab', { name: 'your plans' }));
     expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(1);
   });
 
@@ -522,8 +522,8 @@ describe('chat', () => {
   it('keeps the chat window label short enough to sit beside a name', async () => {
     const view = await render(<ChatScreen />);
 
-    // "expires in 22h" pushed the pill wide enough to overlap the name
-    expect(view.getByText('22h left')).toBeTruthy();
+    // short, live countdown form; never the long "expires in 22h"
+    expect(view.getByText(/\d+h left/)).toBeTruthy();
     expect(view.queryByText('expires in 22h')).toBeNull();
   });
 
@@ -538,20 +538,20 @@ describe('chat', () => {
   it('asks the other side before a longer window, and does not extend on its own', async () => {
     const view = await render(<ChatScreen />);
 
-    // the seed thread is a 24h window with nothing pending
-    expect(view.getByText('22h left')).toBeTruthy();
-    expect(view.queryByRole('button', { name: 'agree to the longer window' })).toBeNull();
+    // a live countdown, and nothing pending yet
+    expect(view.getByText(/\d+h left/)).toBeTruthy();
+    expect(view.queryByRole('button', { name: 'Agree' })).toBeNull();
 
     await act(async () => {
       await extendChat('badminton-after-work', 'always');
     });
 
     // asked, not done: the window is unchanged and the ask is on screen
-    expect(view.getByText('22h left')).toBeTruthy();
-    expect(view.getByText(/you asked for no expiry\. waiting on riya\./)).toBeTruthy();
+    expect(view.getByText(/\d+h left/)).toBeTruthy();
+    expect(view.getByText(/You asked for no expiry/)).toBeTruthy();
     // the person who asked cannot also agree — only take it back
-    expect(view.queryByRole('button', { name: 'agree to the longer window' })).toBeNull();
-    expect(view.getByRole('button', { name: 'take back the request' })).toBeTruthy();
+    expect(view.queryByRole('button', { name: 'Agree' })).toBeNull();
+    expect(view.getByRole('button', { name: 'Take it back' })).toBeTruthy();
 
     await act(async () => {
       await answerWindowRequest('badminton-after-work', true);

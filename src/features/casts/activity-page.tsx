@@ -143,6 +143,11 @@ export function ActivityPage() {
   // "yours" carries nothing to act on, so neither invents a number.
   const requestCount = moveItems.length;
   const unreadCount = chats.reduce((n, chat) => n + chat.unread, 0);
+
+  // the requests tab can vanish under you when the last request is
+  // answered; fall back to chats by DERIVING the shown tab rather than
+  // writing state in an effect.
+  const shownTab: Tab = tab === 'requests' && requestCount === 0 ? 'chats' : tab;
   const nothingAtAll =
     requestCount === 0 &&
     pending.length === 0 &&
@@ -191,14 +196,18 @@ export function ActivityPage() {
           ) : null}
 
           <View style={styles.tabs}>
-            <TabButton label="chats" badge={unreadCount} active={tab === 'chats'} onPress={() => setTab('chats')} />
-            <TabButton label="yours" badge={0} active={tab === 'yours'} onPress={() => setTab('yours')} />
-            <TabButton
-              label="requests"
-              badge={requestCount}
-              active={tab === 'requests'}
-              onPress={() => setTab('requests')}
-            />
+            <TabButton label="chats" badge={unreadCount} active={shownTab === 'chats'} onPress={() => setTab('chats')} />
+            <TabButton label="your plans" badge={0} active={shownTab === 'yours'} onPress={() => setTab('yours')} />
+            {/* the requests tab exists only while something is waiting. an
+                empty tab is a promise of activity the page cannot keep. */}
+            {requestCount > 0 ? (
+              <TabButton
+                label="requests"
+                badge={requestCount}
+                active={shownTab === 'requests'}
+                onPress={() => setTab('requests')}
+              />
+            ) : null}
           </View>
 
           <View style={styles.listWrap}>
@@ -218,7 +227,7 @@ export function ActivityPage() {
               />
             }
           >
-            {tab === 'requests' ? (
+            {shownTab === 'requests' ? (
               <>
                 {moveItems.length > 0 ? <Text style={styles.sectionHot}>ASKED TO JOIN</Text> : null}
                 {archived ? (
@@ -265,7 +274,7 @@ export function ActivityPage() {
               </>
             ) : null}
 
-            {tab === 'chats' ? (
+            {shownTab === 'chats' ? (
               chats.length > 0 ? (
                 chats.map((chat) => (
                   <Row
@@ -298,8 +307,38 @@ export function ActivityPage() {
               )
             ) : null}
 
-            {tab === 'yours' ? (
+            {shownTab === 'yours' ? (
               <>
+                {/* plans you are IN: an accepted request is a match, which
+                    is a chat. surfacing the PLAN here (not just the person
+                    in the chats tab) is the only place the thing you are
+                    actually attending is listed as a plan. */}
+                {chats.filter((c) => !c.ended).length > 0 ? (
+                  <>
+                    <Text style={styles.sectionHot}>YOU&apos;RE IN</Text>
+                    {chats
+                      .filter((c) => !c.ended)
+                      .map((chat) => (
+                        <Row
+                          key={`in-${chat.conversationId}`}
+                          title={chat.castTitle}
+                          sub={`with ${chat.withName}`}
+                          left={
+                            <Face
+                              photo={facePhotos[chat.withId]}
+                              initials={chat.withName.slice(0, 2).toUpperCase()}
+                              size={44}
+                              label={`photo of ${chat.withName}`}
+                              verified={isVerified(chat.withId)}
+                            />
+                          }
+                          right={<Tag label="open chat" tone="line" />}
+                          onPress={() => router.push(`/chat/${chat.conversationId}`)}
+                        />
+                      ))}
+                  </>
+                ) : null}
+
                 {joinsISent.length > 0 ? (
                   <>
                     <Text style={styles.sectionDim}>WAITING ON THEM</Text>

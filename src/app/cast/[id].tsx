@@ -48,33 +48,40 @@ export default function CastDetailScreen() {
         <Text style={styles.reach}>{reachLine(cast)}</Text>
 
         {/* the one route to the profile. everything else on this sheet
-            is about the plan, and tapping it stays on the plan. */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`about ${cast.by}`}
-          onPress={() => router.push(`/caster/${cast.byId}`)}
-          hitSlop={6}
-          style={styles.casterPill}
-        >
-          <Face
-            photo={facePhotos[cast.byId]}
-            initials={cast.by.slice(0, 2).toUpperCase()}
-            size={28}
-            label=""
-            verified={isVerified(cast.byId)}
-          />
-          <Text style={styles.casterText} numberOfLines={1}>
-            {cast.by} ›
-          </Text>
-          {cast.receipts.line ? (
-            <>
-              <SignalBars lit={cast.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
-              <Text style={styles.receiptsLine} numberOfLines={1}>
-                {cast.receipts.line}
-              </Text>
-            </>
-          ) : null}
-        </Pressable>
+            is about the plan, and tapping it stays on the plan. YOUR OWN
+            cast has no caster to open — tapping through went to a
+            /caster/me that does not exist and landed on "not around" —
+            so the capsule is simply not shown on a cast you posted. */}
+        {cast.byId !== 'me' ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`about ${cast.by}`}
+            onPress={() => router.push(`/caster/${cast.byId}`)}
+            hitSlop={6}
+            style={styles.casterPill}
+          >
+            <Face
+              photo={facePhotos[cast.byId]}
+              initials={cast.by.slice(0, 2).toUpperCase()}
+              size={28}
+              label=""
+              verified={isVerified(cast.byId)}
+            />
+            <Text style={styles.casterText} numberOfLines={1}>
+              {cast.by} ›
+            </Text>
+            {cast.receipts.line ? (
+              <>
+                <SignalBars lit={cast.receipts.lit} size="small" trackColor={tokens.semantic.color.ink} />
+                <Text style={styles.receiptsLine} numberOfLines={1}>
+                  {cast.receipts.line}
+                </Text>
+              </>
+            ) : null}
+          </Pressable>
+        ) : (
+          <Text style={styles.yoursNote}>you cast this</Text>
+        )}
 
         {cast.body !== cast.text ? <Text style={styles.body}>{cast.body}</Text> : null}
         {cast.why ? <Text style={styles.why}>why you: {cast.why}</Text> : null}
@@ -190,5 +197,6 @@ const styles = StyleSheet.create({
   },
   goneSub: { ...tokens.typography.meta, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
   askedLine: { ...tokens.typography.metaSmall, color: tokens.semantic.color.accent, marginBottom: 10 },
+  yoursNote: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 14 },
   actions: { marginTop: 18, gap: 2 },
 });

@@ -1175,6 +1175,14 @@ export type Database = {
           statement: string
         }[]
       }
+      my_profile_areas: {
+        Args: never
+        Returns: {
+          latitude: number
+          longitude: number
+          name: string
+        }[]
+      }
       my_receipts: {
         Args: never
         Returns: {

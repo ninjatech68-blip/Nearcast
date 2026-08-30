@@ -227,9 +227,13 @@ export default function AreaScreen() {
     router.back();
   }
 
-  /** drop a pin on the map → resolve to a name and light up the list. */
-  async function dropPin(event: { nativeEvent: { coordinate: LatLng } }) {
-    const coord = event.nativeEvent.coordinate;
+  /**
+   * Resolve a pin to an area name. Shared by a tap on the map, a drag of
+   * the marker, and the auto-drop on open — anywhere the pin moves, its
+   * neighbourhood is fetched and selected so the person does not have to
+   * name the spot they just pointed at.
+   */
+  async function resolvePin(coord: LatLng) {
     setPin(coord);
     try {
       const addresses = await Location.reverseGeocodeAsync(coord);
@@ -237,13 +241,40 @@ export default function AreaScreen() {
       const name = (address?.district || address?.subregion || address?.city)?.trim().toLowerCase();
       if (name) {
         setSelected(name);
-        // put the name at the top of the list if it's not already there
         setResults((prev) => (prev.includes(name) ? prev : [name, ...prev]));
       }
     } catch {
       // silent — the pin is on the map, that's enough
     }
   }
+
+  function dropPin(event: { nativeEvent: { coordinate: LatLng } }) {
+    void resolvePin(event.nativeEvent.coordinate);
+  }
+
+  // Auto-fetch on open: if we arrived without a pin, drop one at the
+  // person's current location and resolve its name, so the map opens
+  // already pointing somewhere real instead of waiting for a tap.
+  const autoDropped = useRef(false);
+  useEffect(() => {
+    if (autoDropped.current || pin) return;
+    autoDropped.current = true;
+    void (async () => {
+      try {
+        const permission = await Location.getForegroundPermissionsAsync();
+        if (!permission.granted) return;
+        const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+        const coord = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+        const next: Region = { ...coord, latitudeDelta: 0.03, longitudeDelta: 0.03 };
+        setRegion(next);
+        mapRef.current?.animateToRegion(next, 400);
+        await resolvePin(coord);
+      } catch {
+        // best-effort: the person can still tap or search
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const busy = status === 'locating' || status === 'searching';
 
@@ -274,6 +305,8 @@ export default function AreaScreen() {
                 coordinate={pin}
                 title={selected ?? undefined}
                 pinColor={tokens.semantic.color.accent}
+                draggable
+                onDragEnd={(e) => void resolvePin(e.nativeEvent.coordinate)}
               />
             ) : null}
           </MapView>
@@ -324,7 +357,7 @@ export default function AreaScreen() {
                 <Row
                   key={area}
                   title={area}
-                  sub={selected === area ? 'pinned on the map · tap use it below' : 'tap to pin · tap use it to choose'}
+                  sub={selected === area ? 'pinned · drag to fine-tune, then use it below' : 'tap to pin · tap use it to choose'}
                   onPress={() => tap(area)}
                 />
               ))}

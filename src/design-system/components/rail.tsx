@@ -44,13 +44,12 @@ export function Rail({
           accessibilityLabel={activityCount > 0 ? `activity, ${activityCount} waiting` : 'activity'}
           hitSlop={10}
           onPress={onActivity}
-          style={styles.item}
+          style={styles.activityItem}
         >
           <Text style={[styles.label, current === 'activity' && styles.on]}>ACTIVITY</Text>
-          {/* a count, not a dot: "something happened" is not as useful
-              as "three things happened", and it is a real number — see
-              useActivityCount. absent at zero, because a permanent 0
-              reads as a failure. */}
+          {/* inline, not absolute: an absolutely-positioned badge pinned to
+              the right sat on top of the label and spilled past the rail's
+              rounded edge. a real count, absent at zero. */}
           {activityCount > 0 ? (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{activityCount > 9 ? '9+' : activityCount}</Text>
@@ -74,22 +73,25 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   item: { minHeight: tokens.component.minTarget, justifyContent: 'center' },
+  activityItem: {
+    minHeight: tokens.component.minTarget,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   badge: {
-    position: 'absolute',
-    top: 6,
-    right: -10,
-    minWidth: 16,
-    height: 16,
-    paddingHorizontal: 4,
-    borderRadius: 8,
+    minWidth: 17,
+    height: 17,
+    paddingHorizontal: 5,
+    borderRadius: 8.5,
     backgroundColor: tokens.semantic.color.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeText: {
     fontFamily: fontFamily.monoSemi,
-    fontSize: 9,
-    lineHeight: 12,
+    fontSize: 10,
+    lineHeight: 13,
     color: tokens.semantic.color.ink,
   },
   label: { ...tokens.typography.tagSmall, color: tokens.primitive.color.cream45, textTransform: 'uppercase' },

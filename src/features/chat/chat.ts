@@ -80,8 +80,14 @@ export type Thread = {
   castTitle: string;
   messages: readonly Message[];
   mode: ExpiryMode;
-  /** display label for the current expiry — kept as a string so the store stays deterministic without a clock */
+  /** display label for the current expiry — a frozen fallback for the list row */
   expiresLabel: string;
+  /**
+   * the raw expiry, so the chat header can count down live rather than
+   * showing a number frozen at load. null for an open or not-yet-set
+   * window. ISO string.
+   */
+  expiresAt: string | null;
   /**
    * an open request for a LONGER window. A longer window is more
    * exposure for both people, so one side asks and the other agrees;
@@ -112,6 +118,7 @@ const SEED_STATE: State = {
       castTitle: 'badminton after work',
       mode: 'day' as const,
       expiresLabel: '22h left',
+      expiresAt: new Date(Date.now() + 22 * 3_600_000).toISOString(),
       messages: [
         { id: 'm1', from: 'them', text: 'saw your cast, i’m in', time: '5:02 pm' },
         { id: 'm2', from: 'me', text: 'nice. court’s booked 7–8', time: '5:04 pm', status: 'read' },
@@ -214,6 +221,7 @@ function buildThread(meta: RemoteConversation, rows: readonly RemoteMessage[]): 
     castTitle: meta.cast_title,
     mode: meta.mode,
     expiresLabel: expiresLabelFor(meta.mode, meta.expires_at),
+    expiresAt: meta.mode === 'always' ? null : meta.expires_at,
     messages: rows.map((row) => toMessage(row, meta.other_last_read_at)),
   };
 }
@@ -274,11 +282,40 @@ export async function conversationIdFor(castId: string, otherId: string): Promis
   return rows.find((r) => r.intent_id === castId && r.other_id === otherId)?.conversation_id ?? null;
 }
 
+/**
+ * Zero a conversation's unread in the LIST immediately.
+ *
+ * The rail's notification count and the chats tab both read the
+ * conversation summaries, not the open thread. markRead updates the
+ * server and the thread, but the summary's unread lingered until the
+ * next full list refresh — so the badge stayed up after you had plainly
+ * read the chat. This clears it on the spot; the next refresh confirms
+ * the same thing from the server.
+ */
+function clearListUnread(conversationId: string): void {
+  let changed = false;
+  const list = state.list.map((c) => {
+    if (c.conversationId === conversationId && c.unread > 0) {
+      changed = true;
+      return { ...c, unread: 0 };
+    }
+    return c;
+  });
+  if (changed) {
+    state = { ...state, list };
+    emit();
+  }
+}
+
 export function openConversation(conversationId: string): () => void {
   if (!chatEnabled()) return () => undefined;
-  void loadConversation(conversationId).then(() => void markRead(conversationId));
+  const read = () => {
+    clearListUnread(conversationId);
+    void markRead(conversationId);
+  };
+  void loadConversation(conversationId).then(read);
   const unsubscribe = subscribeToConversation(conversationId, () => {
-    void loadConversation(conversationId).then(() => void markRead(conversationId));
+    void loadConversation(conversationId).then(read);
   });
   return unsubscribe;
 }
@@ -293,6 +330,7 @@ export function openConversation(conversationId: string): () => void {
 export async function refreshConversationMessages(conversationId: string): Promise<void> {
   if (!chatEnabled()) return;
   await loadConversation(conversationId);
+  clearListUnread(conversationId);
   await markRead(conversationId);
 }
 
@@ -487,11 +525,17 @@ export async function extendChat(threadId: string, mode: 'day' | 'week' | 'alway
     text: noteText[mode],
     time: 'now',
   };
+  const expiresAt: Record<'day' | 'week' | 'always', string | null> = {
+    day: new Date(Date.now() + 24 * 3_600_000).toISOString(),
+    week: new Date(Date.now() + 7 * 24 * 3_600_000).toISOString(),
+    always: null,
+  };
   const { pending: _dropped, ...rest } = thread;
   putThread({
     ...rest,
     mode,
     expiresLabel: labels[mode],
+    expiresAt: expiresAt[mode],
     messages: [...thread.messages, note],
   });
 }
@@ -525,7 +569,13 @@ export async function answerWindowRequest(threadId: string, accept: boolean): Pr
   };
   putThread({
     ...rest,
-    ...(accept ? { mode: wanted, expiresLabel: wanted === 'always' ? 'open' : '7d left' } : {}),
+    ...(accept
+      ? {
+          mode: wanted,
+          expiresLabel: wanted === 'always' ? 'open' : '7d left',
+          expiresAt: wanted === 'always' ? null : new Date(Date.now() + 7 * 24 * 3_600_000).toISOString(),
+        }
+      : {}),
     messages: [...thread.messages, note],
   });
 }
@@ -557,6 +607,7 @@ export async function endChat(threadId: string): Promise<void> {
         ...thread,
         mode: 'ended',
         expiresLabel: 'ended',
+        expiresAt: null,
         messages: [...thread.messages, note],
       },
     },

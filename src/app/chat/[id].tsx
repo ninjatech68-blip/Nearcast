@@ -22,6 +22,7 @@ import {
 import { SymbolView, type SFSymbol } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BarButton, QuietAction } from '@/design-system/components/button';
 import { Face } from '@/design-system/components/face';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
@@ -42,6 +43,7 @@ import {
   type Message,
 } from '@/features/chat/chat';
 import { useMediaUrl } from '@/features/chat/use-media-url';
+import { countdownLabel, countdownTickMs } from '@/features/chat/countdown';
 import { useRefresher } from '@/infrastructure/net/use-refresher';
 import { connectivityNote } from '@/infrastructure/net/connectivity';
 import { useConnectivity } from '@/infrastructure/net/submit';
@@ -73,6 +75,20 @@ export default function ChatScreen() {
   const { refreshing, onRefresh } = useRefresher(async () => {
     if (id) await refreshConversationMessages(id);
   });
+
+  // re-render the countdown on a cadence that matches how close it is:
+  // by the minute normally, twice a minute inside the final hour. cheap,
+  // and it stops the header showing a number frozen at load.
+  const [tick, setTick] = useState(0);
+  const expiresAt = thread?.expiresAt ?? null;
+  const chatMode = thread?.mode;
+  useEffect(() => {
+    if (chatMode === 'always' || chatMode === 'ended' || !expiresAt) return;
+    const id = setInterval(() => setTick((n) => n + 1), countdownTickMs(expiresAt));
+    return () => clearInterval(id);
+  }, [expiresAt, chatMode]);
+  const expiryText = thread ? countdownLabel(thread.mode, thread.expiresAt) : '';
+  void tick;
 
   // while a real conversation is still loading, show a spinner rather
   // than the "not open" state, which would flash on every open.
@@ -221,30 +237,44 @@ export default function ChatScreen() {
       Alert.alert('chat ended', 'this chat is closed. it cannot be reopened.', [{ text: 'ok' }]);
       return;
     }
+    const endAction = {
+      text: 'End chat',
+      style: 'destructive' as const,
+      onPress: () =>
+        Alert.alert('End this chat?', 'No new messages after this. It cannot be reopened.', [
+          { text: 'Never mind' },
+          {
+            text: 'End',
+            style: 'destructive' as const,
+            onPress: () => {
+              haptic('light');
+              endChat(thread.id);
+            },
+          },
+        ]),
+    };
+
+    // Once the window is open with no expiry, there is nothing left to
+    // extend to, and stepping it back DOWN to 24h/7d would be one person
+    // quietly shortening a window they had both agreed to keep open. So
+    // the only move from here is to end the chat outright.
+    if (thread.mode === 'always') {
+      Alert.alert('Chat window', 'This chat stays open. You both agreed to keep it.', [
+        endAction,
+        { text: 'Cancel', style: 'cancel' as const },
+      ]);
+      return;
+    }
+
     Alert.alert(
-      'chat window',
-      `currently ${thread.expiresLabel}. longer takes you both: you ask, they agree. shorter takes effect now.`,
+      'Chat window',
+      `Currently ${countdownLabel(thread.mode, thread.expiresAt)}. A longer window takes you both: you ask, they agree. A shorter one takes effect now.`,
       [
-        { text: '24 hours', onPress: () => void extendChat(thread.id, 'day') },
-        { text: 'ask for 7 days', onPress: () => void extendChat(thread.id, 'week') },
-        { text: 'ask to keep it open', onPress: () => void extendChat(thread.id, 'always') },
-        {
-          text: 'end chat',
-          style: 'destructive',
-          onPress: () =>
-            Alert.alert('end this chat?', 'no new messages after this. it cannot be reopened.', [
-              { text: 'never mind' },
-              {
-                text: 'end',
-                style: 'destructive',
-                onPress: () => {
-                  haptic('light');
-                  endChat(thread.id);
-                },
-              },
-            ]),
-        },
-        { text: 'cancel', style: 'cancel' as const },
+        { text: 'Set to 24 hours', onPress: () => void extendChat(thread.id, 'day') },
+        { text: 'Ask for 7 days', onPress: () => void extendChat(thread.id, 'week') },
+        { text: 'Ask to keep it open', onPress: () => void extendChat(thread.id, 'always') },
+        endAction,
+        { text: 'Cancel', style: 'cancel' as const },
       ],
     );
   }
@@ -286,7 +316,7 @@ export default function ChatScreen() {
                 label in the corner was missed by every tester. it reads
                 as an accent pill now, at the same tap target. */}
             <View style={styles.expiryPill}>
-              <Text style={styles.expiryLabel}>{thread.expiresLabel}</Text>
+              <Text style={styles.expiryLabel}>{expiryText}</Text>
               <Text style={styles.expiryChevron}>⋯</Text>
             </View>
           </Pressable>
@@ -492,32 +522,26 @@ function WindowRequest({
 
   return (
     <View style={styles.request}>
-      <Text style={styles.requestText}>
-        {mine
-          ? `you asked for ${what}. waiting on ${withName.toLowerCase()}.`
-          : `${withName} asked for ${what}. it takes you both.`}
+      <Text style={styles.requestTitle}>
+        {mine ? `You asked for ${what}` : `${withName} asked for ${what}`}
       </Text>
-      <View style={styles.requestActions}>
-        {mine ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="take back the request" onPress={() => onAnswer(false)}>
-            <Text style={styles.requestNo}>take it back</Text>
-          </Pressable>
-        ) : (
-          <>
-            <Pressable accessibilityRole="button" accessibilityLabel="not now" onPress={() => onAnswer(false)}>
-              <Text style={styles.requestNo}>not now</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="agree to the longer window"
-              onPress={() => onAnswer(true)}
-              style={styles.requestYesTap}
-            >
-              <Text style={styles.requestYes}>agree</Text>
-            </Pressable>
-          </>
-        )}
-      </View>
+      <Text style={styles.requestBody}>
+        {mine
+          ? `A longer window takes you both. Waiting on ${withName}.`
+          : 'A longer window is more time you are both reachable. It takes you both.'}
+      </Text>
+      {mine ? (
+        <View style={styles.requestActions}>
+          <QuietAction label="Take it back" color={tokens.semantic.color.ink} onPress={() => onAnswer(false)} />
+        </View>
+      ) : (
+        <View style={styles.requestActions}>
+          <QuietAction label="Not now" color={tokens.semantic.color.ink} onPress={() => onAnswer(false)} />
+          <View style={styles.requestAgree}>
+            <BarButton label="Agree" variant="onOrange" onPress={() => onAnswer(true)} />
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -636,27 +660,23 @@ const styles = StyleSheet.create({
   },
   plusText: { fontFamily: fontFamily.text, fontSize: 24, lineHeight: 26, color: tokens.semantic.color.ink },
   request: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     marginBottom: 8,
     borderRadius: tokens.primitive.radius.control,
     borderWidth: 1,
     borderColor: tokens.semantic.color.accent,
     backgroundColor: tokens.semantic.color.backgroundSubtle,
   },
-  requestText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.ink, flex: 1, lineHeight: 18 },
-  requestActions: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  requestNo: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream },
-  requestYesTap: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: tokens.primitive.radius.pill,
-    backgroundColor: tokens.semantic.color.accent,
+  requestTitle: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.ink },
+  requestBody: {
+    ...tokens.typography.metaSmall,
+    color: tokens.semantic.color.textMutedOnCream,
+    lineHeight: 18,
+    marginTop: 4,
   },
-  requestYes: { ...tokens.typography.tagSmall, color: tokens.semantic.color.ink },
+  requestActions: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 },
+  requestAgree: { flex: 1 },
   plusBtnOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
   plusTextOn: { color: tokens.semantic.color.cream },
   tray: {
@@ -807,9 +827,14 @@ const styles = StyleSheet.create({
   },
   expiryChevron: {
     fontFamily: fontFamily.text,
-    fontSize: 16,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 14,
     color: tokens.semantic.color.accent,
+    // the ⋯ glyph carries bottom bearing that dropped it below the
+    // label's centre line; this lifts it back onto it. the row centres
+    // both, so this is the last few px of optical alignment.
+    marginBottom: 2,
+    includeFontPadding: false,
   },
   endedRow: {
     paddingTop: 12,

@@ -123,3 +123,53 @@ async function syncInterests(
     );
   if (error) throw new Error(error.message);
 }
+
+/**
+ * Read the signed-in user's own profile back from the backend.
+ *
+ * Returns null when there is no backend, no session, or no usable
+ * profile yet (a brand-new account that has not finished onboarding).
+ * "Usable" means a real name AND at least one area — the two things
+ * onboarding sets — because that is exactly the test for "this person
+ * has been through setup already, do not show it again".
+ *
+ * Areas come back with their centroids as lat/lng so a restored profile
+ * keeps delivery measuring distance, and the write that follows does
+ * not silently drop the points.
+ */
+export type OwnProfile = {
+  name: string;
+  approvedAreas: readonly string[];
+  areaPoints: Record<string, AreaPoint>;
+  interests: readonly Category[];
+};
+
+export async function fetchOwnProfile(): Promise<OwnProfile | null> {
+  const client = getSupabase();
+  if (!client) return null;
+
+  const { data: sessionData } = await client.auth.getSession();
+  const user = sessionData.session?.user;
+  if (!user) return null;
+
+  const [{ data: profile }, { data: areaRows }, { data: interestRows }] = await Promise.all([
+    client.from('profiles').select('display_name').eq('id', user.id).maybeSingle(),
+    client.rpc('my_profile_areas'),
+    client.from('profile_interests').select('category').eq('profile_id', user.id),
+  ]);
+
+  const name = (profile?.display_name ?? '').trim();
+  const areas = (areaRows ?? []) as { name: string; latitude: number | null; longitude: number | null }[];
+  // not set up yet: let the shell send them into onboarding as normal.
+  if (!name || name === 'someone' || areas.length === 0) return null;
+
+  const areaPoints: Record<string, AreaPoint> = {};
+  for (const a of areas) {
+    if (a.latitude !== null && a.longitude !== null) {
+      areaPoints[a.name] = { latitude: a.latitude, longitude: a.longitude };
+    }
+  }
+  const interests = ((interestRows ?? []) as { category: Category }[]).map((r) => r.category);
+
+  return { name, approvedAreas: areas.map((a) => a.name), areaPoints, interests };
+}

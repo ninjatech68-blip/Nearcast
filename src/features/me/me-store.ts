@@ -123,8 +123,54 @@ export function setSignedIn(email: string): void {
   emit();
 }
 
+/**
+ * Non-hook reads of the current state, for code and tests that need a
+ * value outside React's render cycle (the auth flow, unit tests). The
+ * hooks above stay the way components read it.
+ */
+export function isOnboardingDone(): boolean {
+  return state.onboardingDone;
+}
+
+export function currentName(): string {
+  return state.name;
+}
+
 export function setOnboardingDone(): void {
   state = { ...state, onboardingDone: true };
+  emit();
+}
+
+/**
+ * Apply a returning user's profile pulled from the backend, in one
+ * write.
+ *
+ * Onboarding is a ONE-TIME setup, but "done" was only ever a flag on
+ * THIS device — so a returning user on a new phone, or after a
+ * reinstall, was shown the whole flow again. When sign-in finds a
+ * profile that already carries a name and at least one area, that setup
+ * is already complete: fill the local store from it and mark it done,
+ * so the shell routes them straight to the feed.
+ *
+ * Only fields the server owns are touched. The photo is device-local
+ * and is left as-is.
+ */
+export function hydrateReturningProfile(profile: {
+  name: string;
+  approvedAreas: readonly string[];
+  areaPoints?: Readonly<Record<string, AreaPoint>>;
+  interests?: readonly Category[];
+}): void {
+  const areas = profile.approvedAreas.filter((a) => a.trim().length > 0);
+  state = {
+    ...state,
+    name: profile.name.trim() || state.name,
+    approvedAreas: areas.length > 0 ? areas : state.approvedAreas,
+    homeArea: areas[0] ?? state.homeArea,
+    areaPoints: profile.areaPoints ?? state.areaPoints,
+    interests: profile.interests && profile.interests.length > 0 ? profile.interests : state.interests,
+    onboardingDone: true,
+  };
   emit();
 }
 

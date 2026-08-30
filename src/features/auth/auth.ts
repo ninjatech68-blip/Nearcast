@@ -1,7 +1,8 @@
 import * as Linking from 'expo-linking';
 
 import { getSupabase, isBackendConfigured } from '@/infrastructure/supabase/client';
-import { setSignedIn, signOut as clearLocalSession } from '@/features/me/me-store';
+import { hydrateReturningProfile, setSignedIn, signOut as clearLocalSession } from '@/features/me/me-store';
+import { fetchOwnProfile } from '@/features/me/profile-sync';
 
 /**
  * Auth: passwordless email MAGIC LINK. No passwords, no codes to type.
@@ -162,6 +163,21 @@ export async function completeAuthFromUrl(url: string): Promise<CallbackResult> 
  * directly with the `code` query param expo-router hands it, so the
  * whole flow lands on a real screen instead of an unmatched route.
  */
+/**
+ * After sign-in, pull the user's own profile and, if it is already
+ * complete, restore it locally and skip onboarding. Best-effort: a
+ * failure here just means the shell may show onboarding, which is
+ * recoverable, so it never blocks the sign-in it follows.
+ */
+async function restoreOnboardingState(): Promise<void> {
+  try {
+    const profile = await fetchOwnProfile();
+    if (profile) hydrateReturningProfile(profile);
+  } catch {
+    // leave onboarding to run; better a repeated step than a failed login
+  }
+}
+
 export async function exchangeAuthCode(code: string): Promise<CallbackResult> {
   const client = getSupabase();
   if (!client) return { ok: true };
@@ -171,6 +187,7 @@ export async function exchangeAuthCode(code: string): Promise<CallbackResult> {
     const user = data.session?.user;
     if (!user) return { ok: false, message: 'that link did not open a session. ask for a new one.' };
     setSignedIn(user.email ?? user.id);
+    await restoreOnboardingState();
     return { ok: true };
   } catch (error) {
     return { ok: false, message: readableError(error) };
@@ -191,6 +208,7 @@ export async function restoreSession(): Promise<string | null> {
     if (!user) return null;
     const identity = user.email ?? user.phone ?? user.id;
     setSignedIn(identity);
+    await restoreOnboardingState();
     return identity;
   } catch {
     return null;
