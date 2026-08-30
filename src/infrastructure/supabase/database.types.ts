@@ -894,6 +894,7 @@ export type Database = {
       }
       notification_outbox: {
         Row: {
+          actor_id: string | null
           attempt_count: number
           conversation_id: string | null
           created_at: string
@@ -909,6 +910,7 @@ export type Database = {
           sent_at: string | null
         }
         Insert: {
+          actor_id?: string | null
           attempt_count?: number
           conversation_id?: string | null
           created_at?: string
@@ -924,6 +926,7 @@ export type Database = {
           sent_at?: string | null
         }
         Update: {
+          actor_id?: string | null
           attempt_count?: number
           conversation_id?: string | null
           created_at?: string
@@ -939,6 +942,13 @@ export type Database = {
           sent_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "notification_outbox_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notification_outbox_conversation_id_fkey"
             columns: ["conversation_id"]
@@ -1275,6 +1285,7 @@ export type Database = {
       claim_notification_batch: {
         Args: { batch_size?: number }
         Returns: {
+          actor_name: string
           attempt_count: number
           badge: number
           conversation_id: string

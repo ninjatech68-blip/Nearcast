@@ -43,24 +43,62 @@ const DELIVERY: Record<string, { channelId: string; priority: 'default' | 'high'
   chat_message: { channelId: 'messages', priority: 'high', ttl: 30 * 60 },
 };
 
-const COPY: Record<string, { title: string; body: string }> = {
-  join_request: {
-    title: 'someone wants in',
-    body: 'they left you a line. yours to say yes or no.',
-  },
-  join_accepted: {
-    title: "you're in",
-    body: "the chat's open. sort out where and when.",
-  },
-  // Says there is something to read without saying a word of it. The
-  // message text never leaves the database, so a lock screen face-up on
-  // a table gives away nothing — which is the whole point of a
-  // notification you can act on.
-  chat_message: {
-    title: 'a new message',
-    body: 'they wrote back. yours to read.',
-  },
+/**
+ * What each kind says, once it knows who acted.
+ *
+ * It used to say "someone wants in" and "they left you a line". Both
+ * fail the Content Design Guide on its own terms — Nearcast must not
+ * sound "mysterious" or "overly familiar", and a notification is
+ * supposed to "name the real state change". A ping you cannot place is
+ * one you open or ignore at random.
+ *
+ * Sentence case, not the app's lowercase. In-app, lowercase is a voice;
+ * on a lock screen, sitting under the OS-rendered app name and beside
+ * every other app's notifications, it reads as a defect. The guide's own
+ * examples are sentence case, and accessibility says not to encode
+ * meaning in capitalization either way.
+ *
+ * No message preview and no plan title, deliberately. The guide rules
+ * out "exact locations, prices, message excerpts, and private-group
+ * references" on a lock screen; a first name is none of those, and the
+ * same guide already states that people can see each other's first name.
+ * So the notification says WHO and WHAT CHANGED, and stops there.
+ *
+ * Nothing here is urgent or promotional. No "now", no "don't miss", no
+ * count of people waiting.
+ */
+const COPY: Record<string, (who: string) => { title: string; body: string }> = {
+  join_request: (who) => ({
+    title: `${who} wants to join`,
+    body: 'Accept or decline when you\u2019re ready.',
+  }),
+  join_accepted: (who) => ({
+    title: `${who} accepted your request`,
+    body: 'The chat is open.',
+  }),
+  // Name as the title, state change as the body: the shape every
+  // messenger uses, and the one that stays honest with previews off.
+  chat_message: (who) => ({
+    title: who,
+    body: 'Sent you a message.',
+  }),
 };
+
+/**
+ * A name fit to put in a title.
+ *
+ * Whatever is in `display_name` reaches a lock screen, so it is
+ * flattened to one line and bounded: a newline would break the layout,
+ * and a very long name would push the real words out of a title that
+ * truncates.
+ */
+const NAME_MAX = 24;
+
+function displayName(raw: string | null | undefined): string {
+  const flat = (raw ?? '').replace(/\s+/g, ' ').trim();
+  if (!flat) return 'Someone';
+  return flat.length > NAME_MAX ? `${flat.slice(0, NAME_MAX - 1)}\u2026` : flat;
+}
 
 type OutboxRow = {
   id: string;
@@ -70,6 +108,7 @@ type OutboxRow = {
   conversation_id: string | null;
   attempt_count: number;
   badge: number | null;
+  actor_name: string | null;
 };
 
 type TokenRow = {
@@ -302,13 +341,14 @@ async function sendPending(
   for (const row of outbox) {
     const attemptedAt = isoNow();
     attemptedAtByOutbox.set(row.id, attemptedAt);
-    const copy = COPY[row.kind];
-    if (!copy) {
+    const render = COPY[row.kind];
+    if (!render) {
       await recordFailure(admin, row.id, `unknown_kind:${row.kind}`);
       failed += 1;
       continue;
     }
 
+    const copy = render(displayName(row.actor_name));
     const delivery = DELIVERY[row.kind];
     const tokens = tokensByUser.get(row.recipient_id) ?? [];
     if (tokens.length === 0) {

@@ -34,6 +34,26 @@ open the app.
 | `join_accepted` | the caster says yes | — |
 | `chat_message` | a message lands in a chat you are in | you have that chat open |
 
+Each names the person who acted, resolved from `actor_id` at send time
+and never stored on the row:
+
+| kind | title | body |
+| --- | --- | --- |
+| `join_request` | **Riya wants to join** | Accept or decline when you're ready. |
+| `join_accepted` | **Riya accepted your request** | The chat is open. |
+| `chat_message` | **Riya** | Sent you a message. |
+
+**No message excerpt and no plan title, deliberately.** `08 - Writing
+and Content Guide.md` rules out "exact locations, prices, message
+excerpts, and private-group references" on a lock screen, and AGENTS.md
+rules out intent text and messages in a payload. A first name is neither
+— the same guide states people can see each other's first name — so a
+notification says who and what changed, and stops.
+
+Sentence case, though the app speaks lowercase in-app: a lock screen
+sits under the OS-rendered app name beside every other app, where
+lowercase reads as a defect rather than a voice.
+
 Quiet hours are NOT built. There is no quiet window in the schema, the
 profile never syncs one, and the sender never asks. The switch that used
 to sit in the profile was removed rather than left inert: it persisted a
