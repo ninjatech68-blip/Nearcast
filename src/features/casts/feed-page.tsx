@@ -3,6 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, Animated, FlatList, Pressable, RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// how far the feed must overscroll at the top before a pull refreshes.
+// the native RefreshControl needs roughly twice this on a full-screen
+// paging list; this is the tunable that makes the pull feel light.
+
 import { Refreshing } from '@/design-system/components/refreshing';
 import { useRefresher } from '@/infrastructure/net/use-refresher';
 
@@ -26,6 +30,11 @@ import {
 import { remoteEnabled } from '@/features/casts/remote';
 
 import { AvatarDot } from './avatar-dot';
+
+// how far the feed must overscroll at the top before a pull refreshes.
+// the native RefreshControl needs roughly twice this on a full-screen
+// paging list; this is the tunable that makes the pull feel light.
+const PULL_TO_REFRESH_PX = 64;
 
 function explainDelivery(cast: CastDetail) {
   const fired = (cast.signals ?? [cast.why]).map((signal) => `· ${signal}`).join('\n');
@@ -165,6 +174,14 @@ export function FeedPage({
         showsVerticalScrollIndicator={false}
         getItemLayout={(_, index) => ({ length: height, offset: height * index, index })}
         onScrollBeginDrag={() => onScrollStateChange?.(true)}
+        onScrollEndDrag={(e) => {
+          // a short overscroll at the top refreshes, without waiting for
+          // the native RefreshControl's much longer pull. PULL_TO_REFRESH_PX
+          // is the whole knob: lower it for a lighter pull.
+          if (e.nativeEvent.contentOffset.y <= -PULL_TO_REFRESH_PX && !refreshing) {
+            pullRefresh();
+          }
+        }}
         onMomentumScrollEnd={() => onScrollStateChange?.(false)}
         windowSize={3}
         // one full-screen poster per page: render exactly what is on

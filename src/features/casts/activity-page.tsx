@@ -295,7 +295,9 @@ export function ActivityPage() {
                       />
                     }
                     right={
-                      chat.unread > 0 ? (
+                      chat.ended ? (
+                        <Tag label="ended" tone="dim" />
+                      ) : chat.unread > 0 ? (
                         <Tag label={String(chat.unread)} tone="hot" />
                       ) : (
                         <Tag label="→" tone="line" />

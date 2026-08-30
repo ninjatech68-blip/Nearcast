@@ -34,13 +34,13 @@ import {
   openConversation,
   refreshConversationMessages,
   retryMessage,
-  sendMediaMessageToThread,
   sendMessage,
   useThread,
   type LocalMedia,
   type Message,
 } from '@/features/chat/chat';
 import { useMediaUrl } from '@/features/chat/use-media-url';
+import { setPendingMedia } from '@/features/chat/pending-media';
 import { countdownLabel, countdownTickMs } from '@/features/chat/countdown';
 import { useRefresher } from '@/infrastructure/net/use-refresher';
 import { connectivityNote } from '@/infrastructure/net/connectivity';
@@ -57,7 +57,6 @@ export default function ChatScreen() {
   const thread = useThread(id ?? '');
   const [draft, setDraft] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
   const [attachOpen, setAttachOpen] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const connectivity = useConnectivity();
@@ -177,9 +176,9 @@ export default function ChatScreen() {
         return;
       }
       // NO allowsEditing: the cropper re-encodes, and a re-encoded GIF
-      // is a still frame. quality < 1 for the same reason it exists —
-      // a 12MP camera photo is not worth the upload on mobile data —
-      // but it does not apply to a GIF, which is copied as picked.
+      // is a still frame. quality < 1 because a 12MP photo is not worth
+      // the upload on mobile data; it does not touch a GIF, copied as
+      // picked. The library allows up to five at once.
       const result =
         source === 'camera'
           ? await ImagePicker.launchCameraAsync({ quality: 0.75, exif: false })
@@ -187,30 +186,26 @@ export default function ChatScreen() {
               mediaTypes: ImagePicker.MediaTypeOptions.Images,
               quality: 0.75,
               exif: false,
-              // ask iOS for the asset AS STORED. transcoding a GIF to a
-              // "compatible" representation flattens it to one frame,
-              // which would make sending a GIF pointless.
+              allowsMultipleSelection: true,
+              selectionLimit: 5,
               preferredAssetRepresentationMode:
                 ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Current,
             });
-      if (result.canceled) return;
-      const asset = result.assets[0];
-      if (!asset) return;
-      const media: LocalMedia = {
+      if (result.canceled || result.assets.length === 0) return;
+      const items: LocalMedia[] = result.assets.slice(0, 5).map((asset) => ({
         uri: asset.uri,
         kind: isGif(asset.uri, asset.mimeType) ? 'gif' : 'image',
         width: asset.width,
         height: asset.height,
         mimeType: asset.mimeType,
-      };
-      setSending(true);
-      await sendMediaMessageToThread(thread!.id, media);
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+      }));
+      // hand off to a preview screen: nothing is sent until the person
+      // confirms there, where they can also caption it or back out.
+      setPendingMedia({ conversationId: thread!.id, items });
+      router.push(`/media-send?conversation=${thread!.id}`);
     } catch {
       haptic('warning');
-      setSendError("that didn't send. try again.");
-    } finally {
-      setSending(false);
+      setSendError("that didn't pick. try again.");
     }
   }
 
@@ -362,19 +357,14 @@ export default function ChatScreen() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="send a photo, GIF or your location"
-                accessibilityState={{ disabled: sending, expanded: attachOpen }}
-                disabled={sending}
+                accessibilityState={{ expanded: attachOpen }}
                 onPress={toggleAttachTray}
                 hitSlop={8}
-                style={[styles.plusBtn, attachOpen && styles.plusBtnOn, sending && styles.sendDim]}
+                style={[styles.plusBtn, attachOpen && styles.plusBtnOn]}
               >
-                {sending ? (
-                  <ActivityIndicator color={tokens.semantic.color.ink} />
-                ) : (
-                  <Text style={[styles.plusText, attachOpen && styles.plusTextOn]}>
-                    {attachOpen ? '×' : '+'}
-                  </Text>
-                )}
+                <Text style={[styles.plusText, attachOpen && styles.plusTextOn]}>
+                  {attachOpen ? '×' : '+'}
+                </Text>
               </Pressable>
               <TextInput
                 accessibilityLabel="message"
@@ -429,7 +419,17 @@ function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }
       >
         {hasMedia ? (
           <>
-            <MediaBubble message={message} />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={message.mediaKind === 'gif' ? 'open GIF' : 'open photo'}
+              onPress={() =>
+                router.push(
+                  `/media-view?path=${encodeURIComponent(message.mediaPath ?? '')}&kind=${message.mediaKind ?? 'image'}`,
+                )
+              }
+            >
+              <MediaBubble message={message} />
+            </Pressable>
             {message.text ? (
               <Text style={[styles.caption, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
             ) : null}

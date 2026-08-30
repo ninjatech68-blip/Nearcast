@@ -118,13 +118,20 @@ export default function InviteScreen() {
     <SheetShell
       title={`${person.name} asked to join`}
       accessory={
-        <Face
-          photo={facePhotos[personId]}
-          initials={person.name.slice(0, 2).toUpperCase()}
-          size={64}
-          label={`photo of ${person.name}`}
-          verified={isVerified(personId)}
-        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`about ${person.name}`}
+          onPress={() => router.push(`/caster/${personId}`)}
+          hitSlop={8}
+        >
+          <Face
+            photo={facePhotos[personId]}
+            initials={person.name.slice(0, 2).toUpperCase()}
+            size={64}
+            label={`photo of ${person.name}`}
+            verified={isVerified(personId)}
+          />
+        </Pressable>
       }
     >
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
@@ -143,16 +150,16 @@ export default function InviteScreen() {
           {cast.area} · {cast.expiry}
         </Text>
 
-        {caster ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`about ${caster.name}`}
-            onPress={() => router.push(`/caster/${caster.id}`)}
-            style={styles.aboutRow}
-          >
-            <Text style={styles.aboutText}>{caster.receipts.line} ›</Text>
-          </Pressable>
-        ) : null}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`see ${person.name}'s profile`}
+          onPress={() => router.push(`/caster/${personId}`)}
+          style={styles.aboutRow}
+        >
+          <Text style={styles.aboutText}>
+            {caster ? `${caster.receipts.line} · see profile ›` : `see ${person.name}'s profile ›`}
+          </Text>
+        </Pressable>
 
         <SheetNote>{`accepting opens a chat with ${person.name}. that is where you settle where and when. declining is silent: they see nothing change.`}</SheetNote>
       </ScrollView>

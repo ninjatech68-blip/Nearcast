@@ -246,11 +246,11 @@ otp_expiry = 3600
 # Uncomment to customize email template
 
 [auth.email.template.magic_link]
-subject = "Sign in to Nearcast"
+subject = "Your Nearcast sign-in link ({{ .Token }})"
 content_path = "./supabase/templates/magic_link.html"
 
 [auth.email.template.confirmation]
-subject = "Verify your Nearcast account"
+subject = "Verify your Nearcast account ({{ .Token }})"
 content_path = "./supabase/templates/confirmation.html"
 
 # [auth.email.template.invite]

@@ -175,6 +175,8 @@ export default function RootLayout() {
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="profile-edit" options={{ presentation: 'modal' }} />
       <Stack.Screen name="pick-location" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
+      <Stack.Screen name="media-send" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
+      <Stack.Screen name="media-view" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
       <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
       <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
       <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />
