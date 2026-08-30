@@ -48,12 +48,44 @@ ranking is a judgement, and mixing them would make it impossible to test either.
 
 ## Task 3: Explainable Delivery
 
-**Files:** `supabase/functions/generate-deliveries/`, `src/features/feed/`
+**Files:** `public.generate_deliveries`, `public.home_feed`, `src/features/feed/`
 
-- [ ] Test every delivered row has one approved explanation code and non-empty reason.
-- [ ] Apply eligibility in this order: lifecycle, reach, time, geography, explicit criteria, blocks, restriction, prior action.
-- [ ] Rank the surviving set by trust distance, geography, timing, relevance, recency, and fatigue.
-- [ ] Render a finite Home list with WhyYouSeeThis, hide, save, and not-relevant actions.
+- [x] Test every delivered row has one approved explanation code and non-empty reason.
+- [x] Apply eligibility in this order: lifecycle, reach, time, geography, explicit criteria, blocks, restriction, prior action.
+- [x] Rank the surviving set by trust distance, geography, timing, relevance, recency, and fatigue.
+- [x] Render a finite Home list with WhyYouSeeThis, hide, save, and not-relevant actions.
+
+An intent reaches someone only through a materialised delivery row, and every
+row carries a stable explanation code and a rendered sentence. The sentence is
+stored at delivery time rather than derived later, so what a person reads is
+what was true when the intent reached them, not a reconstruction from rules that
+may since have changed. The client renders the stored sentence rather than
+deriving its own from the code, because a client that derives can disagree with
+the database that made the decision.
+
+A rendered reason never names the origin group, the broadcaster's circle, or any
+third party. "Someone you both know" is as specific as it gets: it explains the
+connection without disclosing who forms it. A test sweeps every stored reason
+for group and person names.
+
+Generation is idempotent and never rewrites an existing row, so a reason someone
+has already read cannot change under them. Prior action is applied last in the
+eligibility order because it is the only filter about the recipient's history
+rather than about whether they may see the intent at all.
+
+Ranking is applied only to rows that already earned a delivery, and each
+component is named so an ordering can be explained rather than defended: trust
+distance, then geography band, then how soon the intent closes, then recency.
+Fatigue is handled by the finite limit rather than by scoring, so a quiet day
+shows a short list instead of padding it out. Hidden and not-relevant rows never
+return, which is what makes the list end.
+
+A card whose explanation is missing or whose code is not on the approved list is
+dropped rather than shown. Inventing a reason would fabricate the provenance
+this feature exists to guarantee.
+
+`saved_at` was added to `intent_deliveries`; the plan asks for a save action and
+the table had nowhere to record one.
 
 ## Task 4: Measurement
 
@@ -72,3 +104,4 @@ Every feed card has a valid explanation, blocked users never receive each other'
 |---|---|
 | 2026-08-24 | Created discovery and controlled reach implementation plan |
 | 2026-08-31 | Completed approximate geography, coarse distance bands, and eligibility filtering |
+| 2026-08-31 | Completed explainable delivery, ranking, and the finite Home feed |

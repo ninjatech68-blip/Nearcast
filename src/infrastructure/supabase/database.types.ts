@@ -208,6 +208,7 @@ export type Database = {
       }
       intent_deliveries: {
         Row: {
+          saved_at: string | null
           delivered_at: string
           feedback: string | null
           hidden_at: string | null
@@ -218,6 +219,7 @@ export type Database = {
           recipient_id: string
         }
         Insert: {
+          saved_at?: string | null
           delivered_at?: string
           feedback?: string | null
           hidden_at?: string | null
@@ -228,6 +230,7 @@ export type Database = {
           recipient_id: string
         }
         Update: {
+          saved_at?: string | null
           delivered_at?: string
           feedback?: string | null
           hidden_at?: string | null
@@ -764,6 +767,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          approximate_home: unknown | null
           avatar_path: string | null
           city: string | null
           created_at: string
@@ -773,6 +777,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approximate_home?: unknown | null
           avatar_path?: string | null
           city?: string | null
           created_at?: string
@@ -782,6 +787,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approximate_home?: unknown | null
           avatar_path?: string | null
           city?: string | null
           created_at?: string
@@ -1043,6 +1049,40 @@ export type Database = {
       expire_intents: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      home_feed: {
+        Args: { page_size?: number }
+        Returns: {
+          approximate_place: string | null
+          broadcaster_first_name: string | null
+          delivery_id: string
+          distance_band: string | null
+          expires_at: string
+          intent_id: string
+          is_saved: boolean
+          primitive: Database["public"]["Enums"]["intent_primitive"]
+          reason_code: string
+          reason_text: string
+          response_action: string
+          statement: string
+        }[]
+      }
+      distance_band: {
+        Args: { meters: number }
+        Returns: string
+      }
+      discover_intents: {
+        Args: { max_distance_meters?: number }
+        Returns: {
+          approximate_place: string | null
+          broadcaster_first_name: string | null
+          distance_band: string | null
+          expires_at: string
+          intent_id: string
+          primitive: Database["public"]["Enums"]["intent_primitive"]
+          response_action: string
+          statement: string
+        }[]
       }
       decline_response: {
         Args: {

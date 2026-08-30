@@ -1,39 +1,131 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { tokens } from '@/design-system/tokens';
-import { featuredIntent, secondIntent } from '@/features/native-demo/nearcast-fixtures';
-import { Group, IconLine, IntentCard, ScreenTitle, Section } from '@/features/native-demo/native-ui';
+import {
+  fetchHomeFeed,
+  hideDelivery,
+  markNotRelevant,
+  setSaved,
+  type FeedCard,
+} from '@/features/feed/data/feed-repository';
+import { FEEDBACK_LABELS, type FeedbackAction } from '@/features/feed/domain/delivery-reason';
+import { describeDistanceBand } from '@/features/location/domain/distance-band';
 
+type FeedState =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'ready'; cards: FeedCard[] };
+
+/**
+ * Home.
+ *
+ * A finite list of intents that were delivered to this person, each carrying
+ * the explanation stored when it reached them. There is no infinite scroll and
+ * no activity count: the list ends where the deliveries end, and a quiet day
+ * shows a short list rather than padding.
+ */
 export default function HomeScreen() {
+  const [state, setState] = useState<FeedState>({ status: 'loading' });
+  const [reloadToken, setReloadToken] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const cards = await fetchHomeFeed();
+        if (!cancelled) setState({ status: 'ready', cards });
+      } catch {
+        if (!cancelled) setState({ status: 'error' });
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadToken]);
+
+  const act = useCallback(async (card: FeedCard, action: FeedbackAction) => {
+    try {
+      if (action === 'hide') await hideDelivery(card.deliveryId);
+      else if (action === 'not_relevant') await markNotRelevant(card.deliveryId);
+      else await setSaved(card.deliveryId, !card.isSaved);
+    } finally {
+      setReloadToken((token) => token + 1);
+    }
+  }, []);
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.titleRow}>
-          <ScreenTitle>For You</ScreenTitle>
-          <Text style={styles.filterIcon}>...</Text>
-        </View>
+        <Text accessibilityRole="header" style={styles.title}>
+          For you
+        </Text>
 
-        <View style={styles.filterRow}>
-          <View style={styles.filterPill}><Text style={styles.filterText}>Nearby</Text></View>
-          <View style={styles.filterPill}><Text style={styles.filterText}>All intents</Text></View>
-        </View>
+        {state.status === 'loading' && (
+          <ActivityIndicator color={tokens.semantic.color.actionPrimary} />
+        )}
 
-        <Section title="Around you">
-          <View style={styles.cardStack}>
-            <IntentCard intent={featuredIntent} onOpen={() => router.push('/intent/badminton-tonight')} />
-            <IntentCard intent={secondIntent} onOpen={() => router.push('/intent/walk-and-talk')} />
-          </View>
-        </Section>
+        {state.status === 'error' && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Try loading your feed again"
+            onPress={() => setReloadToken((token) => token + 1)}>
+            <Text style={styles.retry}>We could not load this. Tap to try again.</Text>
+          </Pressable>
+        )}
 
-        <Section>
-          <Group compact>
-            <View style={styles.privacyRow}>
-              <IconLine fallback="P" icon="lock" text="Private by design. Origins, exact places, and contact details stay hidden until permission changes." />
+        {state.status === 'ready' && state.cards.length === 0 && (
+          <Text style={styles.empty}>
+            Nothing right now. Intents appear here when they reach you.
+          </Text>
+        )}
+
+        {state.status === 'ready' &&
+          state.cards.map((card) => (
+            <View key={card.deliveryId} style={styles.card}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Open intent: ${card.statement}`}
+                onPress={() => router.push(`/intent/${card.intentId}`)}>
+                <Text style={styles.statement}>{card.statement}</Text>
+                <Text style={styles.meta}>
+                  {card.broadcasterFirstName ?? 'Someone nearby'} ·{' '}
+                  {describeDistanceBand(card.distanceBand)}
+                  {card.approximatePlace === null ? '' : ` · ${card.approximatePlace}`}
+                </Text>
+              </Pressable>
+
+              <Text accessibilityLabel="Why you see this" style={styles.reason}>
+                {card.reasonText}
+              </Text>
+
+              <View style={styles.actions}>
+                {(['save', 'hide', 'not_relevant'] as const).map((action) => (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`${FEEDBACK_LABELS[action]}: ${card.statement}`}
+                    key={action}
+                    onPress={() => void act(card, action)}>
+                    <Text style={styles.actionText}>
+                      {action === 'save' && card.isSaved
+                        ? 'Saved'
+                        : FEEDBACK_LABELS[action]}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
-          </Group>
-        </Section>
+          ))}
+
+        {state.status === 'ready' && state.cards.length > 0 && (
+          <Text style={styles.endOfList}>That is everything for now.</Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -41,12 +133,71 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  filterIcon: { fontFamily: 'Manrope_700Bold', fontSize: 20, color: tokens.semantic.color.textSecondary },
-  filterRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
-  filterPill: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 13, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 12, backgroundColor: tokens.semantic.color.backgroundSurface },
-  filterText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textSecondary },
-  cardStack: { gap: 12 },
-  privacyRow: { paddingHorizontal: 16, paddingBottom: 14 },
+  content: {
+    gap: tokens.primitive.space[4],
+    paddingHorizontal: tokens.primitive.space[5],
+    paddingTop: tokens.primitive.space[3],
+    paddingBottom: tokens.primitive.space[8],
+  },
+  title: {
+    color: tokens.semantic.color.textPrimary,
+    fontFamily: 'Manrope_700Bold',
+    fontSize: tokens.typography.title1.fontSize,
+    lineHeight: tokens.typography.title1.lineHeight,
+  },
+  card: {
+    backgroundColor: tokens.semantic.color.backgroundSurface,
+    borderColor: tokens.semantic.color.borderDefault,
+    borderRadius: tokens.primitive.radius.card,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: tokens.primitive.space[2],
+    padding: tokens.primitive.space[4],
+  },
+  statement: {
+    color: tokens.semantic.color.textPrimary,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.bodyLarge.fontSize,
+    lineHeight: tokens.typography.bodyLarge.lineHeight,
+  },
+  meta: {
+    color: tokens.semantic.color.textMuted,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: tokens.typography.caption.fontSize,
+    marginTop: tokens.primitive.space[1],
+  },
+  reason: {
+    color: tokens.semantic.color.trustText,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.caption.fontSize,
+    lineHeight: tokens.typography.caption.lineHeight,
+  },
+  actions: {
+    borderTopColor: tokens.semantic.color.borderDefault,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: tokens.primitive.space[5],
+    paddingTop: tokens.primitive.space[3],
+  },
+  actionText: {
+    color: tokens.semantic.color.actionPrimary,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.caption.fontSize,
+  },
+  empty: {
+    color: tokens.semantic.color.textSecondary,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: tokens.typography.body.fontSize,
+    lineHeight: tokens.typography.body.lineHeight,
+  },
+  endOfList: {
+    color: tokens.semantic.color.textMuted,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: tokens.typography.caption.fontSize,
+    textAlign: 'center',
+  },
+  retry: {
+    color: tokens.semantic.color.dangerText,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.label.fontSize,
+  },
 });

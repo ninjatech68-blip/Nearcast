@@ -52,6 +52,13 @@ jest.mock('@/features/responses/inbox/data/inbox-repository', () => ({
   declineResponse: async () => ({ status: 'declined' }),
 }));
 
+jest.mock('@/features/feed/data/feed-repository', () => ({
+  fetchHomeFeed: async () => [],
+  hideDelivery: async () => undefined,
+  markNotRelevant: async () => undefined,
+  setSaved: async () => undefined,
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const MessagesScreen = require('./app/(tabs)/messages').default;
 
@@ -61,16 +68,12 @@ describe('native page set', () => {
     mockBack.mockReset();
   });
 
-  it('opens intent detail from the For You feed', async () => {
-    const user = userEvent.setup();
+  it('renders the For You feed shell', async () => {
+    // The feed is now data-backed; its behaviour is covered in
+    // home-feed.test.tsx. This keeps the shell assertion.
     const view = await render(<HomeScreen />);
 
-    expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
-
-    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
-
-    expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
+    expect(await view.findByText(/Nothing right now/)).toBeTruthy();
   });
 
   it('shows recipient intent detail with profile and request paths', async () => {
