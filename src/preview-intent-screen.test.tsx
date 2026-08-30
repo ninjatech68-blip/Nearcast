@@ -51,6 +51,8 @@ function seedDraft(overrides: {
       priceMinor: null,
       currency: null,
       approximatePlace: null,
+      approximateLongitude: null,
+      approximateLatitude: null,
       requirements: [],
       ...overrides.publicDraft,
     },

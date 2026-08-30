@@ -37,6 +37,14 @@ export type PublicDraft = {
   priceMinor: number | null;
   currency: string | null;
   approximatePlace: string | null;
+  /**
+   * The approximate point discovery measures against. Without it an intent is
+   * unplaced and reaches nobody, so it is part of the draft rather than derived
+   * from the place name later. Approximate by construction: the exact point
+   * lives in the private half and is never copied here.
+   */
+  approximateLongitude: number | null;
+  approximateLatitude: number | null;
   requirements: string[];
 };
 
@@ -65,6 +73,8 @@ export function createEmptyDraft(now: Date): IntentDraft {
       priceMinor: null,
       currency: null,
       approximatePlace: null,
+      approximateLongitude: null,
+      approximateLatitude: null,
       requirements: [],
     },
     privateDraft: {
@@ -96,6 +106,8 @@ export const publicDraftSchema = z.object({
   priceMinor: z.number().int().nonnegative().nullable(),
   currency: z.string().length(3).nullable(),
   approximatePlace: nullableTrimmed,
+  approximateLongitude: z.number().min(-180).max(180).nullable(),
+  approximateLatitude: z.number().min(-90).max(90).nullable(),
   requirements: z.array(z.string().trim().min(1)).max(10),
 });
 

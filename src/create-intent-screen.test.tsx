@@ -75,6 +75,8 @@ describe('CreateIntentScreen', () => {
         priceMinor: null,
         currency: null,
         approximatePlace: null,
+        approximateLongitude: null,
+        approximateLatitude: null,
         requirements: [],
       },
       privateDraft: {

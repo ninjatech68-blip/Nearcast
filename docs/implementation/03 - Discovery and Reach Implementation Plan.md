@@ -129,3 +129,4 @@ Every feed card has a valid explanation, blocked users never receive each other'
 | 2026-08-31 | Completed approximate geography, coarse distance bands, and eligibility filtering |
 | 2026-08-31 | Completed explainable delivery, ranking, and the finite Home feed |
 | 2026-08-31 | Completed controlled reach expansion with a three-way gate and immediate reduction |
+| 2026-08-31 | Fixed publishing to generate deliveries and to store the approximate point discovery measures against |

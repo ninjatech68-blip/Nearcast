@@ -978,6 +978,8 @@ export type Database = {
       }
       publish_intent: {
         Args: {
+          context_approximate_latitude?: number
+          context_approximate_longitude?: number
           context_approximate_place?: string
           context_currency?: string
           context_deadline_at?: string
