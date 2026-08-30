@@ -40,6 +40,8 @@ const {
   markRead,
   setMode,
   subscribeToConversation,
+  touchConversationPresence,
+  clearConversationPresence,
 } =
   await import('./remote-chat');
 
@@ -272,5 +274,35 @@ describe('realtime subscription', () => {
     expect(onInsert).toHaveBeenCalled();
     unsub();
     expect(removeChannel).toHaveBeenCalled();
+  });
+});
+
+describe('presence', () => {
+  it('claims the open chat so the server suppresses a redundant push', async () => {
+    const rpc = withRpc(() => ({ data: null, error: null }));
+    await touchConversationPresence('c1');
+    expect(rpc).toHaveBeenCalledWith('touch_conversation_presence', {
+      target_conversation_id: 'c1',
+    });
+  });
+
+  it('releases the chat on the way out', async () => {
+    const rpc = withRpc(() => ({ data: null, error: null }));
+    await clearConversationPresence('c1');
+    expect(rpc).toHaveBeenCalledWith('clear_conversation_presence', {
+      target_conversation_id: 'c1',
+    });
+  });
+
+  it('does not throw when presence fails — a redundant push beats a crash', async () => {
+    withRpc(() => ({ data: null, error: { message: 'offline' } }));
+    await expect(touchConversationPresence('c1')).resolves.toBeUndefined();
+    await expect(clearConversationPresence('c1')).resolves.toBeUndefined();
+  });
+
+  it('is a no-op with no backend', async () => {
+    mockGetSupabase.mockReturnValue(null);
+    await expect(touchConversationPresence('c1')).resolves.toBeUndefined();
+    await expect(clearConversationPresence('c1')).resolves.toBeUndefined();
   });
 });

@@ -29,6 +29,14 @@ const COPY: Record<string, { title: string; body: string }> = {
     title: "you're in",
     body: "the chat's open. sort out where and when.",
   },
+  // Says there is something to read without saying a word of it. The
+  // message text never leaves the database, so a lock screen face-up on
+  // a table gives away nothing — which is the whole point of a
+  // notification you can act on.
+  chat_message: {
+    title: 'a new message',
+    body: 'they wrote back. yours to read.',
+  },
 };
 
 type OutboxRow = {
@@ -36,6 +44,7 @@ type OutboxRow = {
   recipient_id: string;
   kind: string;
   intent_id: string | null;
+  conversation_id: string | null;
   attempt_count: number;
 };
 
@@ -212,12 +221,15 @@ async function sendPending(
   admin: ReturnType<typeof createClient>,
   expoToken: string | undefined,
 ): Promise<{ ok: boolean; attempted: number; submitted: number; noDevices: number; failed: number }> {
-  const { data, error } = await admin
-    .from('notification_outbox')
-    .select('id, recipient_id, kind, intent_id, attempt_count')
-    .eq('delivery_status', 'pending')
-    .order('created_at', { ascending: true })
-    .limit(200);
+  // CLAIM the batch rather than reading it. Selecting pending rows and
+  // marking them only after Expo has answered leaves them looking
+  // pending for the whole submit, so an overlapping run — the drain is
+  // scheduled every minute, a batch can take longer than that — sends
+  // every one of them a second time. The claim moves them to 'sending'
+  // in a single statement, so exactly one run owns them; a run that
+  // dies leaves them claimed and the next one takes them back once the
+  // claim goes stale.
+  const { data, error } = await admin.rpc('claim_notification_batch', { batch_size: 200 });
 
   if (error) return { ok: false, attempted: 0, submitted: 0, noDevices: 0, failed: 0 };
   const outbox = (data ?? []) as OutboxRow[];
@@ -263,7 +275,7 @@ async function sendPending(
         delivery_status: 'failed',
         last_error: `unknown_kind:${row.kind}`,
         last_attempt_at: attemptedAt,
-        attempt_count: row.attempt_count + 1,
+        attempt_count: row.attempt_count,
         resolved_at: attemptedAt,
       });
       failed += 1;
@@ -276,7 +288,7 @@ async function sendPending(
         delivery_status: 'no_devices',
         last_error: 'no_active_tokens',
         last_attempt_at: attemptedAt,
-        attempt_count: row.attempt_count + 1,
+        attempt_count: row.attempt_count,
         resolved_at: attemptedAt,
       });
       noDevices += 1;
@@ -309,7 +321,12 @@ async function sendPending(
           title: copy.title,
           body: copy.body,
           sound: 'default',
-          data: { kind: row.kind, intentId: row.intent_id },
+          // ids only — the app resolves them to the right screen on open
+          data: {
+            kind: row.kind,
+            intentId: row.intent_id,
+            conversationId: row.conversation_id,
+          },
         },
       });
     }
@@ -394,7 +411,7 @@ async function sendPending(
         sent_at: attemptedAtByOutbox.get(row.id) ?? isoNow(),
         last_error: terminalErrors > 0 ? 'partial_submit_error' : null,
         last_attempt_at: attemptedAtByOutbox.get(row.id) ?? isoNow(),
-        attempt_count: row.attempt_count + 1,
+        attempt_count: row.attempt_count,
         resolved_at: null,
       });
     } else {
@@ -404,7 +421,7 @@ async function sendPending(
         delivery_status: 'failed',
         last_error: firstError?.error_code ?? firstError?.error_message ?? 'expo_submit_failed',
         last_attempt_at: attemptedAtByOutbox.get(row.id) ?? isoNow(),
-        attempt_count: row.attempt_count + 1,
+        attempt_count: row.attempt_count,
         resolved_at: attemptedAtByOutbox.get(row.id) ?? isoNow(),
       });
     }

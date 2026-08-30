@@ -38,7 +38,7 @@ type DeviceLike = {
 };
 
 /** what a push carries: a kind and ids, never any content. */
-export type PushPayload = { kind?: string; intentId?: string };
+export type PushPayload = { kind?: string; intentId?: string; conversationId?: string };
 
 let Notifications: NotificationsLike | null = null;
 let Device: DeviceLike | null = null;
@@ -203,5 +203,6 @@ function payloadOf(notification: NotificationLike | undefined): PushPayload {
   const data = notification?.request?.content?.data ?? {};
   const kind = typeof data.kind === 'string' ? data.kind : undefined;
   const intentId = typeof data.intentId === 'string' ? data.intentId : undefined;
-  return { kind, intentId };
+  const conversationId = typeof data.conversationId === 'string' ? data.conversationId : undefined;
+  return { kind, intentId, conversationId };
 }

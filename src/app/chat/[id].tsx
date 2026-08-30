@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  AppState,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -30,6 +31,8 @@ import {
   answerWindowRequest,
   chatEnabled,
   endChat,
+  keepConversationOpen,
+  releaseConversation,
   extendChat,
   loadOlderConversationMessages,
   openConversation,
@@ -74,13 +77,11 @@ export default function ChatScreen() {
     return openConversation(id);
   }, [id]);
 
-  // the WhatsApp floor: even if the realtime socket never connects, poll
+  // the floor under realtime: even if the socket never connects, poll
   // this thread while it is open and the app is foregrounded, so new
-  // messages land in a couple of seconds without a manual pull.
-  // 1s floor: realtime delivers instantly when the socket is up; when it
-  // is not, a once-a-second re-read of the open thread keeps chat feeling
-  // live. lower than this buys little — each tick is a real round-trip —
-  // and it stops the moment the app backgrounds (see usePoll).
+  // messages land in a couple of seconds without a manual pull. Each
+  // tick is a real round-trip, so this is as fast as is worth paying
+  // for, and it stops the moment the app backgrounds (see usePoll).
   usePoll(
     () => {
       if (id) void refreshConversationMessages(id);
@@ -88,6 +89,30 @@ export default function ChatScreen() {
     2500,
     chatEnabled() && !!id,
   );
+
+  // Tell the server this chat is on screen, so it does not push a
+  // notification for a message the person is watching arrive. The lease
+  // is 30s and this renews every 10, so a dropped call is invisible.
+  usePoll(
+    () => {
+      if (id) void keepConversationOpen(id);
+    },
+    10_000,
+    chatEnabled() && !!id,
+  );
+
+  // Backgrounding has to say so out loud. usePoll stops renewing, but
+  // the lease already granted still covers the next 30 seconds — long
+  // enough to swallow the first ping of a chat someone left open and
+  // walked away from, which is the ordinary way to leave a chat.
+  // Coming back needs nothing here: usePoll re-fires on foreground.
+  useEffect(() => {
+    if (!id || !chatEnabled()) return;
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next !== 'active') void releaseConversation(id);
+    });
+    return () => sub.remove();
+  }, [id]);
 
   const { refreshing, onRefresh } = useRefresher(async () => {
     if (id) await refreshConversationMessages(id);

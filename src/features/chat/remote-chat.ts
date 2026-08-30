@@ -288,6 +288,34 @@ export async function markConversationDelivered(conversationId: string): Promise
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Presence: "this chat is on my screen right now".
+ *
+ * A push for a message you are already watching arrive is noise, so the
+ * server suppresses it — but only the app knows what is on screen, and
+ * a read receipt is not the same claim (it moves when a list syncs, not
+ * when someone is looking). So the open thread takes a short LEASE and
+ * renews it. Nothing has to be cleaned up for correctness: kill the app,
+ * lose the network, and the lease simply runs out and pings resume.
+ *
+ * Both calls are best-effort. Failing to claim presence costs a
+ * redundant notification; failing to release one costs a few seconds of
+ * silence. Neither is worth interrupting the person for, so neither
+ * throws.
+ */
+export async function touchConversationPresence(conversationId: string): Promise<void> {
+  const c = getSupabase();
+  if (!c) return;
+  await c.rpc('touch_conversation_presence', { target_conversation_id: conversationId });
+}
+
+/** Leaving the thread, or the app went to the background. Drop the lease now. */
+export async function clearConversationPresence(conversationId: string): Promise<void> {
+  const c = getSupabase();
+  if (!c) return;
+  await c.rpc('clear_conversation_presence', { target_conversation_id: conversationId });
+}
+
 function extensionFor(media: LocalMedia): string {
   if (media.kind === 'gif') return 'gif';
   if (media.mimeType === 'image/jpeg') return 'jpg';

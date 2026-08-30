@@ -10,12 +10,14 @@ import {
 import { submit } from '@/infrastructure/net/submit';
 import {
   chatEnabled,
+  clearConversationPresence,
   fetchConversation,
   fetchConversations,
   fetchMessagesAfter,
   fetchMessagesPage,
   markConversationDelivered,
   markRead,
+  touchConversationPresence,
   sendLocationShareWithClientId,
   sendMediaMessage,
   sendTextWithClientId,
@@ -161,6 +163,8 @@ const subscribe = (l: () => void) => {
 
 registerStoreReset(() => {
   state = SEED_STATE;
+  // a different account must not inherit this one's delivery marks
+  deliveredThrough.clear();
   listeners.forEach((l) => l());
 });
 
@@ -385,8 +389,41 @@ export async function refreshConversations(): Promise<void> {
     }));
     state = { ...state, list };
     emit();
+    void confirmDelivery(rows);
   } catch (error) {
     console.warn('refreshConversations failed', error);
+  }
+}
+
+/**
+ * Two ticks means "it reached them", not "they read it".
+ *
+ * Delivery used to be marked at the same moment as reading, because the
+ * only caller was opening the thread. That collapsed the two states
+ * into one: the sender went straight from one tick to two blue ones and
+ * never saw the middle. What the sender actually wants to know first is
+ * that the message is on the other phone at all, which is true as soon
+ * as this device syncs the list — however the sync was triggered, and
+ * whichever screen is showing.
+ *
+ * Only conversations that have something unread are worth a call, and
+ * only when their newest message has moved since the last one, so an
+ * idle poll costs nothing.
+ */
+const deliveredThrough = new Map<string, string>();
+
+async function confirmDelivery(rows: readonly RemoteConversation[]): Promise<void> {
+  const pending = rows.filter(
+    (row) => row.unread_count > 0 && deliveredThrough.get(row.conversation_id) !== row.last_at,
+  );
+  for (const row of pending) {
+    try {
+      await markConversationDelivered(row.conversation_id);
+      deliveredThrough.set(row.conversation_id, row.last_at);
+    } catch {
+      // a receipt is a courtesy to the sender; it retries on the next
+      // sync and must never break the list the reader is looking at.
+    }
   }
 }
 
@@ -429,11 +466,43 @@ export function openConversation(conversationId: string): () => void {
     void markConversationDelivered(conversationId);
     void markRead(conversationId);
   };
+  // claim presence FIRST, before the thread is even loaded: the gap
+  // between opening a chat and the first message landing is exactly
+  // when a redundant push would fire.
+  void touchConversationPresence(conversationId);
   void loadConversation(conversationId).then(read);
   const unsubscribe = subscribeToConversation(conversationId, () => {
     void syncConversationMessages(conversationId).then(read);
   });
-  return unsubscribe;
+  return () => {
+    unsubscribe();
+    void clearConversationPresence(conversationId);
+  };
+}
+
+/**
+ * Renew the presence lease on the open thread.
+ *
+ * Called on a heartbeat by the chat screen. The server's lease is
+ * deliberately longer than the heartbeat, so one dropped call does not
+ * start a notification the person does not need.
+ */
+export async function keepConversationOpen(conversationId: string): Promise<void> {
+  if (!chatEnabled()) return;
+  await touchConversationPresence(conversationId);
+}
+
+/**
+ * Let go of the open thread — leaving the screen, or backgrounding.
+ *
+ * Backgrounding matters: the app is no longer in front of anyone, so a
+ * message arriving now SHOULD ping. Waiting for the lease to run out
+ * would swallow the first notification of every chat someone leaves
+ * open, which is the common way to leave a chat.
+ */
+export async function releaseConversation(conversationId: string): Promise<void> {
+  if (!chatEnabled()) return;
+  await clearConversationPresence(conversationId);
 }
 
 /**
@@ -742,6 +811,7 @@ export async function endChat(threadId: string): Promise<void> {
 /** test-only reset. clears the persisted record too. */
 export function resetChat(): void {
   clearState(STORAGE_KEYS.chat);
+  deliveredThrough.clear();
   state = SEED_STATE;
   listeners.forEach((l) => l());
 }

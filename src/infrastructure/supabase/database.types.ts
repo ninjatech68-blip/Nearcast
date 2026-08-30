@@ -134,6 +134,42 @@ export type Database = {
           },
         ]
       }
+      conversation_presence: {
+        Row: {
+          active_until: string
+          conversation_id: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          active_until: string
+          conversation_id: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          active_until?: string
+          conversation_id?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_presence_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_presence_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_reads: {
         Row: {
           conversation_id: string
@@ -856,6 +892,7 @@ export type Database = {
       notification_outbox: {
         Row: {
           attempt_count: number
+          conversation_id: string | null
           created_at: string
           delivery_status: string
           id: string
@@ -869,6 +906,7 @@ export type Database = {
         }
         Insert: {
           attempt_count?: number
+          conversation_id?: string | null
           created_at?: string
           delivery_status?: string
           id?: string
@@ -882,6 +920,7 @@ export type Database = {
         }
         Update: {
           attempt_count?: number
+          conversation_id?: string | null
           created_at?: string
           delivery_status?: string
           id?: string
@@ -894,6 +933,13 @@ export type Database = {
           sent_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "notification_outbox_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notification_outbox_intent_id_fkey"
             columns: ["intent_id"]
@@ -1200,6 +1246,25 @@ export type Database = {
       attendance_outcome: {
         Args: { as_of?: string; target_intent: string; target_profile: string }
         Returns: Database["public"]["Enums"]["attendance_result"]
+      }
+      claim_notification_batch: {
+        Args: { batch_size?: number }
+        Returns: {
+          attempt_count: number
+          conversation_id: string
+          id: string
+          intent_id: string
+          kind: string
+          recipient_id: string
+        }[]
+      }
+      clear_conversation_presence: {
+        Args: { target_conversation_id: string }
+        Returns: undefined
+      }
+      close_expired_conversations: {
+        Args: { max_rows?: number }
+        Returns: number
       }
       conversation_messages: {
         Args: { target_conversation_id: string }
@@ -1587,6 +1652,10 @@ export type Database = {
           plans: number
           receipts: number
         }[]
+      }
+      touch_conversation_presence: {
+        Args: { target_conversation_id: string }
+        Returns: undefined
       }
       vouches_for_me: {
         Args: never

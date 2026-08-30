@@ -11,12 +11,40 @@ What is in the repository, and the four steps that are not code.
 | Content-free outbox + triggers | same migration | in the schema |
 | Branded copy + Expo delivery | `supabase/functions/send-push/index.ts` | in the repo, **needs deploying** |
 | Minute-by-minute drain + weekly prune | `supabase/migrations/20260829150000_push_schedule.sql` | guarded no-op until step 3 |
-| Tap handling (refresh + open activity) | `src/features/notifications/routing.ts` | in the app |
+| Batch claim, so two drains cannot double-send | `supabase/migrations/20260830180000_push_claim_batch.sql` | in the schema |
+| Chat-message ping + presence suppression | `supabase/migrations/20260830170000_chat_expiry_and_message_push.sql` | in the schema |
+| Tap handling (refresh + open the right chat) | `src/features/notifications/routing.ts` | in the app |
 
 A push never carries intent text, a message, coordinates, contact
 details, or a private-group name. The outbox stores a kind and ids; the
 copy is composed at send time and says only enough to get the person to
 open the app.
+
+## What gets a ping
+
+| Kind | Fires when | Suppressed when |
+| --- | --- | --- |
+| `join_request` | someone asks to join your cast | — |
+| `join_accepted` | the caster says yes | — |
+| `chat_message` | a message lands in a chat you are in | you have that chat open |
+
+`chat_message` is the one with a rule attached. A notification for a
+message you are watching arrive is noise, so the open thread takes a
+30-second presence lease (`touch_conversation_presence`) and renews it
+every 10 seconds; the enqueue trigger checks that lease and stays quiet
+while it holds. The lease is dropped explicitly when the screen closes
+or the app backgrounds — backgrounding matters, because the app is no
+longer in front of anyone and the next message *should* ping.
+
+Nothing has to be cleaned up for this to be correct. Kill the app, lose
+the network, run out of battery: the lease simply lapses and pings
+resume. That is why it is a lease and not a flag, and why it is not
+inferred from read receipts, which move whenever a list syncs.
+
+A burst of messages is one ping, not one per message: a partial unique
+index keeps a single un-drained `chat_message` row per (recipient,
+conversation). Once that ping is claimed for sending, the next message
+queues its own — so a reply half a minute later is not swallowed.
 
 ## Step 1 — APNs key on the Expo project
 
@@ -121,6 +149,9 @@ intended device row.
 
 - Quiet hours are a local preference; the sender does not yet consult
   them, so a ping can arrive inside a person's quiet window.
+- Presence is per device. Two devices signed into one account, with the
+  chat open on one of them, will suppress the ping on both — the server
+  knows the person is reading, not which screen they are holding.
 - Expo tickets and receipts are tracked, and dead tokens are
   invalidated automatically. Even so, a receipt only means the vendor
   accepted the notification, not that a human definitely saw a banner.
@@ -155,3 +186,43 @@ library, an animated GIF, and a location; check that
 `select media_kind, media_path from public.messages order by created_at desc limit 4;`
 shows paths under the conversation's folder, and that the bucket is
 listed as private in the dashboard.
+
+---
+
+# Ops — The Chat Window
+
+A chat carries an expiry so it does not linger past the reason it
+opened. `20260830170000_chat_expiry_and_message_push.sql` is what makes
+that real; before it, `expires_at` was written and never read, so the
+header counted down to "expired" over a composer that still worked.
+
+Three layers, deliberately:
+
+1. **The guard.** `private.assert_can_send` refuses past the expiry, so
+   a lapsed chat stops taking messages at the instant it lapses rather
+   than whenever a job next runs. Extending is refused for the same
+   reason — there is nothing left to extend.
+2. **The read.** `my_conversations` reports a lapsed chat as `ended`,
+   so the app disables the composer without waiting for anything.
+3. **The sweep.** `close_expired_conversations()` writes the close down
+   — mode `ended`, `closed_at` set to the expiry it actually lapsed at,
+   not the moment the sweeper noticed — and drops a note in the thread.
+   Scheduled every five minutes; idempotent, so running it by hand is
+   safe.
+
+A chat closed by hand and one that ran out of time are told apart by
+their error: `conversation_ended` and `conversation_expired`. An
+`always` chat never lapses, whatever `expires_at` happens to hold.
+
+The sweeper needs pg_cron. Where it is absent — `scripts/db-local.sh`
+has neither pg_cron nor pg_net — the migration says so and skips, and
+the guard plus the read still make expiry behave correctly; only the
+durable write and the closing note wait for a scheduler.
+
+Check it is running:
+
+```sql
+select jobname, schedule, active from cron.job
+ where jobname in ('close-expired-conversations', 'prune-conversation-presence');
+select public.close_expired_conversations(500);  -- returns rows closed
+```
