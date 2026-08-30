@@ -10,11 +10,33 @@
 
 ## Task 1: Approximate Geography
 
-**Files:** new PostGIS migration, `src/features/location/`, pgTAP tests
+**Files:** `20260831030000_approximate_geography.sql`, `src/features/location/`, pgTAP tests
 
-- [ ] Test distance bands and prove exact coordinates never appear in discovery responses.
-- [ ] Store approximate geography with GIST index and convert results to coarse distance labels.
-- [ ] Verify blocked, expired, restricted, and out-of-range candidates return no rows.
+- [x] Test distance bands and prove exact coordinates never appear in discovery responses.
+- [x] Store approximate geography with GIST index and convert results to coarse distance labels.
+- [x] Verify blocked, expired, restricted, and out-of-range candidates return no rows.
+
+Profiles carried only a city name, so discovery had nowhere to measure from.
+They now hold an approximate home point, GIST indexed. It is deliberately
+approximate: what a person is willing to be found near, not where they live.
+Exact coordinates stay in `intent_private.exact_geography` and never enter a
+discovery result.
+
+Distance is reported as a band rather than a number, and that is a privacy
+decision rather than a rounding convenience. A metre value is a coordinate in
+disguise: readings taken from several intents would trilaterate a home address,
+which is precisely what an approximate point exists to prevent. The client
+receives only the band, so nothing downstream can reconstruct a distance.
+
+`discover_intents` cannot leak a coordinate because its return type has no
+column for one, and the suite pins that column list as a set so adding one fails
+loudly. Eligibility is applied before anything else, in the plan's order:
+lifecycle, reach, time, geography, blocks, restriction. An `origin_only` intent
+is not discoverable at all, and an unplaced intent reports `unknown` rather than
+being treated as nearby.
+
+Ranking is deliberately absent. Eligibility is a correctness question and
+ranking is a judgement, and mixing them would make it impossible to test either.
 
 ## Task 2: Reach Expansion
 
@@ -49,3 +71,4 @@ Every feed card has a valid explanation, blocked users never receive each other'
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created discovery and controlled reach implementation plan |
+| 2026-08-31 | Completed approximate geography, coarse distance bands, and eligibility filtering |
