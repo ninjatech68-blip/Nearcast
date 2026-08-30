@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Button } from '@/design-system/components/button';
@@ -8,8 +9,11 @@ import {
   describeDisclosure,
   findDraftProblems,
 } from '@/features/intents/create/domain/draft';
+import { buildPublishRequest } from '@/features/intents/create/domain/publish-request';
 import { PrivacyDisclosure } from '@/features/intents/create/ui/privacy-disclosure';
 import { useDraft } from '@/features/intents/create/ui/use-draft';
+import { publishIntent } from '@/features/intents/data/publish-intent';
+import { newRequestKey } from '@/features/intents/data/request-key';
 
 /**
  * Intent review. Structured context and private details are edited here, then
@@ -17,8 +21,32 @@ import { useDraft } from '@/features/intents/create/ui/use-draft';
  * would not. Publishing itself is Task 3.
  */
 export default function PreviewIntentScreen() {
-  const { draft, update } = useDraft();
+  const { draft, update, discard } = useDraft();
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const now = new Date();
+
+  async function publish() {
+    // One key per publish attempt, reused across retries of that attempt, so a
+    // dropped connection resolves to the original intent instead of a second.
+    const built = buildPublishRequest(draft, 'origin_only', newRequestKey());
+
+    if (!built.ok) return;
+
+    setIsPublishing(true);
+    setPublishError(null);
+
+    try {
+      const published = await publishIntent(built.request);
+
+      discard();
+      router.replace(`/intent/${published.intentId}`);
+    } catch {
+      setPublishError('We could not publish this intent. Your draft is safe. Try again.');
+    } finally {
+      setIsPublishing(false);
+    }
+  }
 
   const problems = findDraftProblems(draft, now);
   const disclosure = describeDisclosure(draft);
@@ -105,10 +133,16 @@ export default function PreviewIntentScreen() {
         </View>
       )}
 
+      {publishError !== null && (
+        <Text accessibilityRole="alert" style={styles.publishError}>
+          {publishError}
+        </Text>
+      )}
+
       <Button
-        disabled={problems.length > 0}
-        label="Publish intent"
-        onPress={() => undefined}
+        disabled={problems.length > 0 || isPublishing}
+        label={isPublishing ? 'Publishing' : 'Publish intent'}
+        onPress={() => void publish()}
       />
 
       <Pressable
@@ -202,6 +236,12 @@ const styles = StyleSheet.create({
     fontSize: tokens.typography.label.fontSize,
     paddingVertical: tokens.primitive.space[3],
     textAlign: 'center',
+  },
+  publishError: {
+    color: tokens.semantic.color.dangerText,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.caption.fontSize,
+    lineHeight: tokens.typography.caption.lineHeight,
   },
   problem: {
     color: tokens.semantic.color.warningText,

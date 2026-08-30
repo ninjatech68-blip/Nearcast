@@ -963,6 +963,34 @@ export type Database = {
           statement: string
         }[]
       }
+      publish_intent: {
+        Args: {
+          context_approximate_place?: string
+          context_currency?: string
+          context_deadline_at?: string
+          context_price_minor?: number
+          context_quantity?: number
+          context_requirements?: Json
+          context_starts_at?: string
+          intent_expires_at: string
+          intent_primitive: Database["public"]["Enums"]["intent_primitive"]
+          intent_response_action: string
+          intent_statement: string
+          link_enabled?: boolean
+          private_contact?: string
+          private_coordination_notes?: string
+          private_exact_address?: string
+          reach?: Database["public"]["Enums"]["reach_level"]
+          request_key?: string
+          show_first_name?: boolean
+        }
+        Returns: {
+          intent_id: string
+          intent_share_slug: string
+          intent_status: Database["public"]["Enums"]["intent_status"]
+          intent_version: number
+        }[]
+      }
       redeem_invite: {
         Args: { chosen_display_name: string; invite_token: string }
         Returns: {

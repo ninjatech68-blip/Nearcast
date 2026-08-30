@@ -5,8 +5,19 @@ import { DRAFT_STORAGE_KEY } from '@/features/intents/create/domain/draft-storag
 
 const store: Record<string, string> = {};
 
+const mockReplace = jest.fn();
+const mockPublish = jest.fn<(request: unknown) => Promise<unknown>>();
+
 jest.mock('expo-router', () => ({
-  router: { back: () => undefined, push: () => undefined },
+  router: {
+    back: () => undefined,
+    push: () => undefined,
+    replace: (href: string) => mockReplace(href),
+  },
+}));
+
+jest.mock('@/features/intents/data/publish-intent', () => ({
+  publishIntent: (request: unknown) => mockPublish(request),
 }));
 
 jest.mock('@/features/intents/create/data/device-draft-store', () => ({
@@ -56,6 +67,8 @@ function seedDraft(overrides: {
 describe('PreviewIntentScreen', () => {
   beforeEach(() => {
     for (const key of Object.keys(store)) delete store[key];
+    mockReplace.mockReset();
+    mockPublish.mockReset();
   });
 
   it('states that nothing is visible while the draft is still local', async () => {
@@ -115,6 +128,56 @@ describe('PreviewIntentScreen', () => {
     const view = await render(<PreviewIntentScreen />);
 
     expect(view.getByText('Choose an expiry in the future')).toBeTruthy();
+  });
+
+  it('publishes, clears the draft, and opens the new intent', async () => {
+    const user = userEvent.setup();
+    seedDraft();
+    mockPublish.mockResolvedValue({
+      intentId: 'intent-1',
+      shareSlug: 'slug-1',
+      status: 'live',
+      version: 1,
+    });
+
+    const view = await render(<PreviewIntentScreen />);
+    await user.press(view.getByRole('button', { name: 'Publish intent' }));
+
+    expect(mockPublish).toHaveBeenCalledTimes(1);
+    expect(mockReplace).toHaveBeenCalledWith('/intent/intent-1');
+    expect(store[DRAFT_STORAGE_KEY]).toBeUndefined();
+  });
+
+  it('sends private details as their own fields, never inside public context', async () => {
+    const user = userEvent.setup();
+    seedDraft({ privateDraft: { exactAddress: '42 Private Lane' } });
+    mockPublish.mockResolvedValue({
+      intentId: 'intent-1',
+      shareSlug: 'slug-1',
+      status: 'live',
+      version: 1,
+    });
+
+    const view = await render(<PreviewIntentScreen />);
+    await user.press(view.getByRole('button', { name: 'Publish intent' }));
+
+    const request = mockPublish.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(request.exactAddress).toBe('42 Private Lane');
+    expect(request.statement).not.toContain('Private Lane');
+    expect(request.approximatePlace).toBeNull();
+  });
+
+  it('keeps the draft when publishing fails', async () => {
+    const user = userEvent.setup();
+    seedDraft();
+    mockPublish.mockRejectedValue(new Error('offline'));
+
+    const view = await render(<PreviewIntentScreen />);
+    await user.press(view.getByRole('button', { name: 'Publish intent' }));
+
+    expect(await view.findByText(/Your draft is safe/)).toBeTruthy();
+    expect(store[DRAFT_STORAGE_KEY]).toBeDefined();
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 
   it('writes a private detail to the device draft, not into public context', async () => {

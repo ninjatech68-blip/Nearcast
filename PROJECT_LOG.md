@@ -66,3 +66,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-30 | Built the temporary coordination room on Gifted Chat with room expiry, a send-message database function, and a real Messages list |
 | 2026-08-30 | Added invitation-gated email one-time-code authentication and protected-route redirects |
 | 2026-08-30 | Added device-local intent drafting and review with a structurally separated public and private draft |
+| 2026-08-30 | Added the atomic publish transaction, completing sign in to publish end to end |

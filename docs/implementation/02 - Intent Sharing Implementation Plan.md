@@ -65,10 +65,29 @@ a `heldBack` list, recorded in the Mobile Screen Contracts change log.
 
 **Files:** `supabase/functions/publish-intent/`, `src/features/intents/data/publish-intent.ts`, database tests
 
-- [ ] Test owner, stale version, expired input, retry, and private-field leakage cases first.
-- [ ] Validate request with Zod; atomically create context/private/reach/event rows and return share slug.
-- [ ] Persist idempotency key and reject mismatched retry fingerprints.
-- [ ] Track `intent_published` without statement or sensitive properties.
+- [x] Test owner, stale version, expired input, retry, and private-field leakage cases first.
+- [x] Validate request with Zod; atomically create context/private/reach/event rows and return share slug.
+- [x] Persist idempotency key and reject mismatched retry fingerprints.
+- [x] Track `intent_published` without statement or sensitive properties.
+
+`public.publish_intent` is a `security definer` function, following the
+`accept_response`, `send_message` and `redeem_invite` precedent. One transaction
+writes the intent, its public context, its private details, its reach and its
+event row, so a partial publish cannot occur.
+
+API Contracts described the input as a draft ID. The draft is device-local by
+the screen contract, and the two documents sit at the same precedence rank, so
+the privacy constraint decided: there is no server draft row to name and publish
+carries the draft's content. The idempotency key does the work the draft ID
+would have and does it better, since a device-local identifier could not
+deduplicate a retry issued from a second device. Expected version belongs to the
+edit path in Task 6, where a row already exists to be stale against. Recorded in
+the API Contracts change log.
+
+Ownership is checked as membership rather than as a draft owner: only a redeemed
+invitation creates a profile, so a signed-in identity without one cannot
+broadcast. Private values are written to `intent_private` and never to
+`intent_context`, and analytics records shape only, never the statement.
 
 ## Task 4: Public Link And Confirmation
 
@@ -98,3 +117,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | 2026-08-24 | Created intent creation and sharing implementation plan |
 | 2026-08-30 | Completed invitation-gated email one-time-code authentication |
 | 2026-08-30 | Completed local intent drafting and review with a public/private draft split |
+| 2026-08-30 | Completed the publish transaction as a database function with idempotent retries |

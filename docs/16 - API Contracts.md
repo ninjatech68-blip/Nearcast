@@ -15,7 +15,7 @@ Authenticated functions derive the actor from the verified JWT and never accept 
 
 | Function | Input | Success | Atomic requirements |
 |---|---|---|---|
-| `publish-intent` | draft ID, expected version, reach/privacy, idempotency key | intent ID, share slug, `live`, version | Validate owner, expiry, required context; create reach and event |
+| `publish-intent` | draft content, reach/privacy, idempotency key | intent ID, share slug, `live`, version | Validate membership, expiry, required context; create context, private, reach and event rows |
 | `change-intent-reach` | intent ID, expected version, target level, disclosure confirmation | level, version | Reject implicit expansion; log old/new reach |
 | `submit-response` | intent ID, message, qualification, idempotency key | response ID, `pending` | Recheck delivery, eligibility, expiry, blocks, self-response |
 | `accept-response` | response ID, expected intent state | match ID, conversation ID, `matched` | Lock response/intent; create one match; idempotently return existing match |
@@ -46,3 +46,4 @@ Logs contain request ID, actor hash, operation, object ID, result code, duration
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined server mutation inventory, public projection, errors, idempotency, and logging boundaries |
+| 2026-08-30 | Replaced `publish-intent`'s draft ID with draft content, because Mobile Screen Contracts keeps the draft device-local and there is no server draft row to name. The idempotency key carries retry safety, and does so across devices, which a local identifier could not. Expected version applies to the edit path, where a prior version exists to be stale against |
