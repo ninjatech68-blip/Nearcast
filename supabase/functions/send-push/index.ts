@@ -129,6 +129,7 @@ Deno.serve(async () => {
       submitted: sends.submitted,
       noDevices: sends.noDevices,
       failed: sends.failed,
+      retrying: sends.retrying,
     },
   }, receipts.ok && sends.ok ? 200 : 500);
 });
@@ -220,7 +221,14 @@ async function reconcileReceipts(
 async function sendPending(
   admin: ReturnType<typeof createClient>,
   expoToken: string | undefined,
-): Promise<{ ok: boolean; attempted: number; submitted: number; noDevices: number; failed: number }> {
+): Promise<{
+  ok: boolean;
+  attempted: number;
+  submitted: number;
+  noDevices: number;
+  failed: number;
+  retrying: number;
+}> {
   // CLAIM the batch rather than reading it. Selecting pending rows and
   // marking them only after Expo has answered leaves them looking
   // pending for the whole submit, so an overlapping run — the drain is
@@ -231,9 +239,9 @@ async function sendPending(
   // claim goes stale.
   const { data, error } = await admin.rpc('claim_notification_batch', { batch_size: 200 });
 
-  if (error) return { ok: false, attempted: 0, submitted: 0, noDevices: 0, failed: 0 };
+  if (error) return { ok: false, attempted: 0, submitted: 0, noDevices: 0, failed: 0, retrying: 0 };
   const outbox = (data ?? []) as OutboxRow[];
-  if (outbox.length === 0) return { ok: true, attempted: 0, submitted: 0, noDevices: 0, failed: 0 };
+  if (outbox.length === 0) return { ok: true, attempted: 0, submitted: 0, noDevices: 0, failed: 0, retrying: 0 };
 
   const recipientIds = [...new Set(outbox.map((row) => row.recipient_id))];
   const { data: tokenData } = await admin
@@ -242,7 +250,7 @@ async function sendPending(
     .in('user_id', recipientIds)
     .is('invalidated_at', null);
   if (!tokenData && recipientIds.length > 0) {
-    return { ok: false, attempted: outbox.length, submitted: 0, noDevices: 0, failed: 0 };
+    return { ok: false, attempted: outbox.length, submitted: 0, noDevices: 0, failed: 0, retrying: 0 };
   }
 
   const tokensByUser = new Map<string, string[]>();
@@ -258,6 +266,7 @@ async function sendPending(
   const touchedOutboxIds = new Set<string>();
   let noDevices = 0;
   let failed = 0;
+  let retrying = 0;
 
   const messages: Array<{
     deliveryId: string;
@@ -271,13 +280,7 @@ async function sendPending(
     attemptedAtByOutbox.set(row.id, attemptedAt);
     const copy = COPY[row.kind];
     if (!copy) {
-      await markOutbox(admin, row.id, {
-        delivery_status: 'failed',
-        last_error: `unknown_kind:${row.kind}`,
-        last_attempt_at: attemptedAt,
-        attempt_count: row.attempt_count,
-        resolved_at: attemptedAt,
-      });
+      await recordFailure(admin, row.id, `unknown_kind:${row.kind}`);
       failed += 1;
       continue;
     }
@@ -339,6 +342,7 @@ async function sendPending(
       submitted: 0,
       noDevices,
       failed,
+      retrying,
     };
   }
 
@@ -388,7 +392,7 @@ async function sendPending(
   }
 
   const { error: deliveryError } = await admin.from('notification_deliveries').insert(deliveryRows);
-  if (deliveryError) return { ok: false, attempted: outbox.length, submitted: 0, noDevices, failed };
+  if (deliveryError) return { ok: false, attempted: outbox.length, submitted: 0, noDevices, failed, retrying };
 
   if (invalidTokens.size > 0) {
     await admin
@@ -415,15 +419,19 @@ async function sendPending(
         resolved_at: null,
       });
     } else {
-      failed += 1;
+      // Not terminal any more. A 5xx from Expo, or a connection that
+      // dropped during the submit, used to mark the whole claimed batch
+      // failed forever — up to two hundred notifications lost to one bad
+      // minute. The database classifies the error and either hands the
+      // row back to the queue with a wait on it or closes it for good.
       const firstError = deliveries.find((delivery) => delivery.error_code || delivery.error_message);
-      await markOutbox(admin, row.id, {
-        delivery_status: 'failed',
-        last_error: firstError?.error_code ?? firstError?.error_message ?? 'expo_submit_failed',
-        last_attempt_at: attemptedAtByOutbox.get(row.id) ?? isoNow(),
-        attempt_count: row.attempt_count,
-        resolved_at: attemptedAtByOutbox.get(row.id) ?? isoNow(),
-      });
+      const settled = await recordFailure(
+        admin,
+        row.id,
+        firstError?.error_code ?? firstError?.error_message ?? 'expo_submit_failed',
+      );
+      if (settled === 'pending') retrying += 1;
+      else failed += 1;
     }
   }
 
@@ -433,7 +441,28 @@ async function sendPending(
     submitted,
     noDevices,
     failed,
+    retrying,
   };
+}
+
+/**
+ * Report a failed send and let the database decide its fate.
+ *
+ * Returns the status it settled on — 'pending' if it will be tried
+ * again, 'failed' if it will not — so the caller can tell a bad minute
+ * apart from a lost notification when it reports what the run did.
+ */
+async function recordFailure(
+  admin: ReturnType<typeof createClient>,
+  outboxId: string,
+  errorCode: string,
+): Promise<string | null> {
+  const { data, error } = await admin.rpc('record_notification_failure', {
+    outbox_id: outboxId,
+    error_code: errorCode,
+  });
+  if (error) return null;
+  return (data as string | null) ?? null;
 }
 
 async function refreshOutboxStatuses(

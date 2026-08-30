@@ -903,6 +903,7 @@ export type Database = {
           kind: string
           last_attempt_at: string | null
           last_error: string | null
+          next_attempt_at: string | null
           recipient_id: string
           resolved_at: string | null
           sent_at: string | null
@@ -917,6 +918,7 @@ export type Database = {
           kind: string
           last_attempt_at?: string | null
           last_error?: string | null
+          next_attempt_at?: string | null
           recipient_id: string
           resolved_at?: string | null
           sent_at?: string | null
@@ -931,6 +933,7 @@ export type Database = {
           kind?: string
           last_attempt_at?: string | null
           last_error?: string | null
+          next_attempt_at?: string | null
           recipient_id?: string
           resolved_at?: string | null
           sent_at?: string | null
@@ -1216,7 +1219,26 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      notification_failures: {
+        Row: {
+          kind: string | null
+          last_seen: string | null
+          reason: string | null
+          rows: number | null
+        }
+        Relationships: []
+      }
+      notification_health: {
+        Row: {
+          delivery_status: string | null
+          kind: string | null
+          last_tried: string | null
+          oldest: string | null
+          rows: number | null
+          worst_attempts: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_response: {
@@ -1596,6 +1618,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      record_notification_failure: {
+        Args: { error_code: string; outbox_id: string }
+        Returns: string
       }
       register_push_token:
         | { Args: { platform: string; token: string }; Returns: undefined }

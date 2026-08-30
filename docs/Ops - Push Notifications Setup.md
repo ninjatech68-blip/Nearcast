@@ -12,6 +12,7 @@ What is in the repository, and the four steps that are not code.
 | Branded copy + Expo delivery | `supabase/functions/send-push/index.ts` | in the repo, **needs deploying** |
 | Minute-by-minute drain + weekly prune | `supabase/migrations/20260829150000_push_schedule.sql` | guarded no-op until step 3 |
 | Batch claim, so two drains cannot double-send | `supabase/migrations/20260830180000_push_claim_batch.sql` | in the schema |
+| Retry with backoff + error classification | `supabase/migrations/20260830200000_push_retry.sql` | in the schema |
 | Chat-message ping + presence suppression | `supabase/migrations/20260830170000_chat_expiry_and_message_push.sql` | in the schema |
 | Tap handling (refresh + open the right chat) | `src/features/notifications/routing.ts` | in the app |
 
@@ -167,6 +168,19 @@ intended device row.
 - Expo tickets and receipts are tracked, and dead tokens are
   invalidated automatically. Even so, a receipt only means the vendor
   accepted the notification, not that a human definitely saw a banner.
+- A failure is retried up to `private.push_max_attempts()` times with a
+  capped exponential backoff (`private.push_backoff`), and only if
+  `private.push_error_is_retryable` says the error was the moment rather
+  than the message. Rate limits, provider 5xx and dropped connections
+  come back; dead tokens, oversized messages and bad credentials do not.
+  A row that exhausts its budget records `gave_up_after_N:<code>`, so a
+  spent budget is never misread as a permanently broken notification.
+- What is going wrong, without reading a log:
+
+  ```sql
+  select * from public.notification_health;    -- counts by kind and status
+  select * from public.notification_failures;  -- why things failed, worst first
+  ```
 
 ---
 
