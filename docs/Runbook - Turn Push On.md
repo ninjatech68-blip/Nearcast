@@ -216,6 +216,32 @@ Then re-run the group-by above and confirm nothing stale is still
 > kind uniformly `failed`, starting at the moment its migration landed.
 > If you see that, deploying the current function is the fix.
 
+> **Skew runs the other way too, and this direction breaks things that
+> currently work.** The sender sets `channelId` on every Android
+> notification, but Android notification channels are created by the
+> CLIENT, in `configureNotifications()`. A notification posted to a
+> channel that does not exist on the device is dropped by Android and
+> never shown — silently, with a delivered receipt.
+>
+> So a sender that names `messages` and `requests` will go dark on any
+> Android device still running a build that only created `default`.
+> iOS ignores `channelId`, so iOS is unaffected either way.
+>
+> Before redeploying a sender that changed `channelId`, check what is
+> actually out there:
+>
+> ```sql
+> select platform, app_build, count(*)
+> from public.device_push_tokens
+> where invalidated_at is null
+> group by platform, app_build;
+> ```
+>
+> No Android tokens: redeploy freely. Android tokens on an older build:
+> ship the client build FIRST — it creates the channels on launch — or
+> the redeploy trades a broken chat notification for a broken join
+> notification.
+
 ```bash
 supabase functions deploy send-push --project-ref <project-ref>
 supabase functions deploy prune-chat-media --project-ref <project-ref>
