@@ -70,15 +70,24 @@ export default function HomeScreen() {
     () => scrollX.interpolate({ inputRange: [0, width], outputRange: [0, 1], extrapolate: 'clamp' }),
     [scrollX, width],
   );
+  // The dock used to light up only on onMomentumScrollEnd, so it could
+  // never do anything but lag the swipe: the pages move continuously and
+  // the marks waited for the gesture to finish. Reading the offset means
+  // selection lands the moment a page passes the halfway point, which is
+  // when a person has already decided. The listener rides along with the
+  // native-driven value rather than replacing it.
   const onScroll = useMemo(
-    () => Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true }),
-    [scrollX],
+    () =>
+      Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+        useNativeDriver: true,
+        listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+          const index = Math.round(event.nativeEvent.contentOffset.x / width);
+          const next = DOCK_PAGES[index];
+          if (next && next !== page) setPage(next);
+        },
+      }),
+    [scrollX, width, page],
   );
-
-  function handlePageSettle(event: NativeSyntheticEvent<NativeScrollEvent>) {
-    const index = Math.round(event.nativeEvent.contentOffset.x / width);
-    setPage(DOCK_PAGES[index] ?? 'near');
-  }
 
   function goTo(target: DockPage) {
     const index = DOCK_PAGES.indexOf(target);
@@ -101,7 +110,6 @@ export default function HomeScreen() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={handlePageSettle}
         onScroll={onScroll}
         scrollEventThrottle={16}
         directionalLockEnabled
