@@ -34,7 +34,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
           that screen broke.
         </Text>
         <Text style={styles.sub}>
-          nothing you did — and nothing you wrote was lost. try again, and if it keeps happening,
+          nothing you did, and nothing you wrote was lost. try again, and if it keeps happening,
           send us this line.
         </Text>
         <Text style={styles.detail} selectable numberOfLines={6}>

@@ -67,7 +67,7 @@ export default function VouchScreen() {
     >
       <ScrollView showsVerticalScrollIndicator={false} style={styles.flex}>
         <Text style={styles.hint}>
-          putting them in one of your circles is your vouch. they never see which one — or that they were added at all.
+          putting them in one of your circles is your vouch. they never see which one, or that they were added at all.
         </Text>
 
         {already.length > 0 ? (

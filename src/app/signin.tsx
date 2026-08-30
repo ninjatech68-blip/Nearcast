@@ -85,7 +85,7 @@ export default function SigninScreen() {
               a place to post a plan.
             </Text>
             <Text style={styles.sub}>
-              and let people you already trust — or one link away — say they&apos;re in.
+              and let people you already trust, or one link away, say they&apos;re in.
             </Text>
           </View>
 
@@ -139,10 +139,10 @@ export default function SigninScreen() {
               />
               <Text style={styles.note}>
                 {!link
-                  ? 'no backend configured — this signs you straight in on fixture data.'
+                  ? 'no backend configured. this signs you straight in on fixture data.'
                   : mode === 'signup'
-                    ? 'we email you a link to set up your account — no password, no code to copy.'
-                    : 'we email a link to your account — no password, no code to copy.'}
+                    ? 'we email you a link to set up your account. no password, no code to copy.'
+                    : 'we email a link to your account. no password, no code to copy.'}
               </Text>
 
               {error ? <Text style={styles.error}>{error}</Text> : null}

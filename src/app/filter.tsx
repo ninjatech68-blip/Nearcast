@@ -109,7 +109,7 @@ export default function FilterScreen() {
           })}
         </View>
         <SheetNote>
-          resets when you leave the feed. search narrows what you already have — it never reaches past who a cast was sent to.
+          resets when you leave the feed. search narrows what you already have. it never reaches past who a cast was sent to.
         </SheetNote>
       </ScrollView>
 

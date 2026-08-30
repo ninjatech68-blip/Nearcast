@@ -72,8 +72,8 @@ export default function ReflectScreen() {
       haptic('warning');
       setError(
         result.reason === 'offline'
-          ? "you're offline. your answers are still here — tap when you're back."
-          : "that didn't save. your answers are still here — tap to try again.",
+          ? "you're offline. your answers are still here. tap when you're back."
+          : "that didn't save. your answers are still here. tap to try again.",
       );
       return;
     }

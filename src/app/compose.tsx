@@ -100,8 +100,8 @@ export default function ComposeScreen() {
       haptic('warning');
       setSendError(
         result.reason === 'offline'
-          ? "you're offline. your cast is saved here — tap again when you're back."
-          : "that didn't go out. your cast is saved here — tap to try again.",
+          ? "you're offline. your cast is saved here. tap again when you're back."
+          : "that didn't go out. your cast is saved here. tap to try again.",
       );
       return;
     }
@@ -246,7 +246,7 @@ export default function ComposeScreen() {
                       }}
                     />
                     <Text style={styles.expandNote}>
-                      pick when the plan starts. the cast stays up until then, then hangs on {CAST_WINDOW_HOURS}h more before it disappears — no countdowns.
+                      pick when the plan starts. the cast stays up until then, then hangs on {CAST_WINDOW_HOURS}h more before it disappears. no countdowns.
                     </Text>
                   </View>
                 ) : null}
@@ -291,7 +291,7 @@ export default function ComposeScreen() {
             <View style={styles.detailsActions}>
               {sendError ? <Text style={styles.sendError}>{sendError}</Text> : null}
               {!area.trim() ? (
-                <Text style={styles.sendError}>pick an area first — tap “add approximate area” above.</Text>
+                <Text style={styles.sendError}>pick an area first. tap “add approximate area” above.</Text>
               ) : null}
               <BarButton
                 label={sendError ? 'try again' : 'cast it'}

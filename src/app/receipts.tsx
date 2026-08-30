@@ -92,7 +92,7 @@ function outcomeLabel(outcome: Outcome): string {
     receipt: 'both sides confirmed',
     flake: 'no-show, confirmed',
     withdrawn: 'you withdrew before the 2h cutoff',
-    disputed: 'reports conflicted — no penalty',
+    disputed: 'reports conflicted · no penalty',
     unverified: 'awaiting reports',
   }[outcome];
 }

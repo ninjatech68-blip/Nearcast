@@ -459,7 +459,7 @@ export const me = {
   areas: 'indiranagar, koramangala, hsr · always approximate',
   quietHours: '10pm to 7am',
   blocked: 'nobody',
-  privacy: 'casts carry the neighbourhood, never an exact spot — the app never has one. sort out exactly where in chat; it lives in-app, numbers never change hands.',
+  privacy: 'casts carry the neighbourhood, never an exact spot. the app never has one. sort out exactly where in chat; it lives in-app, numbers never change hands.',
 };
 
 

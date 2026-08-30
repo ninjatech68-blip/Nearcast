@@ -26,11 +26,11 @@ export default function PrivacyScreen() {
           <Item>your first name</Item>
           <Item>a note you wrote when you asked to join</Item>
           <Item>your public signal + receipts, on tap</Item>
-          <Item>the neighborhood name — never an exact place; the app never stores one</Item>
+          <Item>the neighborhood name, never an exact place; the app never stores one</Item>
         </Section>
 
         <Section h="where you meet">
-          <Item>the app never holds an exact spot. you agree where to meet in chat, after you match — like any conversation.</Item>
+          <Item>the app never holds an exact spot. you agree where to meet in chat, after you match, like any conversation.</Item>
         </Section>
 
         <Section h="what only YOU see">
@@ -41,20 +41,20 @@ export default function PrivacyScreen() {
 
         <Section h="chat + notifications">
           <Item>chat lives in-app. no numbers change hands, ever.</Item>
-          <Item>push and analytics never carry message text or plan details — only ids.</Item>
+          <Item>push and analytics never carry message text or plan details. only ids.</Item>
           <Item>chats expire by default. either side can end one, and it does not reopen.</Item>
         </Section>
 
         <Section h="blocks + reports">
-          <Item>a block is silent to the blocked person. their casts never reach you again — even friend-of-a-friend.</Item>
+          <Item>a block is silent to the blocked person. their casts never reach you again, even friend-of-a-friend.</Item>
           <Item>a report is read by a human. the person you reported never learns it was you.</Item>
         </Section>
 
         <Section h="deletion">
-          <Item>signing out clears your device state. account deletion removes your profile and unpublishes your casts — chats you were in become read-only for the other side, then delete on their next open.</Item>
+          <Item>signing out clears your device state. account deletion removes your profile and unpublishes your casts. chats you were in become read-only for the other side, then delete on their next open.</Item>
         </Section>
 
-        <Text style={styles.footer}>this page is what the app does. if the app does something different, that&apos;s a bug — report it.</Text>
+        <Text style={styles.footer}>this page is what the app does. if the app does something different, that&apos;s a bug. report it.</Text>
       </ScrollView>
 
       <View style={styles.actions}>

@@ -42,8 +42,8 @@ export default function JoinScreen() {
       setState('idle');
       setError(
         result.reason === 'offline'
-          ? "you're offline. your note is still here — tap when you're back."
-          : "that didn't send. your note is still here — tap to try again.",
+          ? "you're offline. your note is still here. tap when you're back."
+          : "that didn't send. your note is still here. tap to try again.",
       );
       return;
     }

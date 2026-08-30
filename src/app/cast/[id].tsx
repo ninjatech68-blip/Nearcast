@@ -78,7 +78,7 @@ export default function CastDetailScreen() {
 
         {cast.body !== cast.text ? <Text style={styles.body}>{cast.body}</Text> : null}
         {cast.why ? <Text style={styles.why}>why you: {cast.why}</Text> : null}
-        <SheetNote>casts show the neighbourhood, never an exact spot. you sort out exactly where in chat — it&apos;s in-app, nobody swaps numbers.</SheetNote>
+        <SheetNote>casts show the neighbourhood, never an exact spot. you sort out exactly where in chat. it&apos;s in-app, nobody swaps numbers.</SheetNote>
       </ScrollView>
       <View style={styles.actions}>{renderActions()}</View>
     </SheetShell>
@@ -97,7 +97,7 @@ export default function CastDetailScreen() {
     if (asked) {
       return (
         <>
-          <Text style={styles.askedLine}>{`you asked to join. ${cast.by.toLowerCase()} decides — you'll hear in activity.`}</Text>
+          <Text style={styles.askedLine}>{`you asked to join. ${cast.by.toLowerCase()} decides. you'll hear in activity.`}</Text>
           <BarButton label="back" variant="onCream" onPress={() => router.back()} />
           <QuietAction label="withdraw request" color={tokens.semantic.color.ink} onPress={openWithdraw} />
         </>

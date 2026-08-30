@@ -189,7 +189,7 @@ export default function OnboardingScreen() {
             <>
               <Text accessibilityRole="header" style={styles.title}>where&apos;s home, roughly?</Text>
               <Text style={styles.hint}>
-                the neighbourhood, not the address — we keep it approximate. we fill this in from your location; tap
+                the neighbourhood, not the address. we keep it approximate. we fill this in from your location; tap
                 to change it on the map.
               </Text>
               {/* auto-filled from the device, a picker to change it.
@@ -212,9 +212,9 @@ export default function OnboardingScreen() {
                     {homeStatus === 'located'
                       ? 'from your location · tap to change'
                       : homeStatus === 'denied'
-                        ? 'location is off — tap to choose on the map'
+                        ? 'location is off · tap to choose on the map'
                         : homeStatus === 'error'
-                          ? "couldn't detect — tap to choose on the map"
+                          ? "couldn't detect · tap to choose on the map"
                           : 'tap to choose on the map'}
                   </Text>
                 </View>
@@ -283,7 +283,7 @@ export default function OnboardingScreen() {
               <Text accessibilityRole="header" style={styles.title}>two pings. that&apos;s it.</Text>
               <Text style={styles.hint}>
                 when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever.
-                a ping never carries the note, the place, or who it&apos;s from — that stays in the app. off whenever
+                a ping never carries the note, the place, or who it&apos;s from. that stays in the app. off whenever
                 you like.
               </Text>
             </>

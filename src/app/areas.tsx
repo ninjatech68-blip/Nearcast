@@ -55,7 +55,7 @@ export default function AreasScreen() {
             ) : null}
           </View>
 
-          <SheetNote>casts show the neighbourhood only — an exact spot is never stored. you settle exactly where in chat, once you&apos;ve matched.</SheetNote>
+          <SheetNote>casts show the neighbourhood only. an exact spot is never stored. you settle exactly where in chat, once you&apos;ve matched.</SheetNote>
         </ScrollView>
 
         <View style={styles.actions}>

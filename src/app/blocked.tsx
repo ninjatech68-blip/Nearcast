@@ -39,10 +39,10 @@ export default function BlockedScreen() {
   return (
     <SheetShell title="blocked">
       <ScrollView showsVerticalScrollIndicator={false} style={styles.flex}>
-        <Text style={styles.hint}>blocking is silent — they see nothing change. their casts never reach you again.</Text>
+        <Text style={styles.hint}>blocking is silent. they see nothing change. their casts never reach you again.</Text>
 
         {rows.length === 0 ? (
-          <Text style={styles.empty}>nobody blocked. good — this list should stay short.</Text>
+          <Text style={styles.empty}>nobody blocked. good. this list should stay short.</Text>
         ) : (
           <View style={styles.rows}>
             {rows.map(({ id, person }) => (
@@ -55,7 +55,7 @@ export default function BlockedScreen() {
                 />
                 <View style={styles.rowMid}>
                   <Text style={styles.name}>{person?.name ?? "a blocked person"}</Text>
-                  <Text style={styles.area}>{person?.area ?? 'blocked — silent to them'}</Text>
+                  <Text style={styles.area}>{person?.area ?? 'blocked · silent to them'}</Text>
                 </View>
                 <Pressable
                   accessibilityRole="button"

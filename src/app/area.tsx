@@ -324,7 +324,7 @@ export default function AreaScreen() {
                 <Row
                   key={area}
                   title={area}
-                  sub={selected === area ? 'pinned on the map — tap use it below' : 'tap to pin · tap use it to choose'}
+                  sub={selected === area ? 'pinned on the map · tap use it below' : 'tap to pin · tap use it to choose'}
                   onPress={() => tap(area)}
                 />
               ))}

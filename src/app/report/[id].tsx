@@ -100,7 +100,7 @@ export default function ReportScreen() {
             style={styles.blockRow}
           >
             <View style={[styles.box, alsoBlock && styles.boxOn]}>{alsoBlock ? <Text style={styles.check}>✓</Text> : null}</View>
-            <Text style={styles.blockText}>also block {name} — recommended</Text>
+            <Text style={styles.blockText}>also block {name} · recommended</Text>
           </Pressable>
 
           <SheetNote>

@@ -62,7 +62,7 @@ export default function DeleteAccountScreen() {
       <SheetShell title="delete account">
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" style={styles.flex}>
           <Text style={styles.lead}>
-            {me.email ? `${me.email} — ` : ''}this removes your profile and takes down everything you have out.
+            {me.email ? `${me.email}. ` : ''}this removes your profile and takes down everything you have out.
           </Text>
 
           <Section h="WHAT GOES">
@@ -75,7 +75,7 @@ export default function DeleteAccountScreen() {
           <Section h="WHAT STAYS, AND WHY">
             <Item>
               messages you sent stay in the other person&apos;s chat. we cannot reach into someone else&apos;s history and
-              edit it — but your name comes off them.
+              edit it, but your name comes off them.
             </Item>
             <Item>
               receipts stay on the plans they belong to. a receipt is a fact two people confirmed together; deleting your

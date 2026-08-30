@@ -10,7 +10,7 @@ export default function TermsScreen() {
     <SheetShell title="terms">
       <ScrollView showsVerticalScrollIndicator={false} style={styles.flex}>
         <Section h="what nearcast is">
-          Nearcast is a place to post a plan and let people you already trust — or people one trusted link away — say they&apos;re in. It is not a follower graph, a rating app, or a broadcast surface.
+          Nearcast is a place to post a plan and let people you already trust, or people one trusted link away, say they&apos;re in. It is not a follower graph, a rating app, or a broadcast surface.
         </Section>
 
         <Section h="what you agree to">
@@ -22,14 +22,14 @@ export default function TermsScreen() {
         </Section>
 
         <Section h="what we can&apos;t do">
-          Sell your data. Share your identity or plans with anyone outside the plan. Change these terms silently — updates go in-app with a clear diff.
+          Sell your data. Share your identity or plans with anyone outside the plan. Change these terms silently. Updates go in-app with a clear diff.
         </Section>
 
         <Section h="disputes">
-          If something goes wrong, tell us. Reports go to a human — nothing is auto-actioned. If you disagree with a decision, you can ask for a review.
+          If something goes wrong, tell us. Reports go to a human. Nothing is auto-actioned. If you disagree with a decision, you can ask for a review.
         </Section>
 
-        <Text style={styles.footer}>this is the short version. the long version reads the same — we&apos;ll never hide a rule in fine print.</Text>
+        <Text style={styles.footer}>this is the short version. the long version reads the same. we&apos;ll never hide a rule in fine print.</Text>
       </ScrollView>
 
       <View style={styles.actions}>

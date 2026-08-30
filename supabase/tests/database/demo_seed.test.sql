@@ -48,7 +48,7 @@ select is(
   1, 'a demo cast reaches a tester with no place/interest/circle match');
 select is(
   (select reason_text from public.my_feed() where intent_id='11111111-0000-0000-0000-0000000000d1'),
-  'demo cast — shown to every tester', 'and carries an honest demo reason');
+  'demo cast · shown to every tester', 'and carries an honest demo reason');
 select is(
   (select count(*)::int from public.my_feed() where intent_id='22222222-0000-0000-0000-0000000000f1'),
   0, 'a real out-of-radius, wrong-interest cast does NOT reach the tester');

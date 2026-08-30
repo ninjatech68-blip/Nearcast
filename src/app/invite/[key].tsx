@@ -86,8 +86,8 @@ export default function InviteScreen() {
       haptic('warning');
       setError(
         result.reason === 'offline'
-          ? "you're offline. they're still waiting — try again when you're back."
-          : "that didn't go through. they're still waiting — tap to try again.",
+          ? "you're offline. they're still waiting. try again when you're back."
+          : "that didn't go through. they're still waiting. tap to try again.",
       );
       return;
     }
@@ -133,7 +133,7 @@ export default function InviteScreen() {
             section label where testers missed it. */}
         <View style={styles.noteCard}>
           <Text style={styles.noteText}>{join.note}</Text>
-          <Text style={styles.noteWho}>— {person.name}</Text>
+          <Text style={styles.noteWho}>from {person.name}</Text>
         </View>
         {meta ? <Text style={styles.meta}>{meta}</Text> : null}
 
@@ -154,7 +154,7 @@ export default function InviteScreen() {
           </Pressable>
         ) : null}
 
-        <SheetNote>{`accepting opens a chat with ${person.name} — that is where you settle where and when. declining is silent — they see nothing change.`}</SheetNote>
+        <SheetNote>{`accepting opens a chat with ${person.name}. that is where you settle where and when. declining is silent: they see nothing change.`}</SheetNote>
       </ScrollView>
 
       <View style={styles.actions}>

@@ -113,7 +113,7 @@ const SEED_STATE: State = {
       mode: 'day' as const,
       expiresLabel: '22h left',
       messages: [
-        { id: 'm1', from: 'them', text: 'saw your cast — i’m in', time: '5:02 pm' },
+        { id: 'm1', from: 'them', text: 'saw your cast, i’m in', time: '5:02 pm' },
         { id: 'm2', from: 'me', text: 'nice. court’s booked 7–8', time: '5:04 pm', status: 'read' },
         { id: 'm3', from: 'them', text: 'can do 7:00 pm', time: '5:05 pm' },
         { id: 'm4', from: 'me', text: 'perfect, bring water. it’s ₹80 split', time: '5:06 pm', status: 'read' },

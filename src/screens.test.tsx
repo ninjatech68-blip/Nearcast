@@ -272,7 +272,7 @@ describe('you sheet', () => {
     // and named a reach model that no longer exists. it must be gone.
     expect(view.queryByText(/reaches ~\d+ people/)).toBeNull();
     expect(view.queryByText(/range:/)).toBeNull();
-    expect(view.getByText(/never an exact spot — the app never has one/)).toBeTruthy();
+    expect(view.getByText(/never an exact spot\. the app never has one/)).toBeTruthy();
   });
 });
 
@@ -502,7 +502,7 @@ describe('chat', () => {
     const view = await render(<ChatScreen />);
 
     expect(view.getByText('you matched. earlier messages are here for context.')).toBeTruthy();
-    expect(view.getByText('saw your cast — i’m in')).toBeTruthy();
+    expect(view.getByText('saw your cast, i’m in')).toBeTruthy();
     expect(view.getByText('done. see you at the gate')).toBeTruthy();
 
     const send = view.getByRole('button', { name: 'send' });

@@ -258,7 +258,7 @@ function FeedEmpty({
         <Text style={styles.emptyHead}>{failed ? "couldn't load." : loading ? 'loading…' : 'quiet.'}</Text>
         <Text style={styles.emptySub}>
           {failed
-            ? "we couldn't reach the server. this isn't an empty feed — we don't know what's out there yet."
+            ? "we couldn't reach the server. this isn't an empty feed. we don't know what's out there yet."
             : loading
               ? 'finding what was cast near you.'
               : filtered

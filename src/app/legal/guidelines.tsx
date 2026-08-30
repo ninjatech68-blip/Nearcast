@@ -25,15 +25,15 @@ export default function GuidelinesScreen() {
         </Section>
 
         <Section h="rarely">
-          <Item>cancel after the 2h cutoff — the others count on you by then</Item>
-          <Item>flake without a note — silence is the worst part</Item>
+          <Item>cancel after the 2h cutoff. the others count on you by then</Item>
+          <Item>flake without a note. silence is the worst part</Item>
           <Item>extend a chat you don&apos;t need</Item>
         </Section>
 
         <Section h="always">
           <Item>show up when you say you will</Item>
-          <Item>agree where to meet in chat, once you&apos;ve matched — not before</Item>
-          <Item>report anything that felt off — a human reads every one</Item>
+          <Item>agree where to meet in chat, once you&apos;ve matched, not before</Item>
+          <Item>report anything that felt off. a human reads every one</Item>
         </Section>
 
         <Section h="what removal looks like">
@@ -42,7 +42,7 @@ export default function GuidelinesScreen() {
           <Item>third: account removed. all chats you were in become read-only for the other side, then delete on their next open.</Item>
         </Section>
 
-        <Text style={styles.footer}>these aren&apos;t the whole picture. if you&apos;re not sure, err toward not doing it — and tell us if the rules made you second-guess something honest.</Text>
+        <Text style={styles.footer}>these aren&apos;t the whole picture. if you&apos;re not sure, err toward not doing it, and tell us if the rules made you second-guess something honest.</Text>
       </ScrollView>
 
       <View style={styles.actions}>
