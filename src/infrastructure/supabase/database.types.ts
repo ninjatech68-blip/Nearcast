@@ -963,6 +963,13 @@ export type Database = {
           statement: string
         }[]
       }
+      confirm_intent: {
+        Args: { requested_share_slug: string }
+        Returns: {
+          confirmation_count: number
+          viewer_has_confirmed: boolean
+        }[]
+      }
       publish_intent: {
         Args: {
           context_approximate_place?: string

@@ -32,13 +32,21 @@ export function deriveMembership(input: {
   return input.hasProfile ? 'member' : 'awaiting_invite';
 }
 
-/** Routes reachable without a redeemed invitation. */
-const PUBLIC_SEGMENTS = new Set(['sign-in', 'invite']);
+/**
+ * The join routes. Reachable without a redeemed invitation, and left behind
+ * once there is one.
+ */
+const JOIN_SEGMENTS = new Set(['sign-in', 'invite']);
 
-function isPublicRoute(segments: readonly string[]): boolean {
-  const [first] = segments;
+/**
+ * Open to everyone, members and strangers alike. MUST-022 requires a link
+ * recipient to read the public intent before installing or signing up, so this
+ * route is never redirected away from in either direction.
+ */
+const OPEN_SEGMENTS = new Set(['i']);
 
-  return first !== undefined && PUBLIC_SEGMENTS.has(first);
+function firstSegment(segments: readonly string[]): string | undefined {
+  return segments[0];
 }
 
 /**
@@ -51,7 +59,11 @@ export function resolveRedirect(
 ): string | null {
   if (membership === 'loading') return null;
 
-  if (isPublicRoute(segments)) {
+  const first = firstSegment(segments);
+
+  if (first !== undefined && OPEN_SEGMENTS.has(first)) return null;
+
+  if (first !== undefined && JOIN_SEGMENTS.has(first)) {
     return membership === 'member' ? '/' : null;
   }
 

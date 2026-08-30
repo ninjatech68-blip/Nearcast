@@ -80,6 +80,7 @@ function AppStack() {
       <Stack.Screen name="room/[id]" options={{ title: 'Coordination room' }} />
       <Stack.Screen name="sign-in" options={{ headerShown: false }} />
       <Stack.Screen name="invite/[token]" options={{ headerShown: false }} />
+      <Stack.Screen name="i/[shareSlug]" options={{ headerShown: false }} />
     </Stack>
   );
 }

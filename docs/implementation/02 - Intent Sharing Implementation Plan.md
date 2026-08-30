@@ -93,10 +93,38 @@ broadcast. Private values are written to `intent_private` and never to
 
 **Files:** `src/app/i/[shareSlug].tsx`, `src/features/sharing/`, `supabase/functions/confirm-intent/`
 
-- [ ] Test anonymous projection contains only the API contract fields.
-- [ ] Add universal link routing and WhatsApp/system share action.
-- [ ] Require authentication for one genuine confirmation per user and forbid self-confirmation.
-- [ ] Render honest zero/one/many confirmation states without origin membership.
+- [x] Test anonymous projection contains only the API contract fields.
+- [x] Add universal link routing and WhatsApp/system share action.
+- [x] Require authentication for one genuine confirmation per user and forbid self-confirmation.
+- [x] Render honest zero/one/many confirmation states without origin membership.
+
+The projection's field list is pinned as a set in pgTAP, so a future change that
+adds `broadcaster_id` or an address column fails loudly rather than leaking
+quietly. The client parses the response through a strict schema that drops any
+field the projection should not have carried.
+
+A privacy defect was fixed here. The foundation policy
+`confirmations_read_visible_intent` let any authenticated user read every row of
+`intent_confirmations`, which hands over the confirmer identities for any
+intent, precisely the origin-circle membership MUST-023 says must not be
+revealed. Reading is now narrowed to the viewer's own row, which is the only
+identity they already know. The aggregate reaches the public projection through
+`get_public_intent`, which returns a number and never a list. The insert policy
+also gained the expiry and public-link checks it was missing.
+
+`confirm_intent` is addressed by share slug, because that is what a link
+recipient holds. The primary key on `(intent_id, confirmer_id)` is what makes a
+count "unique, authenticated people" per MUST-024; the function is idempotent on
+top of it, so a double tap confirms once. A broadcaster cannot confirm their own
+intent, which would be fabricating support.
+
+The share message carries the statement and the link and nothing else: no
+approximate place, no first name, no confirmation count, because a share sheet
+forwards into groups Nearcast cannot see. No copy anywhere implies a WhatsApp
+group is vouched for, per MUST-025.
+
+The public link route is open in both directions: a signed-out reader is not
+redirected to sign-in, per MUST-022, and a member is not bounced home.
 
 ## Task 5: Owner Lifecycle
 
@@ -118,3 +146,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | 2026-08-30 | Completed invitation-gated email one-time-code authentication |
 | 2026-08-30 | Completed local intent drafting and review with a public/private draft split |
 | 2026-08-30 | Completed the publish transaction as a database function with idempotent retries |
+| 2026-08-30 | Completed the public link and confirmation, and closed a confirmer-identity leak in the foundation policies |

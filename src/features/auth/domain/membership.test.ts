@@ -55,7 +55,13 @@ describe('route access', () => {
     expect(resolveRedirect('awaiting_invite', ['invite', 'token-1'])).toBeNull();
   });
 
-  it('moves a member off the public routes and leaves them alone elsewhere', () => {
+  it('leaves the public intent link open to everyone, in both directions', () => {
+    expect(resolveRedirect('signed_out', ['i', 'slug-1'])).toBeNull();
+    expect(resolveRedirect('awaiting_invite', ['i', 'slug-1'])).toBeNull();
+    expect(resolveRedirect('member', ['i', 'slug-1'])).toBeNull();
+  });
+
+  it('moves a member off the join routes and leaves them alone elsewhere', () => {
     expect(resolveRedirect('member', ['sign-in'])).toBe('/');
     expect(resolveRedirect('member', ['invite', 'token-1'])).toBe('/');
     expect(resolveRedirect('member', ['(tabs)'])).toBeNull();
