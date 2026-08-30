@@ -29,6 +29,8 @@ export type RemoteConversation = {
   /** an open request for a LONGER window, waiting on the other side */
   proposed_mode: 'week' | 'always' | null;
   proposed_by_me: boolean | null;
+  /** how many plans this one chat now spans (a pair can match on several) */
+  plan_count: number | null;
 };
 
 export type RemoteMessage = {
@@ -244,6 +246,28 @@ export async function setMode(
  * always what the database actually holds (and what RLS actually
  * permits this viewer to see). Returns an unsubscribe.
  */
+/**
+ * Wake on activity that changes what is waiting for you, app-wide:
+ * a new response on any cast (a request, an accept), and any new
+ * message. RLS scopes both, so you only ever wake for your own. The
+ * handler just says "something changed"; the caller re-reads through the
+ * RPCs, keeping the database the source of truth and Realtime the nudge.
+ *
+ * Returns an unsubscribe, and a no-op one with no backend.
+ */
+export function subscribeToMyActivity(onChange: () => void): () => void {
+  const c = getSupabase();
+  if (!c) return () => undefined;
+  const channel: RealtimeChannel = c
+    .channel('my-activity')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'responses' }, () => onChange())
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => onChange())
+    .subscribe();
+  return () => {
+    void c.removeChannel(channel);
+  };
+}
+
 export function subscribeToConversation(
   conversationId: string,
   onInsert: () => void,

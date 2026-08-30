@@ -18,6 +18,8 @@ import { useProfileSync } from '@/features/me/use-profile-sync';
 import { restoreSession } from '@/features/auth/auth';
 import { configureNotifications, refreshPushRegistration } from '@/features/notifications/push';
 import { useNotificationRouting } from '@/features/notifications/routing';
+import { subscribeToActivity } from '@/features/chat/chat';
+import { refreshInteractions } from '@/features/casts/store';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
 // expo-router renders this instead of a blank white screen when a route
@@ -38,6 +40,16 @@ export default function RootLayout() {
   // a tapped push lands on activity with fresh rows; one that arrives
   // while the app is open refreshes what is already on screen.
   useNotificationRouting();
+
+  // live in-app updates: a request or message elsewhere refreshes the
+  // rail count and activity without waiting for a pull. only while
+  // signed in; torn down on sign-out.
+  useEffect(() => {
+    if (!me.signedIn) return;
+    return subscribeToActivity(() => {
+      void refreshInteractions();
+    });
+  }, [me.signedIn]);
 
   useEffect(() => {
     let isMounted = true;
@@ -162,6 +174,7 @@ export default function RootLayout() {
       <Stack.Screen name="onboarding" options={{ presentation: 'card', gestureEnabled: false, animation: 'fade' }} />
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="profile-edit" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="pick-location" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
       <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
       <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />

@@ -280,7 +280,11 @@ export function ActivityPage() {
                   <Row
                     key={`chat-${chat.conversationId}`}
                     title={chat.withName}
-                    sub={`"${chat.castTitle}" · ${chat.ended ? 'ended' : chat.lastMessage}`}
+                    sub={
+                      chat.planCount > 1
+                        ? `${chat.planCount} plans · ${chat.ended ? 'ended' : chat.lastMessage}`
+                        : `"${chat.castTitle}" · ${chat.ended ? 'ended' : chat.lastMessage}`
+                    }
                     left={
                       <Face
                         photo={facePhotos[chat.withId]}
@@ -321,8 +325,8 @@ export function ActivityPage() {
                       .map((chat) => (
                         <Row
                           key={`in-${chat.conversationId}`}
-                          title={chat.castTitle}
-                          sub={`with ${chat.withName}`}
+                          title={chat.planCount > 1 ? `${chat.planCount} plans with ${chat.withName}` : chat.castTitle}
+                          sub={chat.planCount > 1 ? chat.castTitle : `with ${chat.withName}`}
                           left={
                             <Face
                               photo={facePhotos[chat.withId]}

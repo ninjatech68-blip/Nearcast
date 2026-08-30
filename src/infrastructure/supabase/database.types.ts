@@ -175,6 +175,8 @@ export type Database = {
           id: string
           match_id: string
           mode: Database["public"]["Enums"]["conversation_mode"]
+          person_high: string | null
+          person_low: string | null
           proposed_at: string | null
           proposed_by: string | null
           proposed_mode: Database["public"]["Enums"]["conversation_mode"] | null
@@ -186,6 +188,8 @@ export type Database = {
           id?: string
           match_id: string
           mode?: Database["public"]["Enums"]["conversation_mode"]
+          person_high?: string | null
+          person_low?: string | null
           proposed_at?: string | null
           proposed_by?: string | null
           proposed_mode?:
@@ -198,6 +202,8 @@ export type Database = {
           id?: string
           match_id?: string
           mode?: Database["public"]["Enums"]["conversation_mode"]
+          person_high?: string | null
+          person_low?: string | null
           proposed_at?: string | null
           proposed_by?: string | null
           proposed_mode?:
@@ -209,6 +215,20 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: true
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_person_high_fkey"
+            columns: ["person_high"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_person_low_fkey"
+            columns: ["person_low"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -539,6 +559,7 @@ export type Database = {
           broadcaster_id: string
           cancelled_at: string | null
           closed_at: string | null
+          conversation_id: string | null
           created_at: string
           id: string
           intent_id: string
@@ -549,6 +570,7 @@ export type Database = {
           broadcaster_id: string
           cancelled_at?: string | null
           closed_at?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
           intent_id: string
@@ -559,6 +581,7 @@ export type Database = {
           broadcaster_id?: string
           cancelled_at?: string | null
           closed_at?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
           intent_id?: string
@@ -571,6 +594,13 @@ export type Database = {
             columns: ["broadcaster_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
           {
@@ -1017,6 +1047,7 @@ export type Database = {
           broadcaster_id: string
           cancelled_at: string | null
           closed_at: string | null
+          conversation_id: string | null
           created_at: string
           id: string
           intent_id: string
@@ -1153,6 +1184,7 @@ export type Database = {
           other_first_name: string
           other_id: string
           other_last_read_at: string
+          plan_count: number
           proposed_by_me: boolean
           proposed_mode: Database["public"]["Enums"]["conversation_mode"]
           unread_count: number

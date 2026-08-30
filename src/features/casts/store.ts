@@ -4,6 +4,7 @@ import { category as categoryTokens, type Category } from '@/design-system/token
 import { deliveryFor, type ViewerContext } from './domain/delivery';
 import { DEFAULT_RADIUS_KM } from './domain/geo';
 import { expiryLabel, fetchFeed, publishCast, remoteEnabled } from './remote';
+import { geocodeArea } from './geocode';
 import {
   acceptResponse,
   declineResponse,
@@ -596,12 +597,26 @@ export type AddCastInput = {
  */
 export async function addCast(input: AddCastInput): Promise<void> {
   if (remoteEnabled()) {
+    // radius can only gate a cast that HAS a point. the picker sets one,
+    // but if a cast reaches here without one (a name typed and never
+    // resolved), geocode the name so the cast still carries a centroid
+    // and distance actually applies — otherwise delivery falls back to
+    // matching the place NAME, which ignores the radius entirely.
+    let latitude = input.latitude ?? null;
+    let longitude = input.longitude ?? null;
+    if ((latitude === null || longitude === null) && input.area.trim()) {
+      const resolved = await geocodeArea(input.area.trim());
+      if (resolved) {
+        latitude = resolved.latitude;
+        longitude = resolved.longitude;
+      }
+    }
     await publishCast({
       category: input.category,
       text: input.text,
       area: input.area,
-      latitude: input.latitude ?? null,
-      longitude: input.longitude ?? null,
+      latitude,
+      longitude,
       radiusKm: input.radiusKm ?? DEFAULT_RADIUS_KM,
       startsAt: input.startsAt ?? null,
       expiresAt: input.expiresAt ?? defaultExpiry(),

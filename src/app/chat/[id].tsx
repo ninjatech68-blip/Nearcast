@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -35,7 +34,6 @@ import {
   openConversation,
   refreshConversationMessages,
   retryMessage,
-  sendLocationMessage,
   sendMediaMessageToThread,
   sendMessage,
   useThread,
@@ -132,23 +130,6 @@ export default function ChatScreen() {
     }
   }
 
-  async function shareLocation() {
-    haptic('light');
-    setSendError(null);
-    try {
-      const permission = await Location.requestForegroundPermissionsAsync();
-      if (!permission.granted) {
-        setSendError('location is off. turn it on to share where you are.');
-        return;
-      }
-      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      await sendLocationMessage(thread!.id, pos.coords.latitude, pos.coords.longitude);
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
-    } catch {
-      setSendError("couldn't share your location. try again.");
-    }
-  }
-
   /**
    * The + menu.
    *
@@ -172,7 +153,9 @@ export default function ChatScreen() {
   function chooseAttachment(kind: 'camera' | 'library' | 'location') {
     setAttachOpen(false);
     if (kind === 'location') {
-      void shareLocation();
+      // a map picker, not an outright current-location send: you are
+      // usually planning a spot you are not standing in.
+      router.push(`/pick-location?conversation=${thread!.id}`);
       return;
     }
     void pickMedia(kind);
@@ -301,7 +284,7 @@ export default function ChatScreen() {
                 {thread.withName}
               </Text>
               <Text style={styles.sub} numberOfLines={1}>
-                {thread.castTitle}
+                {thread.planCount > 1 ? `${thread.planCount} plans together` : thread.castTitle}
               </Text>
             </View>
           </Pressable>

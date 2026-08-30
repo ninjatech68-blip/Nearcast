@@ -20,6 +20,7 @@ import {
   respondToModeProposal,
   setMode,
   subscribeToConversation,
+  subscribeToMyActivity,
   type LocalMedia,
   type RemoteConversation,
   type RemoteMessage,
@@ -82,6 +83,8 @@ export type Thread = {
   mode: ExpiryMode;
   /** display label for the current expiry — a frozen fallback for the list row */
   expiresLabel: string;
+  /** plans this chat spans; >1 means more than one shared plan */
+  planCount: number;
   /**
    * the raw expiry, so the chat header can count down live rather than
    * showing a number frozen at load. null for an open or not-yet-set
@@ -105,6 +108,8 @@ export type ConversationSummary = {
   lastMessage: string;
   unread: number;
   ended: boolean;
+  /** plans this chat spans; >1 means the pair matched on more than one */
+  planCount: number;
 };
 
 type State = { threads: Record<string, Thread>; list: readonly ConversationSummary[] };
@@ -119,6 +124,7 @@ const SEED_STATE: State = {
       mode: 'day' as const,
       expiresLabel: '22h left',
       expiresAt: new Date(Date.now() + 22 * 3_600_000).toISOString(),
+      planCount: 1,
       messages: [
         { id: 'm1', from: 'them', text: 'saw your cast, i’m in', time: '5:02 pm' },
         { id: 'm2', from: 'me', text: 'nice. court’s booked 7–8', time: '5:04 pm', status: 'read' },
@@ -222,6 +228,7 @@ function buildThread(meta: RemoteConversation, rows: readonly RemoteMessage[]): 
     mode: meta.mode,
     expiresLabel: expiresLabelFor(meta.mode, meta.expires_at),
     expiresAt: meta.mode === 'always' ? null : meta.expires_at,
+    planCount: meta.plan_count ?? 1,
     messages: rows.map((row) => toMessage(row, meta.other_last_read_at)),
   };
 }
@@ -253,6 +260,19 @@ export function useConversations(): readonly ConversationSummary[] {
   return useSyncExternalStore(subscribe, () => state.list);
 }
 
+/**
+ * Live in-app updates: when a request or a message lands anywhere that
+ * concerns you, pull the interaction state and the chat list so the
+ * activity page and the rail count move on their own, without a manual
+ * refresh. Mounted once in the shell; a no-op with no backend.
+ */
+export function subscribeToActivity(onRefresh: () => void): () => void {
+  return subscribeToMyActivity(() => {
+    void refreshConversations();
+    onRefresh();
+  });
+}
+
 /** pull my chat list (backend mode); drives the activity CHATS section. */
 export async function refreshConversations(): Promise<void> {
   if (!chatEnabled()) return;
@@ -267,6 +287,7 @@ export async function refreshConversations(): Promise<void> {
       lastMessage: row.last_message ?? 'say hi',
       unread: row.unread_count,
       ended: row.mode === 'ended',
+      planCount: row.plan_count ?? 1,
     }));
     state = { ...state, list };
     emit();

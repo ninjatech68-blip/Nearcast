@@ -14,8 +14,13 @@ insert into public.responses (id, intent_id, respondent_id, message, status) val
   ('aaaaaaaa-0000-0000-0000-0000000000b1','aaaaaaaa-0000-0000-0000-0000000000a1','00000000-0000-0000-0000-0000000000e2','in','accepted');
 insert into public.matches (id, intent_id, response_id, broadcaster_id, participant_id) values
   ('bbbbbbbb-0000-0000-0000-0000000000a1','aaaaaaaa-0000-0000-0000-0000000000a1','aaaaaaaa-0000-0000-0000-0000000000b1','00000000-0000-0000-0000-0000000000e1','00000000-0000-0000-0000-0000000000e2');
-insert into public.conversations (id, match_id, mode, expires_at) values
-  ('cccccccc-0000-0000-0000-0000000000a1','bbbbbbbb-0000-0000-0000-0000000000a1','day', now()+interval '1 day');
+insert into public.conversations (id, match_id, person_low, person_high, mode, expires_at) values
+  ('cccccccc-0000-0000-0000-0000000000a1','bbbbbbbb-0000-0000-0000-0000000000a1',
+   least('00000000-0000-0000-0000-0000000000e1'::uuid,'00000000-0000-0000-0000-0000000000e2'::uuid),
+   greatest('00000000-0000-0000-0000-0000000000e1'::uuid,'00000000-0000-0000-0000-0000000000e2'::uuid),
+   'day', now()+interval '1 day');
+update public.matches set conversation_id = 'cccccccc-0000-0000-0000-0000000000a1'
+  where id = 'bbbbbbbb-0000-0000-0000-0000000000a1';
 
 set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000000e1","role":"authenticated"}';
