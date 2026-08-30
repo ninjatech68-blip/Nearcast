@@ -44,7 +44,7 @@ export default function RecapScreen() {
             expiry: '',
             why: '',
           }}
-          reserveRail={false}
+          reserveDock={false}
           tagLabel={recap.tag}
           topRight={
             <Pressable accessibilityRole="button" accessibilityLabel="close" hitSlop={12} onPress={() => router.back()}>

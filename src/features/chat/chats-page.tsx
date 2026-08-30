@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 
 import { Face } from '@/design-system/components/face';
 import { Page, Quiet } from '@/design-system/components/page';
@@ -23,12 +22,10 @@ import { useRefresher } from '@/infrastructure/net/use-refresher';
  * disappearing. A plan that happened is not a plan that never was.
  */
 export function ChatsPage() {
+  // no mount fetch: the app shell polls conversations while signed in,
+  // and fires once immediately, so a second call here would only ever
+  // duplicate the first request of the session.
   const chats = useConversations();
-
-  useEffect(() => {
-    void refreshConversations();
-  }, []);
-
   const { refreshing, onRefresh } = useRefresher(() => refreshConversations());
 
   return (

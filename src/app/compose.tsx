@@ -120,7 +120,7 @@ export default function ComposeScreen() {
           expiry: goneLabel,
           why: '',
         }}
-        reserveRail={false}
+        reserveDock={false}
         badge={<Stamp label="OUT" color={spec.fg} />}
         topRight={
           <Pressable accessibilityRole="button" accessibilityLabel="close" hitSlop={12} onPress={() => router.back()} style={styles.closeTarget}>

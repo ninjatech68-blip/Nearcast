@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Face } from '@/design-system/components/face';
-import { Page, Quiet } from '@/design-system/components/page';
+import { GroupLabel, Page, Quiet } from '@/design-system/components/page';
 import { Row } from '@/design-system/components/row';
 import { Tag } from '@/design-system/components/tag';
 import { haptic } from '@/design-system/haptics';
@@ -58,9 +58,11 @@ export function AlertsPage() {
   const myCastDetails = useMyCastDetails();
   const [selected, setSelected] = useState<AlertTabId>('needs');
 
+  // only attendance: the shell already polls interactions and
+  // conversations while signed in, and fires once immediately. this page
+  // and chats both mount at launch inside the pager, so repeating those
+  // two here made three identical requests of the same cold start.
   useEffect(() => {
-    void refreshInteractions();
-    void refreshConversations();
     void refreshAttendance();
   }, []);
 
@@ -126,6 +128,9 @@ export function AlertsPage() {
                   accessibilityRole="tab"
                   accessibilityState={{ selected: shown === id }}
                   accessibilityLabel={`${LABEL[id]}, ${counts[id]}`}
+                  // the pill is 38 pt to match the category picker; the
+                  // slop is what actually clears the 44 pt floor.
+                  hitSlop={{ top: 6, bottom: 6 }}
                   onPress={() => {
                     haptic('selection');
                     setSelected(id);
@@ -142,7 +147,9 @@ export function AlertsPage() {
               ))}
             </View>
           ) : (
-            <Text style={styles.lone}>{LABEL[shown].toUpperCase()}</Text>
+            // a real count rides the heading too, so rule 4 holds whether
+            // or not the strip is showing.
+            <GroupLabel label={LABEL[shown]} count={counts[shown]} />
           )}
 
           {shown === 'needs' ? (
@@ -297,11 +304,4 @@ const styles = StyleSheet.create({
   tabCountOn: { backgroundColor: tokens.semantic.color.accent },
   tabCountText: { fontFamily: fontFamily.monoSemi, fontSize: 10, lineHeight: 13, color: tokens.semantic.color.ink },
   tabCountTextOn: { color: tokens.semantic.color.ink },
-  lone: {
-    ...tokens.typography.tagSmall,
-    color: tokens.semantic.color.textMutedOnCream,
-    textTransform: 'uppercase',
-    marginTop: 24,
-    marginBottom: 6,
-  },
 });

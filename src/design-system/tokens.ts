@@ -124,7 +124,8 @@ export type Category = (typeof CATEGORIES)[number];
  * category is the color: each category owns a flat poster field with a
  * declared ink-or-cream foreground. the category NAME always renders in
  * type as well — color is never the only carrier. ink and orange remain
- * the only chrome colors; buttons and the rail never change per category.
+ * the only chrome colors; buttons never change per category. the dock has
+ * no chrome of its own: its marks take the field's own declared foreground.
  */
 export const category: Record<Category, { field: string; fg: string; label: string }> = {
   social: { field: '#FF4D00', fg: primitive.color.ink, label: 'social' },

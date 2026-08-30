@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -92,21 +93,31 @@ export function Dock({
 }) {
   const insets = useSafeAreaInsets();
   const ink = tokens.semantic.color.ink;
+  // memoised: a fresh animated node every render churns the graph for a
+  // value that only ever depends on `blend`.
+  const onField = useMemo(() => Animated.subtract(1, blend), [blend]);
 
   return (
     <View
       pointerEvents="box-none"
       style={[styles.dock, { height: tokens.component.dock.control + insets.bottom, paddingBottom: insets.bottom }]}
     >
-      {/* the two cross-faded colour layers: inactive marks only. */}
+      {/* The two cross-faded colour layers: inactive marks only.
+          Hidden from assistive tech — they are the SAME four marks the
+          pressable row below already labels, so leaving them visible to
+          VoiceOver announced every destination three times. */}
       <Animated.View
         pointerEvents="none"
-        style={[styles.layer, { paddingBottom: insets.bottom, opacity: subtractFrom1(blend) }]}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        style={[styles.layer, { paddingBottom: insets.bottom, opacity: onField }]}
       >
         <MarkRow current={current} fg={fieldFg} initials={initials} photo={photo} />
       </Animated.View>
       <Animated.View
         pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
         style={[styles.layer, { paddingBottom: insets.bottom, opacity: blend }]}
       >
         <MarkRow current={current} fg={ink} initials={initials} photo={photo} />
@@ -231,7 +242,7 @@ function Mark({
 function Count({ value }: { value: number }) {
   if (value <= 0) return null;
   return (
-    <View style={styles.count} pointerEvents="none">
+    <View style={styles.count} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Text style={styles.countText} numberOfLines={1}>
         {value > 9 ? '9+' : value}
       </Text>
@@ -243,13 +254,6 @@ function labelFor(slot: Extract<Slot, { kind: 'page' | 'avatar' }>, chats: numbe
   const n = slot.page === 'chats' ? chats : slot.page === 'alerts' ? alerts : 0;
   if (n <= 0) return slot.label;
   return `${slot.label}, ${n} waiting`;
-}
-
-/** 1 - blend, without needing the caller to hold a second value. */
-function subtractFrom1(
-  blend: Animated.AnimatedInterpolation<number> | Animated.Value,
-): Animated.AnimatedInterpolation<number> {
-  return Animated.subtract(1, blend) as unknown as Animated.AnimatedInterpolation<number>;
 }
 
 const dock = tokens.component.dock;

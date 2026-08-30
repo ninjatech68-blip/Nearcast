@@ -43,7 +43,7 @@ export default function RootLayout() {
   useNotificationRouting();
 
   // live in-app updates: a request or message elsewhere refreshes the
-  // rail count and activity without waiting for a pull. only while
+  // dock counts and alerts without waiting for a pull. only while
   // signed in; torn down on sign-out.
   useEffect(() => {
     if (!me.signedIn) return;
@@ -54,8 +54,10 @@ export default function RootLayout() {
 
   // the floor under realtime for everything OFF the open chat: requests,
   // accepts, and unread counts. polled while signed in and foregrounded
-  // so the rail badge and activity move on their own even if the socket
-  // is down. a little slower than the chat poll — these are less urgent.
+  // so the dock badges, chats and alerts move on their own even if the
+  // socket is down. this is also the ONLY fetch of these two at launch:
+  // it fires once immediately, so the pages themselves do not repeat it.
+  // a little slower than the chat poll — these are less urgent.
   usePoll(
     () => {
       void refreshInteractions();

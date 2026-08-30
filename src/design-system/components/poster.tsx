@@ -33,7 +33,7 @@ export function Poster({
   topRight,
   children,
   onOpen,
-  reserveRail = true,
+  reserveDock = true,
   badge,
   tagLabel,
   caster,
@@ -44,7 +44,8 @@ export function Poster({
   topRight?: ReactNode;
   children?: ReactNode;
   onOpen?: () => void;
-  reserveRail?: boolean;
+  /** keep the bottom band clear for the dock. false inside a modal, which covers it. */
+  reserveDock?: boolean;
   badge?: ReactNode;
   tagLabel?: string;
   caster?: { line: string; photo?: ImageSourcePropType; initials: string; verified?: boolean };
@@ -73,7 +74,7 @@ export function Poster({
         {
           backgroundColor: spec.field,
           paddingTop: insets.top + 24,
-          paddingBottom: reserveRail ? tokens.component.posterBottomReserve : insets.bottom + 16,
+          paddingBottom: reserveDock ? tokens.component.posterBottomReserve : insets.bottom + 16,
         },
       ]}
     >

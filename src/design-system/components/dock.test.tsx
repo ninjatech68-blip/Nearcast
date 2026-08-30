@@ -73,12 +73,34 @@ describe('dock', () => {
   it('counts only what is waiting, and shows nothing at zero', async () => {
     const quiet = await renderDock({ chatCount: 0, alertCount: 0 });
     expect(quiet.view.getByRole('button', { name: 'chats' })).toBeTruthy();
-    expect(quiet.view.queryByText('0')).toBeNull();
+    expect(quiet.view.queryByText('0', { includeHiddenElements: true })).toBeNull();
 
     const busy = await renderDock({ chatCount: 2, alertCount: 11 });
     expect(busy.view.getByRole('button', { name: 'chats, 2 waiting' })).toBeTruthy();
-    // a real count, capped so it cannot widen the column
-    expect(busy.view.getByText('9+')).toBeTruthy();
+    // the badge caps its width at 9+; the spoken label never rounds, so
+    // a screen reader hears the real number.
+    expect(busy.view.getByText('9+', { includeHiddenElements: true })).toBeTruthy();
+    expect(busy.view.getByRole('button', { name: 'alerts, 11 waiting' })).toBeTruthy();
+  });
+
+  it('announces each destination exactly once, despite the cross-fade layers', async () => {
+    const { view } = await renderDock({ current: 'near', chatCount: 2, alertCount: 3 });
+
+    // Every INACTIVE mark is drawn twice over, once per cross-fade colour
+    // layer; the selected one is drawn once, in the pressable row, since
+    // it is opaque on its accent pill and needs no fading. Without hiding
+    // the faded copies a screen reader walks "chats" three times before
+    // it reaches alerts.
+    for (const label of ['chats', 'alerts', 'you']) {
+      expect(view.queryAllByText(label, { includeHiddenElements: true }).length).toBe(2);
+      expect(view.queryAllByText(label)).toHaveLength(0);
+    }
+    expect(view.queryAllByText('near')).toHaveLength(1);
+    // and each slot is reachable exactly once, through its own control
+    for (const [name, count] of [['near', 0], ['chats', 2], ['alerts', 3], ['you', 0]] as const) {
+      const label = count > 0 ? `${name}, ${count} waiting` : name;
+      expect(view.getAllByRole('button', { name: label })).toHaveLength(1);
+    }
   });
 
   it('routes a tap to the page it names', async () => {

@@ -15,26 +15,26 @@ import { addNotificationListeners } from './push';
  * anything is shown.
  *
  * A tap also has to GO somewhere. Every push we send is about a request
- * or an accept, and both of those live on the activity page, so a tap
- * closes whatever sheet was open and puts the pager on activity. The
+ * or an accept, and both of those land in alerts, so a tap closes
+ * whatever sheet was open and puts the pager on alerts. The
  * payload carries only a kind and ids (product law: no intent text, no
  * message, no coordinates), which is enough to pick the page and not
  * enough to render anything from — the screen reads the real row.
  */
 
 type Listener = () => void;
-const activityListeners = new Set<Listener>();
+const alertsListeners = new Set<Listener>();
 
-/** ask the home pager to show the activity page. */
-export function requestActivityPage(): void {
-  for (const listener of activityListeners) listener();
+/** ask the home pager to show the alerts page. */
+export function requestAlertsPage(): void {
+  for (const listener of alertsListeners) listener();
 }
 
 /** the home pager subscribes; returns its unsubscribe. */
-export function onActivityRequested(listener: Listener): () => void {
-  activityListeners.add(listener);
+export function onAlertsRequested(listener: Listener): () => void {
+  alertsListeners.add(listener);
   return () => {
-    activityListeners.delete(listener);
+    alertsListeners.delete(listener);
   };
 }
 
@@ -61,7 +61,7 @@ export function useNotificationRouting(): void {
             // nothing was open
           }
           router.navigate('/');
-          requestActivityPage();
+          requestAlertsPage();
         },
       }),
     [],

@@ -27,13 +27,19 @@ const SYMBOL: Record<GlyphName, SFSymbol> = {
   camera: 'camera.fill',
 };
 
+/**
+ * Android has no SF Symbols. These are deliberately plain marks in the
+ * app's own mono rather than emoji: an emoji in a nav bar is a different
+ * typeface, a different colour system and a different voice from every
+ * other pixel on the screen.
+ */
 const FALLBACK: Record<GlyphName, string> = {
   near: '((•))',
-  chats: '💬',
-  alerts: '🔔',
+  chats: '(:)',
+  alerts: '(!)',
   cast: '+',
   lens: '≡',
-  camera: '◉',
+  camera: '◎',
 };
 
 export function Glyph({

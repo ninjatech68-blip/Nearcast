@@ -40,7 +40,7 @@ export function Page({
   const { width } = useWindowDimensions();
 
   return (
-    <View style={[styles.page, { width, paddingTop: insets.top + 20 }]}>
+    <View style={[styles.page, { width, paddingTop: insets.top + 24 }]}>
       <View style={styles.head}>
         <Text accessibilityRole="header" style={styles.title}>
           {title}
@@ -70,7 +70,7 @@ export function Page({
 }
 
 /** the ground fading up into the marks. same cream, never a second shade. */
-export function FooterFade() {
+function FooterFade() {
   const insets = useSafeAreaInsets();
   const solid = tokens.component.dock.control + insets.bottom;
   return (
@@ -97,7 +97,10 @@ const STEP = 7;
 const FADE_STEPS = [0.08, 0.2, 0.36, 0.55, 0.76, 0.92];
 
 const styles = StyleSheet.create({
-  page: { flex: 1, paddingHorizontal: 24 },
+  // painted explicitly rather than inherited from the route: these are
+  // pager children, and during a swipe from a poster the ground behind
+  // them has to be this page's, not the one it is sliding away from.
+  page: { flex: 1, backgroundColor: tokens.semantic.color.cream, paddingHorizontal: 24 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 14, minHeight: 44 },
   title: { ...tokens.typography.screenTitle, color: tokens.semantic.color.ink },
   body: { flex: 1, marginTop: 4 },

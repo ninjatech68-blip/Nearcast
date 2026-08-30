@@ -263,7 +263,7 @@ export function useConversations(): readonly ConversationSummary[] {
 /**
  * Live in-app updates: when a request or a message lands anywhere that
  * concerns you, pull the interaction state and the chat list so the
- * activity page and the rail count move on their own, without a manual
+ * alerts page and the dock counts move on their own, without a manual
  * refresh. Mounted once in the shell; a no-op with no backend.
  */
 export function subscribeToActivity(onRefresh: () => void): () => void {
@@ -306,7 +306,7 @@ export async function conversationIdFor(castId: string, otherId: string): Promis
 /**
  * Zero a conversation's unread in the LIST immediately.
  *
- * The rail's notification count and the chats tab both read the
+ * The dock's chats count and the chats page both read the
  * conversation summaries, not the open thread. markRead updates the
  * server and the thread, but the summary's unread lingered until the
  * next full list refresh — so the badge stayed up after you had plainly

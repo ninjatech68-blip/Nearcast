@@ -798,7 +798,7 @@ export async function refreshSentJoins(): Promise<void> {
   }
 }
 
-/** refresh both sides of the interaction loop; drives the activity page. */
+/** refresh both sides of the interaction loop; drives the alerts page. */
 export async function refreshInteractions(): Promise<void> {
   if (!remoteEnabled()) return;
   await Promise.all([refreshMyCasts(), refreshSentJoins()]);

@@ -18,7 +18,7 @@ import { useConversations } from '@/features/chat/chat';
 import { initialsFor } from '@/features/me/initials';
 import { useMe, useMyPhoto } from '@/features/me/me-store';
 import { YouPage } from '@/features/me/you-page';
-import { onActivityRequested } from '@/features/notifications/routing';
+import { onAlertsRequested } from '@/features/notifications/routing';
 
 /**
  * The root: four horizontal pages under one dock.
@@ -92,7 +92,7 @@ export default function HomeScreen() {
   // person on the feed to find it themselves. re-subscribed when the
   // page width changes, because goTo scrolls by it.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => onActivityRequested(() => goTo('alerts')), [width]);
+  useEffect(() => onAlertsRequested(() => goTo('alerts')), [width]);
 
   return (
     <View style={{ flex: 1 }}>
