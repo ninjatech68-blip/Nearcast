@@ -128,11 +128,33 @@ redirected to sign-in, per MUST-022, and a member is not bounced home.
 
 ## Task 5: Owner Lifecycle
 
-**Files:** `src/features/intents/manage/`, `supabase/functions/update-intent/`, `supabase/functions/close-intent/`
+**Files:** `src/features/intents/manage/`, `public.update_intent`, `public.withdraw_intent`, `public.resolve_intent`, `public.expire_intents`
 
-- [ ] Test material-edit event history, withdrawal, resolution, expiry, stale state, and duplicate retries.
-- [ ] Add My Intents and IntentStatusHeader with next valid owner actions.
-- [ ] Stop new responses immediately for non-live states.
+- [x] Test material-edit event history, withdrawal, resolution, expiry, stale state, and duplicate retries.
+- [x] Add My Intents and IntentStatusHeader with next valid owner actions.
+- [x] Stop new responses immediately for non-live states.
+
+Every transition is a `security definer` function guarded by an expected
+version, so two devices editing the same intent cannot silently overwrite one
+another. Withdraw and resolve are idempotent on a repeat rather than
+version-strict: a retry after a dropped connection should confirm the outcome
+that was asked for, not report a stale state the person cannot act on.
+
+MUST-017 requires a material change to price, location, eligibility or time to
+be visible to existing respondents, so `update_intent` compares old against new
+and records the changed field names on the event. History carries the answer
+rather than a diff nobody kept, and a wording-only edit is recorded distinctly
+from a material one.
+
+New responses already stop for non-live intents through
+`responses_insert_recipient`, which requires status `live` and a future expiry.
+The suite asserts that rather than adding a second gate that could drift.
+
+`IntentStatusHeader` renders only the actions a status permits, so a control the
+server would refuse is never offered. A matched intent loses `edit`, because
+editing terms already being coordinated moves the ground under an agreement. A
+restricted intent offers nothing, and its copy does not disclose what triggered
+the review.
 
 ## Exit Gate
 
@@ -147,3 +169,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | 2026-08-30 | Completed local intent drafting and review with a public/private draft split |
 | 2026-08-30 | Completed the publish transaction as a database function with idempotent retries |
 | 2026-08-30 | Completed the public link and confirmation, and closed a confirmer-identity leak in the foundation policies |
+| 2026-08-30 | Completed the owner lifecycle with version-guarded edit, withdraw, resolve and expiry |

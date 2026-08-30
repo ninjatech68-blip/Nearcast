@@ -1006,6 +1006,44 @@ export type Database = {
           outcome: string
         }[]
       }
+      resolve_intent: {
+        Args: { expected_version: number; target_intent: string }
+        Returns: {
+          intent_status: Database["public"]["Enums"]["intent_status"]
+          intent_version: number
+        }[]
+      }
+      withdraw_intent: {
+        Args: { expected_version: number; target_intent: string }
+        Returns: {
+          intent_status: Database["public"]["Enums"]["intent_status"]
+          intent_version: number
+        }[]
+      }
+      update_intent: {
+        Args: {
+          expected_version: number
+          new_approximate_place?: string
+          new_currency?: string
+          new_deadline_at?: string
+          new_expires_at: string
+          new_price_minor?: number
+          new_quantity?: number
+          new_requirements?: Json
+          new_response_action: string
+          new_starts_at?: string
+          new_statement: string
+          target_intent: string
+        }
+        Returns: {
+          intent_status: Database["public"]["Enums"]["intent_status"]
+          intent_version: number
+        }[]
+      }
+      expire_intents: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       send_message: {
         Args: {
           message_body: string
