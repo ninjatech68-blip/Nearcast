@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 
+import { Glyph } from '@/design-system/components/glyph';
 import { fontFamily, tokens } from '@/design-system/tokens';
 
 /**
@@ -18,15 +19,22 @@ export function Face({
   size = 44,
   label,
   verified = false,
+  badge,
 }: {
   photo?: ImageSourcePropType;
   initials: string;
   size?: number;
   label?: string;
   verified?: boolean;
+  /**
+   * An action badge, which outranks the verified tick when both apply:
+   * on your own profile the photo IS the control for changing it, and a
+   * tappable avatar with nothing on it is a secret.
+   */
+  badge?: 'camera';
 }) {
   const radius = size / 2;
-  const dotSize = Math.max(Math.round(size * 0.22), 10);
+  const dotSize = badge === 'camera' ? Math.max(Math.round(size * 0.36), 22) : Math.max(Math.round(size * 0.22), 10);
 
   const inner = photo ? (
     <Image
@@ -43,13 +51,13 @@ export function Face({
     </View>
   );
 
-  if (!verified) return inner;
+  if (!verified && !badge) return inner;
 
   return (
     <View style={{ width: size, height: size }}>
       {inner}
       <View
-        accessibilityLabel="verified in-app selfie"
+        accessibilityLabel={badge === 'camera' ? 'change your photo' : 'verified in-app selfie'}
         style={[
           styles.badge,
           {
@@ -61,7 +69,11 @@ export function Face({
           },
         ]}
       >
-        <Text style={[styles.badgeMark, { fontSize: Math.round(dotSize * 0.6) }]}>✓</Text>
+        {badge === 'camera' ? (
+          <Glyph name="camera" size={Math.round(dotSize * 0.55)} color={tokens.semantic.color.ink} />
+        ) : (
+          <Text style={[styles.badgeMark, { fontSize: Math.round(dotSize * 0.6) }]}>✓</Text>
+        )}
       </View>
     </View>
   );

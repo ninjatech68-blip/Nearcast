@@ -6,7 +6,7 @@ describe('design tokens', () => {
   it('keeps every interactive target at least 44 points', () => {
     expect(tokens.component.bar.height).toBeGreaterThanOrEqual(44);
     expect(tokens.component.quiet.minHeight).toBeGreaterThanOrEqual(44);
-    expect(tokens.component.rail.height).toBeGreaterThanOrEqual(44);
+    expect(tokens.component.dock.control).toBeGreaterThanOrEqual(44);
     expect(tokens.component.minTarget).toBe(44);
   });
 
@@ -42,9 +42,21 @@ describe('design tokens', () => {
     expect(tokens.component.field.warnAt).toBeLessThan(tokens.component.field.maxLength);
   });
 
-  it('reserves poster bottom space for the rail', () => {
-    expect(tokens.component.posterBottomReserve).toBeGreaterThanOrEqual(
-      tokens.component.rail.height + tokens.component.rail.bottomOffset,
-    );
+  it('keeps a poster clear of the compose button, not just of the dock', () => {
+    // the reserve is measured from the screen bottom; the compose button
+    // is centred on the icon-and-label block, so its top sits ABOVE the
+    // control row's own top by (control - cast.top - cast.size). at the
+    // old 96 it cut into the poster's call-to-action.
+    const { dock, posterBottomReserve } = tokens.component;
+    const homeIndicator = 34;
+    const composeTopFromBottom = homeIndicator + dock.control - dock.cast.top;
+    expect(posterBottomReserve).toBeGreaterThan(composeTopFromBottom);
+  });
+
+  it('puts the dock label line below the icons it labels', () => {
+    const { dock } = tokens.component;
+    expect(dock.labelTop).toBeGreaterThanOrEqual(dock.iconTop + dock.icon);
+    // and the whole block still fits the control row
+    expect(dock.labelTop + tokens.typography.tagSmall.lineHeight).toBeLessThanOrEqual(dock.control);
   });
 });

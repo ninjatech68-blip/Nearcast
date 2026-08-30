@@ -86,7 +86,7 @@ describe('RootLayout', () => {
     const view = await render(<RootLayout />);
     await act(async () => undefined);
 
-    for (const route of ['index', 'compose', 'cast/[id]', 'join/[id]', 'you', 'caster/[id]', 'recap', 'media-send', 'media-view', 'pick-location', 'plan/[id]', 'edit-cast/[id]']) {
+    for (const route of ['index', 'compose', 'cast/[id]', 'join/[id]', 'profile-edit', 'name', 'quiet-hours', 'caster/[id]', 'recap', 'media-send', 'media-view', 'pick-location', 'plan/[id]', 'edit-cast/[id]']) {
       expect(view.getByText(route)).toBeTruthy();
     }
   });

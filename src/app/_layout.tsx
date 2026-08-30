@@ -166,7 +166,6 @@ export default function RootLayout() {
       <Stack.Screen name="compose" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="cast/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="join/[id]" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="you" options={{ presentation: 'modal' }} />
       <Stack.Screen name="caster/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="filter" options={{ presentation: 'modal' }} />
       {/* area is opened FROM modals (compose is a fullScreenModal, areas is
@@ -188,6 +187,8 @@ export default function RootLayout() {
       <Stack.Screen name="onboarding" options={{ presentation: 'card', gestureEnabled: false, animation: 'fade' }} />
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="profile-edit" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="name" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="quiet-hours" options={{ presentation: 'modal' }} />
       <Stack.Screen name="pick-location" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-send" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-view" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />

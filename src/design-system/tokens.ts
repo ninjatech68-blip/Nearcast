@@ -64,7 +64,29 @@ export const tokens = {
   component: {
     bar: { height: 58, radius: primitive.radius.bar, paddingX: 20 },
     quiet: { minHeight: 44 },
-    rail: { height: 46, bottomOffset: 8, castSize: 32 },
+    /**
+     * The dock. Five marks across the bottom edge, on no surface at all:
+     * the category field runs unbroken underneath them, because a second
+     * shade of the category is the one thing not to do to a product whose
+     * identity is one flat colour owning one screen.
+     *
+     * Geometry inside the 56 pt control row (the safe-area inset sits
+     * below it): icon 10–36, label 42–53. The active pill is centred on
+     * the icon; compose is centred on the icon-and-label block, which is
+     * what keeps it clear of a poster's call-to-action.
+     */
+    dock: {
+      control: 56,
+      icon: 26,
+      iconTop: 10,
+      labelTop: 42,
+      /** the DS selected state: an accent pill, ink on top of it. */
+      pill: { width: 56, height: 32, radius: 16, top: 7 },
+      cast: { size: 52, radius: 17, top: 5.5, ring: 2 },
+      /** ground-coloured, so it is invisible on a poster and stops list
+       *  rows colliding with the marks on the cream screens. */
+      scrim: 130,
+    },
     row: { minHeight: 64 },
     field: { fontSize: 34, lineHeight: 37, maxLength: 140, warnAt: 120 },
     sheet: { radius: primitive.radius.sheet, padding: 24 },
@@ -72,7 +94,13 @@ export const tokens = {
       small: { widths: 5, gap: 3, radius: 2, heights: [7, 11, 15, 19, 23] },
       big: { widths: 10, gap: 5, radius: 3, heights: [14, 22, 30, 38, 46] },
     },
-    posterBottomReserve: 96,
+    /**
+     * The band a poster keeps empty for the dock. 104 rather than the
+     * dock's own height: compose is a 52 pt button whose top sits above
+     * the control row, and at 96 it overlapped the poster's own
+     * call-to-action. This leaves 19.5 pt between them.
+     */
+    posterBottomReserve: 104,
     minTarget: 44,
   },
 } as const;

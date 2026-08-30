@@ -39,7 +39,6 @@ export function Poster({
   caster,
   onOpenCaster,
   onWhyPress,
-  onWordmarkPress,
 }: {
   cast: PosterData;
   topRight?: ReactNode;
@@ -51,7 +50,6 @@ export function Poster({
   caster?: { line: string; photo?: ImageSourcePropType; initials: string; verified?: boolean };
   onOpenCaster?: () => void;
   onWhyPress?: () => void;
-  onWordmarkPress?: () => void;
 }) {
   const insets = useSafeAreaInsets();
   const spec = categoryTokens[cast.category];
@@ -80,13 +78,11 @@ export function Poster({
       ]}
     >
       <View style={styles.top}>
-        {onWordmarkPress ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="filter the feed" hitSlop={10} onPress={onWordmarkPress}>
-            <Text style={[styles.wordmark, { color: fg }]}>NEARCAST ⌄</Text>
-          </Pressable>
-        ) : (
-          <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>
-        )}
+        {/* the wordmark is a brand mark, not a button. it used to carry
+            a chevron and open the filter, which is not a control anybody
+            looks for on a logo — that job belongs to the lens icon that
+            now sits in topRight. */}
+        <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>
         {topRight}
       </View>
       <View style={styles.middle}>
