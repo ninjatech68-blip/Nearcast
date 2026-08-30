@@ -8,6 +8,8 @@ import {
   STORAGE_KEYS,
 } from '@/infrastructure/persistence/storage';
 import { submit } from '@/infrastructure/net/submit';
+import { setBadgeCount } from '@/features/notifications/push';
+
 import { chatPollMs, shellPollMs } from './cadence';
 import {
   chatEnabled,
@@ -409,6 +411,11 @@ export async function refreshConversations(): Promise<void> {
     }));
     state = { ...state, list };
     emit();
+    // A push sets the badge on the way in, but nothing brings it down:
+    // reading a chat involves no notification at all. Every sync already
+    // knows every unread count, so it is the honest place to say what
+    // the number is now.
+    void setBadgeCount(rows.reduce((total, row) => total + (row.unread_count ?? 0), 0));
     void confirmDelivery(rows);
   } catch (error) {
     console.warn('refreshConversations failed', error);

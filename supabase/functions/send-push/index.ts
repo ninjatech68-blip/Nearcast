@@ -20,6 +20,29 @@ const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
 const EXPO_RECEIPTS_URL = 'https://exp.host/--/api/v2/push/getReceipts';
 const INVALID_TOKEN_ERRORS = new Set(['DeviceNotRegistered']);
 
+/**
+ * Which Android channel a kind belongs to, how urgently it travels, and
+ * how long it stays worth delivering.
+ *
+ * The channel split is what lets somebody turn join requests down
+ * without silencing the person they are meeting — per-category control
+ * belongs to the OS, and this is the honest substitute for the
+ * app-level quiet hours chat messages are exempt from.
+ *
+ * The TTL matters more than it looks. Without one, a notification the
+ * provider could not deliver — phone off, no signal — can be handed
+ * over an hour later, about a message read on a laptop forty minutes
+ * ago. Our own retry budget already gives up at half an hour; these
+ * make the provider agree rather than holding it indefinitely.
+ */
+const DELIVERY: Record<string, { channelId: string; priority: 'default' | 'high'; ttl: number }> = {
+  // somebody is waiting on an answer, but it will keep.
+  join_request: { channelId: 'requests', priority: 'default', ttl: 60 * 60 },
+  join_accepted: { channelId: 'requests', priority: 'high', ttl: 60 * 60 },
+  // a message is a person mid-conversation. late is worse than never.
+  chat_message: { channelId: 'messages', priority: 'high', ttl: 30 * 60 },
+};
+
 const COPY: Record<string, { title: string; body: string }> = {
   join_request: {
     title: 'someone wants in',
@@ -46,6 +69,7 @@ type OutboxRow = {
   intent_id: string | null;
   conversation_id: string | null;
   attempt_count: number;
+  badge: number | null;
 };
 
 type TokenRow = {
@@ -285,6 +309,7 @@ async function sendPending(
       continue;
     }
 
+    const delivery = DELIVERY[row.kind];
     const tokens = tokensByUser.get(row.recipient_id) ?? [];
     if (tokens.length === 0) {
       await markOutbox(admin, row.id, {
@@ -324,6 +349,11 @@ async function sendPending(
           title: copy.title,
           body: copy.body,
           sound: 'default',
+          // the badge is the whole app's unread, computed with the claim
+          ...(typeof row.badge === 'number' ? { badge: row.badge } : {}),
+          ...(delivery
+            ? { channelId: delivery.channelId, priority: delivery.priority, ttl: delivery.ttl }
+            : {}),
           // ids only — the app resolves them to the right screen on open
           data: {
             kind: row.kind,

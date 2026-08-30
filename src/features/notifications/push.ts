@@ -30,6 +30,7 @@ type NotificationsLike = {
   setNotificationChannelAsync: (id: string, channel: unknown) => Promise<unknown>;
   addNotificationReceivedListener: (fn: (n: NotificationLike) => void) => Subscription;
   addNotificationResponseReceivedListener: (fn: (r: ResponseLike) => void) => Subscription;
+  setBadgeCountAsync: (count: number) => Promise<boolean>;
   AndroidImportance: { DEFAULT: number; HIGH: number };
 };
 type DeviceLike = {
@@ -99,11 +100,46 @@ export async function configureNotifications(): Promise<void> {
     }),
   });
   if (Platform.OS === 'android') {
+    // Two channels, not one. A single channel means somebody who wants
+    // join requests quieter than messages has to silence both — and
+    // per-category notification preference is the OS's job, with its
+    // own UI people already know. 'default' stays for anything that
+    // predates the split.
+    await Notifications.setNotificationChannelAsync('messages', {
+      name: 'Messages',
+      description: 'Someone you matched with wrote to you.',
+      importance: Notifications.AndroidImportance.HIGH,
+      lightColor: tokens.semantic.color.accent,
+    });
+    await Notifications.setNotificationChannelAsync('requests', {
+      name: 'Requests and accepts',
+      description: 'Someone asked to join your cast, or said yes to you.',
+      importance: Notifications.AndroidImportance.DEFAULT,
+      lightColor: tokens.semantic.color.accent,
+    });
     await Notifications.setNotificationChannelAsync('default', {
       name: 'Nearcast',
       importance: Notifications.AndroidImportance.DEFAULT,
       lightColor: tokens.semantic.color.accent,
     });
+  }
+}
+
+/**
+ * Put the app icon's badge where the server says it should be.
+ *
+ * A push carries the badge on arrival, but the number also has to come
+ * DOWN when someone reads a chat — and that happens with no
+ * notification involved at all, so the arriving push cannot be the only
+ * thing that sets it. Best-effort: a wrong badge is a blemish, never a
+ * reason to interrupt anyone.
+ */
+export async function setBadgeCount(count: number): Promise<void> {
+  if (!Notifications) return;
+  try {
+    await Notifications.setBadgeCountAsync(Math.max(0, Math.floor(count)));
+  } catch {
+    // some launchers simply do not have a badge to set
   }
 }
 

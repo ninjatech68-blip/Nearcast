@@ -1276,6 +1276,7 @@ export type Database = {
         Args: { batch_size?: number }
         Returns: {
           attempt_count: number
+          badge: number
           conversation_id: string
           id: string
           intent_id: string
@@ -1540,6 +1541,7 @@ export type Database = {
           title: string
         }[]
       }
+      my_unread_badge: { Args: never; Returns: number }
       pending_joins_on_my_casts: {
         Args: never
         Returns: {

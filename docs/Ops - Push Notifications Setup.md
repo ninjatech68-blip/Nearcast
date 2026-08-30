@@ -2,6 +2,10 @@
 
 What is in the repository, and the four steps that are not code.
 
+> To actually turn push on for the first time, follow
+> **`docs/Runbook - Turn Push On.md`** — it sequences every credential,
+> deploy and check, and says how to read the result when one fails.
+
 ## The pieces
 
 | Piece | Where | State |
@@ -13,6 +17,7 @@ What is in the repository, and the four steps that are not code.
 | Minute-by-minute drain + weekly prune | `supabase/migrations/20260829150000_push_schedule.sql` | guarded no-op until step 3 |
 | Batch claim, so two drains cannot double-send | `supabase/migrations/20260830180000_push_claim_batch.sql` | in the schema |
 | Retry with backoff + error classification | `supabase/migrations/20260830200000_push_retry.sql` | in the schema |
+| Badge count, Android channel split, TTL | `supabase/migrations/20260830210000_push_badge_and_channels.sql` | in the schema |
 | Chat-message ping + presence suppression | `supabase/migrations/20260830170000_chat_expiry_and_message_push.sql` | in the schema |
 | Tap handling (refresh + open the right chat) | `src/features/notifications/routing.ts` | in the app |
 
