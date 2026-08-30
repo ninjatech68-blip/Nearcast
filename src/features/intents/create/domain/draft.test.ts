@@ -111,7 +111,8 @@ describe('privacy disclosure', () => {
 
   it('lists the public context that publishing would reveal', () => {
     const draft = publishableDraft();
-    draft.publicDraft.approximatePlace = 'Indiranagar';
+    draft.publicDraft.approximatePlaceId = 'place-1';
+    draft.publicDraft.approximatePlaceName = 'Indiranagar';
     draft.publicDraft.quantity = 2;
     draft.publicDraft.requirements = ['Can lift boxes'];
 
@@ -125,7 +126,8 @@ describe('privacy disclosure', () => {
 
   it('never leaks a private value into what publishing reveals', () => {
     const draft = publishableDraft();
-    draft.publicDraft.approximatePlace = 'Indiranagar';
+    draft.publicDraft.approximatePlaceId = 'place-1';
+    draft.publicDraft.approximatePlaceName = 'Indiranagar';
     draft.privateDraft = {
       exactAddress: '42 Private Lane',
       privateContact: '+910000000000',

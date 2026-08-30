@@ -765,6 +765,33 @@ export type Database = {
           },
         ]
       }
+      places: {
+        Row: {
+          centre: unknown
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          region: string
+        }
+        Insert: {
+          centre: unknown
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          region: string
+        }
+        Update: {
+          centre?: unknown
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          region?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           approximate_home: unknown | null
@@ -978,11 +1005,9 @@ export type Database = {
       }
       publish_intent: {
         Args: {
-          context_approximate_latitude?: number
-          context_approximate_longitude?: number
-          context_approximate_place?: string
           context_currency?: string
           context_deadline_at?: string
+          context_place?: string
           context_price_minor?: number
           context_quantity?: number
           context_requirements?: Json
@@ -1051,6 +1076,10 @@ export type Database = {
       expire_intents: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      set_home_place: {
+        Args: { target_place: string }
+        Returns: string
       }
       change_intent_reach: {
         Args: {

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Button } from '@/design-system/components/button';
@@ -10,6 +10,7 @@ import {
   findDraftProblems,
 } from '@/features/intents/create/domain/draft';
 import { buildPublishRequest } from '@/features/intents/create/domain/publish-request';
+import { fetchPlaces, type Place } from '@/features/location/data/places-repository';
 import { PrivacyDisclosure } from '@/features/intents/create/ui/privacy-disclosure';
 import { useDraft } from '@/features/intents/create/ui/use-draft';
 import { publishIntent } from '@/features/intents/data/publish-intent';
@@ -22,9 +23,27 @@ import { newRequestKey } from '@/features/intents/data/request-key';
  */
 export default function PreviewIntentScreen() {
   const { draft, update, discard } = useDraft();
+  const [places, setPlaces] = useState<Place[]>([]);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   const now = new Date();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchPlaces()
+      .then((loaded) => {
+        if (!cancelled) setPlaces(loaded);
+      })
+      .catch(() => {
+        // A missing place list leaves the intent unplaced rather than blocking
+        // publication; an unplaced intent is still shareable by link.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function publish() {
     // One key per publish attempt, reused across retries of that attempt, so a
@@ -72,13 +91,37 @@ export default function PreviewIntentScreen() {
         Everyone who receives this intent can see these.
       </Text>
 
-      <Field
-        label="Approximate area"
-        accessibilityLabel="Approximate area"
-        onChangeText={(value) => update({ publicDraft: { approximatePlace: value } })}
-        placeholder="Indiranagar"
-        value={publicDraft.approximatePlace ?? ''}
-      />
+      <View style={styles.field}>
+        <Text style={styles.label}>Approximate area</Text>
+        <Text style={styles.sectionHint}>
+          Choose the area people should see. Your exact place is never shared.
+        </Text>
+        {places.map((place) => {
+          const isSelected = publicDraft.approximatePlaceId === place.id;
+
+          return (
+            <Pressable
+              accessibilityRole="radio"
+              accessibilityLabel={place.name}
+              accessibilityState={{ selected: isSelected }}
+              key={place.id}
+              onPress={() =>
+                update({
+                  publicDraft: {
+                    approximatePlaceId: place.id,
+                    approximatePlaceName: place.name,
+                  },
+                })
+              }
+              style={[styles.placeOption, isSelected && styles.placeOptionSelected]}>
+              <Text
+                style={[styles.placeText, isSelected && styles.placeTextSelected]}>
+                {place.name}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
 
       <Field
         label="How many"
@@ -203,6 +246,25 @@ const styles = StyleSheet.create({
     lineHeight: tokens.typography.caption.lineHeight,
   },
   field: { gap: tokens.primitive.space[1] },
+  placeOption: {
+    backgroundColor: tokens.semantic.color.backgroundSurface,
+    borderColor: tokens.semantic.color.borderDefault,
+    borderRadius: tokens.primitive.radius.control,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: tokens.primitive.space[1],
+    paddingHorizontal: tokens.primitive.space[4],
+    paddingVertical: tokens.primitive.space[3],
+  },
+  placeOptionSelected: {
+    backgroundColor: tokens.semantic.color.trustSurface,
+    borderColor: tokens.semantic.color.trustText,
+  },
+  placeText: {
+    color: tokens.semantic.color.textPrimary,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: tokens.typography.body.fontSize,
+  },
+  placeTextSelected: { color: tokens.semantic.color.trustText },
   label: {
     color: tokens.semantic.color.textSecondary,
     fontFamily: 'Manrope_600SemiBold',

@@ -36,15 +36,15 @@ export type PublicDraft = {
   quantity: number | null;
   priceMinor: number | null;
   currency: string | null;
-  approximatePlace: string | null;
   /**
-   * The approximate point discovery measures against. Without it an intent is
-   * unplaced and reaches nobody, so it is part of the draft rather than derived
-   * from the place name later. Approximate by construction: the exact point
-   * lives in the private half and is never copied here.
+   * The chosen area, held as an id rather than a coordinate. Discovery needs a
+   * point, but the app never handles one: the server resolves the id to both
+   * the displayed name and the point, so the two cannot disagree and no
+   * latitude ever exists in a draft on disk. `approximatePlaceName` is kept
+   * only so the review screen can show the choice back without a round trip.
    */
-  approximateLongitude: number | null;
-  approximateLatitude: number | null;
+  approximatePlaceId: string | null;
+  approximatePlaceName: string | null;
   requirements: string[];
 };
 
@@ -72,9 +72,8 @@ export function createEmptyDraft(now: Date): IntentDraft {
       quantity: null,
       priceMinor: null,
       currency: null,
-      approximatePlace: null,
-      approximateLongitude: null,
-      approximateLatitude: null,
+      approximatePlaceId: null,
+      approximatePlaceName: null,
       requirements: [],
     },
     privateDraft: {
@@ -105,9 +104,8 @@ export const publicDraftSchema = z.object({
   quantity: z.number().positive().nullable(),
   priceMinor: z.number().int().nonnegative().nullable(),
   currency: z.string().length(3).nullable(),
-  approximatePlace: nullableTrimmed,
-  approximateLongitude: z.number().min(-180).max(180).nullable(),
-  approximateLatitude: z.number().min(-90).max(90).nullable(),
+  approximatePlaceId: z.string().nullable(),
+  approximatePlaceName: nullableTrimmed,
   requirements: z.array(z.string().trim().min(1)).max(10),
 });
 
@@ -197,10 +195,10 @@ export function describeDisclosure(draft: IntentDraft): Disclosure {
     { label: 'Expires', detail: formatDate(publicDraft.expiresAt) },
   ];
 
-  if (publicDraft.approximatePlace !== null) {
+  if (publicDraft.approximatePlaceName !== null) {
     visibleAfterAction.push({
       label: 'Approximate area',
-      detail: publicDraft.approximatePlace,
+      detail: publicDraft.approximatePlaceName,
     });
   }
 

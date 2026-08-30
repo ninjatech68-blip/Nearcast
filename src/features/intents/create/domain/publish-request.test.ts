@@ -41,7 +41,7 @@ describe('publish request', () => {
 
     expect(result.request.exactAddress).toBe('42 Private Lane');
     expect(result.request.statement).not.toContain('Private Lane');
-    expect(result.request.approximatePlace).toBeNull();
+    expect(result.request.approximatePlaceId).toBeNull();
   });
 
   it('refuses a draft with no primitive chosen', () => {

@@ -20,6 +20,13 @@ jest.mock('@/features/intents/data/publish-intent', () => ({
   publishIntent: (request: unknown) => mockPublish(request),
 }));
 
+jest.mock('@/features/location/data/places-repository', () => ({
+  fetchPlaces: async () => [
+    { id: 'place-1', name: 'Indiranagar', region: 'Bengaluru' },
+    { id: 'place-2', name: 'Koramangala', region: 'Bengaluru' },
+  ],
+}));
+
 jest.mock('@/features/intents/create/data/device-draft-store', () => ({
   deviceDraftStore: {
     getItem: (key: string) => store[key] ?? null,
@@ -50,9 +57,8 @@ function seedDraft(overrides: {
       quantity: null,
       priceMinor: null,
       currency: null,
-      approximatePlace: null,
-      approximateLongitude: null,
-      approximateLatitude: null,
+      approximatePlaceId: null,
+      approximatePlaceName: null,
       requirements: [],
       ...overrides.publicDraft,
     },
@@ -83,7 +89,7 @@ describe('PreviewIntentScreen', () => {
   });
 
   it('shows the public context that publishing would reveal', async () => {
-    seedDraft({ publicDraft: { approximatePlace: 'Indiranagar' } });
+    seedDraft({ publicDraft: { approximatePlaceId: 'place-1', approximatePlaceName: 'Indiranagar' } });
     const view = await render(<PreviewIntentScreen />);
     const disclosure = within(view.getByLabelText('What others can see'));
 
@@ -166,7 +172,7 @@ describe('PreviewIntentScreen', () => {
     const request = mockPublish.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(request.exactAddress).toBe('42 Private Lane');
     expect(request.statement).not.toContain('Private Lane');
-    expect(request.approximatePlace).toBeNull();
+    expect(request.approximatePlaceId).toBeNull();
   });
 
   it('keeps the draft when publishing fails', async () => {
@@ -180,6 +186,39 @@ describe('PreviewIntentScreen', () => {
     expect(await view.findByText(/Your draft is safe/)).toBeTruthy();
     expect(store[DRAFT_STORAGE_KEY]).toBeDefined();
     expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it('picks an area by name and never puts a coordinate in the draft', async () => {
+    const user = userEvent.setup();
+    seedDraft();
+    const view = await render(<PreviewIntentScreen />);
+
+    await user.press(await view.findByLabelText('Koramangala'));
+
+    const saved = JSON.parse(store[DRAFT_STORAGE_KEY] ?? '{}');
+    expect(saved.publicDraft.approximatePlaceId).toBe('place-2');
+    expect(saved.publicDraft.approximatePlaceName).toBe('Koramangala');
+    expect(JSON.stringify(saved)).not.toMatch(/latitude|longitude|\d{2}\.\d{4}/);
+  });
+
+  it('sends the place id, leaving the server to resolve the point', async () => {
+    const user = userEvent.setup();
+    seedDraft();
+    mockPublish.mockResolvedValue({
+      intentId: 'intent-1',
+      shareSlug: 'slug-1',
+      status: 'live',
+      version: 1,
+    });
+
+    const view = await render(<PreviewIntentScreen />);
+    await user.press(await view.findByLabelText('Indiranagar'));
+    await user.press(view.getByRole('button', { name: 'Publish intent' }));
+
+    const request = mockPublish.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(request.approximatePlaceId).toBe('place-1');
+    expect('approximateLatitude' in request).toBe(false);
+    expect('approximateLongitude' in request).toBe(false);
   });
 
   it('writes a private detail to the device draft, not into public context', async () => {
