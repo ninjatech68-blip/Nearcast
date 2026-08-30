@@ -386,7 +386,13 @@ function nameFor(personId: string): string {
  */
 function statusLine(cast: CastDetail): string {
   const pending = cast.pendingJoins?.length ?? 0;
-  const parts = ['live'];
+  // It used to open with the word "live", unconditionally. CastDetail
+  // carries no status, so that was an assertion the row could not make:
+  // a matched cast read as live, and then the plan screen withheld the
+  // edit button that "live, nobody in" would have earned. Saying only
+  // what is known — who is waiting, when it goes — leaves nothing to
+  // contradict.
+  const parts: string[] = [];
   if (pending > 0) parts.push(pending === 1 ? '1 waiting on you' : `${pending} waiting on you`);
   parts.push(cast.expiry);
   return parts.join(' · ');
@@ -798,7 +804,7 @@ export async function refreshSentJoins(): Promise<void> {
   }
 }
 
-/** refresh both sides of the interaction loop; drives the activity page. */
+/** refresh both sides of the interaction loop; drives the alerts page. */
 export async function refreshInteractions(): Promise<void> {
   if (!remoteEnabled()) return;
   await Promise.all([refreshMyCasts(), refreshSentJoins()]);

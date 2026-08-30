@@ -43,7 +43,7 @@ export default function RootLayout() {
   useNotificationRouting();
 
   // live in-app updates: a request or message elsewhere refreshes the
-  // rail count and activity without waiting for a pull. only while
+  // dock counts and alerts without waiting for a pull. only while
   // signed in; torn down on sign-out.
   useEffect(() => {
     if (!me.signedIn) return;
@@ -54,8 +54,10 @@ export default function RootLayout() {
 
   // the floor under realtime for everything OFF the open chat: requests,
   // accepts, and unread counts. polled while signed in and foregrounded
-  // so the rail badge and activity move on their own even if the socket
-  // is down. a little slower than the chat poll — these are less urgent.
+  // so the dock badges, chats and alerts move on their own even if the
+  // socket is down. this is also the ONLY fetch of these two at launch:
+  // it fires once immediately, so the pages themselves do not repeat it.
+  // a little slower than the chat poll — these are less urgent.
   usePoll(
     () => {
       void refreshInteractions();
@@ -166,7 +168,6 @@ export default function RootLayout() {
       <Stack.Screen name="compose" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="cast/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="join/[id]" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="you" options={{ presentation: 'modal' }} />
       <Stack.Screen name="caster/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="filter" options={{ presentation: 'modal' }} />
       {/* area is opened FROM modals (compose is a fullScreenModal, areas is
@@ -188,6 +189,7 @@ export default function RootLayout() {
       <Stack.Screen name="onboarding" options={{ presentation: 'card', gestureEnabled: false, animation: 'fade' }} />
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="profile-edit" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="name" options={{ presentation: 'modal' }} />
       <Stack.Screen name="pick-location" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-send" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-view" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />

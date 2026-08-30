@@ -81,7 +81,16 @@ export default function PlanDetailScreen() {
         <Text style={styles.rowSub}>the exact spot is settled in chat, never stored here.</Text>
 
         <Text style={styles.rowLabel}>WHO</Text>
-        <View style={styles.people}>
+        {/* the caster is a person you can look up before deciding, the
+            same as on the poster. only somebody else: there is no
+            profile of your own to open from your own plan. */}
+        <Pressable
+          accessibilityRole={plan.isMine ? undefined : 'button'}
+          accessibilityLabel={plan.isMine ? undefined : `about ${plan.casterName}`}
+          disabled={plan.isMine}
+          onPress={() => router.push(`/caster/${plan.casterId}`)}
+          style={styles.people}
+        >
           <Face
             photo={facePhotos[plan.casterId]}
             initials={plan.casterName.slice(0, 2).toUpperCase()}
@@ -90,7 +99,8 @@ export default function PlanDetailScreen() {
             verified={isVerified(plan.casterId)}
           />
           <Text style={styles.rowValue}>{plan.isMine ? 'you' : plan.casterName} cast this</Text>
-        </View>
+          {plan.isMine ? null : <Text style={styles.chev}>›</Text>}
+        </Pressable>
         <Text style={styles.rowSub}>
           {plan.participantCount === 0
             ? 'nobody has joined yet.'
@@ -103,13 +113,25 @@ export default function PlanDetailScreen() {
       <View style={styles.actions}>
         {plan.isMine ? (
           <>
+            {/* A cast can be corrected until somebody acts on it. After
+                that the words are frozen, because editing them out from
+                under a joiner is a bait and switch — the backend refuses
+                it too. What was missing was saying so: the button simply
+                vanished, which reads as a missing feature rather than a
+                rule, and that is exactly how it was reported. */}
             {plan.participantCount === 0 && plan.status === 'live' ? (
               <BarButton
                 label="edit this cast"
                 variant="onOrange"
                 onPress={() => router.push(`/edit-cast/${plan.intentId}`)}
               />
-            ) : null}
+            ) : (
+              <Text style={styles.locked}>
+                {plan.participantCount > 0
+                  ? 'someone is in, so the words are set. cancel it and cast fresh if it needs to change.'
+                  : 'this cast is no longer live, so its words are set.'}
+              </Text>
+            )}
             <QuietAction label="back" color={tokens.semantic.color.ink} onPress={() => router.back()} />
           </>
         ) : (
@@ -141,6 +163,8 @@ const styles = StyleSheet.create({
   rowValue: { fontFamily: fontFamily.displaySemi, fontSize: 17, color: tokens.semantic.color.ink },
   rowSub: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 4 },
   mapLink: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.accent, marginTop: 6 },
-  people: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  people: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: tokens.component.minTarget },
+  chev: { fontFamily: fontFamily.displaySemi, fontSize: 17, color: tokens.semantic.color.textMutedOnCream },
+  locked: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, textAlign: 'center', paddingHorizontal: 8 },
   actions: { marginTop: 18, gap: 2 },
 });

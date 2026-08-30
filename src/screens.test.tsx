@@ -101,7 +101,7 @@ const CastDetailScreen = require('./app/cast/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const JoinScreen = require('./app/join/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const YouScreen = require('./app/you').default;
+const { YouPage } = require('./features/me/you-page');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ComposeScreen = require('./app/compose').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -128,7 +128,7 @@ describe('home pager', () => {
     mockParams = { id: 'badminton-after-work' };
   });
 
-  it('renders the feed poster with its trust facts and the rail', async () => {
+  it('renders the feed poster with its trust facts and the dock', async () => {
     const view = await render(<HomeScreen />);
 
     expect(view.getByText('badminton after work. need two.')).toBeTruthy();
@@ -137,17 +137,30 @@ describe('home pager', () => {
     // the why line is computed by the delivery framework, never fixture prose.
     // multiple casts can legitimately share a top-2 reason string, so match all.
     expect(view.getAllByText('why you: one trusted link away · near you in indiranagar ›').length).toBeGreaterThanOrEqual(1);
-    expect(view.getByRole('button', { name: 'cast' })).toBeTruthy();
-    // the rail carries a real count of things waiting behind it
-    expect(view.getByRole('button', { name: /^activity/ })).toBeTruthy();
+    // five slots, compose in the middle: four destinations plus an
+    // action is the only arrangement that balances on an even grid.
+    expect(view.getByRole('button', { name: 'cast something' })).toBeTruthy();
+    expect(view.getByRole('button', { name: 'near' })).toBeTruthy();
+    expect(view.getByRole('button', { name: 'you' })).toBeTruthy();
+    // chats and alerts carry their counts in the label when they have one
+    expect(view.getByRole('button', { name: /^chats/ })).toBeTruthy();
+    expect(view.getByRole('button', { name: /^alerts/ })).toBeTruthy();
   });
 
-  it('counts what is waiting on the rail, and says so out loud', async () => {
+  it('counts what is waiting on the dock, and says so out loud', async () => {
     const view = await render(<HomeScreen />);
 
-    // the fixture viewer has requests and unread chats waiting
-    const activity = view.getByRole('button', { name: /^activity, \d+ waiting$/ });
-    expect(activity).toBeTruthy();
+    // the fixture viewer has join requests waiting on them. the count is
+    // decisions owed, never a total of things to look at — a number that
+    // includes what you have already read is one nobody can clear.
+    expect(view.getByRole('button', { name: /^alerts, \d+ waiting$/ })).toBeTruthy();
+  });
+
+  it('marks the selected slot as selected, so the state is not colour alone', async () => {
+    const view = await render(<HomeScreen />);
+
+    expect(view.getByRole('button', { name: 'near' }).props.accessibilityState).toMatchObject({ selected: true });
+    expect(view.getByRole('button', { name: 'you' }).props.accessibilityState).toMatchObject({ selected: false });
   });
 
   it('never shows one particular tester’s initials on everyone’s avatar', async () => {
@@ -159,16 +172,28 @@ describe('home pager', () => {
     expect(view.queryByText('PS')).toBeNull();
   });
 
-  it('lands the activity page on chats, with yours and requests after it', async () => {
+  it('shows only the alert groups that have rows, each carrying its count', async () => {
     const view = await render(<HomeScreen />);
 
-    const chats = view.getByRole('tab', { name: 'chats' });
-    expect(chats.props.accessibilityState).toMatchObject({ selected: true });
-    expect(view.getByRole('tab', { name: 'your plans' })).toBeTruthy();
-    // the label carries its count when it has one: "requests, 2"
-    expect(view.getByRole('tab', { name: /^requests/ })).toBeTruthy();
-    // renamed: "needs you" was the old first tab
-    expect(view.queryByRole('tab', { name: 'needs you' })).toBeNull();
+    // every tab label carries a real count — that is what buys back the
+    // scent a tab normally costs.
+    const tabs = view.getAllByRole('tab');
+    expect(tabs.length).toBeGreaterThanOrEqual(2);
+    for (const tab of tabs) {
+      expect(tab.props.accessibilityLabel).toMatch(/^(needs you|news|your plans), \d+$/);
+      expect(tab.props.accessibilityLabel).not.toMatch(/, 0$/);
+    }
+    // exactly one is selected, and it is the first populated one
+    expect(tabs.filter((t) => t.props.accessibilityState?.selected)).toHaveLength(1);
+    expect(tabs[0].props.accessibilityState).toMatchObject({ selected: true });
+  });
+
+  it('replaces the wordmark chevron with a real lens control', async () => {
+    const view = await render(<HomeScreen />);
+
+    expect(view.getByRole('button', { name: /^search and filter/ })).toBeTruthy();
+    expect(view.queryByText('NEARCAST ⌄')).toBeNull();
+    expect(view.getAllByText('NEARCAST').length).toBeGreaterThanOrEqual(1);
   });
 
   it('opens the detail sheet from the headline and the join sheet from the bar', async () => {
@@ -182,11 +207,11 @@ describe('home pager', () => {
     expect(mockPush).toHaveBeenCalledWith('/join/badminton-after-work');
   });
 
-  it('opens compose from the rail', async () => {
+  it('opens compose from the dock', async () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
 
-    await user.press(view.getByRole('button', { name: 'cast' }));
+    await user.press(view.getByRole('button', { name: 'cast something' }));
     expect(mockPush).toHaveBeenCalledWith('/compose');
   });
 
@@ -262,17 +287,49 @@ describe('join sheet', () => {
   });
 });
 
-describe('you sheet', () => {
+describe('you', () => {
   it('shows signal and receipts, and never a fabricated range number', async () => {
-    const view = await render(<YouScreen />);
+    const view = await render(<YouPage />);
 
     expect(view.getByText('signal: strong')).toBeTruthy();
-    expect(view.getByText('receipts')).toBeTruthy();
+    expect(view.getByText('your receipts')).toBeTruthy();
     // the old "~240 people" range was invented — a product-law breach —
     // and named a reach model that no longer exists. it must be gone.
     expect(view.queryByText(/reaches ~\d+ people/)).toBeNull();
     expect(view.queryByText(/range:/)).toBeNull();
-    expect(view.getByText(/never an exact spot\. the app never has one/)).toBeTruthy();
+  });
+
+  it('orders the hub by consequence, with circles first and settings behind one door', async () => {
+    const view = await render(<YouPage />);
+
+    // the controls that decide how the app reaches you
+    expect(view.getByText('circles')).toBeTruthy();
+    expect(view.getByText('blocked')).toBeTruthy();
+    // one door, and nothing destructive on the way to it
+    expect(view.getByText('edit profile')).toBeTruthy();
+    expect(view.queryByText('delete account')).toBeNull();
+    expect(view.queryByText('sign out')).toBeNull();
+    expect(view.queryByText('terms + privacy')).toBeNull();
+  });
+
+  it('offers no control the app does not honour', async () => {
+    const view = await render(<YouPage />);
+
+    // Quiet hours persisted a window and nothing ever read it: no column
+    // in the schema, nothing sent by profile sync, nothing checked by
+    // send-push. A switch that promises the phone stays silent and does
+    // not is worse to ship than a missing one, so it is gone until the
+    // server side exists.
+    expect(view.queryByText('quiet hours')).toBeNull();
+    expect(view.queryByText(/does not make a sound/)).toBeNull();
+  });
+
+  it('puts the photo control on the photo, not in a settings row', async () => {
+    const view = await render(<YouPage />);
+
+    expect(view.getByRole('button', { name: /photo/ })).toBeTruthy();
+    // a row labelled "photo" three screens deep is what this replaces
+    expect(view.queryByText('photo')).toBeNull();
   });
 });
 
@@ -369,9 +426,10 @@ describe('compose', () => {
 
     const feed = await render(<HomeScreen />);
     // your own casts never appear in the feed (the feed is decisions to
-    // make — yours aren't). they surface under the activity page's
-    // "yours" tab, which is where what you started lives.
-    await user.press(feed.getByRole('tab', { name: 'your plans' }));
+    // make — yours aren't). they surface under the alerts page's "your
+    // plans" group, which is where what you started lives. the tab label
+    // carries the count, so match on the prefix.
+    await user.press(feed.getByRole('tab', { name: /^your plans/ }));
     expect(feed.getAllByText('chess in the park sunday morning.').length).toBeGreaterThanOrEqual(1);
   });
 
@@ -540,7 +598,7 @@ describe('chat', () => {
 
     // a live countdown, and nothing pending yet
     expect(view.getByText(/\d+h left/)).toBeTruthy();
-    expect(view.queryByRole('button', { name: 'Agree' })).toBeNull();
+    expect(view.queryByRole('button', { name: 'agree' })).toBeNull();
 
     await act(async () => {
       await extendChat('badminton-after-work', 'always');
@@ -548,10 +606,10 @@ describe('chat', () => {
 
     // asked, not done: the window is unchanged and the ask is on screen
     expect(view.getByText(/\d+h left/)).toBeTruthy();
-    expect(view.getByText(/You asked for no expiry/)).toBeTruthy();
+    expect(view.getByText(/you asked for no expiry/)).toBeTruthy();
     // the person who asked cannot also agree — only take it back
-    expect(view.queryByRole('button', { name: 'Agree' })).toBeNull();
-    expect(view.getByRole('button', { name: 'Take it back' })).toBeTruthy();
+    expect(view.queryByRole('button', { name: 'agree' })).toBeNull();
+    expect(view.getByRole('button', { name: 'take it back' })).toBeTruthy();
 
     await act(async () => {
       await answerWindowRequest('badminton-after-work', true);

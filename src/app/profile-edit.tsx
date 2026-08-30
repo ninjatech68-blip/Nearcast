@@ -1,107 +1,90 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
-import { BarButton, QuietAction } from '@/design-system/components/button';
+import { QuietAction } from '@/design-system/components/button';
+import { Row } from '@/design-system/components/row';
 import { SheetNote, SheetShell } from '@/design-system/components/sheet';
-import { haptic } from '@/design-system/haptics';
-import { fontFamily, tokens } from '@/design-system/tokens';
-import { setName, useMe } from '@/features/me/me-store';
+import { Tag } from '@/design-system/components/tag';
+import { tokens } from '@/design-system/tokens';
+import { signOut } from '@/features/auth/auth';
+import { useMe } from '@/features/me/me-store';
 
 /**
- * Edit your name.
+ * Edit profile: who you are, where you cast, and the paperwork.
  *
- * Onboarding was the only place a name could ever be set, so a typo
- * there was permanent — and the name is what every other person on a
- * cast sees. Saving writes the local store; `useProfileSync` in the
- * shell notices the change and replaces the server copy, so the name
- * on other people's screens follows without a separate call here.
+ * The split from the profile hub runs along a sharper line than "often
+ * used / rarely used". The hub keeps the things that change what the
+ * app DOES to you — who your casts reach, when it may interrupt you,
+ * who it must keep away from you — because each of those is rarely
+ * touched and expensive to get wrong, and burying them by frequency
+ * would put blocking below a monthly recap.
  *
- * Email is shown but NOT editable. Sign-in is a magic link to that
- * address, so changing it means re-verifying the new one before the
- * old one stops working — a real flow, not a text field. Saying so is
- * better than offering a field that silently locks someone out.
+ * What is left here is identity and paperwork: the name and email other
+ * people see, the areas you cast into, the two legal pages, and the two
+ * ways to leave. None of it changes how a cast travels.
  *
- * The note says only that, and stops. It used to end "write in and
- * we'll move it across", which promised a support channel that does
- * not exist — an offer nobody could act on is worse than the plain
- * "not yet".
+ * Your photo is NOT here. It is edited by tapping the photo, on the hub,
+ * because the object and its control should be the same object.
  */
 export default function ProfileEditScreen() {
   const me = useMe();
-  const [name, setLocalName] = useState(me.name);
-  const trimmed = name.trim();
-  const ready = trimmed.length > 0 && trimmed !== me.name;
-
-  function save() {
-    if (!ready) return;
-    haptic('success');
-    setName(trimmed);
-    router.back();
-  }
+  const areasLine = `${me.approvedAreas.join(', ')} · always approximate`;
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
-      <SheetShell title="your details">
-        <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-          <Text style={styles.label}>NAME</Text>
-          <TextInput
-            accessibilityLabel="your first name"
-            value={name}
-            onChangeText={setLocalName}
-            placeholder="first name"
-            placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-            selectionColor={tokens.semantic.color.accent}
-            style={styles.input}
-            autoCapitalize="words"
-            autoCorrect={false}
-            returnKeyType="done"
-            maxLength={40}
-            onSubmitEditing={ready ? save : undefined}
-          />
-          <Text style={styles.hint}>your first name is all anyone else on nearcast sees.</Text>
+    <SheetShell title="edit profile">
+      <View style={styles.rows}>
+        <Row
+          title="name & email"
+          sub={me.email ? `${me.name} · ${me.email}` : me.name}
+          right={<Tag label="→" tone="line" />}
+          onPress={() => router.push('/name')}
+        />
+        <Row title="area" sub={areasLine} right={<Tag label="→" tone="line" />} onPress={() => router.push('/areas')} />
+        <Row
+          title="terms + privacy"
+          sub="what stays private · how blocks work"
+          right={<Tag label="→" tone="line" />}
+          onPress={() => router.push('/legal/privacy')}
+        />
+        <Row
+          title="community guidelines"
+          sub="what gets you removed"
+          right={<Tag label="→" tone="line" />}
+          onPress={() => router.push('/legal/guidelines')}
+        />
+      </View>
 
-          <Text style={styles.label}>EMAIL</Text>
-          <View style={styles.readonly}>
-            <Text style={styles.readonlyText}>{me.email || 'not set'}</Text>
-          </View>
-          <SheetNote>
-            this is where your sign-in link is sent. moving it to another address means verifying that one first,
-            so it can&apos;t be changed here yet.
-          </SheetNote>
-        </ScrollView>
-        <View style={styles.actions}>
-          <BarButton label="save" variant="onOrange" onPress={save} disabled={!ready} />
-          <QuietAction label="never mind" color={tokens.semantic.color.ink} onPress={() => router.back()} />
-        </View>
-      </SheetShell>
-    </KeyboardAvoidingView>
+      <SheetNote>nearcast never shows your exact location, your email, or which circle vouched for you.</SheetNote>
+
+      {/* last, behind everything else, and off the hub entirely. */}
+      <View style={styles.leave}>
+        <QuietAction
+          label="delete account"
+          color={tokens.semantic.color.textMutedOnCream}
+          onPress={() => router.push('/delete-account')}
+        />
+        <QuietAction
+          label="sign out"
+          color={tokens.semantic.color.ink}
+          onPress={() =>
+            Alert.alert('sign out?', 'you can sign back in with the same email.', [
+              { text: 'never mind' },
+              {
+                text: 'sign out',
+                style: 'destructive',
+                onPress: () => {
+                  void signOut().finally(() => router.replace('/signin'));
+                },
+              },
+            ])
+          }
+        />
+      </View>
+    </SheetShell>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  label: { ...tokens.typography.tagSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 20, marginBottom: 8 },
-  input: {
-    minHeight: 56,
-    borderRadius: tokens.primitive.radius.control,
-    borderWidth: 1.5,
-    borderColor: tokens.semantic.color.accent,
-    paddingHorizontal: 14,
-    fontFamily: fontFamily.text,
-    fontSize: 18,
-    color: tokens.semantic.color.ink,
-  },
-  hint: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 10 },
-  readonly: {
-    minHeight: 56,
-    justifyContent: 'center',
-    borderRadius: tokens.primitive.radius.control,
-    borderWidth: 1,
-    borderColor: tokens.semantic.color.hairlineOnCream,
-    backgroundColor: tokens.semantic.color.backgroundSubtle,
-    paddingHorizontal: 14,
-  },
-  readonlyText: { fontFamily: fontFamily.text, fontSize: 18, color: tokens.semantic.color.textMutedOnCream },
-  actions: { marginTop: 18, gap: 2 },
+  rows: { marginTop: 18 },
+  leave: { marginTop: 'auto', paddingTop: 24, alignItems: 'center' },
 });

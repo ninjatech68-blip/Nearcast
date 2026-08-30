@@ -1,6 +1,16 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Animated, FlatList, Pressable, RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+  Alert,
+  Animated,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // how far the feed must overscroll at the top before a pull refreshes.
@@ -11,9 +21,10 @@ import { Refreshing } from '@/design-system/components/refreshing';
 import { useRefresher } from '@/infrastructure/net/use-refresher';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
+import { Lens } from '@/design-system/components/lens';
 import { Poster } from '@/design-system/components/poster';
 import { haptic } from '@/design-system/haptics';
-import { category as categoryTokens, fontFamily, tokens } from '@/design-system/tokens';
+import { category as categoryTokens, fontFamily, tokens, type Category } from '@/design-system/tokens';
 import { NEVER_USED } from '@/features/casts/domain/delivery';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { type CastDetail } from '@/features/casts/fixtures';
@@ -28,8 +39,6 @@ import {
   useQuery,
 } from '@/features/casts/store';
 import { remoteEnabled } from '@/features/casts/remote';
-
-import { AvatarDot } from './avatar-dot';
 
 // how far the feed must overscroll at the top before a pull refreshes.
 // the native RefreshControl needs roughly twice this on a full-screen
@@ -52,9 +61,14 @@ function explainDelivery(cast: CastDetail) {
  * pill below the top row stays visible with one-tap clear.
  */
 export function FeedPage({
-  onScrollStateChange,
+  onCategoryChange,
 }: {
-  onScrollStateChange?: (scrolling: boolean) => void;
+  /**
+   * The category of the poster actually on screen, so the dock can take
+   * that field's declared foreground. Null when no poster is showing —
+   * the empty and error states render on cream, where ink is right.
+   */
+  onCategoryChange?: (category: Category | null) => void;
 }) {
   const { height, width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -66,6 +80,31 @@ export function FeedPage({
   const [reloadKey, setReloadKey] = useState(0);
 
   const visible = useMemo(() => applyLens(all, filter, query), [all, filter, query]);
+
+  /**
+   * Which poster is on screen, reported up so the dock can colour its
+   * marks against the field they sit on.
+   *
+   * Tracked from the scroll offset rather than onViewableItemsChanged:
+   * FlatList treats that prop as immutable after mount, so keeping it
+   * stable means a ref, and a ref read during render is the stale-value
+   * hazard we just spent a release fixing elsewhere. One poster fills
+   * the viewport, so the offset IS the index.
+   *
+   * And from onScroll rather than onMomentumScrollEnd, because a drag
+   * released without velocity never fires momentum — the precise gap
+   * that used to leave the old rail invisible.
+   */
+  const [shown, setShown] = useState(0);
+  // clamped, because a refresh that shortens the feed leaves the index
+  // past the end while a poster is still on screen — and an unclamped
+  // read would send the dock back to ink over a coloured field.
+  const current = visible[Math.min(shown, visible.length - 1)]?.category ?? null;
+  // the empty, loading and error states render on cream, so this also
+  // has to go back to null the moment the last poster leaves.
+  useEffect(() => {
+    onCategoryChange?.(current);
+  }, [current, onCategoryChange]);
 
   /**
    * Pull the delivered feed on mount, and again on retry.
@@ -167,13 +206,17 @@ export function FeedPage({
         keyExtractor={(cast) => cast.id}
         renderItem={({ item }) => (
           <View style={{ height, width }}>
-            <SkippablePoster cast={item} onSkip={() => skip(item.id)} />
+            <SkippablePoster cast={item} lensOn={lensOn} onSkip={() => skip(item.id)} />
           </View>
         )}
         pagingEnabled
         showsVerticalScrollIndicator={false}
         getItemLayout={(_, index) => ({ length: height, offset: height * index, index })}
-        onScrollBeginDrag={() => onScrollStateChange?.(true)}
+        onScroll={(e) => {
+          const index = Math.round(e.nativeEvent.contentOffset.y / height);
+          if (index !== shown && index >= 0) setShown(index);
+        }}
+        scrollEventThrottle={16}
         onScrollEndDrag={(e) => {
           // a short overscroll at EITHER end refreshes, without waiting for
           // the native RefreshControl's much longer pull. PULL_TO_REFRESH_PX
@@ -188,7 +231,6 @@ export function FeedPage({
           const atBottom = overscrollBottom >= PULL_TO_REFRESH_PX;
           if (atTop || atBottom) pullRefresh();
         }}
-        onMomentumScrollEnd={() => onScrollStateChange?.(false)}
         windowSize={3}
         // one full-screen poster per page: render exactly what is on
         // screen, keep one neighbour warm, and let RN detach the rest so
@@ -215,7 +257,7 @@ export function FeedPage({
   );
 }
 
-function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => void }) {
+function SkippablePoster({ cast, lensOn, onSkip }: { cast: CastDetail; lensOn: boolean; onSkip: () => void }) {
   const { width } = useWindowDimensions();
   const [exit] = useState(() => new Animated.Value(0));
   const fg = categoryTokens[cast.category].fg;
@@ -233,7 +275,7 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
     <Animated.View style={{ flex: 1, transform: [{ translateX }, { rotate }] }}>
       <Poster
         cast={cast}
-        topRight={<AvatarDot castCategory={cast.category} />}
+        topRight={<Lens color={fg} on={lensOn} onPress={() => router.push('/filter')} />}
         onOpen={() => router.push(`/cast/${cast.id}`)}
         caster={{
           line: `${cast.by.toLowerCase()} · ${cast.receipts.line.split(' · ')[0]}`,
@@ -243,7 +285,6 @@ function SkippablePoster({ cast, onSkip }: { cast: CastDetail; onSkip: () => voi
         }}
         onOpenCaster={() => router.push(`/caster/${cast.byId}`)}
         onWhyPress={() => explainDelivery(cast)}
-        onWordmarkPress={() => router.push('/filter')}
       >
         <BarButton
           label="ask to join"
@@ -275,7 +316,10 @@ function FeedEmpty({
     <View style={[styles.empty, { paddingTop: insets.top + 24, paddingBottom: insets.bottom }]}>
       <View style={styles.emptyTop}>
         <Text style={styles.wordmark}>NEARCAST</Text>
-        <AvatarDot />
+        {/* the lens stays reachable when the feed is empty: a filter is
+            the most likely reason it IS empty, and the pill below says
+            so only when one is on. */}
+        <Lens color={tokens.semantic.color.ink} on={filtered} onPress={() => router.push('/filter')} />
       </View>
       <View style={styles.emptyMiddle}>
         <Text style={styles.emptyHead}>{failed ? "couldn't load." : loading ? 'loading…' : 'quiet.'}</Text>

@@ -33,25 +33,24 @@ export function Poster({
   topRight,
   children,
   onOpen,
-  reserveRail = true,
+  reserveDock = true,
   badge,
   tagLabel,
   caster,
   onOpenCaster,
   onWhyPress,
-  onWordmarkPress,
 }: {
   cast: PosterData;
   topRight?: ReactNode;
   children?: ReactNode;
   onOpen?: () => void;
-  reserveRail?: boolean;
+  /** keep the bottom band clear for the dock. false inside a modal, which covers it. */
+  reserveDock?: boolean;
   badge?: ReactNode;
   tagLabel?: string;
   caster?: { line: string; photo?: ImageSourcePropType; initials: string; verified?: boolean };
   onOpenCaster?: () => void;
   onWhyPress?: () => void;
-  onWordmarkPress?: () => void;
 }) {
   const insets = useSafeAreaInsets();
   const spec = categoryTokens[cast.category];
@@ -75,18 +74,16 @@ export function Poster({
         {
           backgroundColor: spec.field,
           paddingTop: insets.top + 24,
-          paddingBottom: reserveRail ? tokens.component.posterBottomReserve : insets.bottom + 16,
+          paddingBottom: reserveDock ? tokens.component.posterBottomReserve : insets.bottom + 16,
         },
       ]}
     >
       <View style={styles.top}>
-        {onWordmarkPress ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="filter the feed" hitSlop={10} onPress={onWordmarkPress}>
-            <Text style={[styles.wordmark, { color: fg }]}>NEARCAST ⌄</Text>
-          </Pressable>
-        ) : (
-          <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>
-        )}
+        {/* the wordmark is a brand mark, not a button. it used to carry
+            a chevron and open the filter, which is not a control anybody
+            looks for on a logo — that job belongs to the lens icon that
+            now sits in topRight. */}
+        <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>
         {topRight}
       </View>
       <View style={styles.middle}>

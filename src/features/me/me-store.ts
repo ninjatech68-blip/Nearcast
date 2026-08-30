@@ -16,7 +16,6 @@ import { clearAllState, loadState, saveState, STORAGE_KEYS } from '@/infrastruct
  * private_state table for blocked ids and push preferences.
  */
 
-type QuietHours = { start: string; end: string; on: boolean };
 
 /**
  * The approximate centre of an approved area, as the picker resolved
@@ -40,7 +39,6 @@ type State = {
   interests: readonly Category[];
   blocked: readonly string[];
   photoUri: string | null;
-  quietHours: QuietHours;
 };
 
 const DEFAULT_STATE: State = {
@@ -55,7 +53,6 @@ const DEFAULT_STATE: State = {
   interests: ['sports', 'games', 'arts'],
   blocked: [],
   photoUri: null,
-  quietHours: { start: '10:00 pm', end: '7:00 am', on: true },
 };
 
 // hydrate synchronously at module load so the shell's signed-in /
@@ -105,15 +102,6 @@ export function useMyPhoto(): string | null {
 
 export function setMyPhoto(uri: string | null): void {
   state = { ...state, photoUri: uri };
-  emit();
-}
-
-export function useQuietHours(): QuietHours {
-  return useSyncExternalStore(subscribe, () => state.quietHours);
-}
-
-export function setQuietHours(next: Partial<QuietHours>): void {
-  state = { ...state, quietHours: { ...state.quietHours, ...next } };
   emit();
 }
 

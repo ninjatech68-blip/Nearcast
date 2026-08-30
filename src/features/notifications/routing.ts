@@ -15,15 +15,15 @@ import { addNotificationListeners } from './push';
  * anything is shown.
  *
  * A tap also has to GO somewhere. Every push we send is about a request
- * or an accept, and both of those live on the activity page, so a tap
- * closes whatever sheet was open and puts the pager on activity. The
+ * or an accept, and both of those land in alerts, so a tap closes
+ * whatever sheet was open and puts the pager on alerts. The
  * payload carries only a kind and ids (product law: no intent text, no
  * message, no coordinates), which is enough to pick the page and not
  * enough to render anything from — the screen reads the real row.
  */
 
 type Listener = () => void;
-const activityListeners = new Set<Listener>();
+const alertsListeners = new Set<Listener>();
 
 /**
  * A request nobody was around to hear is kept, not dropped.
@@ -40,38 +40,38 @@ const activityListeners = new Set<Listener>();
  *
  * So the ask is remembered until something can act on it — but not
  * forever. A request left unclaimed is stale within seconds; honouring
- * a minutes-old one would jump someone to activity when they later
+ * a minutes-old one would jump someone to alerts when they later
  * opened the app for their own reasons.
  */
 const REQUEST_GOES_STALE_MS = 30_000;
 let requestedAt: number | null = null;
 
-/** ask the home pager to show the activity page. */
-export function requestActivityPage(): void {
-  if (activityListeners.size === 0) {
+/** ask the home pager to show the alerts page. */
+export function requestAlertsPage(): void {
+  if (alertsListeners.size === 0) {
     requestedAt = Date.now();
     return;
   }
   requestedAt = null;
-  for (const listener of activityListeners) listener();
+  for (const listener of alertsListeners) listener();
 }
 
 /** the home pager subscribes; returns its unsubscribe. */
-export function onActivityRequested(listener: Listener): () => void {
-  activityListeners.add(listener);
+export function onAlertsRequested(listener: Listener): () => void {
+  alertsListeners.add(listener);
   if (requestedAt !== null && Date.now() - requestedAt < REQUEST_GOES_STALE_MS) {
     requestedAt = null;
     listener();
   }
   return () => {
-    activityListeners.delete(listener);
+    alertsListeners.delete(listener);
   };
 }
 
 /** test-only: forget any unclaimed request. */
-export function resetActivityRequest(): void {
+export function resetAlertsRequest(): void {
   requestedAt = null;
-  activityListeners.clear();
+  alertsListeners.clear();
 }
 
 /** mounted once in the app shell. */
@@ -98,14 +98,14 @@ export function useNotificationRouting(): void {
           }
           // A message ping is about ONE conversation, and the person
           // tapped it to read that conversation. Dropping them on the
-          // activity list to find it themselves is the app making them
+          // alerts list to find it themselves is the app making them
           // do the work the notification already did.
           if (payload.kind === 'chat_message' && payload.conversationId) {
             router.navigate(`/chat/${payload.conversationId}`);
             return;
           }
           router.navigate('/');
-          requestActivityPage();
+          requestAlertsPage();
         },
       }),
     [],

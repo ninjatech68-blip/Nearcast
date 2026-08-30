@@ -5,17 +5,17 @@ vi.mock('@/features/casts/store', () => ({ refreshInteractions: vi.fn() }));
 vi.mock('@/features/chat/chat', () => ({ refreshConversations: vi.fn() }));
 vi.mock('./push', () => ({ addNotificationListeners: vi.fn(() => () => undefined) }));
 
-const { requestActivityPage, onActivityRequested, resetActivityRequest } =
+const { requestAlertsPage, onAlertsRequested, resetAlertsRequest } =
   await import('./routing');
 
-beforeEach(() => resetActivityRequest());
+beforeEach(() => resetAlertsRequest());
 
-describe('asking the home pager for the activity page', () => {
+describe('asking the home pager for the alerts page', () => {
   it('tells a pager that is already listening', () => {
-    const goToActivity = vi.fn();
-    onActivityRequested(goToActivity);
-    requestActivityPage();
-    expect(goToActivity).toHaveBeenCalledTimes(1);
+    const goToAlerts = vi.fn();
+    onAlertsRequested(goToAlerts);
+    requestAlertsPage();
+    expect(goToAlerts).toHaveBeenCalledTimes(1);
   });
 
   // THE REGRESSION: the tap handler calls this straight after
@@ -24,52 +24,52 @@ describe('asking the home pager for the activity page', () => {
   // where the whole shell boots first — so a plain event bus drops the
   // request and the person lands on the feed.
   it('keeps a request made before the pager exists, and delivers it on mount', () => {
-    requestActivityPage();
-    const goToActivity = vi.fn();
-    onActivityRequested(goToActivity);
-    expect(goToActivity).toHaveBeenCalledTimes(1);
+    requestAlertsPage();
+    const goToAlerts = vi.fn();
+    onAlertsRequested(goToAlerts);
+    expect(goToAlerts).toHaveBeenCalledTimes(1);
   });
 
   it('delivers a kept request once, not to every later subscriber', () => {
-    requestActivityPage();
+    requestAlertsPage();
     const first = vi.fn();
     const second = vi.fn();
-    onActivityRequested(first);
-    onActivityRequested(second);
+    onAlertsRequested(first);
+    onAlertsRequested(second);
     expect(first).toHaveBeenCalledTimes(1);
     expect(second).not.toHaveBeenCalled();
   });
 
   it('does not re-deliver to a pager that remounts later', () => {
-    requestActivityPage();
+    requestAlertsPage();
     const first = vi.fn();
-    const unsubscribe = onActivityRequested(first);
+    const unsubscribe = onAlertsRequested(first);
     expect(first).toHaveBeenCalledTimes(1);
 
     unsubscribe();
     const remounted = vi.fn();
-    onActivityRequested(remounted);
+    onAlertsRequested(remounted);
     expect(remounted).not.toHaveBeenCalled();
   });
 
   it('forgets a request nobody claimed in time', () => {
     vi.useFakeTimers();
     try {
-      requestActivityPage();
+      requestAlertsPage();
       // opening the app minutes later, for your own reasons, must not
-      // bounce you to activity because of a notification you ignored.
+      // bounce you to alerts because of a notification you ignored.
       vi.advanceTimersByTime(60_000);
-      const goToActivity = vi.fn();
-      onActivityRequested(goToActivity);
-      expect(goToActivity).not.toHaveBeenCalled();
+      const goToAlerts = vi.fn();
+      onAlertsRequested(goToAlerts);
+      expect(goToAlerts).not.toHaveBeenCalled();
     } finally {
       vi.useRealTimers();
     }
   });
 
   it('does not fire on mount when nothing was ever asked for', () => {
-    const goToActivity = vi.fn();
-    onActivityRequested(goToActivity);
-    expect(goToActivity).not.toHaveBeenCalled();
+    const goToAlerts = vi.fn();
+    onAlertsRequested(goToAlerts);
+    expect(goToAlerts).not.toHaveBeenCalled();
   });
 });

@@ -34,12 +34,18 @@ open the app.
 | `join_accepted` | the caster says yes | — |
 | `chat_message` | a message lands in a chat you are in | you have that chat open |
 
-Quiet hours apply to the app's own pings, not to a person's message.
-`join_request` and `join_accepted` are Nearcast talking, so they wait
-for a quiet window to pass; `chat_message` is somebody writing to you
-and behaves like a text, which is a per-chat mute or the OS's own Do
-Not Disturb to silence, not an app-wide curfew. (Neither half is wired
-up yet — see Known limits.)
+Quiet hours are NOT built. There is no quiet window in the schema, the
+profile never syncs one, and the sender never asks. The switch that used
+to sit in the profile was removed rather than left inert: it persisted a
+window nothing read, and a control that promises the phone will stay
+silent and does not is worse to ship than a missing one.
+
+The scope, for when it is built: quiet hours apply to the app's own
+pings, not to a person's message. `join_request` and `join_accepted` are
+Nearcast talking, so they wait for a quiet window to pass;
+`chat_message` is somebody writing to you and behaves like a text, which
+is a per-chat mute or the OS's own Do Not Disturb to silence, not an
+app-wide curfew. See Known limits.
 
 `chat_message` is the one with a rule attached. A notification for a
 message you are watching arrive is noise, so the open thread takes a
@@ -160,10 +166,15 @@ intended device row.
 
 ## Known limits
 
-- Quiet hours are a local preference the sender does not yet consult,
-  so a `join_request` or `join_accepted` can arrive inside a person's
-  quiet window. `chat_message` is out of scope by design and would not
-  be held back even once this is wired up.
+- Quiet hours do not exist. Not in the schema, not in profile sync, not
+  in the sender, and no longer in the app: the local-only switch was
+  removed once it was clear nothing ever read it. Any `join_request` or
+  `join_accepted` can arrive at any hour. Building it means
+  `quiet_start` and `quiet_end` on the profile, synced by
+  `useProfileSync` and read before the enqueue decision — server-side
+  state, which is why the local shape was not worth keeping warm.
+  `chat_message` is out of scope by design and would not be held back
+  even once this is wired up.
 - Presence is keyed per PERSON, not per device: the lease is
   `(conversation_id, profile_id)`, and the trigger decides whether to
   enqueue at all before any device is looked at. So two devices signed
