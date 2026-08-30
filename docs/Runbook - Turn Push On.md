@@ -198,6 +198,24 @@ Then re-run the group-by above and confirm nothing stale is still
 
 ## Step 3 — deploy the sender
 
+> **This is very likely a REDEPLOY, not a first deploy.** If the outbox
+> holds rows with status `delivered`, `no_devices` or `failed`, a
+> previous version of `send-push` has already run — those three statuses
+> are written by nothing else.
+>
+> That makes version skew the failure mode to watch for. The kinds a
+> notification can have live in the DATABASE (the `kind` check
+> constraint, and the triggers that enqueue), while the COPY for each
+> kind lives in the FUNCTION. Applying a migration that adds a kind
+> without redeploying the function means the database starts queueing
+> something the function cannot render, and every one of those rows dies
+> as `unknown_kind:<kind>` — terminal by design, silent unless someone
+> reads `last_error`.
+>
+> The tell is a clean split by kind: older kinds `delivered`, the newest
+> kind uniformly `failed`, starting at the moment its migration landed.
+> If you see that, deploying the current function is the fix.
+
 ```bash
 supabase functions deploy send-push --project-ref <project-ref>
 supabase functions deploy prune-chat-media --project-ref <project-ref>
