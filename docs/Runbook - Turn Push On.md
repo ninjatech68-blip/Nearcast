@@ -1,7 +1,8 @@
 # Runbook — Turn Push On
 
-Everything in the repository is built and tested. Push still does not
-work, and none of the reasons are code:
+Everything in the repository is built and tested. When push does not
+work, it is almost never the code — it is one of these, and none of them
+are code:
 
 | # | What is missing | Without it |
 | --- | --- | --- |
@@ -369,8 +370,28 @@ select * from public.notification_failures;
 
 ### Reading the result
 
+**What healthy looks like.** Confirmed in production on 2026-08-30 —
+two chat messages, end to end:
+
+| message | queued | `submitted` | `delivered` |
+| --- | --- | --- | --- |
+| #1 | 15:56:47 | 15:57:00 | 15:58:00 |
+| #2 | 15:58:05 | 15:59:00 | 16:00:01 |
+
+A row moves `pending → sending → submitted → delivered`, and each hop
+waits for the next minute-ly drain: one to submit it to Expo, the next
+to poll the receipt and promote it. So roughly a minute to reach the
+device and another before the database says `delivered`.
+
+`submitted` is therefore a NORMAL transient state, not a stuck one. Read
+the outbox during that window — as is easy to do, since you are usually
+querying seconds after testing — and a perfectly healthy notification
+looks unfinished. Give it one more drain cycle before investigating.
+
 | What you see | What it means |
 | --- | --- |
+| `submitted`, `resolved_at` null, less than ~2 min old | Normal. The receipt has not been polled yet. Wait one drain cycle. |
+| `submitted` for many minutes | The receipt poll is failing. Check `notification_deliveries.error_code`. |
 | No outbox row | The trigger did not fire. Is the recipient the *other* party, and is the chat window still open? |
 | `pending` with `next_attempt_at` in the future | It failed and is waiting to retry. `last_error` says why. |
 | `pending`, `next_attempt_at` null, never moving | The cron drain is not running — go back to step 4. |
