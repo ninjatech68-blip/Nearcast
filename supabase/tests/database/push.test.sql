@@ -1,9 +1,10 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(6);
+select plan(11);
 
 select has_table('public', 'device_push_tokens', 'device tokens table exists');
 select has_table('public', 'notification_outbox', 'the notification outbox exists');
+select has_table('public', 'notification_deliveries', 'per-device delivery rows exist');
 
 -- caster A and joiner B, both in indiranagar and into sports so the cast
 -- reaches B through the normal gate
@@ -26,7 +27,13 @@ reset role;
 -- B registers a device token, sees the cast, and asks to join
 set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000000B1","role":"authenticated"}';
-select public.register_push_token('ExponentPushToken[test-b]', 'ios');
+select public.register_push_token(
+  'ExponentPushToken[test-b]',
+  'ios',
+  'Riya phone',
+  'iPhone 16 Pro',
+  '14'
+);
 select count(*) from public.my_feed();
 select public.respond_to_cast(
   (select intent_id from public.intent_deliveries where recipient_id='00000000-0000-0000-0000-0000000000B1' limit 1),
@@ -37,8 +44,17 @@ select is(
   (select count(*)::int from public.device_push_tokens where user_id='00000000-0000-0000-0000-0000000000B1'),
   1, 'the device token is stored for the signed-in user');
 select is(
+  (select device_label from public.device_push_tokens where user_id='00000000-0000-0000-0000-0000000000B1' limit 1),
+  'Riya phone', 'the token keeps a human-readable device label');
+select is(
+  (select device_model from public.device_push_tokens where user_id='00000000-0000-0000-0000-0000000000B1' limit 1),
+  'iPhone 16 Pro', 'the token keeps a device model for ops mapping');
+select is(
   (select count(*)::int from public.notification_outbox where recipient_id='00000000-0000-0000-0000-0000000000A1' and kind='join_request'),
   1, 'the caster is queued a join_request ping');
+select is(
+  (select delivery_status from public.notification_outbox where recipient_id='00000000-0000-0000-0000-0000000000A1' and kind='join_request' limit 1),
+  'pending', 'new outbox rows start pending until the sender works them');
 
 -- A accepts the request
 set local role authenticated;
@@ -49,6 +65,9 @@ reset role;
 select is(
   (select count(*)::int from public.notification_outbox where recipient_id='00000000-0000-0000-0000-0000000000B1' and kind='join_accepted'),
   1, 'the joiner is queued a join_accepted ping');
+select is(
+  (select attempt_count from public.notification_outbox where recipient_id='00000000-0000-0000-0000-0000000000B1' and kind='join_accepted' limit 1),
+  0, 'new outbox rows start with zero send attempts');
 
 -- privacy: the outbox holds only a kind + ids, never message content
 select is(

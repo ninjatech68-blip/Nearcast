@@ -11,12 +11,47 @@ What is in the repository, and the four steps that are not code.
 | Content-free outbox + triggers | same migration | in the schema |
 | Branded copy + Expo delivery | `supabase/functions/send-push/index.ts` | in the repo, **needs deploying** |
 | Minute-by-minute drain + weekly prune | `supabase/migrations/20260829150000_push_schedule.sql` | guarded no-op until step 3 |
-| Tap handling (refresh + open activity) | `src/features/notifications/routing.ts` | in the app |
+| Batch claim, so two drains cannot double-send | `supabase/migrations/20260830180000_push_claim_batch.sql` | in the schema |
+| Chat-message ping + presence suppression | `supabase/migrations/20260830170000_chat_expiry_and_message_push.sql` | in the schema |
+| Tap handling (refresh + open the right chat) | `src/features/notifications/routing.ts` | in the app |
 
 A push never carries intent text, a message, coordinates, contact
 details, or a private-group name. The outbox stores a kind and ids; the
 copy is composed at send time and says only enough to get the person to
 open the app.
+
+## What gets a ping
+
+| Kind | Fires when | Suppressed when |
+| --- | --- | --- |
+| `join_request` | someone asks to join your cast | — |
+| `join_accepted` | the caster says yes | — |
+| `chat_message` | a message lands in a chat you are in | you have that chat open |
+
+Quiet hours apply to the app's own pings, not to a person's message.
+`join_request` and `join_accepted` are Nearcast talking, so they wait
+for a quiet window to pass; `chat_message` is somebody writing to you
+and behaves like a text, which is a per-chat mute or the OS's own Do
+Not Disturb to silence, not an app-wide curfew. (Neither half is wired
+up yet — see Known limits.)
+
+`chat_message` is the one with a rule attached. A notification for a
+message you are watching arrive is noise, so the open thread takes a
+30-second presence lease (`touch_conversation_presence`) and renews it
+every 10 seconds; the enqueue trigger checks that lease and stays quiet
+while it holds. The lease is dropped explicitly when the screen closes
+or the app backgrounds — backgrounding matters, because the app is no
+longer in front of anyone and the next message *should* ping.
+
+Nothing has to be cleaned up for this to be correct. Kill the app, lose
+the network, run out of battery: the lease simply lapses and pings
+resume. That is why it is a lease and not a flag, and why it is not
+inferred from read receipts, which move whenever a list syncs.
+
+A burst of messages is one ping, not one per message: a partial unique
+index keeps a single un-drained `chat_message` row per (recipient,
+conversation). Once that ping is claimed for sending, the next message
+queues its own — so a reply half a minute later is not swallowed.
 
 ## Step 1 — APNs key on the Expo project
 
@@ -92,12 +127,46 @@ is failing at Expo or APNs (step 1) — check the function logs:
 supabase functions logs send-push --project-ref <project-ref>
 ```
 
+## Token mapping
+
+Do not test against "the newest iOS token" and assume it belongs to the
+phone in your hand. A person can have multiple devices, reinstall the
+app, or sign in on more than one handset.
+
+Use the token rows with the profile and device metadata together:
+
+```sql
+select
+  p.display_name,
+  d.platform,
+  d.device_label,
+  d.device_model,
+  d.app_build,
+  left(d.token, 25) as token_prefix,
+  d.updated_at
+from public.device_push_tokens d
+join public.profiles p on p.id = d.user_id
+order by p.display_name, d.updated_at desc;
+```
+
+Send a direct Expo test only after matching the intended person and the
+intended device row.
+
 ## Known limits
 
-- Quiet hours are a local preference; the sender does not yet consult
-  them, so a ping can arrive inside a person's quiet window.
-- There is no receipt of delivery. `sent_at` records that the message
-  was handed to Expo, not that a phone showed it.
+- Quiet hours are a local preference the sender does not yet consult,
+  so a `join_request` or `join_accepted` can arrive inside a person's
+  quiet window. `chat_message` is out of scope by design and would not
+  be held back even once this is wired up.
+- Presence is keyed per PERSON, not per device: the lease is
+  `(conversation_id, profile_id)`, and the trigger decides whether to
+  enqueue at all before any device is looked at. So two devices signed
+  into one account, with the chat open on either, suppress the ping on
+  both. Fixing it means moving the decision to fan-out time in the
+  sender, where device identity actually exists.
+- Expo tickets and receipts are tracked, and dead tokens are
+  invalidated automatically. Even so, a receipt only means the vendor
+  accepted the notification, not that a human definitely saw a banner.
 
 ---
 
@@ -129,3 +198,102 @@ library, an animated GIF, and a location; check that
 `select media_kind, media_path from public.messages order by created_at desc limit 4;`
 shows paths under the conversation's folder, and that the bucket is
 listed as private in the dashboard.
+
+---
+
+# Ops — The Chat Window
+
+A chat carries an expiry so it does not linger past the reason it
+opened. `20260830170000_chat_expiry_and_message_push.sql` is what makes
+that real; before it, `expires_at` was written and never read, so the
+header counted down to "expired" over a composer that still worked.
+
+Three layers, deliberately:
+
+1. **The guard.** `private.assert_can_send` refuses past the expiry, so
+   a lapsed chat stops taking messages at the instant it lapses rather
+   than whenever a job next runs. Extending is refused for the same
+   reason — there is nothing left to extend.
+2. **The read.** `my_conversations` reports a lapsed chat as `ended`,
+   so the app disables the composer without waiting for anything.
+3. **The sweep.** `close_expired_conversations()` writes the close down
+   — mode `ended`, `closed_at` set to the expiry it actually lapsed at,
+   not the moment the sweeper noticed — and drops a note in the thread.
+   Scheduled every five minutes; idempotent, so running it by hand is
+   safe.
+
+A chat closed by hand and one that ran out of time are told apart by
+their error: `conversation_ended` and `conversation_expired`. An
+`always` chat never lapses, whatever `expires_at` happens to hold.
+
+The sweeper needs pg_cron. Where it is absent — `scripts/db-local.sh`
+has neither pg_cron nor pg_net — the migration says so and skips, and
+the guard plus the read still make expiry behave correctly; only the
+durable write and the closing note wait for a scheduler.
+
+Check it is running:
+
+```sql
+select jobname, schedule, active from cron.job
+ where jobname in ('close-expired-conversations', 'prune-conversation-presence');
+select public.close_expired_conversations(500);  -- returns rows closed
+```
+
+---
+
+# Ops — Chat Load
+
+An open chat polls, and that poll is the largest source of steady-state
+load in the app: it runs for everyone signed in, several times a minute,
+whether or not anything is happening. `20260830190000_chat_hot_path.sql`
+and the cadence around it exist to make each tick proportional to what
+changed rather than to how long the conversation has been going.
+
+Measured before the change, against 400 conversations and a
+2,000-message thread — one person, one chat open:
+
+| per tick | before | after |
+| --- | --- | --- |
+| `mark_conversation_read` | 32.5 ms, 35,968 buffers | 0.17 ms |
+| `mark_conversation_delivered` | 22.2 ms, 14,732 buffers | 0.15 ms |
+| conversation metadata | 9.9 ms (whole list) | 1.3 ms (one row) |
+| twenty ticks | 2,849 ms | 61 ms |
+| dead tuples left behind | 62,000 | 121 |
+
+Four things did it, none of which change what the app shows:
+
+1. **Receipt watermarks.** Both marks rewrote a receipt row for every
+   message in the thread, every tick. `conversation_reads` now carries
+   `delivered_through` beside `last_read_at`, and a tick only looks at
+   messages newer than it. The scan deliberately re-runs over a minute
+   of overlap (`private.receipt_overlap()`) so a message committing
+   slightly out of timestamp order is still picked up; `on conflict`
+   makes re-stamping free.
+2. **`conversation_summary(uuid)`.** The open thread needed one row and
+   was pulling the whole list to get it. Same columns, one row.
+3. **`private.conversation_rows`.** One definition behind both readers,
+   with laterals correlated to the caller's own conversations. The old
+   body ran five correlated subqueries per row, computed the last
+   message twice, and built its match lookup from a scan of *every*
+   match in the table before discarding all but the caller's.
+4. **The poll became a floor again.** `src/features/chat/cadence.ts`
+   slows both polls when the realtime socket is confirmed live, because
+   a tick then re-fetches what already arrived over the socket. It fails
+   toward polling fast: any status other than SUBSCRIBED — including
+   not knowing yet — reads as not live.
+
+An idle tick also no longer writes at all. Acknowledging an empty thread
+wrote two receipt rows about nothing; the client now only answers for
+something that actually came.
+
+If chat ever feels sluggish, the first thing to check is whether the
+socket is wrongly reporting itself live:
+
+```sql
+-- is the hot path still cheap? both should be well under a millisecond
+explain (analyze, buffers) select public.mark_conversation_read('<id>');
+explain (analyze, buffers) select * from public.conversation_summary('<id>');
+-- watermarks should be advancing, not null
+select conversation_id, last_read_at, delivered_through
+  from public.conversation_reads where profile_id = '<uid>';
+```

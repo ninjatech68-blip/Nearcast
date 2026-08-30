@@ -134,19 +134,58 @@ export type Database = {
           },
         ]
       }
+      conversation_presence: {
+        Row: {
+          active_until: string
+          conversation_id: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          active_until: string
+          conversation_id: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          active_until?: string
+          conversation_id?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_presence_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_presence_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_reads: {
         Row: {
           conversation_id: string
+          delivered_through: string | null
           last_read_at: string
           profile_id: string
         }
         Insert: {
           conversation_id: string
+          delivered_through?: string | null
           last_read_at?: string
           profile_id: string
         }
         Update: {
           conversation_id?: string
+          delivered_through?: string | null
           last_read_at?: string
           profile_id?: string
         }
@@ -242,18 +281,33 @@ export type Database = {
       }
       device_push_tokens: {
         Row: {
+          app_build: string | null
+          device_label: string | null
+          device_model: string | null
+          invalidated_at: string | null
+          last_error: string | null
           platform: string
           token: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          app_build?: string | null
+          device_label?: string | null
+          device_model?: string | null
+          invalidated_at?: string | null
+          last_error?: string | null
           platform?: string
           token: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          app_build?: string | null
+          device_label?: string | null
+          device_model?: string | null
+          invalidated_at?: string | null
+          last_error?: string | null
           platform?: string
           token?: string
           updated_at?: string
@@ -626,9 +680,46 @@ export type Database = {
           },
         ]
       }
+      message_receipts: {
+        Row: {
+          delivered_at: string | null
+          message_id: string
+          read_at: string | null
+          recipient_id: string
+        }
+        Insert: {
+          delivered_at?: string | null
+          message_id: string
+          read_at?: string | null
+          recipient_id: string
+        }
+        Update: {
+          delivered_at?: string | null
+          message_id?: string
+          read_at?: string | null
+          recipient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_receipts_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_receipts_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           body: string
+          client_message_id: string | null
           conversation_id: string
           created_at: string
           id: string
@@ -638,12 +729,14 @@ export type Database = {
           media_height: number | null
           media_kind: string | null
           media_path: string | null
+          media_thumb_path: string | null
           media_width: number | null
           place_label: string | null
           sender_id: string | null
         }
         Insert: {
           body: string
+          client_message_id?: string | null
           conversation_id: string
           created_at?: string
           id?: string
@@ -653,12 +746,14 @@ export type Database = {
           media_height?: number | null
           media_kind?: string | null
           media_path?: string | null
+          media_thumb_path?: string | null
           media_width?: number | null
           place_label?: string | null
           sender_id?: string | null
         }
         Update: {
           body?: string
+          client_message_id?: string | null
           conversation_id?: string
           created_at?: string
           id?: string
@@ -668,6 +763,7 @@ export type Database = {
           media_height?: number | null
           media_kind?: string | null
           media_path?: string | null
+          media_thumb_path?: string | null
           media_width?: number | null
           place_label?: string | null
           sender_id?: string | null
@@ -686,6 +782,66 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_deliveries: {
+        Row: {
+          created_at: string
+          error_code: string | null
+          error_message: string | null
+          expo_ticket_id: string | null
+          id: string
+          outbox_id: string
+          receipt_checked_at: string | null
+          receipt_status: string | null
+          resolved_at: string | null
+          submitted_at: string | null
+          ticket_status: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          expo_ticket_id?: string | null
+          id?: string
+          outbox_id: string
+          receipt_checked_at?: string | null
+          receipt_status?: string | null
+          resolved_at?: string | null
+          submitted_at?: string | null
+          ticket_status?: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          expo_ticket_id?: string | null
+          id?: string
+          outbox_id?: string
+          receipt_checked_at?: string | null
+          receipt_status?: string | null
+          resolved_at?: string | null
+          submitted_at?: string | null
+          ticket_status?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_deliveries_outbox_id_fkey"
+            columns: ["outbox_id"]
+            isOneToOne: false
+            referencedRelation: "notification_outbox"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_deliveries_token_fkey"
+            columns: ["token"]
+            isOneToOne: false
+            referencedRelation: "device_push_tokens"
+            referencedColumns: ["token"]
           },
         ]
       }
@@ -738,30 +894,55 @@ export type Database = {
       }
       notification_outbox: {
         Row: {
+          attempt_count: number
+          conversation_id: string | null
           created_at: string
+          delivery_status: string
           id: string
           intent_id: string | null
           kind: string
+          last_attempt_at: string | null
+          last_error: string | null
           recipient_id: string
+          resolved_at: string | null
           sent_at: string | null
         }
         Insert: {
+          attempt_count?: number
+          conversation_id?: string | null
           created_at?: string
+          delivery_status?: string
           id?: string
           intent_id?: string | null
           kind: string
+          last_attempt_at?: string | null
+          last_error?: string | null
           recipient_id: string
+          resolved_at?: string | null
           sent_at?: string | null
         }
         Update: {
+          attempt_count?: number
+          conversation_id?: string | null
           created_at?: string
+          delivery_status?: string
           id?: string
           intent_id?: string | null
           kind?: string
+          last_attempt_at?: string | null
+          last_error?: string | null
           recipient_id?: string
+          resolved_at?: string | null
           sent_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "notification_outbox_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notification_outbox_intent_id_fkey"
             columns: ["intent_id"]
@@ -1069,10 +1250,30 @@ export type Database = {
         Args: { as_of?: string; target_intent: string; target_profile: string }
         Returns: Database["public"]["Enums"]["attendance_result"]
       }
+      claim_notification_batch: {
+        Args: { batch_size?: number }
+        Returns: {
+          attempt_count: number
+          conversation_id: string
+          id: string
+          intent_id: string
+          kind: string
+          recipient_id: string
+        }[]
+      }
+      clear_conversation_presence: {
+        Args: { target_conversation_id: string }
+        Returns: undefined
+      }
+      close_expired_conversations: {
+        Args: { max_rows?: number }
+        Returns: number
+      }
       conversation_messages: {
         Args: { target_conversation_id: string }
         Returns: {
           body: string
+          client_message_id: string
           created_at: string
           id: string
           is_mine: boolean
@@ -1082,9 +1283,82 @@ export type Database = {
           media_height: number
           media_kind: string
           media_path: string
+          media_thumb_path: string
           media_width: number
           place_label: string
+          remote_status: string
           sender_id: string
+        }[]
+      }
+      conversation_messages_after: {
+        Args: {
+          after_created_at: string
+          after_id?: string
+          page_size?: number
+          target_conversation_id: string
+        }
+        Returns: {
+          body: string
+          client_message_id: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          is_system: boolean
+          latitude: number
+          longitude: number
+          media_height: number
+          media_kind: string
+          media_path: string
+          media_thumb_path: string
+          media_width: number
+          place_label: string
+          remote_status: string
+          sender_id: string
+        }[]
+      }
+      conversation_messages_page: {
+        Args: {
+          before_created_at?: string
+          before_id?: string
+          page_size?: number
+          target_conversation_id: string
+        }
+        Returns: {
+          body: string
+          client_message_id: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          is_system: boolean
+          latitude: number
+          longitude: number
+          media_height: number
+          media_kind: string
+          media_path: string
+          media_thumb_path: string
+          media_width: number
+          place_label: string
+          remote_status: string
+          sender_id: string
+        }[]
+      }
+      conversation_summary: {
+        Args: { target_conversation_id: string }
+        Returns: {
+          cast_title: string
+          conversation_id: string
+          expires_at: string
+          intent_id: string
+          last_at: string
+          last_message: string
+          mode: Database["public"]["Enums"]["conversation_mode"]
+          other_first_name: string
+          other_id: string
+          other_last_read_at: string
+          plan_count: number
+          proposed_by_me: boolean
+          proposed_mode: Database["public"]["Enums"]["conversation_mode"]
+          unread_count: number
         }[]
       }
       create_circle: { Args: { circle_name: string }; Returns: string }
@@ -1150,6 +1424,16 @@ export type Database = {
           response_id: string
           status: Database["public"]["Enums"]["response_status"]
         }[]
+      }
+      list_chat_media_orphans: {
+        Args: { max_objects?: number; older_than?: string }
+        Returns: {
+          path: string
+        }[]
+      }
+      mark_conversation_delivered: {
+        Args: { target_conversation_id: string }
+        Returns: undefined
       }
       mark_conversation_read: {
         Args: { target_conversation_id: string }
@@ -1313,10 +1597,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      register_push_token: {
-        Args: { platform: string; token: string }
-        Returns: undefined
-      }
+      register_push_token:
+        | { Args: { platform: string; token: string }; Returns: undefined }
+        | {
+            Args: {
+              app_build: string
+              device_label: string
+              device_model: string
+              platform: string
+              token: string
+            }
+            Returns: undefined
+          }
       remove_from_circle: {
         Args: { member: string; target_circle: string }
         Returns: undefined
@@ -1339,6 +1631,7 @@ export type Database = {
       }
       send_location: {
         Args: {
+          client_message_id?: string
           label?: string
           share_latitude: number
           share_longitude: number
@@ -1349,16 +1642,22 @@ export type Database = {
       send_media: {
         Args: {
           caption?: string
+          client_message_id?: string
           height?: number
           kind: string
           path: string
           target_conversation_id: string
+          thumb_path?: string
           width?: number
         }
         Returns: string
       }
       send_message: {
-        Args: { message_body: string; target_conversation_id: string }
+        Args: {
+          client_message_id?: string
+          message_body: string
+          target_conversation_id: string
+        }
         Returns: string
       }
       set_conversation_mode: {
@@ -1375,6 +1674,10 @@ export type Database = {
           plans: number
           receipts: number
         }[]
+      }
+      touch_conversation_presence: {
+        Args: { target_conversation_id: string }
+        Returns: undefined
       }
       vouches_for_me: {
         Args: never

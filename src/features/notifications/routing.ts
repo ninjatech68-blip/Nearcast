@@ -49,7 +49,7 @@ export function useNotificationRouting(): void {
           void refreshInteractions();
           void refreshConversations();
         },
-        onTap: () => {
+        onTap: (payload) => {
           void refreshInteractions();
           void refreshConversations();
           // a push can be tapped from anywhere, including with a sheet
@@ -59,6 +59,14 @@ export function useNotificationRouting(): void {
             router.dismissAll();
           } catch {
             // nothing was open
+          }
+          // A message ping is about ONE conversation, and the person
+          // tapped it to read that conversation. Dropping them on the
+          // activity list to find it themselves is the app making them
+          // do the work the notification already did.
+          if (payload.kind === 'chat_message' && payload.conversationId) {
+            router.navigate(`/chat/${payload.conversationId}`);
+            return;
           }
           router.navigate('/');
           requestAlertsPage();

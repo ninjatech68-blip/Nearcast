@@ -1,11 +1,50 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockGetSupabase = vi.fn();
+const manipulateAsync = vi.fn();
+const tusFindPreviousUploads = vi.fn();
+const tusResumeFromPreviousUpload = vi.fn();
+const tusStart = vi.fn();
 vi.mock('@/infrastructure/supabase/client', () => ({
   getSupabase: () => mockGetSupabase(),
 }));
+vi.mock('expo-image-manipulator', () => ({
+  manipulateAsync: (...args: unknown[]) => manipulateAsync(...args),
+  SaveFormat: { JPEG: 'jpeg' },
+}));
+vi.mock('tus-js-client', () => ({
+  Upload: class {
+    constructor(_file: unknown, private readonly options: { onSuccess: () => void }) {}
+    findPreviousUploads() {
+      return tusFindPreviousUploads();
+    }
+    resumeFromPreviousUpload(upload: unknown) {
+      tusResumeFromPreviousUpload(upload);
+    }
+    start() {
+      tusStart();
+      this.options.onSuccess();
+    }
+  },
+}));
 
-const { fetchMessages, sendText, sendLocationShare, markRead, setMode, subscribeToConversation } =
+const {
+  fetchMessages,
+  fetchMessagesAfter,
+  fetchMessagesPage,
+  markConversationDelivered,
+  sendMediaMessage,
+  sendText,
+  sendTextWithClientId,
+  sendLocationShare,
+  markRead,
+  setMode,
+  subscribeToConversation,
+  touchConversationPresence,
+  clearConversationPresence,
+  realtimeIsLive,
+  resetRealtimeHealth,
+} =
   await import('./remote-chat');
 
 function withRpc(impl: (name: string, args: unknown) => { data?: unknown; error?: unknown }) {
@@ -15,6 +54,10 @@ function withRpc(impl: (name: string, args: unknown) => { data?: unknown; error?
 }
 
 beforeEach(() => mockGetSupabase.mockReset());
+beforeEach(() => manipulateAsync.mockReset());
+beforeEach(() => tusFindPreviousUploads.mockReset());
+beforeEach(() => tusResumeFromPreviousUpload.mockReset());
+beforeEach(() => tusStart.mockReset());
 
 describe('reads', () => {
   it('returns [] with no backend rather than throwing', async () => {
@@ -26,6 +69,34 @@ describe('reads', () => {
     withRpc(() => ({ data: null, error: { message: 'boom' } }));
     await expect(fetchMessages('c1')).rejects.toThrow(/boom/);
   });
+
+  it('fetches one recent page and exposes whether older rows exist', async () => {
+    withRpc((name) =>
+      name === 'conversation_messages_page'
+        ? {
+            data: Array.from({ length: 41 }, (_, i) => ({
+              id: `${i + 1}`,
+              created_at: `2026-08-30T00:00:${String(i).padStart(2, '0')}Z`,
+            })),
+            error: null,
+          }
+        : { data: null, error: null },
+    );
+    const page = await fetchMessagesPage('c1');
+    expect(page.messages).toHaveLength(40);
+    expect(page.hasOlder).toBe(true);
+  });
+
+  it('fetches only rows after a cursor for incremental sync', async () => {
+    const rpc = withRpc(() => ({ data: [], error: null }));
+    await fetchMessagesAfter('c1', { id: 'm3', createdAt: '2026-08-30T00:00:03Z' });
+    expect(rpc).toHaveBeenCalledWith('conversation_messages_after', {
+      target_conversation_id: 'c1',
+      after_created_at: '2026-08-30T00:00:03Z',
+      after_id: 'm3',
+      page_size: 100,
+    });
+  });
 });
 
 describe('sends', () => {
@@ -33,6 +104,16 @@ describe('sends', () => {
     const rpc = withRpc(() => ({ error: null }));
     await sendText('c1', 'hi');
     expect(rpc).toHaveBeenCalledWith('send_message', { target_conversation_id: 'c1', message_body: 'hi' });
+  });
+
+  it('includes a stable client message id when provided', async () => {
+    const rpc = withRpc(() => ({ error: null }));
+    await sendTextWithClientId('c1', 'hi', 'msg-123');
+    expect(rpc).toHaveBeenCalledWith('send_message', {
+      target_conversation_id: 'c1',
+      message_body: 'hi',
+      client_message_id: 'msg-123',
+    });
   });
 
   it('surfaces an ended conversation as an error', async () => {
@@ -54,6 +135,92 @@ describe('sends', () => {
     const args = rpc.mock.calls[0][1] as Record<string, unknown>;
     expect(args.label).toBe('the gate');
   });
+
+  it('compresses photos before upload and records the message', async () => {
+    manipulateAsync.mockResolvedValue({
+      uri: 'file:///tmp/compressed.jpg',
+      width: 1200,
+      height: 900,
+    });
+    global.fetch = vi.fn(async () => ({ arrayBuffer: async () => new ArrayBuffer(8) })) as unknown as typeof fetch;
+    const upload = vi.fn(async () => ({ error: null }));
+    const remove = vi.fn(async () => ({ error: null }));
+    const rpc = vi.fn(async () => ({ error: null }));
+    mockGetSupabase.mockReturnValue({
+      rpc,
+      storage: { from: () => ({ upload, remove }) },
+    });
+
+    await sendMediaMessage('c1', { uri: 'file:///tmp/original.heic', kind: 'image', width: 2400, height: 1800 });
+
+    expect(manipulateAsync).toHaveBeenCalled();
+    expect(upload).toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledWith(
+      'send_media',
+      expect.objectContaining({
+        target_conversation_id: 'c1',
+        kind: 'image',
+        width: 1200,
+        height: 900,
+        thumb_path: expect.stringContaining('c1/thumb-'),
+      }),
+    );
+  });
+
+  it('cleans up the uploaded object when the message write fails', async () => {
+    manipulateAsync.mockResolvedValue({
+      uri: 'file:///tmp/compressed.jpg',
+      width: 800,
+      height: 600,
+    });
+    global.fetch = vi.fn(async () => ({ arrayBuffer: async () => new ArrayBuffer(8) })) as unknown as typeof fetch;
+    const upload = vi.fn(async () => ({ error: null }));
+    const remove = vi.fn(async () => ({ error: null }));
+    mockGetSupabase.mockReturnValue({
+      rpc: vi.fn(async () => ({ error: { message: 'write failed' } })),
+      storage: { from: () => ({ upload, remove }) },
+    });
+
+    await expect(sendMediaMessage('c1', { uri: 'file:///tmp/original.jpg', kind: 'image' })).rejects.toThrow(/write failed/);
+    expect(remove).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses resumable upload for large media files', async () => {
+    manipulateAsync.mockResolvedValue({
+      uri: 'file:///tmp/compressed.jpg',
+      width: 1200,
+      height: 900,
+    });
+    tusFindPreviousUploads.mockResolvedValue([{ id: 'prev' }]);
+    const rpc = vi.fn(async () => ({ error: null }));
+    const upload = vi.fn(async () => ({ error: null }));
+    mockGetSupabase.mockReturnValue({
+      rpc,
+      auth: { getSession: vi.fn(async () => ({ data: { session: { access_token: 'token' } } })) },
+      storage: { from: () => ({ upload, remove: vi.fn(async () => ({ error: null })) }) },
+    });
+    process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://iichoutwafrmrwdyeqsi.supabase.co';
+
+    await sendMediaMessage(
+      'c1',
+      { uri: 'file:///tmp/original.heic', kind: 'image', width: 2400, height: 1800, fileSize: 7 * 1024 * 1024 },
+      'caption',
+      'msg-456',
+    );
+
+    expect(tusFindPreviousUploads).toHaveBeenCalled();
+    expect(tusResumeFromPreviousUpload).toHaveBeenCalledWith({ id: 'prev' });
+    expect(tusStart).toHaveBeenCalled();
+    expect(upload).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith(
+      'send_media',
+      expect.objectContaining({
+        client_message_id: 'msg-456',
+        target_conversation_id: 'c1',
+        thumb_path: expect.stringContaining('c1/thumb-'),
+      }),
+    );
+  });
 });
 
 describe('mark read', () => {
@@ -65,6 +232,11 @@ describe('mark read', () => {
     const rpc = withRpc(() => ({ error: null }));
     await markRead('c1');
     expect(rpc).toHaveBeenCalledWith('mark_conversation_read', { target_conversation_id: 'c1' });
+  });
+  it('can mark a conversation delivered without reading it yet', async () => {
+    const rpc = withRpc(() => ({ error: null }));
+    await markConversationDelivered('c1');
+    expect(rpc).toHaveBeenCalledWith('mark_conversation_delivered', { target_conversation_id: 'c1' });
   });
 });
 
@@ -104,5 +276,96 @@ describe('realtime subscription', () => {
     expect(onInsert).toHaveBeenCalled();
     unsub();
     expect(removeChannel).toHaveBeenCalled();
+  });
+});
+
+describe('presence', () => {
+  it('claims the open chat so the server suppresses a redundant push', async () => {
+    const rpc = withRpc(() => ({ data: null, error: null }));
+    await touchConversationPresence('c1');
+    expect(rpc).toHaveBeenCalledWith('touch_conversation_presence', {
+      target_conversation_id: 'c1',
+    });
+  });
+
+  it('releases the chat on the way out', async () => {
+    const rpc = withRpc(() => ({ data: null, error: null }));
+    await clearConversationPresence('c1');
+    expect(rpc).toHaveBeenCalledWith('clear_conversation_presence', {
+      target_conversation_id: 'c1',
+    });
+  });
+
+  it('does not throw when presence fails — a redundant push beats a crash', async () => {
+    withRpc(() => ({ data: null, error: { message: 'offline' } }));
+    await expect(touchConversationPresence('c1')).resolves.toBeUndefined();
+    await expect(clearConversationPresence('c1')).resolves.toBeUndefined();
+  });
+
+  it('is a no-op with no backend', async () => {
+    mockGetSupabase.mockReturnValue(null);
+    await expect(touchConversationPresence('c1')).resolves.toBeUndefined();
+    await expect(clearConversationPresence('c1')).resolves.toBeUndefined();
+  });
+});
+
+describe('realtime health', () => {
+  function channelReporting(): { channel: any; report: (status: string) => void } {
+    let report: (status: string) => void = () => undefined;
+    const channel: any = {
+      on: () => channel,
+      subscribe: (cb: (status: string) => void) => {
+        report = cb;
+        return channel;
+      },
+    };
+    return { channel, report: (status: string) => report(status) };
+  }
+
+  it('reads as not live until a channel says otherwise', () => {
+    resetRealtimeHealth();
+    expect(realtimeIsLive()).toBe(false);
+  });
+
+  it('goes live once a subscription is confirmed', () => {
+    resetRealtimeHealth();
+    const { channel, report } = channelReporting();
+    mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+    subscribeToConversation('c1', vi.fn());
+    report('SUBSCRIBED');
+    expect(realtimeIsLive()).toBe(true);
+  });
+
+  it('drops back the moment the socket errors — polling must speed up again', () => {
+    resetRealtimeHealth();
+    const { channel, report } = channelReporting();
+    mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+    subscribeToConversation('c1', vi.fn());
+    report('SUBSCRIBED');
+    report('CHANNEL_ERROR');
+    expect(realtimeIsLive()).toBe(false);
+  });
+
+  it('a timeout or a close counts as not live', () => {
+    for (const status of ['TIMED_OUT', 'CLOSED']) {
+      resetRealtimeHealth();
+      const { channel, report } = channelReporting();
+      mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+      subscribeToConversation('c1', vi.fn());
+      report('SUBSCRIBED');
+      report(status);
+      expect(realtimeIsLive()).toBe(false);
+    }
+  });
+
+  it('unsubscribing gives up the channel it was vouching for', () => {
+    resetRealtimeHealth();
+    const { channel, report } = channelReporting();
+    mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+    const unsub = subscribeToConversation('c1', vi.fn());
+    report('SUBSCRIBED');
+    expect(realtimeIsLive()).toBe(true);
+    unsub();
+    expect(realtimeIsLive()).toBe(false);
   });
 });

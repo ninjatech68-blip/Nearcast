@@ -16,7 +16,11 @@ import { useMediaUrl } from '@/features/chat/use-media-url';
 export default function MediaViewScreen() {
   const insets = useSafeAreaInsets();
   const { path, kind } = useLocalSearchParams<{ path?: string; kind?: string }>();
-  const url = useMediaUrl(path ? decodeURIComponent(path) : undefined);
+  const decoded = path ? decodeURIComponent(path) : undefined;
+  const url = useMediaUrl(
+    decoded,
+    kind === 'image' ? { kind: 'image', width: 1600 } : { kind: 'original' },
+  );
 
   return (
     <View style={styles.screen}>
