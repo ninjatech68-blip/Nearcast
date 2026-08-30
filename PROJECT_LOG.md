@@ -70,3 +70,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-30 | Added the public share link and genuine confirmation, and narrowed confirmation reads so the origin circle stays private |
 | 2026-08-30 | Added the owner lifecycle and My Intents, completing the intent creation and sharing plan |
 | 2026-08-30 | Added contextual response, so a delivered recipient can reply to an intent |
+| 2026-08-30 | Added the broadcaster inbox and atomic acceptance, closing the loop from publish to coordination room |

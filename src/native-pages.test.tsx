@@ -46,6 +46,12 @@ jest.mock('@/features/responses/data/responses-repository', () => ({
   submitResponse: async () => ({ responseId: 'response-1', status: 'pending' }),
 }));
 
+jest.mock('@/features/responses/inbox/data/inbox-repository', () => ({
+  fetchInbox: async () => [],
+  acceptResponse: async () => ({ matchId: 'match-1' }),
+  declineResponse: async () => ({ status: 'declined' }),
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const MessagesScreen = require('./app/(tabs)/messages').default;
 
@@ -105,9 +111,10 @@ describe('native page set', () => {
   });
 
   it('shows minimal activity and messages tabs', async () => {
+    // The inbox is now data-backed; its behaviour is covered in
+    // inbox-screen.test.tsx. This keeps the shell assertion.
     const activity = await render(<ActivityScreen />);
-    expect(activity.getByText('No responses yet')).toBeTruthy();
-    expect(activity.getByText('Two people for badminton tonight')).toBeTruthy();
+    expect(await activity.findByText(/No responses yet/)).toBeTruthy();
 
     const messages = await render(<MessagesScreen />);
     expect(messages.getByText('Messages')).toBeTruthy();

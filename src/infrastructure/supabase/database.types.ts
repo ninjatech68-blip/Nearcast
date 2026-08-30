@@ -1044,6 +1044,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      decline_response: {
+        Args: {
+          expected_status: Database["public"]["Enums"]["response_status"]
+          target_response: string
+        }
+        Returns: {
+          response_id: string
+          response_status: Database["public"]["Enums"]["response_status"]
+        }[]
+      }
       submit_response: {
         Args: {
           request_key?: string

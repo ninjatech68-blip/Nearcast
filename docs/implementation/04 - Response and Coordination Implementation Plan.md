@@ -42,19 +42,54 @@ asserted. The sheet shows one CTA and no view of anyone else's reply.
 
 ## Task 2: Broadcaster Inbox
 
-**Files:** `src/features/responses/inbox/`, `supabase/functions/decide-response/`
+**Files:** `src/features/responses/inbox/`, `public.decline_response`
 
-- [ ] Test that respondents cannot see competitors and declined users receive only neutral status.
-- [ ] Implement RequestCard and Accept/Reply/Decline actions.
-- [ ] Use expected status/version for every decision.
+- [x] Test that respondents cannot see competitors and declined users receive only neutral status.
+- [x] Implement RequestCard and Accept/Reply/Decline actions.
+- [x] Use expected status/version for every decision.
+
+`responses_read_parties` already limits a respondent to their own response, so
+competitors are invisible by policy rather than by the inbox choosing not to
+render them; the suite asserts a respondent reads exactly one row while the
+broadcaster reads all of them.
+
+A decline is neutral because there is nowhere to put a reason: the responses
+table has no such column, so a private justification cannot be stored and
+therefore cannot leak. The inbox offers no reason field either.
+
+Decisions carry the status they were made against, and both accept and decline
+are idempotent on a repeat, so a retry confirms the outcome rather than
+reporting a state the broadcaster cannot act on. Accept is withdrawn from the
+inbox once the intent is no longer live, because a matched intent cannot take a
+second match and offering it would promise what the server refuses.
+
+Responses are never ranked or scored. Presenting them as a leaderboard would
+turn a request for help into a competition the respondents cannot see they are
+entered in.
 
 ## Task 3: Atomic Acceptance
 
 **Files:** acceptance migration/function, concurrency pgTAP test, `src/features/matches/`
 
-- [ ] Run two concurrent acceptance attempts and prove exactly one match and conversation exist.
-- [ ] Return the existing match for an identical accepted-response retry.
-- [ ] Release no private field until a separate disclosure action succeeds.
+- [x] Run two concurrent acceptance attempts and prove exactly one match and conversation exist.
+- [x] Return the existing match for an identical accepted-response retry.
+- [x] Release no private field until a separate disclosure action succeeds.
+
+Concurrency was proved with two real connections racing `accept_response` on
+two different responses to the same intent, not with a single-session
+simulation: pgTAP runs in one transaction and cannot express a race. One
+attempt won and the other raised `stale_intent_state`, leaving exactly one
+match, one conversation and one accepted response. The `for update` lock on the
+intent serialises the attempts, and `matches.intent_id` being unique is the
+constraint that makes a second match impossible even if the lock were bypassed.
+
+`accept_response` now also queues the respondent's notification inside the same
+transaction. Without it an accepted respondent would have a coordination room
+open and no reason to look at it.
+
+Acceptance releases nothing private. The suite asserts `match_disclosures` is
+empty after a match is created and that the accepted participant still cannot
+read `intent_private`; releasing a field remains a separate, deliberate act.
 
 ## Task 4: Temporary Messaging
 
@@ -95,3 +130,4 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 | 2026-08-24 | Created response, acceptance, coordination, and notification implementation plan |
 | 2026-08-30 | Completed temporary messaging on Gifted Chat with room expiry and a send-message database function |
 | 2026-08-30 | Completed contextual response with delivery-based eligibility and a transactional notification |
+| 2026-08-30 | Completed the broadcaster inbox and atomic acceptance, with concurrency proved across two connections |
