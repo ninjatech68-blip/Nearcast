@@ -8,9 +8,11 @@ import {
   STORAGE_KEYS,
 } from '@/infrastructure/persistence/storage';
 import { submit } from '@/infrastructure/net/submit';
+import { chatPollMs, shellPollMs } from './cadence';
 import {
   chatEnabled,
   clearConversationPresence,
+  realtimeIsLive,
   fetchConversation,
   fetchConversations,
   fetchMessagesAfter,
@@ -32,6 +34,16 @@ import {
 } from './remote-chat';
 
 export { chatEnabled, signedMediaUrl, type LocalMedia, type SignedMediaVariant } from './remote-chat';
+
+/**
+ * How often each poll should run, right now.
+ *
+ * Passed to usePoll as a function so the socket's state is re-read
+ * before every wait: the moment realtime drops, the next wait is
+ * already the short one.
+ */
+export const chatPollInterval = (): number => chatPollMs(realtimeIsLive());
+export const shellPollInterval = (): number => shellPollMs(realtimeIsLive());
 
 /**
  * chat opens only after a match, and carries the earlier messages so a
@@ -299,19 +311,26 @@ function mergeMessages(existing: readonly Message[], incoming: readonly Message[
   });
 }
 
-async function syncConversationMessages(conversationId: string): Promise<void> {
+/**
+ * Pull whatever has arrived since the last message we hold.
+ *
+ * Returns whether there is anything for the caller to acknowledge, so a
+ * tick that found an empty thread does not go on to write two receipts
+ * about nothing.
+ */
+async function syncConversationMessages(conversationId: string): Promise<boolean> {
   const thread = state.threads[conversationId];
   if (!thread) {
     await loadConversation(conversationId);
-    return;
+    return true;
   }
 
   const meta = await fetchConversation(conversationId);
-  if (!meta) return;
+  if (!meta) return false;
   const after = cursorOf(thread.messages[thread.messages.length - 1]);
   if (!after) {
     putThread(buildThread(meta, [], thread.hasOlderMessages));
-    return;
+    return meta.unread_count > 0;
   }
 
   const incoming = await fetchMessagesAfter(conversationId, after);
@@ -320,6 +339,7 @@ async function syncConversationMessages(conversationId: string): Promise<void> {
     ...buildThread(meta, [], thread.hasOlderMessages),
     messages: merged,
   });
+  return incoming.length > 0 || meta.unread_count > 0;
 }
 
 export async function loadOlderConversationMessages(conversationId: string): Promise<void> {
@@ -412,10 +432,22 @@ export async function refreshConversations(): Promise<void> {
  */
 const deliveredThrough = new Map<string, string>();
 
+/**
+ * How many chats one sync will confirm delivery for.
+ *
+ * Coming back after a week away, every thread has something unread, and
+ * an uncapped loop turns one sync into one round-trip per conversation.
+ * The receipts are a courtesy to the sender, not something the reader is
+ * waiting on, so take the busiest few and let the next sync take the
+ * rest — the list arrives newest-first, so "the few" are the ones whose
+ * senders are most likely to be looking.
+ */
+const DELIVERY_CONFIRMATIONS_PER_SYNC = 10;
+
 async function confirmDelivery(rows: readonly RemoteConversation[]): Promise<void> {
-  const pending = rows.filter(
-    (row) => row.unread_count > 0 && deliveredThrough.get(row.conversation_id) !== row.last_at,
-  );
+  const pending = rows
+    .filter((row) => row.unread_count > 0 && deliveredThrough.get(row.conversation_id) !== row.last_at)
+    .slice(0, DELIVERY_CONFIRMATIONS_PER_SYNC);
   for (const row of pending) {
     try {
       await markConversationDelivered(row.conversation_id);
@@ -514,7 +546,13 @@ export async function releaseConversation(conversationId: string): Promise<void>
  */
 export async function refreshConversationMessages(conversationId: string): Promise<void> {
   if (!chatEnabled()) return;
-  await syncConversationMessages(conversationId);
+  const arrived = await syncConversationMessages(conversationId);
+  // An open chat is mostly idle: nobody is typing, and the tick exists
+  // only so a dropped socket cannot freeze the thread. Acknowledging an
+  // empty thread wrote two receipt rows about nothing, several times a
+  // minute, per open chat — a transaction and a WAL record each, for a
+  // fact the server already had. Only answer for something that came.
+  if (!arrived) return;
   clearListUnread(conversationId);
   await markConversationDelivered(conversationId);
   await markRead(conversationId);

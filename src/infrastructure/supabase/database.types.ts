@@ -173,16 +173,19 @@ export type Database = {
       conversation_reads: {
         Row: {
           conversation_id: string
+          delivered_through: string | null
           last_read_at: string
           profile_id: string
         }
         Insert: {
           conversation_id: string
+          delivered_through?: string | null
           last_read_at?: string
           profile_id: string
         }
         Update: {
           conversation_id?: string
+          delivered_through?: string | null
           last_read_at?: string
           profile_id?: string
         }
@@ -1337,6 +1340,25 @@ export type Database = {
           place_label: string
           remote_status: string
           sender_id: string
+        }[]
+      }
+      conversation_summary: {
+        Args: { target_conversation_id: string }
+        Returns: {
+          cast_title: string
+          conversation_id: string
+          expires_at: string
+          intent_id: string
+          last_at: string
+          last_message: string
+          mode: Database["public"]["Enums"]["conversation_mode"]
+          other_first_name: string
+          other_id: string
+          other_last_read_at: string
+          plan_count: number
+          proposed_by_me: boolean
+          proposed_mode: Database["public"]["Enums"]["conversation_mode"]
+          unread_count: number
         }[]
       }
       create_circle: { Args: { circle_name: string }; Returns: string }

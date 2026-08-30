@@ -18,7 +18,7 @@ import { useProfileSync } from '@/features/me/use-profile-sync';
 import { restoreSession } from '@/features/auth/auth';
 import { configureNotifications, refreshPushRegistration } from '@/features/notifications/push';
 import { useNotificationRouting } from '@/features/notifications/routing';
-import { refreshConversations, subscribeToActivity } from '@/features/chat/chat';
+import { refreshConversations, shellPollInterval, subscribeToActivity } from '@/features/chat/chat';
 import { refreshInteractions } from '@/features/casts/store';
 import { usePoll } from '@/infrastructure/net/use-poll';
 import { flushWrites } from '@/infrastructure/persistence/storage';
@@ -61,7 +61,7 @@ export default function RootLayout() {
       void refreshInteractions();
       void refreshConversations();
     },
-    8000,
+    shellPollInterval,
     me.signedIn,
   );
 

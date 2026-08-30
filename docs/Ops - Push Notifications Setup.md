@@ -238,3 +238,62 @@ select jobname, schedule, active from cron.job
  where jobname in ('close-expired-conversations', 'prune-conversation-presence');
 select public.close_expired_conversations(500);  -- returns rows closed
 ```
+
+---
+
+# Ops — Chat Load
+
+An open chat polls, and that poll is the largest source of steady-state
+load in the app: it runs for everyone signed in, several times a minute,
+whether or not anything is happening. `20260830190000_chat_hot_path.sql`
+and the cadence around it exist to make each tick proportional to what
+changed rather than to how long the conversation has been going.
+
+Measured before the change, against 400 conversations and a
+2,000-message thread — one person, one chat open:
+
+| per tick | before | after |
+| --- | --- | --- |
+| `mark_conversation_read` | 32.5 ms, 35,968 buffers | 0.17 ms |
+| `mark_conversation_delivered` | 22.2 ms, 14,732 buffers | 0.15 ms |
+| conversation metadata | 9.9 ms (whole list) | 1.3 ms (one row) |
+| twenty ticks | 2,849 ms | 61 ms |
+| dead tuples left behind | 62,000 | 121 |
+
+Four things did it, none of which change what the app shows:
+
+1. **Receipt watermarks.** Both marks rewrote a receipt row for every
+   message in the thread, every tick. `conversation_reads` now carries
+   `delivered_through` beside `last_read_at`, and a tick only looks at
+   messages newer than it. The scan deliberately re-runs over a minute
+   of overlap (`private.receipt_overlap()`) so a message committing
+   slightly out of timestamp order is still picked up; `on conflict`
+   makes re-stamping free.
+2. **`conversation_summary(uuid)`.** The open thread needed one row and
+   was pulling the whole list to get it. Same columns, one row.
+3. **`private.conversation_rows`.** One definition behind both readers,
+   with laterals correlated to the caller's own conversations. The old
+   body ran five correlated subqueries per row, computed the last
+   message twice, and built its match lookup from a scan of *every*
+   match in the table before discarding all but the caller's.
+4. **The poll became a floor again.** `src/features/chat/cadence.ts`
+   slows both polls when the realtime socket is confirmed live, because
+   a tick then re-fetches what already arrived over the socket. It fails
+   toward polling fast: any status other than SUBSCRIBED — including
+   not knowing yet — reads as not live.
+
+An idle tick also no longer writes at all. Acknowledging an empty thread
+wrote two receipt rows about nothing; the client now only answers for
+something that actually came.
+
+If chat ever feels sluggish, the first thing to check is whether the
+socket is wrongly reporting itself live:
+
+```sql
+-- is the hot path still cheap? both should be well under a millisecond
+explain (analyze, buffers) select public.mark_conversation_read('<id>');
+explain (analyze, buffers) select * from public.conversation_summary('<id>');
+-- watermarks should be advancing, not null
+select conversation_id, last_read_at, delivered_through
+  from public.conversation_reads where profile_id = '<uid>';
+```

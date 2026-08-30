@@ -30,6 +30,7 @@ import { facePhotos, isVerified } from '@/features/casts/faces';
 import {
   answerWindowRequest,
   chatEnabled,
+  chatPollInterval,
   endChat,
   keepConversationOpen,
   releaseConversation,
@@ -86,7 +87,7 @@ export default function ChatScreen() {
     () => {
       if (id) void refreshConversationMessages(id);
     },
-    2500,
+    chatPollInterval,
     chatEnabled() && !!id,
   );
 

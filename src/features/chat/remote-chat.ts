@@ -102,9 +102,25 @@ export async function fetchConversations(): Promise<readonly RemoteConversation[
   return (data ?? []) as unknown as RemoteConversation[];
 }
 
+/**
+ * One conversation's metadata.
+ *
+ * The open thread needs this on every poll tick. It used to be answered
+ * by pulling the WHOLE list and filtering here, so someone with forty
+ * chats paid for forty rows — each with its own unread count, last
+ * message and plan tally — to read one of them, several times a
+ * minute. `conversation_summary` returns the same columns for the one
+ * that is on screen.
+ */
 export async function fetchConversation(conversationId: string): Promise<RemoteConversation | null> {
-  const all = await fetchConversations();
-  return all.find((row) => row.conversation_id === conversationId) ?? null;
+  const c = getSupabase();
+  if (!c) return null;
+  const { data, error } = await c.rpc('conversation_summary', {
+    target_conversation_id: conversationId,
+  });
+  if (error) throw new Error(error.message);
+  const rows = (data ?? []) as unknown as RemoteConversation[];
+  return rows[0] ?? null;
 }
 
 export async function fetchMessages(conversationId: string): Promise<readonly RemoteMessage[]> {
@@ -528,6 +544,43 @@ export async function setMode(
  *
  * Returns an unsubscribe, and a no-op one with no backend.
  */
+/**
+ * Is the realtime socket actually carrying anything?
+ *
+ * The polls exist because a websocket can fail to connect — captive
+ * wifi, a project without Realtime enabled, a backgrounded app — and a
+ * messenger that needs a manual pull is broken. But when the socket IS
+ * up, every message arrives through it within milliseconds and the poll
+ * is pure duplicate load: several round trips a minute, per open chat,
+ * per signed-in person, to re-fetch what already arrived.
+ *
+ * So the poll becomes what it was always meant to be: a floor, not a
+ * second delivery path. This counts channels that have reported
+ * SUBSCRIBED and not since dropped.
+ *
+ * It fails SAFE. Anything other than a live subscription — an error, a
+ * timeout, a close, or simply not knowing yet — reads as not live, and
+ * the caller polls at the fast cadence. Being wrong costs redundant
+ * queries; being wrong the other way costs a chat that looks frozen.
+ */
+const liveChannels = new Set<string>();
+
+export function realtimeIsLive(): boolean {
+  return liveChannels.size > 0;
+}
+
+/** test seam: forget every channel's health. */
+export function resetRealtimeHealth(): void {
+  liveChannels.clear();
+}
+
+function trackChannelHealth(name: string): (status: string) => void {
+  return (status: string) => {
+    if (status === 'SUBSCRIBED') liveChannels.add(name);
+    else liveChannels.delete(name);
+  };
+}
+
 export function subscribeToMyActivity(onChange: () => void): () => void {
   const c = getSupabase();
   if (!c) return () => undefined;
@@ -535,8 +588,9 @@ export function subscribeToMyActivity(onChange: () => void): () => void {
     .channel('my-activity')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'responses' }, () => onChange())
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => onChange())
-    .subscribe();
+    .subscribe(trackChannelHealth('my-activity'));
   return () => {
+    liveChannels.delete('my-activity');
     void c.removeChannel(channel);
   };
 }
@@ -554,8 +608,9 @@ export function subscribeToConversation(
       { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
       () => onInsert(),
     )
-    .subscribe();
+    .subscribe(trackChannelHealth(`messages:${conversationId}`));
   return () => {
+    liveChannels.delete(`messages:${conversationId}`);
     void c.removeChannel(channel);
   };
 }

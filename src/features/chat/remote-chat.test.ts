@@ -42,6 +42,8 @@ const {
   subscribeToConversation,
   touchConversationPresence,
   clearConversationPresence,
+  realtimeIsLive,
+  resetRealtimeHealth,
 } =
   await import('./remote-chat');
 
@@ -304,5 +306,66 @@ describe('presence', () => {
     mockGetSupabase.mockReturnValue(null);
     await expect(touchConversationPresence('c1')).resolves.toBeUndefined();
     await expect(clearConversationPresence('c1')).resolves.toBeUndefined();
+  });
+});
+
+describe('realtime health', () => {
+  function channelReporting(): { channel: any; report: (status: string) => void } {
+    let report: (status: string) => void = () => undefined;
+    const channel: any = {
+      on: () => channel,
+      subscribe: (cb: (status: string) => void) => {
+        report = cb;
+        return channel;
+      },
+    };
+    return { channel, report: (status: string) => report(status) };
+  }
+
+  it('reads as not live until a channel says otherwise', () => {
+    resetRealtimeHealth();
+    expect(realtimeIsLive()).toBe(false);
+  });
+
+  it('goes live once a subscription is confirmed', () => {
+    resetRealtimeHealth();
+    const { channel, report } = channelReporting();
+    mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+    subscribeToConversation('c1', vi.fn());
+    report('SUBSCRIBED');
+    expect(realtimeIsLive()).toBe(true);
+  });
+
+  it('drops back the moment the socket errors — polling must speed up again', () => {
+    resetRealtimeHealth();
+    const { channel, report } = channelReporting();
+    mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+    subscribeToConversation('c1', vi.fn());
+    report('SUBSCRIBED');
+    report('CHANNEL_ERROR');
+    expect(realtimeIsLive()).toBe(false);
+  });
+
+  it('a timeout or a close counts as not live', () => {
+    for (const status of ['TIMED_OUT', 'CLOSED']) {
+      resetRealtimeHealth();
+      const { channel, report } = channelReporting();
+      mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+      subscribeToConversation('c1', vi.fn());
+      report('SUBSCRIBED');
+      report(status);
+      expect(realtimeIsLive()).toBe(false);
+    }
+  });
+
+  it('unsubscribing gives up the channel it was vouching for', () => {
+    resetRealtimeHealth();
+    const { channel, report } = channelReporting();
+    mockGetSupabase.mockReturnValue({ channel: () => channel, removeChannel: vi.fn() });
+    const unsub = subscribeToConversation('c1', vi.fn());
+    report('SUBSCRIBED');
+    expect(realtimeIsLive()).toBe(true);
+    unsub();
+    expect(realtimeIsLive()).toBe(false);
   });
 });
