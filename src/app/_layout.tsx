@@ -18,8 +18,9 @@ import { useProfileSync } from '@/features/me/use-profile-sync';
 import { restoreSession } from '@/features/auth/auth';
 import { configureNotifications, refreshPushRegistration } from '@/features/notifications/push';
 import { useNotificationRouting } from '@/features/notifications/routing';
-import { subscribeToActivity } from '@/features/chat/chat';
+import { refreshConversations, subscribeToActivity } from '@/features/chat/chat';
 import { refreshInteractions } from '@/features/casts/store';
+import { usePoll } from '@/infrastructure/net/use-poll';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
 // expo-router renders this instead of a blank white screen when a route
@@ -50,6 +51,19 @@ export default function RootLayout() {
       void refreshInteractions();
     });
   }, [me.signedIn]);
+
+  // the floor under realtime for everything OFF the open chat: requests,
+  // accepts, and unread counts. polled while signed in and foregrounded
+  // so the rail badge and activity move on their own even if the socket
+  // is down. a little slower than the chat poll — these are less urgent.
+  usePoll(
+    () => {
+      void refreshInteractions();
+      void refreshConversations();
+    },
+    8000,
+    me.signedIn,
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -177,6 +191,8 @@ export default function RootLayout() {
       <Stack.Screen name="pick-location" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-send" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-view" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+      <Stack.Screen name="plan/[id]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="edit-cast/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="blocked" options={{ presentation: 'modal' }} />
       <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
       <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />

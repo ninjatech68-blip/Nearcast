@@ -40,6 +40,7 @@ import {
   type Message,
 } from '@/features/chat/chat';
 import { useMediaUrl } from '@/features/chat/use-media-url';
+import { usePoll } from '@/infrastructure/net/use-poll';
 import { setPendingMedia } from '@/features/chat/pending-media';
 import { countdownLabel, countdownTickMs } from '@/features/chat/countdown';
 import { useRefresher } from '@/infrastructure/net/use-refresher';
@@ -68,6 +69,17 @@ export default function ChatScreen() {
     if (!id) return;
     return openConversation(id);
   }, [id]);
+
+  // the WhatsApp floor: even if the realtime socket never connects, poll
+  // this thread while it is open and the app is foregrounded, so new
+  // messages land in a couple of seconds without a manual pull.
+  usePoll(
+    () => {
+      if (id) void refreshConversationMessages(id);
+    },
+    2500,
+    chatEnabled() && !!id,
+  );
 
   const { refreshing, onRefresh } = useRefresher(async () => {
     if (id) await refreshConversationMessages(id);

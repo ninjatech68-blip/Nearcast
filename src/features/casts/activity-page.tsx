@@ -338,8 +338,8 @@ export function ActivityPage() {
                               verified={isVerified(chat.withId)}
                             />
                           }
-                          right={<Tag label="open chat" tone="line" />}
-                          onPress={() => router.push(`/chat/${chat.conversationId}`)}
+                          right={<Tag label="→" tone="line" />}
+                          onPress={() => router.push(`/plan/${chat.castId}?chat=${chat.conversationId}`)}
                         />
                       ))}
                   </>
@@ -381,7 +381,7 @@ export function ActivityPage() {
                       right={
                         item.tag ? <Tag label={item.tag.label} tone={item.tag.tone} /> : <Tag label="→" tone="line" />
                       }
-                      onPress={item.castId ? () => router.push(`/cast/${item.castId}`) : () => router.push('/compose')}
+                      onPress={item.castId ? () => router.push(`/plan/${item.castId}`) : () => router.push('/compose')}
                       onLongPress={isPosted && item.castId ? () => confirmCancel(item.castId!, item.title) : undefined}
                     />
                   );

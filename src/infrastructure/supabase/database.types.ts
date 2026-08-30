@@ -1092,6 +1092,14 @@ export type Database = {
         Args: { target_response_id: string }
         Returns: undefined
       }
+      edit_cast: {
+        Args: {
+          new_category: Database["public"]["Enums"]["cast_category"]
+          new_statement: string
+          target_intent_id: string
+        }
+        Returns: undefined
+      }
       get_public_intent: {
         Args: { requested_share_slug: string }
         Returns: {
@@ -1236,6 +1244,26 @@ export type Database = {
           joiner_id: string
           note: string
           response_id: string
+        }[]
+      }
+      plan_detail: {
+        Args: { target_intent_id: string }
+        Returns: {
+          area: string
+          caster_first_name: string
+          caster_id: string
+          category: Database["public"]["Enums"]["cast_category"]
+          expires_at: string
+          intent_id: string
+          is_mine: boolean
+          latitude: number
+          longitude: number
+          participant_count: number
+          participant_names: string[]
+          radius_km: number
+          starts_at: string
+          statement: string
+          status: Database["public"]["Enums"]["intent_status"]
         }[]
       }
       plans_to_report: {
