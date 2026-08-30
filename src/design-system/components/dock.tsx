@@ -68,12 +68,31 @@ const dock = tokens.component.dock;
  * cream pages. Mid-swipe the screen is half poster and half cream, so no
  * single mark colour is right for both halves; cross-fading two copies
  * means at every point one of them is legible against whatever is
- * actually behind it. Only the cast button and the counts sit outside
- * that fade, because accent behind ink is legible on any ground.
+ * actually behind it. Only the counts sit outside that fade, because
+ * accent behind ink is legible on any ground.
+ *
+ * THE CAST BUTTON TAKES THE FIELD'S POLES. It is filled — it is the one
+ * filled shape on the edge, and the whole reason the dock can sit on no
+ * surface at all — but the fill is `fieldFg` and the glyph is the field
+ * itself, so the `+` reads as a hole punched through to the poster. That
+ * is `polesFor` in tokens, the rule every other control on a poster
+ * already follows: a control takes the field's foreground as its
+ * background.
+ *
+ * It used to be accent orange with an ink ring, and the ring existed to
+ * rescue it on the social field, where the button and the poster are the
+ * same orange. A patch on a problem the button gave itself: an accent
+ * that ignores the ground has no relationship to any of the ten fields,
+ * so on arts and games it read as a sticker laid over the design. Taking
+ * the poles means contrast is guaranteed by construction on all ten —
+ * `fg` is defined against its own field — and the ring is gone. Accent
+ * survives on the counts, which is the one place a colour that belongs
+ * to no field is the point.
  */
 export function Dock({
   current,
   fieldFg,
+  fieldBg,
   blend,
   chatCount = 0,
   alertCount = 0,
@@ -85,6 +104,8 @@ export function Dock({
   current: DockPage;
   /** the feed's foreground colour for the poster currently on screen. */
   fieldFg: string;
+  /** that poster's own field colour — the cast glyph is punched out of it. */
+  fieldBg: string;
   /** 0 = fully on the feed, 1 = fully on a cream page. */
   blend: Animated.AnimatedInterpolation<number> | Animated.Value;
   chatCount?: number;
@@ -96,6 +117,7 @@ export function Dock({
 }) {
   const insets = useSafeAreaInsets();
   const ink = tokens.semantic.color.ink;
+  const cream = tokens.semantic.color.cream;
   // memoised: a fresh animated node every render churns the graph for a
   // value that only ever depends on `blend`.
   const onField = useMemo(() => Animated.subtract(1, blend), [blend]);
@@ -115,7 +137,7 @@ export function Dock({
         importantForAccessibility="no-hide-descendants"
         style={[styles.layer, { paddingBottom: insets.bottom, opacity: onField }]}
       >
-        <MarkRow current={current} fg={fieldFg} initials={initials} photo={photo} />
+        <MarkRow current={current} fg={fieldFg} bg={fieldBg} initials={initials} photo={photo} />
       </Animated.View>
       <Animated.View
         pointerEvents="none"
@@ -123,10 +145,12 @@ export function Dock({
         importantForAccessibility="no-hide-descendants"
         style={[styles.layer, { paddingBottom: insets.bottom, opacity: blend }]}
       >
-        <MarkRow current={current} fg={ink} initials={initials} photo={photo} />
+        <MarkRow current={current} fg={ink} bg={cream} initials={initials} photo={photo} />
       </Animated.View>
 
-      {/* the row that is actually pressed, plus the two opaque things. */}
+      {/* the row that is actually pressed. every mark's visuals, the cast
+          chip included, live in the faded layers above; this row holds
+          the five touch targets and the counts. */}
       <View style={styles.row}>
         {SLOTS.map((slot) =>
           slot.kind === 'cast' ? (
@@ -137,9 +161,9 @@ export function Dock({
               onPress={onCast}
               style={styles.column}
             >
-              <View style={styles.cast}>
-                <Glyph name="cast" size={dock.icon} color={ink} weight="semibold" />
-              </View>
+              {/* sized to the chip drawn above it, so the target matches
+                  what a thumb can see. */}
+              <View style={styles.castTouch} />
             </Pressable>
           ) : (
             <Pressable
@@ -166,11 +190,14 @@ export function Dock({
 function MarkRow({
   current,
   fg,
+  bg,
   initials,
   photo,
 }: {
   current: DockPage;
   fg: string;
+  /** the ground this row is drawn against; the cast glyph is cut from it. */
+  bg: string;
   initials: string;
   photo?: ImageSourcePropType;
 }) {
@@ -181,9 +208,12 @@ function MarkRow({
         return (
           <View key={slot.kind === 'cast' ? 'cast' : slot.page} style={styles.column}>
             {slot.kind === 'cast' ? (
-              // the button itself is opaque and lives in the row below;
-              // only its label belongs to the ground.
-              <View style={styles.markBox} />
+              // filled with this row's foreground, glyph cut from its
+              // ground — so the chip belongs to whatever is behind it and
+              // fades with everything else.
+              <View style={[styles.cast, { backgroundColor: fg }]}>
+                <Glyph name="cast" size={dock.icon} color={bg} weight="semibold" />
+              </View>
             ) : (
               <View
                 style={[
@@ -296,15 +326,13 @@ const styles = StyleSheet.create({
     width: dock.cast.size,
     height: dock.cast.size,
     borderRadius: dock.cast.radius,
-    backgroundColor: tokens.semantic.color.accent,
-    // the ring is what saves it on the social field, where the button and
-    // the poster are the same orange. ink on every ground: the fields
-    // that need a ring at all are the light ones.
-    borderWidth: dock.cast.ring,
-    borderColor: tokens.semantic.color.ink,
+    // backgroundColor is the row's foreground, applied per layer.
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // the pressable's own child: the chip is drawn in the faded layers, so
+  // this exists purely to give the thumb the same area to aim at.
+  castTouch: { position: 'absolute', top: dock.cast.top, width: dock.cast.size, height: dock.cast.size },
   count: {
     position: 'absolute',
     top: 2,

@@ -64,6 +64,9 @@ export default function HomeScreen() {
   // an empty or failed feed renders on cream, so ink is the honest
   // default until a poster is actually on screen.
   const fieldFg = fieldCategory ? categoryTokens[fieldCategory].fg : tokens.semantic.color.ink;
+  // the cast chip fills with fieldFg and cuts its glyph from the field
+  // itself, so the dock needs both poles of whatever poster is on screen.
+  const fieldBg = fieldCategory ? categoryTokens[fieldCategory].field : tokens.semantic.color.cream;
 
   // 0 while the feed fills the screen, 1 once any cream page does.
   const blend = useMemo(
@@ -122,6 +125,7 @@ export default function HomeScreen() {
       <Dock
         current={page}
         fieldFg={fieldFg}
+        fieldBg={fieldBg}
         blend={blend}
         chatCount={unreadChats}
         alertCount={needsYou}

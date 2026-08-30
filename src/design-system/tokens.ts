@@ -98,7 +98,11 @@ export const tokens = {
        */
       selectedScale: 1.12,
       /** the one filled shape, centred on the same line as the marks. */
-      cast: { size: 36, radius: 12, top: 4, ring: 2 },
+      /** the one filled shape on the edge. it takes the field's poles —
+       *  fill of `fg`, glyph cut from the field — so it needs no ring;
+       *  the ring only ever existed to rescue an accent fill on the
+       *  social field, where button and poster were the same orange. */
+      cast: { size: 36, radius: 12, top: 4 },
       /** ground-coloured, so it is invisible on a poster and stops list
        *  rows colliding with the marks on the cream screens. */
       scrim: 130,

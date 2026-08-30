@@ -4,7 +4,7 @@ import { Animated } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Dock, DOCK_PAGES, type DockPage } from './dock';
-import { tokens } from '../tokens';
+import { category as categoryTokens, tokens } from '../tokens';
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 59, left: 0, right: 0, bottom: 34 } };
 
@@ -16,6 +16,7 @@ async function renderDock(props: Partial<React.ComponentProps<typeof Dock>> = {}
       <Dock
         current="near"
         fieldFg={tokens.primitive.color.cream}
+        fieldBg={categoryTokens.games.field}
         blend={new Animated.Value(0)}
         initials="PS"
         onGo={onGo as (page: DockPage) => void}
@@ -38,6 +39,18 @@ function paintedWith(root: Node, color: string): number {
   return here + kids.reduce((n, child) => n + paintedWith(child, color), 0);
 }
 
+type PaintedStyle = { backgroundColor?: string; width?: unknown; minWidth?: unknown };
+
+/** the flattened style of every node that declares a background. */
+function paintedNodes(root: Node): PaintedStyle[] {
+  const style = root.props?.style;
+  const flat = Array.isArray(style) ? Object.assign({}, ...style.filter(Boolean)) : style;
+  const here =
+    flat && typeof flat === 'object' && (flat as PaintedStyle).backgroundColor ? [flat as PaintedStyle] : [];
+  const kids = (root.children ?? []).filter((c): c is Node => typeof c === 'object' && c !== null);
+  return kids.reduce((all, child) => all.concat(paintedNodes(child)), here);
+}
+
 describe('dock', () => {
   it('offers four destinations and one action, and nothing else', async () => {
     const { view } = await renderDock();
@@ -54,11 +67,48 @@ describe('dock', () => {
 
     expect(view.getByRole('button', { name: 'alerts' }).props.accessibilityState).toMatchObject({ selected: true });
     expect(view.getByRole('button', { name: 'near' }).props.accessibilityState).toMatchObject({ selected: false });
-    // selection is a colour change and nothing else. the only accent
-    // fill left in the dock is the cast button; a selected destination
-    // adds none, so the count of filled shapes does not move with it.
-    const filled = (page: 'near' | 'alerts') => paintedWith(view.toJSON() as unknown as Node, tokens.semantic.color.accent);
-    expect(filled('alerts')).toBe(1);
+    // selection is a colour change and nothing else. the one filled
+    // shape in the dock is the cast chip, drawn once per cross-fade
+    // layer — its fill is the layer's foreground, so the field layer
+    // paints cream and the cream layer paints ink. a selected
+    // destination adds no fill of any colour, on either layer.
+    const filled = (color: string) => paintedWith(view.toJSON() as unknown as Node, color);
+    expect(filled(tokens.primitive.color.cream)).toBe(1);
+    expect(filled(tokens.primitive.color.ink)).toBe(1);
+
+    const quiet = await renderDock({ current: 'near' });
+    const filledQuiet = (color: string) => paintedWith(quiet.view.toJSON() as unknown as Node, color);
+    expect(filledQuiet(tokens.primitive.color.cream)).toBe(1);
+    expect(filledQuiet(tokens.primitive.color.ink)).toBe(1);
+  });
+
+  // THE REGRESSION THIS PINS: the chip was accent orange with an ink
+  // ring, which meant it had no relationship to any of the ten fields —
+  // a sticker on arts and games, and the same colour as the poster on
+  // social, which is what the ring was bolted on to rescue. It now takes
+  // the field's poles like every other control (`polesFor` in tokens),
+  // so accent survives in the dock only where a colour belonging to no
+  // field is the whole point: the counts.
+  it('fills the cast chip from the field, never from the accent', async () => {
+    const { view } = await renderDock({ chatCount: 0, alertCount: 0 });
+    expect(paintedWith(view.toJSON() as unknown as Node, tokens.semantic.color.accent)).toBe(0);
+
+    // and on a light field the chip flips with it, rather than staying
+    // one fixed colour the ground has to cope with.
+    const light = await renderDock({
+      fieldFg: tokens.primitive.color.ink,
+      fieldBg: categoryTokens.sports.field,
+      chatCount: 0,
+      alertCount: 0,
+    });
+    expect(paintedWith(light.view.toJSON() as unknown as Node, tokens.semantic.color.accent)).toBe(0);
+    // ink on both layers now: the field's foreground AND the cream page's.
+    expect(paintedWith(light.view.toJSON() as unknown as Node, tokens.primitive.color.ink)).toBe(2);
+  });
+
+  it('brings the accent back for a count, which belongs to no field', async () => {
+    const { view } = await renderDock({ chatCount: 3, alertCount: 0 });
+    expect(paintedWith(view.toJSON() as unknown as Node, tokens.semantic.color.accent)).toBe(1);
   });
 
   it('keeps every mark on one line at one size', async () => {
@@ -82,10 +132,17 @@ describe('dock', () => {
   it('never paints itself a surface, so the poster runs to the bottom edge', async () => {
     const { view } = await renderDock();
 
-    // the only opaque things are the accent compose button; nothing
-    // renders a ground of its own behind the marks.
-    for (const ground of [tokens.semantic.color.cream, tokens.semantic.color.ink]) {
-      expect(paintedWith(view.toJSON() as unknown as Node, ground)).toBe(0);
+    // The dock paints marks, never a plane. Asserting "nothing is ever
+    // painted cream or ink" used to say that, but only because the chip
+    // was accent; it would now fail for the chip itself, which is a mark.
+    // So measure the thing that actually matters: every painted shape is
+    // chip-sized or smaller, and nothing spans the row.
+    const painted = paintedNodes(view.toJSON() as unknown as Node);
+    expect(painted.length).toBeGreaterThan(0);
+    for (const style of painted) {
+      expect(typeof style.width === 'number' || typeof style.minWidth === 'number').toBe(true);
+      const w = (style.width ?? style.minWidth) as number;
+      expect(w).toBeLessThanOrEqual(tokens.component.dock.cast.size);
     }
   });
 
