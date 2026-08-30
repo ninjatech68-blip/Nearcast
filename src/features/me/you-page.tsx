@@ -15,7 +15,7 @@ import { casters, me as meFixture } from '@/features/casts/fixtures';
 import { useRecap } from '@/features/casts/use-recap';
 import { useMyPastPlans } from '@/features/attendance/store';
 import { initialsFor } from '@/features/me/initials';
-import { setMyPhoto, useMe, useMyPhoto, useQuietHours } from '@/features/me/me-store';
+import { setMyPhoto, useMe, useMyPhoto } from '@/features/me/me-store';
 import { profilesEnabled, signalLit } from '@/features/me/remote-profile';
 import { circlesVouchingForMe, refreshCircles, refreshVouchers, useCircles, vouchersOfMe } from '@/features/trust/circles';
 
@@ -33,13 +33,21 @@ function signalWord(lit: number): string {
  * moved behind one door, and what is left is ordered by CONSEQUENCE
  * rather than by how often it is opened:
  *
- *   circles      — the only control over who a cast reaches. P1.
- *   quiet hours  — whether the phone may wake you.
- *   blocked      — who cannot reach you at all.
+ *   circles  — the only control over who a cast reaches. P1.
+ *   blocked  — who cannot reach you at all.
  *
- * Each is rarely touched and expensive to get wrong, which is exactly
+ * Both are rarely touched and expensive to get wrong, which is exactly
  * why sorting by frequency would have buried them. Receipts and the
  * recap sit below: things you read about yourself, not things you set.
+ *
+ * QUIET HOURS IS NOT HERE, and that is deliberate. The switch existed,
+ * it persisted, and nothing ever read it: there is no quiet window in
+ * the schema, profile sync never sent one, and send-push never asked.
+ * A control that promises the phone will stay silent and does not is a
+ * worse thing to ship than a missing one, and this screen had promoted
+ * it to the second row. When it is built it needs server-side state
+ * synced with the profile, so the local-only shape it had was the wrong
+ * shape to keep warm. The scope is written down in fa04b55.
  */
 export function YouPage() {
   const me = useMe();
@@ -53,7 +61,6 @@ export function YouPage() {
 
   const pastPlans = useMyPastPlans();
   const circles = useCircles();
-  const quiet = useQuietHours();
   const photoUri = useMyPhoto();
 
   const realReceipts = pastPlans.filter((p) => p.outcome === 'receipt').length;
@@ -171,12 +178,6 @@ export function YouPage() {
 
       <View style={styles.rows}>
         <Row title="circles" sub={circlesSub} right={<Tag label="→" tone="line" />} onPress={() => router.push('/circles')} />
-        <Row
-          title="quiet hours"
-          sub={quiet.on ? `${quiet.start} to ${quiet.end}` : 'a ping can arrive at any hour'}
-          right={<Tag label="→" tone="line" />}
-          onPress={() => router.push('/quiet-hours')}
-        />
         <Row title="blocked" sub={blockedLine} right={<Tag label="→" tone="line" />} onPress={() => router.push('/blocked')} />
         <Row
           title="your receipts"

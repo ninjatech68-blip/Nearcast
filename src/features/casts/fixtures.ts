@@ -457,7 +457,6 @@ export const me = {
   receipts: { count: 31, sub: '31 plans made real · last: badminton, tuesday' },
   circles: '3 circles · 24 people',
   areas: 'indiranagar, koramangala, hsr · always approximate',
-  quietHours: '10pm to 7am',
   blocked: 'nobody',
   privacy: 'casts carry the neighbourhood, never an exact spot. the app never has one. sort out exactly where in chat; it lives in-app, numbers never change hands.',
 };

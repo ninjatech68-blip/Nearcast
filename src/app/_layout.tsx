@@ -190,7 +190,6 @@ export default function RootLayout() {
       <Stack.Screen name="areas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="profile-edit" options={{ presentation: 'modal' }} />
       <Stack.Screen name="name" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="quiet-hours" options={{ presentation: 'modal' }} />
       <Stack.Screen name="pick-location" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-send" options={{ presentation: 'fullScreenModal', gestureEnabled: false }} />
       <Stack.Screen name="media-view" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />

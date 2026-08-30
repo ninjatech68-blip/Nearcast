@@ -302,15 +302,26 @@ describe('you', () => {
   it('orders the hub by consequence, with circles first and settings behind one door', async () => {
     const view = await render(<YouPage />);
 
-    // the three controls that decide how the app reaches you
+    // the controls that decide how the app reaches you
     expect(view.getByText('circles')).toBeTruthy();
-    expect(view.getByText('quiet hours')).toBeTruthy();
     expect(view.getByText('blocked')).toBeTruthy();
     // one door, and nothing destructive on the way to it
     expect(view.getByText('edit profile')).toBeTruthy();
     expect(view.queryByText('delete account')).toBeNull();
     expect(view.queryByText('sign out')).toBeNull();
     expect(view.queryByText('terms + privacy')).toBeNull();
+  });
+
+  it('offers no control the app does not honour', async () => {
+    const view = await render(<YouPage />);
+
+    // Quiet hours persisted a window and nothing ever read it: no column
+    // in the schema, nothing sent by profile sync, nothing checked by
+    // send-push. A switch that promises the phone stays silent and does
+    // not is worse to ship than a missing one, so it is gone until the
+    // server side exists.
+    expect(view.queryByText('quiet hours')).toBeNull();
+    expect(view.queryByText(/does not make a sound/)).toBeNull();
   });
 
   it('puts the photo control on the photo, not in a settings row', async () => {
