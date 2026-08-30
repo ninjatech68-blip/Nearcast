@@ -295,7 +295,11 @@ export default function ChatScreen() {
                 as an accent pill now, at the same tap target. */}
             <View style={styles.expiryPill}>
               <Text style={styles.expiryLabel}>{expiryText}</Text>
-              <Text style={styles.expiryChevron}>⋯</Text>
+              <View style={styles.expiryDots}>
+                <View style={styles.expiryDot} />
+                <View style={styles.expiryDot} />
+                <View style={styles.expiryDot} />
+              </View>
             </View>
           </Pressable>
         </View>
@@ -807,17 +811,20 @@ const styles = StyleSheet.create({
   expiryLabel: {
     ...tokens.typography.tagSmall,
     color: tokens.semantic.color.accent,
-  },
-  expiryChevron: {
-    fontFamily: fontFamily.text,
-    fontSize: 14,
-    lineHeight: 14,
-    color: tokens.semantic.color.accent,
-    // the ⋯ glyph carries bottom bearing that dropped it below the
-    // label's centre line; this lifts it back onto it. the row centres
-    // both, so this is the last few px of optical alignment.
-    marginBottom: 2,
+    // strip the mono line-box padding so the text height equals its cap
+    // height; the row then centres label and dots on the same line.
+    lineHeight: 12,
     includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  // three drawn dots instead of a "⋯" glyph, whose font bearing never
+  // sat on the label's centre line. views centre exactly via the row.
+  expiryDots: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  expiryDot: {
+    width: 2.5,
+    height: 2.5,
+    borderRadius: 1.25,
+    backgroundColor: tokens.semantic.color.accent,
   },
   endedRow: {
     paddingTop: 12,

@@ -175,12 +175,18 @@ export function FeedPage({
         getItemLayout={(_, index) => ({ length: height, offset: height * index, index })}
         onScrollBeginDrag={() => onScrollStateChange?.(true)}
         onScrollEndDrag={(e) => {
-          // a short overscroll at the top refreshes, without waiting for
+          // a short overscroll at EITHER end refreshes, without waiting for
           // the native RefreshControl's much longer pull. PULL_TO_REFRESH_PX
           // is the whole knob: lower it for a lighter pull.
-          if (e.nativeEvent.contentOffset.y <= -PULL_TO_REFRESH_PX && !refreshing) {
-            pullRefresh();
-          }
+          if (refreshing) return;
+          const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+          const atTop = contentOffset.y <= -PULL_TO_REFRESH_PX;
+          // pulling UP past the last card: how far the content bottom has
+          // been dragged above the viewport bottom.
+          const overscrollBottom =
+            contentOffset.y + layoutMeasurement.height - contentSize.height;
+          const atBottom = overscrollBottom >= PULL_TO_REFRESH_PX;
+          if (atTop || atBottom) pullRefresh();
         }}
         onMomentumScrollEnd={() => onScrollStateChange?.(false)}
         windowSize={3}

@@ -1,7 +1,7 @@
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import MapView, { Marker, PROVIDER_DEFAULT, type LatLng, type Region } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -28,6 +28,8 @@ export default function PickLocationScreen() {
   const [pin, setPin] = useState<LatLng | null>(null);
   const [label, setLabel] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
   const [region] = useState<Region>({
     latitude: 12.9719,
     longitude: 77.6412,
@@ -64,6 +66,38 @@ export default function PickLocationScreen() {
   }, []);
 
 
+  async function useMyLocation() {
+    try {
+      const permission = await Location.requestForegroundPermissionsAsync();
+      if (!permission.granted) return;
+      const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const coord = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+      mapRef.current?.animateToRegion({ ...coord, latitudeDelta: 0.02, longitudeDelta: 0.02 }, 400);
+      move(coord);
+    } catch {
+      // best-effort
+    }
+  }
+
+  async function search(text: string) {
+    const typed = text.trim();
+    if (typed.length < 2) return;
+    setSearching(true);
+    try {
+      const matches = await Location.geocodeAsync(typed);
+      const first = matches[0];
+      if (first) {
+        const coord = { latitude: first.latitude, longitude: first.longitude };
+        mapRef.current?.animateToRegion({ ...coord, latitudeDelta: 0.02, longitudeDelta: 0.02 }, 400);
+        move(coord);
+      }
+    } catch {
+      // no match: the map still works by tap/drag
+    } finally {
+      setSearching(false);
+    }
+  }
+
   function move(coord: LatLng) {
     setPin(coord);
     void resolveLabel(coord);
@@ -92,7 +126,35 @@ export default function PickLocationScreen() {
         </View>
 
         <Text accessibilityRole="header" style={styles.title}>where, exactly?</Text>
-        <Text style={styles.hint}>drag the pin or tap the map. approximate, and only shared with this chat.</Text>
+        <Text style={styles.hint}>search a place, drag the pin, or tap the map. approximate, and only shared with this chat.</Text>
+
+        <View style={styles.searchRow}>
+          <TextInput
+            accessibilityLabel="search for a place"
+            value={query}
+            onChangeText={setQuery}
+            onSubmitEditing={() => search(query)}
+            placeholder="search a place nearby"
+            placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+            selectionColor={tokens.semantic.color.accent}
+            style={styles.search}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+          />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="use my location"
+            onPress={useMyLocation}
+            style={styles.locateBtn}
+          >
+            {searching ? (
+              <ActivityIndicator color={tokens.semantic.color.accent} />
+            ) : (
+              <Text style={styles.locateGlyph}>◉</Text>
+            )}
+          </Pressable>
+        </View>
 
         <View style={styles.mapWrap}>
           <MapView
@@ -147,6 +209,28 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   hint: { ...tokens.typography.metaSmall, color: tokens.semantic.color.textMutedOnCream, marginTop: 8 },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12 },
+  search: {
+    flex: 1,
+    minHeight: 48,
+    borderRadius: tokens.primitive.radius.control,
+    borderWidth: 1.5,
+    borderColor: tokens.semantic.color.accent,
+    paddingHorizontal: 14,
+    fontFamily: fontFamily.text,
+    fontSize: 16,
+    color: tokens.semantic.color.ink,
+  },
+  locateBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: tokens.primitive.radius.control,
+    borderWidth: 1.5,
+    borderColor: tokens.semantic.color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locateGlyph: { fontFamily: fontFamily.text, fontSize: 20, color: tokens.semantic.color.accent },
   mapWrap: {
     flex: 1,
     marginTop: 14,

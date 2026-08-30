@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,7 +14,6 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BarButton } from '@/design-system/components/button';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { sendMediaMessageToThread, type LocalMedia } from '@/features/chat/chat';
@@ -91,56 +91,66 @@ export default function MediaSendScreen() {
           <Image source={{ uri: items[active]?.uri }} style={styles.hero} contentFit="contain" />
         </View>
 
-        {many ? (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.strip}
-            keyboardShouldPersistTaps="handled"
-          >
-            {items.map((item, i) => (
-              <View key={`${item.uri}-${i}`} style={styles.thumbWrap}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`preview ${i + 1}`}
-                  onPress={() => setActive(i)}
-                  style={[styles.thumb, i === active && styles.thumbActive]}
-                >
-                  <Image source={{ uri: item.uri }} style={styles.thumbImg} contentFit="cover" />
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`remove ${i + 1}`}
-                  hitSlop={8}
-                  onPress={() => removeAt(i)}
-                  style={styles.thumbX}
-                >
-                  <Text style={styles.thumbXText}>×</Text>
-                </Pressable>
-              </View>
-            ))}
-          </ScrollView>
-        ) : null}
-
         <View style={[styles.bottom, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-          <TextInput
-            accessibilityLabel="add a caption"
-            value={caption}
-            onChangeText={setCaption}
-            placeholder="add a caption"
-            placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-            selectionColor={tokens.semantic.color.accent}
-            style={styles.caption}
-            multiline
-          />
-          <BarButton
-            label={sending ? 'sending…' : many ? `send ${items.length}` : 'send'}
-            variant="onOrange"
-            onPress={send}
-            disabled={sending}
-            loading={sending}
-            loadingLabel="sending…"
-          />
+          {many ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.strip}
+              keyboardShouldPersistTaps="handled"
+            >
+              {items.map((item, i) => (
+                <View key={`${item.uri}-${i}`} style={styles.thumbWrap}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`preview ${i + 1}`}
+                    onPress={() => setActive(i)}
+                    style={[styles.thumb, i === active && styles.thumbActive]}
+                  >
+                    <Image source={{ uri: item.uri }} style={styles.thumbImg} contentFit="cover" />
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`remove ${i + 1}`}
+                    hitSlop={8}
+                    onPress={() => removeAt(i)}
+                    style={styles.thumbX}
+                  >
+                    <Text style={styles.thumbXText}>×</Text>
+                  </Pressable>
+                </View>
+              ))}
+            </ScrollView>
+          ) : null}
+
+          {/* caption + send on one bar, WhatsApp-style: a rounded field
+              with the send button as a circle at its end. */}
+          <View style={styles.composerRow}>
+            <TextInput
+              accessibilityLabel="add a caption"
+              value={caption}
+              onChangeText={setCaption}
+              placeholder="add a caption…"
+              placeholderTextColor="rgba(244,239,228,0.5)"
+              selectionColor={tokens.semantic.color.accent}
+              style={styles.caption}
+              multiline
+            />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={many ? `send ${items.length}` : 'send'}
+              accessibilityState={{ disabled: sending }}
+              disabled={sending}
+              onPress={send}
+              style={[styles.sendBtn, sending && styles.sendBtnDim]}
+            >
+              {sending ? (
+                <ActivityIndicator color={tokens.semantic.color.ink} />
+              ) : (
+                <Text style={styles.sendGlyph}>↑</Text>
+              )}
+            </Pressable>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -155,9 +165,9 @@ const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, minHeight: 40 },
   close: { fontFamily: fontFamily.text, fontSize: 30, lineHeight: 32, color: tokens.semantic.color.cream, width: 30 },
   count: { ...tokens.typography.tagSmall, color: tokens.semantic.color.cream },
-  stage: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  hero: { flex: 1, width: '100%' },
-  strip: { paddingHorizontal: 14, gap: 10, paddingVertical: 8 },
+  stage: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12, paddingTop: 8 },
+  hero: { flex: 1, width: '100%', borderRadius: tokens.primitive.radius.control },
+  strip: { gap: 10, paddingVertical: 4, paddingBottom: 12 },
   thumbWrap: { width: 60 },
   thumb: { width: 60, height: 60, borderRadius: 10, overflow: 'hidden', borderWidth: 2, borderColor: 'transparent' },
   thumbActive: { borderColor: tokens.semantic.color.accent },
@@ -174,16 +184,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   thumbXText: { fontFamily: fontFamily.text, fontSize: 13, lineHeight: 15, color: tokens.semantic.color.cream },
-  bottom: { paddingHorizontal: 16, gap: 10 },
+  bottom: { paddingHorizontal: 14, paddingTop: 10 },
+  composerRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 10 },
   caption: {
-    minHeight: 44,
+    flex: 1,
+    minHeight: 46,
     maxHeight: 120,
-    borderRadius: tokens.primitive.radius.control,
+    borderRadius: 23,
     backgroundColor: 'rgba(244,239,228,0.12)',
-    paddingHorizontal: 14,
-    paddingTop: 12,
+    paddingHorizontal: 18,
+    paddingTop: 13,
+    paddingBottom: 13,
     fontFamily: fontFamily.text,
     fontSize: 16,
     color: tokens.semantic.color.cream,
   },
+  sendBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: tokens.semantic.color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendBtnDim: { opacity: 0.5 },
+  sendGlyph: { fontFamily: fontFamily.display, fontSize: 22, lineHeight: 24, color: tokens.semantic.color.ink },
 });
