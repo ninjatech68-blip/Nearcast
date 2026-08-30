@@ -101,18 +101,21 @@ export type Database = {
         Row: {
           closed_at: string | null
           created_at: string
+          expires_at: string
           id: string
           match_id: string
         }
         Insert: {
           closed_at?: string | null
           created_at?: string
+          expires_at: string
           id?: string
           match_id: string
         }
         Update: {
           closed_at?: string | null
           created_at?: string
+          expires_at?: string
           id?: string
           match_id?: string
         }
@@ -572,6 +575,7 @@ export type Database = {
           created_at: string
           id: string
           is_system: boolean
+          reply_to_id: string | null
           sender_id: string | null
         }
         Insert: {
@@ -580,6 +584,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_system?: boolean
+          reply_to_id?: string | null
           sender_id?: string | null
         }
         Update: {
@@ -588,6 +593,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_system?: boolean
+          reply_to_id?: string | null
           sender_id?: string | null
         }
         Relationships: [
@@ -597,6 +603,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_same_conversation"
+            columns: ["reply_to_id", "conversation_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id", "conversation_id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
@@ -807,6 +820,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      close_expired_conversations: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       accept_response: {
         Args: {
           expected_intent_status: Database["public"]["Enums"]["intent_status"]
