@@ -28,6 +28,13 @@ open the app.
 | `join_accepted` | the caster says yes | — |
 | `chat_message` | a message lands in a chat you are in | you have that chat open |
 
+Quiet hours apply to the app's own pings, not to a person's message.
+`join_request` and `join_accepted` are Nearcast talking, so they wait
+for a quiet window to pass; `chat_message` is somebody writing to you
+and behaves like a text, which is a per-chat mute or the OS's own Do
+Not Disturb to silence, not an app-wide curfew. (Neither half is wired
+up yet — see Known limits.)
+
 `chat_message` is the one with a rule attached. A notification for a
 message you are watching arrive is noise, so the open thread takes a
 30-second presence lease (`touch_conversation_presence`) and renews it
@@ -147,11 +154,16 @@ intended device row.
 
 ## Known limits
 
-- Quiet hours are a local preference; the sender does not yet consult
-  them, so a ping can arrive inside a person's quiet window.
-- Presence is per device. Two devices signed into one account, with the
-  chat open on one of them, will suppress the ping on both — the server
-  knows the person is reading, not which screen they are holding.
+- Quiet hours are a local preference the sender does not yet consult,
+  so a `join_request` or `join_accepted` can arrive inside a person's
+  quiet window. `chat_message` is out of scope by design and would not
+  be held back even once this is wired up.
+- Presence is keyed per PERSON, not per device: the lease is
+  `(conversation_id, profile_id)`, and the trigger decides whether to
+  enqueue at all before any device is looked at. So two devices signed
+  into one account, with the chat open on either, suppress the ping on
+  both. Fixing it means moving the decision to fan-out time in the
+  sender, where device identity actually exists.
 - Expo tickets and receipts are tracked, and dead tokens are
   invalidated automatically. Even so, a receipt only means the vendor
   accepted the notification, not that a human definitely saw a banner.
