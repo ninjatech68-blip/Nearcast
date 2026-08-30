@@ -68,14 +68,32 @@ THE DATABASE — never run it against a hosted project.**
 **Check** — against the hosted project (`supabase db query --linked -f ...`):
 
 ```sql
-select count(*) from public.notification_outbox;      -- 0, not an error
-select count(*) from public.conversation_presence;    -- 0, not an error
+select count(*) as outbox from public.notification_outbox;
+select count(*) as presence from public.conversation_presence;
 select proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
  where n.nspname = 'public'
    and proname in ('claim_notification_batch','record_notification_failure',
                    'my_unread_badge','conversation_summary');
--- expect all four
 ```
+
+**What passes:** the two counts return **a number — any number** — and
+the last returns **all four** function names.
+
+A number is the whole point: it proves the table exists. `0` is not the
+expected value, it is merely one possible one. On a project that has
+seen any testing, a non-zero outbox is normal and expected — nothing has
+ever drained it, which is the entire reason for this runbook. Only an
+**error** fails this check:
+
+```
+error: relation "public.notification_outbox" does not exist
+```
+
+That means the schema is not applied, or you queried the wrong database.
+
+> **If the outbox is non-zero, read "Before the first drain" below
+> before you reach step 4.** Those rows are real notifications that are
+> about to be delivered.
 
 ---
 
@@ -126,6 +144,55 @@ npx eas secret:create --scope project --name GOOGLE_SERVICES_JSON \
 ```
 
 **Check:** `npx eas credentials` shows an FCM V1 key for Android.
+
+---
+
+## Before the first drain — what is already in the outbox
+
+Anything sitting in `notification_outbox` with `delivery_status =
+'pending'` has never been delivered, because nothing has ever drained
+it. The moment step 4 starts the cron job, the drain claims every one
+of them and submits them for real.
+
+If those rows are days old, that means real people getting *"someone
+wants in"* about a cast that has long since happened. The TTL added in
+`20260830210000` bounds how long the *provider* holds a notification; it
+does not make a week-old queued row young.
+
+So look before you start the drain:
+
+```sql
+select kind, delivery_status, count(*),
+       min(created_at) as oldest, max(created_at) as newest
+from public.notification_outbox
+group by kind, delivery_status
+order by 3 desc;
+
+-- and whether anyone would actually receive them
+select count(*) as live_tokens
+from public.device_push_tokens where invalidated_at is null;
+```
+
+**If `live_tokens` is 0**, the queue is harmless: the drain will mark
+every row `no_devices` and resolve it without sending anything. Carry
+on.
+
+**If `live_tokens` is not 0 and the rows are stale**, retire them before
+step 4. Mark rather than delete, so the audit trail keeps the fact that
+they existed and were deliberately not sent:
+
+```sql
+update public.notification_outbox
+set delivery_status = 'failed',
+    last_error = 'discarded_before_first_drain',
+    resolved_at = now(),
+    next_attempt_at = null
+where delivery_status = 'pending'
+  and created_at < now() - interval '1 day';
+```
+
+Then re-run the group-by above and confirm nothing stale is still
+`pending`.
 
 ---
 
