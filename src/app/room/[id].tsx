@@ -28,11 +28,11 @@ type LoadState =
     };
 
 /**
- * Client-generated message id, which doubles as the send's idempotency key.
- * The column is a uuid, so the fallback has to produce a well-formed v4 rather
- * than an arbitrary unique string.
+ * Idempotency key for a send. The server stores it against the request
+ * fingerprint, so a retry resolves to the original message. The column is a
+ * uuid, so the fallback has to produce a well-formed v4.
  */
-function newMessageId(): string {
+function newRequestKey(): string {
   const uuid = globalThis.crypto?.randomUUID?.();
   if (uuid !== undefined) return uuid;
 
@@ -108,9 +108,11 @@ export default function MatchRoomScreen() {
     (body: string, replyToId: string | null) => {
       if (viewerId === null) return;
 
-      const messageId = newMessageId();
+      const requestKey = newRequestKey();
+      // The server assigns the real id; this placeholder only identifies the
+      // optimistic row until the persisted one replaces it.
       const optimistic: RoomMessageRecord = {
-        id: messageId,
+        id: `pending:${requestKey}`,
         senderId: viewerId,
         body,
         isSystem: false,
@@ -121,13 +123,7 @@ export default function MatchRoomScreen() {
 
       setMessages((current) => [...current, optimistic]);
 
-      void sendMessage({
-        conversationId: id,
-        messageId,
-        senderId: viewerId,
-        body,
-        replyToId,
-      })
+      void sendMessage({ conversationId: id, body, replyToId, requestKey })
         .then((persisted) => {
           if (!isMounted.current) return;
           setMessages((current) =>

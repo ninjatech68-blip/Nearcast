@@ -36,9 +36,22 @@
 
 **Files:** `src/features/messages/`, `supabase/functions/send-message/`
 
-- [ ] Test membership, closed room, block, body length, idempotency, reconnect, and missed-message fetch.
-- [ ] Persist before private-channel broadcast and unsubscribe on unmount.
-- [ ] Exclude typing, presence, media, voice, and live location.
+- [x] Test membership, closed room, block, body length, idempotency, reconnect, and missed-message fetch.
+- [x] Persist before private-channel broadcast and unsubscribe on unmount.
+- [x] Exclude typing, presence, media, voice, and live location.
+
+The room renders through `react-native-gifted-chat`, configured so that every
+excluded feature is left unenabled rather than switched off after the fact; the
+message mapper is a whitelist, so a field with no column behind it cannot be
+produced. Read receipts are limited to pending and sent, which report whether
+PostgreSQL holds the row. `received` is never set, because nothing records
+whether a message was read and a read tick would invent an activity signal.
+
+`send-message` is a `security definer` database function rather than an Edge
+Function, matching the `accept_response` precedent and the server-controlled
+transaction rule in AGENTS.md. Persisting there is what makes the Realtime
+broadcast safe: `postgres_changes` only emits after the transaction commits.
+Room lifetime and the read-only state after close follow MUST-055 and MUST-056.
 
 ## Task 5: Notifications
 
@@ -56,3 +69,4 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created response, acceptance, coordination, and notification implementation plan |
+| 2026-08-30 | Completed temporary messaging on Gifted Chat with room expiry and a send-message database function |

@@ -72,6 +72,8 @@
 - **MUST-052:** Messages must be limited to accepted participants and authorized support staff.
 - **MUST-053:** Users must be able to block or report from the coordination channel.
 - **MUST-054:** Closing an intent must stop new responses while preserving necessary safety history.
+- **MUST-055:** The coordination channel must carry an explicit deadline. It closes one day after the governing intent expires, and never sooner than one day after acceptance, so parties can still confirm the outcome once the intent itself has lapsed.
+- **MUST-056:** A channel past its deadline must stop accepting messages immediately, whether or not a scheduled sweep has run, and must remain readable to its parties afterwards. A closed channel is a read-only record, not a hidden one.
 - **MAY-050:** Media messaging, voice notes, typing indicators, and presence are deferred.
 
 ## Resolution And Trust
@@ -125,3 +127,4 @@ The MVP passes functional acceptance when an invited user can create an intent, 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined closed-alpha functional and non-functional requirements |
+| 2026-08-30 | Defined the coordination channel lifetime and its read-only state after close |

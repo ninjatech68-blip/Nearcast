@@ -17,10 +17,10 @@ import { supabase } from '@/infrastructure/supabase/client';
  * enforces membership, an open and unexpired room, the absence of a block, and
  * that a party cannot forge a system row.
  *
- * Idempotency comes from a client-generated primary key: replaying a send after
- * a dropped connection collides with the existing row rather than duplicating
- * it. Plan 04 names a `send-message` Edge Function for this path; moving it
- * server-side later (for rate limiting) will not change this module's contract.
+ * Idempotency is the server's: `send_message` stores the request fingerprint
+ * against a client-generated key, so replaying a send after a dropped
+ * connection returns the original message instead of duplicating it, and the
+ * same key with a different body is rejected as a conflict.
  *
  * Realtime accelerates delivery; PostgreSQL stays the source of truth, so a
  * reconnect refetches rather than replaying channel state.
@@ -117,43 +117,22 @@ export async function fetchMessagePage(
   };
 }
 
-/** Postgres error code raised when a replayed send hits the existing row. */
-const UNIQUE_VIOLATION = '23505';
-
 export async function sendMessage(input: {
   conversationId: string;
-  messageId: string;
-  senderId: string;
   body: string;
   replyToId: string | null;
+  requestKey: string;
 }): Promise<RoomMessageRecord> {
-  const { data, error } = await supabase
-    .from('messages')
-    .insert({
-      id: input.messageId,
-      conversation_id: input.conversationId,
-      sender_id: input.senderId,
-      body: input.body,
-      reply_to_id: input.replyToId,
-    })
-    .select('id, sender_id, body, is_system, created_at, reply_to_id')
-    .single();
+  const { data, error } = await supabase.rpc('send_message', {
+    target_conversation: input.conversationId,
+    message_body: input.body,
+    reply_to: input.replyToId ?? undefined,
+    request_key: input.requestKey,
+  });
 
-  if (error === null) return toRecord(data);
+  if (error !== null) throw error;
 
-  // A retry of a send that actually landed resolves to the stored row.
-  if (error.code === UNIQUE_VIOLATION) {
-    const { data: existing, error: fetchError } = await supabase
-      .from('messages')
-      .select('id, sender_id, body, is_system, created_at, reply_to_id')
-      .eq('id', input.messageId)
-      .single();
-
-    if (fetchError !== null) throw fetchError;
-    return toRecord(existing);
-  }
-
-  throw error;
+  return toRecord(data);
 }
 
 /**
@@ -177,4 +156,65 @@ export function subscribeToRoom(
       (payload) => onMessage(toRecord(payload.new as MessageRow)),
     )
     .subscribe();
+}
+
+export type ConversationSummary = {
+  conversationId: string;
+  intentStatement: string;
+  counterpartName: string;
+  room: RoomLifetime;
+};
+
+/**
+ * Rooms the signed-in person is a party to. RLS already limits
+ * `conversations` to the two match parties, so no ownership filter is needed
+ * here; the query cannot see anyone else's rooms.
+ */
+export async function fetchConversationSummaries(
+  viewerId: string,
+): Promise<ConversationSummary[]> {
+  const { data, error } = await supabase
+    .from('conversations')
+    .select(
+      'id, expires_at, closed_at, matches!inner(broadcaster_id, participant_id, intents!inner(statement))',
+    )
+    .order('created_at', { ascending: false });
+
+  if (error !== null) throw error;
+
+  const counterpartIds = data.map((row) =>
+    row.matches.broadcaster_id === viewerId
+      ? row.matches.participant_id
+      : row.matches.broadcaster_id,
+  );
+
+  if (counterpartIds.length === 0) return [];
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('id, display_name')
+    .in('id', counterpartIds);
+
+  if (profilesError !== null) throw profilesError;
+
+  const nameById = new Map(
+    profiles.map((profile) => [profile.id, profile.display_name]),
+  );
+
+  return data.map((row) => {
+    const counterpartId =
+      row.matches.broadcaster_id === viewerId
+        ? row.matches.participant_id
+        : row.matches.broadcaster_id;
+
+    return {
+      conversationId: row.id,
+      intentStatement: row.matches.intents.statement,
+      counterpartName: nameById.get(counterpartId) ?? 'Match party',
+      room: {
+        expiresAt: new Date(row.expires_at),
+        closedAt: row.closed_at === null ? null : new Date(row.closed_at),
+      },
+    };
+  });
 }

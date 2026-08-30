@@ -31,6 +31,16 @@ const BroadcasterProfileScreen = require('./app/profile/[id]').default;
 const RequestSheetScreen = require('./app/request/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ActivityScreen = require('./app/(tabs)/activity').default;
+jest.mock('@/infrastructure/supabase/client', () => ({
+  supabase: {
+    auth: { getUser: async () => ({ data: { user: { id: 'viewer' } } }) },
+  },
+}));
+
+jest.mock('@/features/messages/data/messages-repository', () => ({
+  fetchConversationSummaries: async () => [],
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const MessagesScreen = require('./app/(tabs)/messages').default;
 
@@ -95,6 +105,8 @@ describe('native page set', () => {
 
     const messages = await render(<MessagesScreen />);
     expect(messages.getByText('Messages')).toBeTruthy();
-    expect(messages.getByText('Messages appear after acceptance')).toBeTruthy();
+    expect(
+      await messages.findByText('Messages appear after acceptance'),
+    ).toBeTruthy();
   });
 });

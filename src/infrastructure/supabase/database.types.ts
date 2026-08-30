@@ -767,6 +767,41 @@ export type Database = {
           },
         ]
       }
+      request_idempotency: {
+        Row: {
+          actor_id: string
+          created_at: string
+          fingerprint: string
+          operation: string
+          request_key: string
+          result: Json
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          fingerprint: string
+          operation: string
+          request_key: string
+          result: Json
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          fingerprint?: string
+          operation?: string
+          request_key?: string
+          result?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_idempotency_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       responses: {
         Row: {
           created_at: string
@@ -823,6 +858,23 @@ export type Database = {
       close_expired_conversations: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      send_message: {
+        Args: {
+          message_body: string
+          reply_to?: string
+          request_key?: string
+          target_conversation: string
+        }
+        Returns: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_system: boolean
+          reply_to_id: string | null
+          sender_id: string | null
+        }
       }
       accept_response: {
         Args: {

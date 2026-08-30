@@ -152,6 +152,16 @@ Do not delete evidence during an active safety or security incident.
 - Sample nonessential analytics only after volume warrants it.
 - Avoid adding paid search, chat, or AI services before a validated need.
 
+## Scheduled Jobs
+
+| Job | Cadence | Purpose | If it stops |
+|---|---|---|---|
+| `public.close_expired_conversations()` | Every 15 minutes | Marks lapsed coordination rooms closed and appends the closing system message | Rooms stay writable-looking in stale clients only. Write access is denied by `messages_insert_parties`, which compares `expires_at` against the clock, so a stalled sweep cannot let a lapsed room accept messages. Backlog clears on the next successful run. |
+
+Schedule with `pg_cron` in each deployed environment. The function is
+`security definer` and execution is revoked from `anon` and `authenticated`, so
+it must be invoked by a scheduled job or an operator, never by a client.
+
 ## Operational Runbooks Required Before Public Beta
 
 - Authentication outage.
@@ -162,9 +172,11 @@ Do not delete evidence during an active safety or security incident.
 - Harmful-content report.
 - Account recovery and deletion.
 - Lost signing credential or leaked secret.
+- Coordination-room expiry sweep stalled.
 
 ## Change Log
 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined environments, migrations, releases, observability, incidents, recovery, and moderation operations |
+| 2026-08-30 | Added the scheduled-jobs inventory and the coordination-room expiry sweep |
