@@ -1,79 +1,212 @@
-import { useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { tokens } from '@/design-system/tokens';
 import { Button } from '@/design-system/components/button';
-import { Group, PrimitiveChip, Section, SymbolIcon } from '@/features/native-demo/native-ui';
+import { tokens } from '@/design-system/tokens';
+import {
+  RESPONSE_ACTION_MAX_LENGTH,
+  describeDisclosure,
+  findDraftProblems,
+} from '@/features/intents/create/domain/draft';
+import { PrivacyDisclosure } from '@/features/intents/create/ui/privacy-disclosure';
+import { useDraft } from '@/features/intents/create/ui/use-draft';
 
-const reachLevels = [
-  ['Trusted circles', 'People you are connected to'],
-  ['Adjacent network', 'People connected to your network'],
-  ['Relevant nearby', 'People near you with shared context'],
-  ['Broader approved', 'People in approved neighborhoods'],
-] as const;
-
+/**
+ * Intent review. Structured context and private details are edited here, then
+ * `PrivacyDisclosure` states plainly what publishing would reveal and what it
+ * would not. Publishing itself is Task 3.
+ */
 export default function PreviewIntentScreen() {
-  const { primitive = 'request', statement = '' } = useLocalSearchParams<{ primitive?: string; statement?: string }>();
-  const primitiveLabel = primitive === 'offer' ? 'I offer' : primitive === 'plan' ? 'I want to' : 'I need';
+  const { draft, update } = useDraft();
+  const now = new Date();
+
+  const problems = findDraftProblems(draft, now);
+  const disclosure = describeDisclosure(draft);
+  const { publicDraft, privateDraft } = draft;
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
-      <Text accessibilityRole="header" style={styles.title}>Review</Text>
+    <ScrollView contentContainerStyle={styles.content} style={styles.screen}>
+      <Text accessibilityRole="header" style={styles.title}>
+        Review intent
+      </Text>
 
-      <Section>
-        <Group>
-          <View style={styles.previewCard}>
-            <PrimitiveChip label={primitiveLabel} />
-            <Text style={styles.statement}>{statement || 'Your intent preview will appear here.'}</Text>
-            <View style={styles.expiryRow}>
-              <SymbolIcon fallback="E" name="clock" size={16} />
-              <Text style={styles.meta}>Expires today, 10:00 PM</Text>
-            </View>
-          </View>
-        </Group>
-      </Section>
+      <Field
+        label="What does a helpful reply look like?"
+        accessibilityLabel="Response action"
+        maxLength={RESPONSE_ACTION_MAX_LENGTH}
+        onChangeText={(value) => update({ publicDraft: { responseAction: value } })}
+        placeholder="Offer help"
+        value={publicDraft.responseAction}
+      />
 
-      <Section title="Who can see this?">
-        <Group>
-          {reachLevels.map(([title, body], index) => {
-            const selected = title === 'Adjacent network';
-            return (
-              <View key={title}>
-                <View style={styles.reachRow}>
-                  <View style={styles.reachCopy}>
-                    <Text style={styles.reachTitle}>{title}</Text>
-                    <Text style={styles.reachBody}>{body}</Text>
-                  </View>
-                  <View style={[styles.radio, selected && styles.radioSelected]}>{selected ? <View style={styles.radioDot} /> : null}</View>
-                </View>
-                {index < reachLevels.length - 1 ? <View style={styles.divider} /> : null}
-              </View>
-            );
-          })}
-        </Group>
-      </Section>
+      <Text style={styles.sectionHeading}>Public context</Text>
+      <Text style={styles.sectionHint}>
+        Everyone who receives this intent can see these.
+      </Text>
 
-      <View style={styles.footer}>
-        <Button label="Broadcast intent" onPress={() => undefined} />
-      </View>
+      <Field
+        label="Approximate area"
+        accessibilityLabel="Approximate area"
+        onChangeText={(value) => update({ publicDraft: { approximatePlace: value } })}
+        placeholder="Indiranagar"
+        value={publicDraft.approximatePlace ?? ''}
+      />
+
+      <Field
+        label="How many"
+        accessibilityLabel="How many"
+        inputMode="numeric"
+        onChangeText={(value) =>
+          update({
+            publicDraft: { quantity: value.trim() === '' ? null : Number(value) },
+          })
+        }
+        placeholder="2"
+        value={publicDraft.quantity === null ? '' : String(publicDraft.quantity)}
+      />
+
+      <Text style={styles.sectionHeading}>Private details</Text>
+      <Text style={styles.sectionHint}>
+        These never enter the public intent. You release them to one person after
+        you accept them.
+      </Text>
+
+      <Field
+        label="Exact address"
+        accessibilityLabel="Exact address"
+        onChangeText={(value) => update({ privateDraft: { exactAddress: value } })}
+        placeholder="Only shared after you accept someone"
+        value={privateDraft.exactAddress ?? ''}
+      />
+
+      <Field
+        label="Contact details"
+        accessibilityLabel="Contact details"
+        onChangeText={(value) => update({ privateDraft: { privateContact: value } })}
+        placeholder="Only shared after you accept someone"
+        value={privateDraft.privateContact ?? ''}
+      />
+
+      <PrivacyDisclosure
+        actionLabel="publish"
+        heldBack={disclosure.heldBack}
+        visibleAfterAction={disclosure.visibleAfterAction}
+        visibleNow={disclosure.visibleNow}
+      />
+
+      {problems.length > 0 && (
+        <View accessibilityLabel="Before you can publish" style={styles.problems}>
+          <Text style={styles.problemsTitle}>Before you can publish</Text>
+          {problems.map((problem) => (
+            <Text key={problem} style={styles.problem}>
+              {problem}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      <Button
+        disabled={problems.length > 0}
+        label="Publish intent"
+        onPress={() => undefined}
+      />
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Keep editing"
+        onPress={() => router.back()}>
+        <Text style={styles.secondaryAction}>Keep editing</Text>
+      </Pressable>
     </ScrollView>
   );
 }
 
+function Field({
+  label,
+  accessibilityLabel,
+  ...inputProps
+}: {
+  label: string;
+  accessibilityLabel: string;
+} & React.ComponentProps<typeof TextInput>) {
+  return (
+    <View style={styles.field}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        accessibilityLabel={accessibilityLabel}
+        placeholderTextColor={tokens.semantic.color.textMuted}
+        style={styles.input}
+        {...inputProps}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  content: { flexGrow: 1, padding: 20, backgroundColor: tokens.semantic.color.backgroundCanvas },
-  title: { fontFamily: 'Manrope_700Bold', fontSize: 17, lineHeight: 23, textAlign: 'center', color: tokens.semantic.color.textPrimary },
-  previewCard: { gap: 12, padding: 14 },
-  statement: { fontFamily: 'Manrope_700Bold', fontSize: 18, lineHeight: 24, color: tokens.semantic.color.textPrimary },
-  expiryRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  meta: { fontFamily: 'Manrope_400Regular', fontSize: 13, color: tokens.semantic.color.textMuted },
-  reachRow: { minHeight: 70, flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 14, paddingVertical: 12 },
-  reachCopy: { flex: 1 },
-  reachTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
-  reachBody: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.textMuted },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, alignItems: 'center', justifyContent: 'center' },
-  radioSelected: { borderColor: tokens.semantic.color.actionPrimary },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: tokens.semantic.color.actionPrimary },
-  divider: { height: 1, marginLeft: 14, backgroundColor: tokens.semantic.color.borderDefault },
-  footer: { marginTop: 'auto', paddingTop: 24 },
+  screen: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  content: {
+    gap: tokens.primitive.space[3],
+    paddingHorizontal: tokens.primitive.space[5],
+    paddingTop: tokens.primitive.space[4],
+    paddingBottom: tokens.primitive.space[8],
+  },
+  title: {
+    color: tokens.semantic.color.textPrimary,
+    fontFamily: 'Manrope_700Bold',
+    fontSize: tokens.typography.title1.fontSize,
+    lineHeight: tokens.typography.title1.lineHeight,
+  },
+  sectionHeading: {
+    color: tokens.semantic.color.textPrimary,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.title3.fontSize,
+    marginTop: tokens.primitive.space[3],
+  },
+  sectionHint: {
+    color: tokens.semantic.color.textSecondary,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: tokens.typography.caption.fontSize,
+    lineHeight: tokens.typography.caption.lineHeight,
+  },
+  field: { gap: tokens.primitive.space[1] },
+  label: {
+    color: tokens.semantic.color.textSecondary,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.label.fontSize,
+  },
+  input: {
+    backgroundColor: tokens.semantic.color.backgroundSurface,
+    borderColor: tokens.semantic.color.borderDefault,
+    borderRadius: tokens.component.input.radius,
+    borderWidth: StyleSheet.hairlineWidth,
+    color: tokens.semantic.color.textPrimary,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: tokens.typography.body.fontSize,
+    minHeight: tokens.component.input.minHeight,
+    paddingHorizontal: tokens.primitive.space[4],
+  },
+  problems: {
+    backgroundColor: tokens.semantic.color.warningSurface,
+    borderRadius: tokens.primitive.radius.control,
+    gap: tokens.primitive.space[1],
+    padding: tokens.primitive.space[4],
+  },
+  problemsTitle: {
+    color: tokens.semantic.color.warningText,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.label.fontSize,
+  },
+  secondaryAction: {
+    color: tokens.semantic.color.actionPrimary,
+    fontFamily: 'Manrope_600SemiBold',
+    fontSize: tokens.typography.label.fontSize,
+    paddingVertical: tokens.primitive.space[3],
+    textAlign: 'center',
+  },
+  problem: {
+    color: tokens.semantic.color.warningText,
+    fontFamily: 'Manrope_400Regular',
+    fontSize: tokens.typography.caption.fontSize,
+    lineHeight: tokens.typography.caption.lineHeight,
+  },
 });

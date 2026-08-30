@@ -1,4 +1,6 @@
 import type { RedeemOutcome } from '@/features/auth/domain/membership';
+import { deviceDraftStore } from '@/features/intents/create/data/device-draft-store';
+import { clearDraft } from '@/features/intents/create/domain/draft-storage';
 import { supabase } from '@/infrastructure/supabase/client';
 
 /**
@@ -73,11 +75,16 @@ export async function redeemInvite(
 }
 
 /**
- * Ends the session and clears the persisted copy. `scope: 'local'` is
- * deliberate: signing out on this device should not invalidate the person's
- * other devices.
+ * Ends the session and clears device-local private data.
+ *
+ * `scope: 'local'` is deliberate: signing out here should not invalidate the
+ * person's other devices. The draft is discarded because it is private and the
+ * next person to sign in on this device must not inherit it. The same call
+ * covers account deletion, which has no local state of its own to forget.
  */
 export async function signOut(): Promise<void> {
+  clearDraft(deviceDraftStore);
+
   const { error } = await supabase.auth.signOut({ scope: 'local' });
 
   if (error !== null) throw error;

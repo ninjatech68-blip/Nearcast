@@ -37,10 +37,29 @@ Apple sign-in are deferred to MUST-001a.
 
 **Files:** `src/features/intents/create/`, `src/app/create.tsx`, `src/app/preview.tsx`
 
-- [ ] Test local draft recovery, 500-character limit, expiry default, and required primitive.
-- [ ] Add structured time, approximate place, quantity, price, requirements, and private details.
-- [ ] Render `PrivacyDisclosure` from separate public/private draft models.
-- [ ] Test offline draft storage and explicit draft clearing on account deletion.
+- [x] Test local draft recovery, 500-character limit, expiry default, and required primitive.
+- [x] Add structured time, approximate place, quantity, price, requirements, and private details.
+- [x] Render `PrivacyDisclosure` from separate public/private draft models.
+- [x] Test offline draft storage and explicit draft clearing on account deletion.
+
+The public and private halves are separate objects rather than one record with
+sensitive fields mixed in. A screen rendering the public projection is handed
+`publicDraft` and structurally cannot reach an exact address or a phone number,
+so "exact details never enter public context" holds by shape rather than by
+remembering to filter. `describeDisclosure` is built from `publicDraft` alone
+and a test asserts no private value reaches the visible lists.
+
+The draft is stored on the device through expo-sqlite's localStorage shim and is
+no longer passed through navigation parameters, which keeps it local as the
+screen contract requires and survives an offline period. Unreadable or outdated
+stored data is discarded rather than repaired: losing an unfinished draft is a
+smaller harm than publishing one silently missing fields the person believed
+were set. `signOut` clears it, so the next person to sign in on a shared device
+inherits nothing; account deletion has no separate local state to forget.
+
+Expiry defaults to 24 hours per MUST-013, proposed rather than assumed, and the
+review screen refuses a deadline already in the past. `PrivacyDisclosure` gained
+a `heldBack` list, recorded in the Mobile Screen Contracts change log.
 
 ## Task 3: Publish Transaction
 
@@ -78,3 +97,4 @@ Five testers publish and share real intents without assistance; public metadata 
 |---|---|
 | 2026-08-24 | Created intent creation and sharing implementation plan |
 | 2026-08-30 | Completed invitation-gated email one-time-code authentication |
+| 2026-08-30 | Completed local intent drafting and review with a public/private draft split |

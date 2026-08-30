@@ -36,7 +36,7 @@ Unauthenticated routes are invitation, sign-in, public intent, and policy pages.
 
 ## Component APIs
 
-`IntentCard` receives a privacy-safe view model, not a raw database row. `ReachSelector` receives current level, allowed next levels, and disclosure diffs. `PrivacyDisclosure` receives `visibleNow` and `visibleAfterAction`. `ResponseCTA` receives one verb phrase and one action. `WhyYouSeeThis` requires both rendered explanation and feedback action.
+`IntentCard` receives a privacy-safe view model, not a raw database row. `ReachSelector` receives current level, allowed next levels, and disclosure diffs. `PrivacyDisclosure` receives `visibleNow`, `visibleAfterAction`, and `heldBack`. The first two say what becomes visible; `heldBack` names the private fields that will not, because a person cannot trust a boundary they cannot see. It carries labels only and never repeats a private value. `ResponseCTA` receives one verb phrase and one action. `WhyYouSeeThis` requires both rendered explanation and feedback action.
 
 ## Deep Links
 
