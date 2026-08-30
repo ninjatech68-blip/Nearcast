@@ -13,7 +13,7 @@ export const DOCK_PAGES: readonly DockPage[] = ['near', 'chats', 'alerts', 'you'
 type Slot =
   | { readonly kind: 'page'; readonly page: DockPage; readonly label: string; readonly glyph: GlyphName }
   | { readonly kind: 'avatar'; readonly page: DockPage; readonly label: string }
-  | { readonly kind: 'cast' };
+  | { readonly kind: 'cast'; readonly label: string };
 
 /**
  * Five columns. Compose sits in column three, which is the only
@@ -24,10 +24,12 @@ type Slot =
 const SLOTS: readonly Slot[] = [
   { kind: 'page', page: 'near', label: 'near', glyph: 'near' },
   { kind: 'page', page: 'chats', label: 'chats', glyph: 'chats' },
-  { kind: 'cast' },
+  { kind: 'cast', label: 'cast' },
   { kind: 'page', page: 'alerts', label: 'alerts', glyph: 'alerts' },
   { kind: 'avatar', page: 'you', label: 'you' },
 ];
+
+const dock = tokens.component.dock;
 
 /**
  * The dock: five marks across the bottom edge, on no surface at all.
@@ -35,9 +37,9 @@ const SLOTS: readonly Slot[] = [
  * The category field runs unbroken underneath, because the flat colour
  * owning the whole screen is the only thing about this app that is
  * unmistakably itself, and a bar with its own shade takes a tenth of it
- * away. What replaces the missing plane is the compose button — the one
- * filled, elevated object on the edge — and the fact that a poster
- * already reserves this band, so nothing is ever underneath the marks.
+ * away. What replaces the missing plane is the cast button — the one
+ * filled shape on the edge — and the fact that a poster already reserves
+ * this band, so nothing is ever underneath the marks.
  *
  * It never fades. The rail it replaces animated to `opacity: 0` on
  * scroll and only `onMomentumScrollEnd` brought it back, so a drag
@@ -46,27 +48,28 @@ const SLOTS: readonly Slot[] = [
  * went on swallowing every tap meant for the poster beneath it. That is
  * the bug this component exists to make unrepresentable.
  *
- * COLOUR. Marks take the ground's declared foreground: cream on the
- * four dark fields, ink on the six light ones. Cream alone would fail
- * on six of ten — 1.37:1 on sports, and exactly 1.00:1 on help, which
- * is the same colour — so `category[id].fg` is the rule, and it already
- * exists in tokens. Nothing is dimmed: games gives cream only 4.94:1 to
- * begin with, so any transparency at all drops it below AA.
+ * COLOUR. Marks take the ground's declared foreground: cream on the four
+ * dark fields, ink on the six light ones. Cream alone would fail on six
+ * of ten — 1.37:1 on sports, and exactly 1.00:1 on help, which is the
+ * same colour — so `category[id].fg` is the rule, and it already exists
+ * in tokens.
  *
- * SELECTION follows the design system rather than inventing a state:
- * an accent pill with ink on top of it, the same recipe as Tag `hot`
- * and the selected category in compose. Accent as a *foreground* would
- * fail on eight of ten fields (1.00:1 on social, which is the accent).
- * Semibold and the pill's fill carry it as well, so colour is never
- * the only carrier.
+ * SELECTION IS A COLOUR CHANGE AND NOTHING ELSE. No pill, no fill: an
+ * inactive mark is the foreground at 70%, the selected one is the same
+ * colour at full strength. 70% is not a taste call — it is the floor
+ * that keeps the tightest field above the 3:1 WCAG asks of a UI
+ * component, on games, where cream starts at only 4.94:1. The selected
+ * mark also grows 12%, about the centre of a fixed box so nothing below
+ * it shifts, and its label goes semibold. Labels never dim, because
+ * 11 pt is small text and owes 4.5:1 — so between weight, size and
+ * strength, the state still reads if colour does not.
  *
  * BLEND is the pager's horizontal offset, 0 on the feed and 1 on the
- * cream pages. Mid-swipe the screen is half poster and half cream, so
- * no single mark colour is right for both halves; cross-fading two
- * copies means at every point in the transition one of them is legible
- * against whatever is actually behind it. The active pill and the
- * compose button are opaque and ground-independent, so they sit in the
- * one layer that never fades.
+ * cream pages. Mid-swipe the screen is half poster and half cream, so no
+ * single mark colour is right for both halves; cross-fading two copies
+ * means at every point one of them is legible against whatever is
+ * actually behind it. Only the cast button and the counts sit outside
+ * that fade, because accent behind ink is legible on any ground.
  */
 export function Dock({
   current,
@@ -100,12 +103,12 @@ export function Dock({
   return (
     <View
       pointerEvents="box-none"
-      style={[styles.dock, { height: tokens.component.dock.control + insets.bottom, paddingBottom: insets.bottom }]}
+      style={[styles.dock, { height: dock.control + insets.bottom, paddingBottom: insets.bottom }]}
     >
-      {/* The two cross-faded colour layers: inactive marks only.
-          Hidden from assistive tech — they are the SAME four marks the
-          pressable row below already labels, so leaving them visible to
-          VoiceOver announced every destination three times. */}
+      {/* Two cross-faded colour layers carrying every mark and label.
+          Hidden from assistive tech — the pressable row below labels the
+          same five slots, and leaving these visible announced every
+          destination three times. */}
       <Animated.View
         pointerEvents="none"
         accessibilityElementsHidden
@@ -123,7 +126,7 @@ export function Dock({
         <MarkRow current={current} fg={ink} initials={initials} photo={photo} />
       </Animated.View>
 
-      {/* the row that is actually pressed, and the two opaque things. */}
+      {/* the row that is actually pressed, plus the two opaque things. */}
       <View style={styles.row}>
         {SLOTS.map((slot) =>
           slot.kind === 'cast' ? (
@@ -135,7 +138,7 @@ export function Dock({
               style={styles.column}
             >
               <View style={styles.cast}>
-                <Glyph name="cast" size={26} color={ink} weight="semibold" />
+                <Glyph name="cast" size={dock.icon} color={ink} weight="semibold" />
               </View>
             </Pressable>
           ) : (
@@ -147,17 +150,9 @@ export function Dock({
               onPress={() => onGo(slot.page)}
               style={styles.column}
             >
-              {current === slot.page ? (
-                <>
-                  <View style={styles.pill} />
-                  <Mark slot={slot} fg={ink} initials={initials} photo={photo} selected />
-                  <Text style={[styles.label, styles.labelOn, { color: ink }]}>{slot.label}</Text>
-                </>
-              ) : (
-                // the visuals live in the faded layers above; this keeps
-                // the column's size and the touch target.
-                <View style={styles.spacer} />
-              )}
+              {/* the visuals live in the faded layers above; this holds
+                  the column's size and the touch target. */}
+              <View style={styles.markBox} />
               <Count value={slot.page === 'chats' ? chatCount : slot.page === 'alerts' ? alertCount : 0} />
             </Pressable>
           ),
@@ -167,7 +162,7 @@ export function Dock({
   );
 }
 
-/** one full row of marks in a single colour, active slot left blank. */
+/** one full row of marks and labels in a single ground's foreground. */
 function MarkRow({
   current,
   fg,
@@ -181,18 +176,28 @@ function MarkRow({
 }) {
   return (
     <View style={styles.row}>
-      {SLOTS.map((slot) => (
-        <View key={slot.kind === 'cast' ? 'cast' : slot.page} style={styles.column}>
-          {slot.kind === 'cast' || current === slot.page ? (
-            <View style={styles.spacer} />
-          ) : (
-            <>
-              <Mark slot={slot} fg={fg} initials={initials} photo={photo} />
-              <Text style={[styles.label, { color: fg }]}>{slot.label}</Text>
-            </>
-          )}
-        </View>
-      ))}
+      {SLOTS.map((slot) => {
+        const on = slot.kind !== 'cast' && current === slot.page;
+        return (
+          <View key={slot.kind === 'cast' ? 'cast' : slot.page} style={styles.column}>
+            {slot.kind === 'cast' ? (
+              // the button itself is opaque and lives in the row below;
+              // only its label belongs to the ground.
+              <View style={styles.markBox} />
+            ) : (
+              <View
+                style={[
+                  styles.markBox,
+                  on ? { transform: [{ scale: dock.selectedScale }] } : { opacity: dock.inactive },
+                ]}
+              >
+                <Mark slot={slot} fg={fg} initials={initials} photo={photo} selected={on} />
+              </View>
+            )}
+            <Text style={[styles.label, on ? styles.labelOn : null, { color: fg }]}>{slot.label}</Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -202,17 +207,17 @@ function Mark({
   fg,
   initials,
   photo,
-  selected = false,
+  selected,
 }: {
   slot: Extract<Slot, { kind: 'page' | 'avatar' }>;
   fg: string;
   initials: string;
   photo?: ImageSourcePropType;
-  selected?: boolean;
+  selected: boolean;
 }) {
   if (slot.kind === 'avatar') {
     return (
-      <View style={[styles.avatar, { borderColor: fg }]}>
+      <View style={[styles.avatar, { borderColor: fg, borderWidth: selected ? 2 : 1.5 }]}>
         {photo ? (
           <Image source={photo} style={styles.avatarPhoto} accessibilityLabel="" />
         ) : (
@@ -221,11 +226,7 @@ function Mark({
       </View>
     );
   }
-  return (
-    <View style={styles.glyphBox}>
-      <Glyph name={slot.glyph} size={tokens.component.dock.icon} color={fg} weight={selected ? 'semibold' : 'regular'} />
-    </View>
-  );
+  return <Glyph name={slot.glyph} size={dock.icon} color={fg} weight={selected ? 'semibold' : 'regular'} />;
 }
 
 /**
@@ -237,12 +238,18 @@ function Mark({
  * a number everybody learns to ignore.
  *
  * It rides in the always-opaque layer — accent behind ink is legible on
- * every ground, so it needs no ring and no cross-fade.
+ * every ground, so it needs no cross-fade — and is hidden from assistive
+ * tech, because the slot's own label already speaks the number.
  */
 function Count({ value }: { value: number }) {
   if (value <= 0) return null;
   return (
-    <View style={styles.count} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View
+      style={styles.count}
+      pointerEvents="none"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
       <Text style={styles.countText} numberOfLines={1}>
         {value > 9 ? '9+' : value}
       </Text>
@@ -252,40 +259,29 @@ function Count({ value }: { value: number }) {
 
 function labelFor(slot: Extract<Slot, { kind: 'page' | 'avatar' }>, chats: number, alerts: number): string {
   const n = slot.page === 'chats' ? chats : slot.page === 'alerts' ? alerts : 0;
-  if (n <= 0) return slot.label;
-  return `${slot.label}, ${n} waiting`;
+  return n > 0 ? `${slot.label}, ${n} waiting` : slot.label;
 }
-
-const dock = tokens.component.dock;
 
 const styles = StyleSheet.create({
   dock: { position: 'absolute', left: 0, right: 0, bottom: 0 },
   layer: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
   row: { flex: 1, flexDirection: 'row', alignItems: 'flex-start' },
   column: { flex: 1, alignItems: 'center', paddingTop: dock.iconTop, minHeight: dock.control },
-  spacer: { height: dock.icon },
-  glyphBox: { height: dock.icon, alignItems: 'center', justifyContent: 'center' },
+  // every mark sits in the same box, so the five columns share one icon
+  // line and one label line whatever shape the mark itself is.
+  markBox: { width: dock.icon, height: dock.icon, alignItems: 'center', justifyContent: 'center' },
   label: {
     ...tokens.typography.tagSmall,
     textTransform: 'uppercase',
-    // labelTop is measured from the control row's top, and the column
+    // labelTop is measured from the control row's top and the column
     // already pads by iconTop, so this is the gap between the two.
     marginTop: dock.labelTop - dock.iconTop - dock.icon,
   },
   labelOn: { fontFamily: fontFamily.monoSemi },
-  pill: {
-    position: 'absolute',
-    top: dock.pill.top,
-    width: dock.pill.width,
-    height: dock.pill.height,
-    borderRadius: dock.pill.radius,
-    backgroundColor: tokens.semantic.color.accent,
-  },
   avatar: {
     width: dock.icon,
     height: dock.icon,
     borderRadius: dock.icon / 2,
-    borderWidth: 1.7,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -294,14 +290,16 @@ const styles = StyleSheet.create({
   avatarInitials: { fontFamily: fontFamily.monoSemi, fontSize: 9, letterSpacing: 0.3 },
   cast: {
     position: 'absolute',
+    // centred on the same line as every other mark: the marks run
+    // iconTop..iconTop+icon, and this is centred on that midpoint.
     top: dock.cast.top,
     width: dock.cast.size,
     height: dock.cast.size,
     borderRadius: dock.cast.radius,
     backgroundColor: tokens.semantic.color.accent,
-    // the ring is what saves it on the social field, where the button
-    // and the poster are the same orange. ink on every ground: the two
-    // fields that need a ring at all are both light.
+    // the ring is what saves it on the social field, where the button and
+    // the poster are the same orange. ink on every ground: the fields
+    // that need a ring at all are the light ones.
     borderWidth: dock.cast.ring,
     borderColor: tokens.semantic.color.ink,
     alignItems: 'center',
@@ -311,7 +309,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 2,
     left: '50%',
-    marginLeft: 6,
+    marginLeft: 5,
     minWidth: 18,
     height: 18,
     paddingHorizontal: 5,

@@ -49,15 +49,34 @@ describe('dock', () => {
     expect(view.getAllByRole('button')).toHaveLength(DOCK_PAGES.length + 1);
   });
 
-  it('marks the selected slot with the design system selected state, not colour alone', async () => {
+  it('marks the selected slot without filling it', async () => {
     const { view } = await renderDock({ current: 'alerts' });
 
     expect(view.getByRole('button', { name: 'alerts' }).props.accessibilityState).toMatchObject({ selected: true });
     expect(view.getByRole('button', { name: 'near' }).props.accessibilityState).toMatchObject({ selected: false });
-    // the accent pill: the same recipe as Tag `hot` and the selected
-    // category in compose. accent as a FOREGROUND would be 1.00:1 on the
-    // social field, which is the accent itself.
-    expect(paintedWith(view.toJSON() as unknown as Node, tokens.semantic.color.accent)).toBeGreaterThanOrEqual(1);
+    // selection is a colour change and nothing else. the only accent
+    // fill left in the dock is the cast button; a selected destination
+    // adds none, so the count of filled shapes does not move with it.
+    const filled = (page: 'near' | 'alerts') => paintedWith(view.toJSON() as unknown as Node, tokens.semantic.color.accent);
+    expect(filled('alerts')).toBe(1);
+  });
+
+  it('keeps every mark on one line at one size', async () => {
+    const { view } = await renderDock();
+    const { dock } = tokens.component;
+
+    // the cast button is centred on the same midpoint as the marks, so
+    // the five columns read as one row rather than four plus an outlier.
+    const markMid = dock.iconTop + dock.icon / 2;
+    const castMid = dock.cast.top + dock.cast.size / 2;
+    expect(castMid).toBe(markMid);
+    // and the label line clears the tallest thing above it
+    expect(dock.labelTop).toBeGreaterThan(dock.cast.top + dock.cast.size);
+    // the selected mark grows about the centre of a fixed box, so it can
+    // never push the label line down as selection moves along the row
+    expect(dock.selectedScale).toBeGreaterThan(1);
+    expect(dock.icon * dock.selectedScale).toBeLessThan(dock.cast.size);
+    expect(view.getByRole('button', { name: 'cast something' })).toBeTruthy();
   });
 
   it('never paints itself a surface, so the poster runs to the bottom edge', async () => {
@@ -91,11 +110,14 @@ describe('dock', () => {
     // it is opaque on its accent pill and needs no fading. Without hiding
     // the faded copies a screen reader walks "chats" three times before
     // it reaches alerts.
-    for (const label of ['chats', 'alerts', 'you']) {
+    // Every label is drawn twice, once per cross-fade colour layer, and
+    // both copies are hidden: the pressable row is what a screen reader
+    // walks. Without hiding them it heard "chats" three times before it
+    // reached alerts.
+    for (const label of ['near', 'chats', 'alerts', 'you', 'cast']) {
       expect(view.queryAllByText(label, { includeHiddenElements: true }).length).toBe(2);
       expect(view.queryAllByText(label)).toHaveLength(0);
     }
-    expect(view.queryAllByText('near')).toHaveLength(1);
     // and each slot is reachable exactly once, through its own control
     for (const [name, count] of [['near', 0], ['chats', 2], ['alerts', 3], ['you', 0]] as const) {
       const label = count > 0 ? `${name}, ${count} waiting` : name;

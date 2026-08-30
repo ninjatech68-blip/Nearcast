@@ -77,12 +77,28 @@ export const tokens = {
      */
     dock: {
       control: 56,
-      icon: 26,
+      /** one size for every mark, including the avatar and the cast glyph. */
+      icon: 24,
       iconTop: 10,
       labelTop: 42,
-      /** the DS selected state: an accent pill, ink on top of it. */
-      pill: { width: 56, height: 32, radius: 16, top: 7 },
-      cast: { size: 52, radius: 17, top: 5.5, ring: 2 },
+      /**
+       * Selection is a colour change and nothing else: no pill, no fill.
+       * An inactive mark is its ground's foreground at 70%, which is the
+       * floor that keeps the tightest field (games, cream at 4.94:1 to
+       * begin with) above the 3:1 WCAG asks of a UI component. Labels
+       * never dim, because 11 pt is small text and owes 4.5:1; the
+       * selected one goes semibold, so the state survives without colour.
+       */
+      inactive: 0.7,
+      /**
+       * The selected mark also grows, slightly. Colour is never the only
+       * carrier, and 1.12 is deliberately small: it scales about the
+       * centre of a fixed-size box, so the icon line and the label line
+       * below it do not move as selection travels along the row.
+       */
+      selectedScale: 1.12,
+      /** the one filled shape, centred on the same line as the marks. */
+      cast: { size: 36, radius: 12, top: 4, ring: 2 },
       /** ground-coloured, so it is invisible on a poster and stops list
        *  rows colliding with the marks on the cream screens. */
       scrim: 130,
