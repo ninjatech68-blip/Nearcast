@@ -25,7 +25,7 @@ import { useRefresher } from '@/infrastructure/net/use-refresher';
 
 const LABEL: Record<AlertTabId, string> = {
   needs: 'needs you',
-  news: 'news',
+  waiting: 'waiting',
   plans: 'your plans',
 };
 
@@ -43,8 +43,7 @@ const LABEL: Record<AlertTabId, string> = {
  *   needs you  — join requests on your casts, and plans still waiting
  *                for "how did it go?". Decisions you owe. The only
  *                group that feeds the dock's badge.
- *   news       — someone you asked has not answered yet, a chat has
- *                ended. Information; nothing to do.
+ *   waiting    — requests you sent that nobody has answered yet.
  *   your plans — what you cast and what you joined, in one list, each
  *                row tagged. They answer the same question — what am I
  *                part of? — and splitting them made you look twice.
@@ -70,13 +69,24 @@ export function AlertsPage() {
     Promise.all([refreshInteractions(), refreshConversations(), refreshAttendance()]),
   );
 
-  const live = useMemo(() => chats.filter((c) => !c.ended), [chats]);
-  const ended = useMemo(() => chats.filter((c) => c.ended), [chats]);
+  /**
+   * One row per plan.
+   *
+   * A cast you posted that somebody joined was appearing twice: once
+   * from myCasts as "you cast", and again inside the conversation row
+   * for the same plan. The conversation belongs to whoever did NOT cast
+   * it, so a chat whose plan is already in your own casts is dropped
+   * here. Ended chats are dropped altogether — they have a home on the
+   * chats page, with their own tag, and repeating them under a heading
+   * called news is what made that heading meaningless.
+   */
+  const mine = useMemo(() => new Set(myCasts.map((item) => item.castId)), [myCasts]);
+  const joined = useMemo(() => chats.filter((c) => !c.ended && !mine.has(c.castId)), [chats, mine]);
 
   const counts: AlertCounts = {
     needs: pendingJoins.length + reflect.length,
-    news: joinsISent.length + ended.length,
-    plans: live.length + myCasts.length,
+    waiting: joinsISent.length,
+    plans: joined.length + myCasts.length,
   };
   const { visible, shown, showStrip } = alertTabs(counts, selected);
 
@@ -190,7 +200,7 @@ export function AlertsPage() {
             </>
           ) : null}
 
-          {shown === 'news' ? (
+          {shown === 'waiting' ? (
             <>
               {joinsISent.map((j) => (
                 <Row
@@ -202,24 +212,6 @@ export function AlertsPage() {
                   right={<Tag label="pending" tone="dim" />}
                   onPress={() => router.push(`/cast/${j.castId}`)}
                   onLongPress={() => confirmWithdraw(j.castId, j.casterName)}
-                />
-              ))}
-              {ended.map((chat) => (
-                <Row
-                  key={`ended-${chat.conversationId}`}
-                  title={chat.castTitle}
-                  sub={`with ${chat.withName} · the chat has ended`}
-                  left={
-                    <Face
-                      photo={facePhotos[chat.withId]}
-                      initials={chat.withName.slice(0, 2).toUpperCase()}
-                      size={44}
-                      label={`photo of ${chat.withName}`}
-                      verified={isVerified(chat.withId)}
-                    />
-                  }
-                  right={<Tag label="ended" tone="dim" />}
-                  onPress={() => router.push(`/plan/${chat.castId}?chat=${chat.conversationId}`)}
                 />
               ))}
             </>
@@ -241,7 +233,7 @@ export function AlertsPage() {
                   />
                 );
               })}
-              {live.map((chat) => (
+              {joined.map((chat) => (
                 <Row
                   key={`in-${chat.conversationId}`}
                   title={chat.planCount > 1 ? `${chat.planCount} plans with ${chat.withName}` : chat.castTitle}

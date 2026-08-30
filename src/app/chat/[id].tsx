@@ -22,7 +22,6 @@ import {
 import { SymbolView, type SFSymbol } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BarButton, QuietAction } from '@/design-system/components/button';
 import { Face } from '@/design-system/components/face';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
@@ -348,9 +347,11 @@ export default function ChatScreen() {
             onPress={openExpiryMenu}
             style={styles.expiryTap}
           >
-            {/* the window is the whole point of the chat — a muted 11pt
-                label in the corner was missed by every tester. it reads
-                as an accent pill now, at the same tap target. */}
+            {/* The window is the whole point of the chat, so it has to be
+                seen — but an accent-outlined, filled capsule read as an
+                alert about something wrong. It is a fact, not a warning:
+                plain type at full strength, with the dots that say it
+                opens a menu, and the same tap target as before. */}
             <View style={styles.expiryPill}>
               <Text style={styles.expiryLabel}>{expiryText}</Text>
               <View style={styles.expiryDots}>
@@ -588,27 +589,30 @@ function WindowRequest({
   const what = mode === 'always' ? 'no expiry' : '7 days';
 
   return (
-    <View style={styles.request}>
-      <Text style={styles.requestTitle}>
-        {mine ? `You asked for ${what}` : `${withName} asked for ${what}`}
-      </Text>
+    <View style={styles.request} accessibilityLabel="chat notice">
+      {/* the same voice as every other line in the app: lowercase, and
+          saying what is true rather than announcing itself. */}
       <Text style={styles.requestBody}>
         {mine
-          ? `A longer window takes you both. Waiting on ${withName}.`
-          : 'A longer window is more time you are both reachable. It takes you both.'}
+          ? `you asked for ${what}. a longer window takes you both, so it waits on ${withName}.`
+          : `${withName} asked for ${what}. a longer window is more time you are both reachable, and it takes you both.`}
       </Text>
-      {mine ? (
-        <View style={styles.requestActions}>
-          <QuietAction label="Take it back" color={tokens.semantic.color.ink} onPress={() => onAnswer(false)} />
-        </View>
-      ) : (
-        <View style={styles.requestActions}>
-          <QuietAction label="Not now" color={tokens.semantic.color.ink} onPress={() => onAnswer(false)} />
-          <View style={styles.requestAgree}>
-            <BarButton label="Agree" variant="onOrange" onPress={() => onAnswer(true)} />
-          </View>
-        </View>
-      )}
+      <View style={styles.requestActions}>
+        {mine ? (
+          <Pressable accessibilityRole="button" accessibilityLabel="take it back" onPress={() => onAnswer(false)}>
+            <Text style={styles.requestNo}>take it back</Text>
+          </Pressable>
+        ) : (
+          <>
+            <Pressable accessibilityRole="button" accessibilityLabel="not now" onPress={() => onAnswer(false)}>
+              <Text style={styles.requestNo}>not now</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="agree" onPress={() => onAnswer(true)}>
+              <Text style={styles.requestYes}>agree</Text>
+            </Pressable>
+          </>
+        )}
+      </View>
     </View>
   );
 }
@@ -733,24 +737,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   plusText: { fontFamily: fontFamily.text, fontSize: 24, lineHeight: 26, color: tokens.semantic.color.ink },
+  // the same capsule as a plain notice: this is a note in the thread
+  // that happens to need an answer, not a banner about a problem.
   request: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    alignSelf: 'center',
+    maxWidth: '86%',
+    paddingVertical: 9,
+    paddingHorizontal: 14,
     marginBottom: 8,
-    borderRadius: tokens.primitive.radius.control,
-    borderWidth: 1,
-    borderColor: tokens.semantic.color.accent,
+    borderRadius: tokens.primitive.radius.sheet,
     backgroundColor: tokens.semantic.color.backgroundSubtle,
   },
-  requestTitle: { fontFamily: fontFamily.displaySemi, fontSize: 15, color: tokens.semantic.color.ink },
   requestBody: {
     ...tokens.typography.metaSmall,
     color: tokens.semantic.color.textMutedOnCream,
     lineHeight: 18,
-    marginTop: 4,
+    textAlign: 'center',
   },
-  requestActions: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 },
-  requestAgree: { flex: 1 },
+  // the actions are the one thing in the capsule at full strength, so
+  // the note stays a note and the answer stays findable.
+  requestActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 22,
+    minHeight: tokens.component.minTarget,
+  },
+  requestNo: { fontFamily: fontFamily.displaySemi, fontSize: 14, color: tokens.semantic.color.textMutedOnCream },
+  requestYes: { fontFamily: fontFamily.displaySemi, fontSize: 14, color: tokens.semantic.color.accent },
   plusBtnOn: { backgroundColor: tokens.semantic.color.ink, borderColor: tokens.semantic.color.ink },
   plusTextOn: { color: tokens.semantic.color.cream },
   tray: {
@@ -820,21 +834,22 @@ const styles = StyleSheet.create({
   },
   olderBtnDim: { opacity: 0.7 },
   olderText: { ...tokens.typography.metaSmall, color: tokens.semantic.color.ink },
+  // One notice style for the whole thread, plain or with actions: a
+  // centred capsule in the ground's own tint, no border, small muted
+  // type. A bordered, semibold block in the middle of a conversation
+  // read as an error about the chat rather than a note within it.
   systemRow: {
     alignSelf: 'center',
-    maxWidth: '90%',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
+    maxWidth: '86%',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    marginVertical: 4,
+    borderRadius: tokens.primitive.radius.pill,
     backgroundColor: tokens.semantic.color.backgroundSubtle,
-    borderWidth: 1,
-    borderColor: tokens.semantic.color.hairlineOnCream,
   },
   systemText: {
-    fontFamily: fontFamily.monoSemi,
-    fontSize: 13,
-    lineHeight: 19,
-    color: tokens.semantic.color.ink,
+    ...tokens.typography.metaSmall,
+    color: tokens.semantic.color.textMutedOnCream,
     textAlign: 'center',
   },
   bubbleRow: { maxWidth: '82%' },
@@ -901,13 +916,9 @@ const styles = StyleSheet.create({
   expiryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 9,
+    gap: 6,
+    paddingHorizontal: 2,
     paddingVertical: 5,
-    borderRadius: tokens.primitive.radius.pill,
-    borderWidth: 1,
-    borderColor: tokens.semantic.color.accent,
-    backgroundColor: tokens.semantic.color.backgroundSubtle,
   },
   expiryLabel: {
     ...tokens.typography.tagSmall,

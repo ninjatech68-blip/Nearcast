@@ -23,7 +23,10 @@ const SYMBOL: Record<GlyphName, SFSymbol> = {
   chats: 'bubble.left.and.bubble.right',
   alerts: 'bell',
   cast: 'plus',
-  lens: 'line.3.horizontal.decrease',
+  // a magnifier, not three decreasing bars: that glyph is the iOS
+  // sort/filter mark and reads as a menu on a screen whose first
+  // control is a search field.
+  lens: 'magnifyingglass',
   camera: 'camera.fill',
 };
 
@@ -38,7 +41,7 @@ const FALLBACK: Record<GlyphName, string> = {
   chats: '(:)',
   alerts: '(!)',
   cast: '+',
-  lens: '≡',
+  lens: '⌕',
   camera: '◎',
 };
 

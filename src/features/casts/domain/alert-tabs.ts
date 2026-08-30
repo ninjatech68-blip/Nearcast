@@ -24,10 +24,10 @@
  * the counts it renders are the same ones passed in here.
  */
 
-export type AlertTabId = 'needs' | 'news' | 'plans';
+export type AlertTabId = 'needs' | 'waiting' | 'plans';
 
 /** the one order, and the only place it is written down. */
-export const ALERT_TAB_ORDER: readonly AlertTabId[] = ['needs', 'news', 'plans'];
+export const ALERT_TAB_ORDER: readonly AlertTabId[] = ['needs', 'waiting', 'plans'];
 
 export type AlertCounts = Readonly<Record<AlertTabId, number>>;
 

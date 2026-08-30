@@ -598,7 +598,7 @@ describe('chat', () => {
 
     // a live countdown, and nothing pending yet
     expect(view.getByText(/\d+h left/)).toBeTruthy();
-    expect(view.queryByRole('button', { name: 'Agree' })).toBeNull();
+    expect(view.queryByRole('button', { name: 'agree' })).toBeNull();
 
     await act(async () => {
       await extendChat('badminton-after-work', 'always');
@@ -606,10 +606,10 @@ describe('chat', () => {
 
     // asked, not done: the window is unchanged and the ask is on screen
     expect(view.getByText(/\d+h left/)).toBeTruthy();
-    expect(view.getByText(/You asked for no expiry/)).toBeTruthy();
+    expect(view.getByText(/you asked for no expiry/)).toBeTruthy();
     // the person who asked cannot also agree — only take it back
-    expect(view.queryByRole('button', { name: 'Agree' })).toBeNull();
-    expect(view.getByRole('button', { name: 'Take it back' })).toBeTruthy();
+    expect(view.queryByRole('button', { name: 'agree' })).toBeNull();
+    expect(view.getByRole('button', { name: 'take it back' })).toBeTruthy();
 
     await act(async () => {
       await answerWindowRequest('badminton-after-work', true);
