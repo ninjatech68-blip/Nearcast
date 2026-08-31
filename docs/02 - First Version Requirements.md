@@ -15,8 +15,7 @@
 
 ## Accounts And Identity
 
-- **MUST-001:** Users must authenticate with a one-time code sent to their email during closed alpha. Accounts are invite-only: a verified identity is not membership, and a profile exists only after an invitation is redeemed.
-- **MUST-001a:** Google and Apple sign-in are deferred, not dropped, and must ship before public beta. Offering third-party sign-in on iOS obliges Nearcast to offer Sign in with Apple, which requires a paid Apple Developer Program membership; email codes carry no such obligation and no external dependency, so closed alpha does not pay that cost to prove the product.
+- **MUST-001:** Users must authenticate with Google or Apple during private alpha.
 - **MUST-002:** Every user must have a stable internal identifier independent of email or phone.
 - **MUST-003:** Profiles must support display name, avatar, approximate home area, interests, verification state, and contextual reliability summaries.
 - **MUST-004:** Users must be able to delete their account and request deletion of associated personal data.
@@ -46,14 +45,15 @@
 
 ## Reach And Discovery
 
-- **MUST-030:** The broadcaster must explicitly choose an initial reach level.
-- **MUST-031:** Reach levels must include origin-only, adjacent trust network, relevant nearby users, and broader approved reach.
-- **MUST-032:** The UI must explain what each reach level exposes.
-- **MUST-033:** Nearcast must never expand reach without user confirmation.
+- **MUST-030:** Every cast must carry a casting radius, and the caster must be able to change it before publishing. It is offered with a sensible default rather than as a required decision — an unanswered question at the moment of casting is friction, not consent.
+- **MUST-031:** Distribution must be by place and intent, and admission by trust: a cast must reach people the caster is connected to at any distance, and must reach a stranger only inside the radius AND with a shared interest — never place alone.
+- **MUST-032:** The UI must state, in plain words, who the chosen radius reaches.
+- **MUST-033:** Nearcast must never widen a published cast's radius without an informed user action.
 - **MUST-034:** Every delivered intent must include a human-readable reason for delivery.
 - **MUST-035:** Discovery must exclude blocked relationships, expired intents, ineligible recipients, and prohibited content.
 - **MUST-036:** The `For You` feed must be finite and refreshable rather than endless.
 - **MUST-037:** Users must be able to hide an intent and mark it not relevant.
+- **MUST-038:** No surface may ask for, or display, how many joiners a cast wants or has. A cast with no stated ceiling must have no ceiling — a hidden default that silently refuses a joiner is prohibited. A cast that does carry a ceiling must have it enforced in PostgreSQL.
 - **SHOULD-030:** Ranking should combine eligibility, trust distance, geography, timing, recency, and user preference.
 
 ## Responses And Matching
@@ -73,8 +73,6 @@
 - **MUST-052:** Messages must be limited to accepted participants and authorized support staff.
 - **MUST-053:** Users must be able to block or report from the coordination channel.
 - **MUST-054:** Closing an intent must stop new responses while preserving necessary safety history.
-- **MUST-055:** The coordination channel must carry an explicit deadline. It closes one day after the governing intent expires, and never sooner than one day after acceptance, so parties can still confirm the outcome once the intent itself has lapsed.
-- **MUST-056:** A channel past its deadline must stop accepting messages immediately, whether or not a scheduled sweep has run, and must remain readable to its parties afterwards. A closed channel is a read-only record, not a hidden one.
 - **MAY-050:** Media messaging, voice notes, typing indicators, and presence are deferred.
 
 ## Resolution And Trust
@@ -121,12 +119,11 @@
 
 ## MVP Acceptance Scenario
 
-The MVP passes functional acceptance when an invited user can create an intent, share it into a WhatsApp circle, receive genuine confirmations, expand its reach, deliver it to an eligible adjacent user, receive a response, accept that response, coordinate privately, resolve the intent, and update contextual trust without exposing the origin group or exact location prematurely.
+The MVP passes functional acceptance when an invited user can create an intent, share it into a WhatsApp circle, receive genuine confirmations, widen its casting radius, deliver it to an eligible nearby user, receive a response, accept that response, coordinate privately, resolve the intent, and update contextual trust without exposing the origin group or exact location prematurely.
 
 ## Change Log
 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined closed-alpha functional and non-functional requirements |
-| 2026-08-30 | Defined the coordination channel lifetime and its read-only state after close |
-| 2026-08-30 | Changed closed-alpha authentication to invite-gated email one-time codes and deferred Google and Apple sign-in to MUST-001a |
+| 2026-08-28 | Reach levels replaced by a casting radius (MUST-030..033); slots hidden and uncapped (MUST-038) |

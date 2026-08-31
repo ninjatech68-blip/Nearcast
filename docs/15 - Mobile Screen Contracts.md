@@ -13,7 +13,7 @@ Every data screen must define loading, empty, error with retry, offline or queue
 
 ## Navigation
 
-Unauthenticated routes are invitation, sign-in, public intent, and policy pages. Authenticated primary destinations are Home, My Intents, Activity, and Profile. Creation is a full-screen modal. Response, reach, privacy, resolution, report, and disclosure decisions use sheets. Match coordination is a dedicated screen.
+Unauthenticated routes are invitation, sign-in, public intent, and policy pages. Authenticated primary destinations are Home, My Intents, Activity, and Profile. Creation is a full-screen modal. Response, privacy, resolution, report, and disclosure decisions use sheets; the casting radius is chosen inline on the creation modal, not in a sheet of its own. Match coordination is a dedicated screen.
 
 ## MVP Screens
 
@@ -23,7 +23,7 @@ Unauthenticated routes are invitation, sign-in, public intent, and policy pages.
 | Sign in | Verify access? | Email/phone OTP, recovery | Generic errors prevent account enumeration |
 | Home | Inspect or create? | Finite intent list, WhyYouSeeThis, create action | No infinite-feed mechanics or fabricated activity |
 | Intent composer | What is the intent? | Primitive, statement, suggestions, draft state | Draft remains local/private |
-| Intent review | Publish with these terms? | Structured context, expiry, reach, PrivacyDisclosure | Exact details never enter public context |
+| Intent review | Publish with these terms? | Structured context, expiry, casting radius, PrivacyDisclosure | Exact details never enter public context |
 | Share | Where will user share it? | HTTPS link, WhatsApp/system share, public preview | Nearcast does not read the destination group |
 | Public intent | Is this worth joining? | Privacy-safe projection and sign-in action | Query only `get_public_intent`; no private table reads |
 | Reach selector | Expand to whom? | Four ordered levels, newly included audience, disclosure delta | Expansion requires explicit confirmation |
@@ -36,7 +36,7 @@ Unauthenticated routes are invitation, sign-in, public intent, and policy pages.
 
 ## Component APIs
 
-`IntentCard` receives a privacy-safe view model, not a raw database row. `ReachSelector` receives current level, allowed next levels, and disclosure diffs. `PrivacyDisclosure` receives `visibleNow`, `visibleAfterAction`, and `heldBack`. The first two say what becomes visible; `heldBack` names the private fields that will not, because a person cannot trust a boundary they cannot see. It carries labels only and never repeats a private value. `ResponseCTA` receives one verb phrase and one action. `WhyYouSeeThis` requires both rendered explanation and feedback action.
+`IntentCard` receives a privacy-safe view model, not a raw database row. `ReachSelector` receives current level, allowed next levels, and disclosure diffs. `PrivacyDisclosure` receives `visibleNow` and `visibleAfterAction`. `ResponseCTA` receives one verb phrase and one action. `WhyYouSeeThis` requires both rendered explanation and feedback action.
 
 ## Deep Links
 

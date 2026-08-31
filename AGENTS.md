@@ -19,7 +19,6 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 ## Non-Negotiable Product Rules
 
 - Never fabricate users, confirmations, responses, availability, or activity counts.
-  The one exception is developer demo data, bounded in "Demo Data" below.
 - Never expand intent reach without an informed user action.
 - Never expose private-group identity or membership.
 - Never store exact location or contact details in discoverable intent rows.
@@ -35,7 +34,7 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 - Enable RLS on every exposed table. Use explicit policies and test allowed and denied paths.
 - Put privileged lifecycle transitions in server-controlled database functions or Edge Functions; make transitions idempotent.
 - Write a failing test before production behavior. Run `npm run verify` before claiming app changes complete.
-- Run `npm run db:test` against the staging project after schema or RLS changes.
+- Run `npm run db:test` after schema or RLS changes, or `npm run db:local:test` where Docker is unavailable. Never claim a migration is verified without having run it.
 - Never commit `.env`, service-role keys, access tokens, or production data.
 
 ## Commands
@@ -43,68 +42,28 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 ```bash
 npm install
 cp .env.example .env
+npm run start
 npm run verify
-npm run build:preview
-npm run db:push
+npm run db:start
+npm run db:reset
 npm run db:test
 npm run db:types
 ```
 
-## Nothing Runs Locally
+The `db:*` commands need a Docker daemon. Without one, the same schema, RLS,
+function and type work runs against a plain local PostgreSQL 16 — same
+migrations, same pgTAP suite, same generator:
 
-The database is a hosted Supabase project, builds happen on EAS, and the app
-talks to the internet. There is no local Supabase stack, no simulator, and no
-Metro dev server. Everything is in git and reachable over the network.
+```bash
+npm run db:local        # apply every migration to a fresh local database
+npm run db:local:test   # run the pgTAP suite against it
+npm run db:local:types  # regenerate database.types.ts
+npm run db:local:stop
+```
 
-This is not a preference. A build that depends on one machine being reachable
-cannot be handed to a tester, and a dev-client build fetches its bundle from
-whatever Metro answers on port 8081 — which has already caused a build of this
-app to load an unrelated project's JavaScript.
-
-## Database
-
-Migrations are pushed to the hosted project with `npm run db:push` after
-`supabase link`. `npm run db:test` runs pgTAP against `SUPABASE_DB_URL`, and
-`npm run db:types` regenerates types from the linked project. Never point these
-at a local stack.
-
-## Builds
-
-`npm run build:preview` produces a release build on EAS with internal
-distribution: an installable link for registered devices. `npm run
-build:production` produces store builds. Both are release configuration; there
-is no development profile, deliberately.
-
-The preflight runs first. Release builds inline `EXPO_PUBLIC_*` at bundle time,
-so it rejects a URL that is http, loopback, or a private network address before
-a build starts rather than after.
-
-## Demo Data
-
-`supabase/seeds/demo-feed.sql` inserts demo broadcasters and live intents so the
-home feed has enough cards to scroll, order and lay out against. It is not a
-migration and `npm run db:push` never applies it. Automatic seeding is off in
-`supabase/config.toml` for the same reason.
-
-This sits against the first product rule, so its boundary is stated rather than
-assumed. The rule exists to stop a user being shown activity that did not
-happen. A developer who runs this file against a staging project misleads
-nobody, because the person running it knows exactly what the rows are. The rule
-is broken the moment that data shares a project with a real tester, who cannot
-tell demo rows from real ones.
-
-So:
-
-- Run it only against a staging project used by the team.
-- Never run it against a project a real alpha tester touches.
-- Every demo account uses `@demo.nearcast.invalid`, so demo rows stay
-  identifiable in the database even though the feed reads normally.
-- The file refuses to run if the project already holds responses or matches,
-  which is the cheapest available signal that real people have used it.
-
-Demo data never substitutes for a product surface. Confirmation counts,
-availability and response state still come from real actions only: the seed
-creates intents to look at, not activity to believe.
+This covers schema, policies, functions, triggers and types. It does not
+run GoTrue, PostgREST, Realtime or Storage — for anything that needs those,
+use the Docker stack or a hosted project.
 
 ## Definition Of Done
 

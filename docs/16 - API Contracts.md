@@ -15,8 +15,10 @@ Authenticated functions derive the actor from the verified JWT and never accept 
 
 | Function | Input | Success | Atomic requirements |
 |---|---|---|---|
-| `publish-intent` | draft content, reach/privacy, idempotency key | intent ID, share slug, `live`, version | Validate membership, expiry, required context; create context, private, reach and event rows |
-| `change-intent-reach` | intent ID, expected version, target level, disclosure confirmation | level, version | Reject implicit expansion; log old/new reach |
+| `publish_cast` (implemented) | category, statement, area name, radius km, expiry; optional pin, start time, coarse window | the created `intents` row | Owner from `auth.uid()`; rejects a past expiry and an out-of-range radius; rounds the pin to 3dp before storing so no discoverable row carries an exact location |
+| `my_feed` (implemented) | — | delivered casts with `reason_text`, `signals`, `score` | Evaluates undelivered live casts through the gate, stores the passing ones in `intent_deliveries`, then returns what that table holds. The stored delivery is also what grants read on the cast |
+| `hide_cast` (implemented) | intent ID, not-relevant flag | — | Sets `hidden_at` on the viewer's own delivery row only |
+| `change-intent-radius` | intent ID, expected version, target radius in km, confirmation | radius, version | Reject implicit widening; log old/new radius |
 | `submit-response` | intent ID, message, qualification, idempotency key | response ID, `pending` | Recheck delivery, eligibility, expiry, blocks, self-response |
 | `accept-response` | response ID, expected intent state | match ID, conversation ID, `matched` | Lock response/intent; create one match; idempotently return existing match |
 | `resolve-intent` | intent ID, expected state, outcome | `resolved`, version | Stop responses; append event and notification jobs |
@@ -46,4 +48,3 @@ Logs contain request ID, actor hash, operation, object ID, result code, duration
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined server mutation inventory, public projection, errors, idempotency, and logging boundaries |
-| 2026-08-30 | Replaced `publish-intent`'s draft ID with draft content, because Mobile Screen Contracts keeps the draft device-local and there is no server draft row to name. The idempotency key carries retry safety, and does so across devices, which a local identifier could not. Expected version applies to the edit path, where a prior version exists to be stale against |

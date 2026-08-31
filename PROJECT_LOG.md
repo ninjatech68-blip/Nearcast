@@ -63,24 +63,3 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded native homepage UX pass |
 | 2026-08-25 | Recorded native minimal design-system exploration checkpoint |
 | 2026-08-25 | Recorded native minimal page implementation checkpoint |
-| 2026-08-30 | Built the temporary coordination room on Gifted Chat with room expiry, a send-message database function, and a real Messages list |
-| 2026-08-30 | Added invitation-gated email one-time-code authentication and protected-route redirects |
-| 2026-08-30 | Added device-local intent drafting and review with a structurally separated public and private draft |
-| 2026-08-30 | Added the atomic publish transaction, completing sign in to publish end to end |
-| 2026-08-30 | Added the public share link and genuine confirmation, and narrowed confirmation reads so the origin circle stays private |
-| 2026-08-30 | Added the owner lifecycle and My Intents, completing the intent creation and sharing plan |
-| 2026-08-30 | Added contextual response, so a delivered recipient can reply to an intent |
-| 2026-08-30 | Added the broadcaster inbox and atomic acceptance, closing the loop from publish to coordination room |
-| 2026-08-31 | Added approximate geography and coarse distance bands for discovery eligibility |
-| 2026-08-31 | Added explainable delivery and the finite Home feed, so a published intent can now reach a real recipient |
-| 2026-08-31 | Added controlled reach expansion, so an intent widens only through an informed action |
-| 2026-08-31 | Fixed publishing so it delivers: publish now generates deliveries and stores the approximate point they are measured against |
-| 2026-08-31 | Added curated places, so a member picks an area by name and the server resolves the point, keeping coordinates out of the app entirely |
-| 2026-08-31 | Adopted release builds on real devices as the only run path, with a preflight that catches an unreachable Supabase URL before building |
-| 2026-08-31 | Removed every local dependency: hosted Supabase, EAS cloud builds, no simulator and no Metro |
-| 2026-08-31 | Completed joining with an area step, so a new member reaches a feed that can actually fill |
-| 2026-08-31 | Added a bounded demo feed seed for scroll testing, with the fabrication-rule exception recorded in AGENTS.md |
-| 2026-08-31 | Replaced the fixture intent detail screen with the real one, so every feed card opens its own intent and the response CTA reaches it; removed the fabricated broadcaster profile |
-| 2026-08-31 | Added operator-issued invitations, closing the bootstrap gap that left no way for anyone to sign in |
-| 2026-08-31 | Wired sign-out into the You tab and showed the member's own name and area, replacing placeholder copy |
-| 2026-08-31 | Made db:test say when SUPABASE_DB_URL is unset or local, instead of reporting it as a connection failure |

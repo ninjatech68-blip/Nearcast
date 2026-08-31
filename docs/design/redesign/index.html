@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Nearcast v2 — Cast</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ============ tokens ============ */
+:root{
+  --ink:#14120E;
+  --cream:#F4EFE4;
+  --orange:#FF4D00;   /* social · the brand */
+  --yellow:#FFC633;   /* sports */
+  --green:#17442E;    /* travel + outdoors */
+  --ink40:rgba(20,18,14,.4);
+  --ink12:rgba(20,18,14,.12);
+  --cream40:rgba(244,239,228,.45);
+  --cream16:rgba(244,239,228,.16);
+
+  --disp:'Bricolage Grotesque',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+
+  /* motion */
+  --press:120ms cubic-bezier(.3,.7,.4,1);
+  --snap:220ms cubic-bezier(.2,.9,.3,1.15);
+  --slide:300ms cubic-bezier(.32,.72,.28,1);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--ink);color:var(--cream);font-family:var(--disp);font-weight:400}
+::selection{background:var(--orange);color:var(--ink)}
+
+/* ============ doc chrome ============ */
+.doc{max-width:1480px;margin:0 auto;padding:64px 40px 120px}
+.doc-head{margin-bottom:72px}
+.doc-head .k{font:500 12px/1 var(--mono);letter-spacing:.14em;color:var(--orange);text-transform:uppercase}
+.doc-head h1{margin:14px 0 10px;font-size:clamp(48px,7vw,96px);line-height:.95;letter-spacing:-.03em;font-weight:800}
+.doc-head p{margin:0;max-width:560px;font-size:16px;line-height:1.5;color:var(--cream40)}
+.secnum{font:500 12px/1 var(--mono);color:var(--orange);letter-spacing:.14em}
+h2.sec{margin:96px 0 6px;font-size:40px;font-weight:800;letter-spacing:-.02em}
+p.sub{margin:0 0 28px;max-width:560px;font-size:15px;line-height:1.55;color:var(--cream40)}
+.mono{font-family:var(--mono)}
+.rule-list{margin:0;padding:0;list-style:none;max-width:680px}
+.rule-list li{display:flex;gap:16px;padding:14px 0;border-top:1px solid var(--cream16);font-size:15px;line-height:1.5}
+.rule-list li:last-child{border-bottom:1px solid var(--cream16)}
+.rule-list b{flex:0 0 150px;font-weight:600}
+.rule-list span{color:var(--cream40)}
+.defense{font:400 12px/1.5 var(--mono);color:var(--cream40);max-width:520px;margin:8px 0 0}
+.defense::before{content:'why: ';color:var(--orange)}
+
+/* ============ 01 color ============ */
+.swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.sw{width:220px;height:220px;border-radius:4px;padding:18px;display:flex;flex-direction:column;justify-content:space-between}
+.sw .name{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.sw .hex{font:500 12px var(--mono)}
+.sw.orange{background:var(--orange);color:var(--ink)}
+.sw.yellow{background:var(--yellow);color:var(--ink)}
+.sw.green{background:var(--green);color:var(--cream)}
+.sw.ink{background:var(--ink);color:var(--cream);border:1px solid var(--cream16)}
+.sw.cream{background:var(--cream);color:var(--ink)}
+
+/* ============ 02 type ============ */
+.spec{border-top:1px solid var(--cream16);padding:22px 0;display:flex;gap:32px;align-items:baseline}
+.spec:last-child{border-bottom:1px solid var(--cream16)}
+.spec .lab{flex:0 0 190px;font:500 12px var(--mono);color:var(--cream40)}
+.t-cast{font-size:56px;line-height:.98;letter-spacing:-.025em;font-weight:800}
+.t-title{font-size:30px;line-height:1.05;letter-spacing:-.02em;font-weight:800}
+.t-body{font-size:17px;line-height:1.45;font-weight:400}
+.t-meta{font:500 13px/1.5 var(--mono)}
+.t-tag{font:600 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+
+/* ============ device frame ============ */
+.board{display:flex;gap:36px;align-items:flex-start;overflow-x:auto;padding:26px 4px 48px}
+.wrap{flex:0 0 auto}
+.cap{margin:0 0 6px 6px;font-size:14px;font-weight:600}
+.cap .g{margin-left:8px;font:400 11px var(--mono);color:var(--cream40)}
+.gesture{margin:10px 6px 0;font:400 11px/1.6 var(--mono);color:var(--cream40);max-width:390px}
+.gesture b{color:var(--orange);font-weight:500}
+.device{width:390px;height:844px;padding:6px;border-radius:50px;background:#000;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.screen{height:100%;border-radius:44px;overflow:hidden;position:relative;background:var(--cream);color:var(--ink)}
+.island{position:absolute;z-index:40;top:12px;left:50%;transform:translateX(-50%);width:118px;height:34px;background:#000;border-radius:20px}
+
+/* ============ primitives ============ */
+
+/* POSTER — one cast, full bleed */
+.poster{height:100%;width:100%;padding:78px 24px 30px;display:flex;flex-direction:column;position:relative}
+.poster.lets{background:var(--orange);color:var(--ink)}
+.poster.need{background:var(--yellow);color:var(--ink)}
+.poster.got{background:var(--green);color:var(--cream)}
+.poster.quietbg{background:var(--cream);color:var(--ink)}
+.p-top{display:flex;justify-content:space-between;align-items:center}
+.p-verb{font:600 13px/1 var(--mono);letter-spacing:.16em}
+.p-dot{width:34px;height:34px;border-radius:50%;background:currentColor;color:inherit;display:grid;place-items:center;position:relative}
+.p-dot i{position:absolute;inset:0;display:grid;place-items:center;font:600 11px var(--mono);color:var(--orange)}
+.poster.lets .p-dot i,.poster.need .p-dot i{color:var(--yellow)}
+.poster.lets .p-dot i{color:var(--orange)}
+.p-dot.oncream i{color:var(--cream)}
+.p-cast{margin:auto 0;font-size:46px;line-height:1.0;letter-spacing:-.025em;font-weight:800;max-width:330px}
+.p-meta{font:500 13px/1.7 var(--mono);margin-top:18px}
+.p-why{font:400 12px/1.6 var(--mono);opacity:.62;margin-top:6px}
+.p-bar{margin-top:26px}
+
+/* BAR — one fat action + one quiet one */
+.bar{display:flex;flex-direction:column;gap:2px}
+.btn{width:100%;height:58px;border:0;border-radius:16px;font:800 17px var(--disp);letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:transform var(--press);-webkit-tap-highlight-color:transparent}
+.btn:active{transform:scale(.96)}
+.btn.on-ink{background:var(--ink);color:var(--cream)}
+.btn.on-cream{background:var(--cream);color:var(--ink)}
+.btn.on-orange{background:var(--orange);color:var(--ink)}
+.btn.is-wait{opacity:.6;pointer-events:none}
+.quiet{background:none;border:0;padding:13px 0 2px;font:600 14px var(--disp);color:inherit;opacity:.6;text-align:center;cursor:pointer;width:100%}
+
+/* SHEET */
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--cream);color:var(--ink);border-radius:28px 28px 0 0;padding:14px 24px 30px;box-shadow:0 -20px 60px rgba(0,0,0,.35)}
+.sheet .grab{width:40px;height:4px;border-radius:99px;background:var(--ink12);margin:0 auto 16px}
+.sheet h2{margin:0 0 4px;font-size:30px;line-height:1.02;letter-spacing:-.02em;font-weight:800}
+.sheet .s-note{font:400 12px/1.6 var(--mono);color:var(--ink40);margin:10px 0 0}
+.scrim{position:absolute;inset:0;z-index:20;background:rgba(20,18,14,.45)}
+
+/* ROW — mono list line */
+.row{display:flex;align-items:baseline;gap:14px;padding:16px 0;border-top:1px solid var(--ink12);text-decoration:none;color:inherit}
+.row:last-child{border-bottom:1px solid var(--ink12)}
+.row .r-main{flex:1;min-width:0}
+.row .r-main b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.row .r-main .r-sub{font:400 12px/1.6 var(--mono);color:var(--ink40);margin-top:3px}
+.row .tag{flex:0 0 auto}
+
+/* TAG */
+.tag{font:600 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:6px}
+.tag.hot{background:var(--orange);color:var(--ink)}
+.tag.ok{background:var(--green);color:var(--cream)}
+.tag.dim{background:var(--ink12);color:var(--ink40)}
+.tag.line{background:none;padding:6px 0}
+
+/* FIELD — display-size input */
+.field{width:100%;border:0;background:none;font:800 34px/1.08 var(--disp);letter-spacing:-.02em;color:var(--ink);resize:none;outline:none;padding:0;caret-color:var(--orange)}
+.field::placeholder{color:var(--ink12)}
+.f-count{font:500 12px var(--mono);color:var(--ink40);text-align:right}
+
+/* screen scaffolding */
+.appbody{height:100%;display:flex;flex-direction:column;padding:78px 24px 30px}
+.a-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.a-title{font-size:38px;font-weight:800;letter-spacing:-.025em}
+.wordmark{font:600 13px var(--mono);letter-spacing:.16em}
+.xbtn{width:36px;height:36px;border:0;background:none;font:400 22px var(--disp);color:inherit;cursor:pointer;display:grid;place-items:center}
+.feedstream{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
+.feedstream::-webkit-scrollbar{display:none}
+.feedstream .poster{scroll-snap-align:start;scroll-snap-stop:always;flex:0 0 auto}
+.railhint{position:absolute;z-index:15;bottom:10px;left:50%;transform:translateX(-50%);font:500 10px var(--mono);letter-spacing:.14em;opacity:.5}
+.rail{position:absolute;z-index:16;bottom:16px;left:50%;transform:translateX(-50%);height:46px;padding:0 18px;border-radius:999px;background:var(--ink);color:var(--cream40);display:flex;align-items:center;gap:18px;font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.rail .on{color:var(--orange)}
+.rail .castplus{width:32px;height:32px;border-radius:10px;background:var(--orange);color:var(--ink);display:grid;place-items:center;font:800 18px/1 var(--disp)}
+.feedstream .poster{padding-bottom:96px}
+
+/* verb picker (compose) */
+.verbs{display:flex;gap:8px;margin:6px 0 26px}
+.verbs .v{flex:1;height:52px;border-radius:14px;border:1.5px solid var(--ink12);display:grid;place-items:center;font:600 13px var(--mono);letter-spacing:.14em;color:var(--ink40);cursor:pointer;transition:transform var(--press)}
+.verbs .v:active{transform:scale(.95)}
+.verbs .v.on-need{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+.verbs .v.on-got{background:var(--green);border-color:var(--green);color:var(--cream)}
+.verbs .v.on-lets{background:var(--orange);border-color:var(--orange);color:var(--ink)}
+
+/* reach rows */
+.reach{display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid var(--ink12)}
+.reach:last-of-type{border-bottom:1px solid var(--ink12)}
+.reach .r-copy{flex:1}
+.reach .r-copy b{display:block;font-size:16px;font-weight:600}
+.reach .r-copy span{font:400 12px var(--mono);color:var(--ink40)}
+.pick{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink12);display:grid;place-items:center}
+.pick.on{border-color:var(--ink);background:var(--ink)}
+.pick.on::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--orange)}
+
+/* SIG — signal bars, the one data visual */
+.sig{display:inline-flex;align-items:flex-end;gap:3px}
+.sig i{width:5px;border-radius:2px;background:currentColor;opacity:.16}
+.sig i:nth-child(1){height:7px}.sig i:nth-child(2){height:11px}.sig i:nth-child(3){height:15px}.sig i:nth-child(4){height:19px}.sig i:nth-child(5){height:23px}
+.sig i.on{opacity:1;background:var(--orange)}
+.sig.big{gap:5px}
+.sig.big i{width:10px;border-radius:3px}
+.sig.big i:nth-child(1){height:14px}.sig.big i:nth-child(2){height:22px}.sig.big i:nth-child(3){height:30px}.sig.big i:nth-child(4){height:38px}.sig.big i:nth-child(5){height:46px}
+
+/* strip (offline) */
+.strip{position:absolute;z-index:35;top:58px;left:24px;right:24px;background:var(--ink);color:var(--cream);border-radius:12px;padding:10px 14px;font:500 12px var(--mono)}
+
+/* stamp */
+.stamp{display:inline-block;font:800 15px var(--disp);letter-spacing:.02em;border:2.5px solid currentColor;border-radius:8px;padding:7px 14px;transform:rotate(-6deg)}
+
+/* voice table */
+.strings{width:100%;border-collapse:collapse;max-width:1000px}
+.strings th{text-align:left;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cream40);padding:0 20px 12px 0;border-bottom:1px solid var(--cream16)}
+.strings td{padding:13px 20px 13px 0;border-bottom:1px solid var(--cream16);font-size:14px;line-height:1.5;vertical-align:top}
+.strings td.old{color:var(--cream40);text-decoration:line-through;text-decoration-color:rgba(255,77,0,.6);max-width:380px}
+.strings td.new{font-weight:600}
+.strings td.new .m{font:500 13px var(--mono);font-weight:500}
+
+/* motion demos */
+.motionrow{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+.mdemo{width:300px;border:1px solid var(--cream16);border-radius:16px;padding:20px;background:rgba(244,239,228,.03)}
+.mdemo .lab{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cream40);display:block;margin-bottom:16px}
+.mdemo .btn{height:52px}
+.wipebox{height:120px;border-radius:12px;background:var(--green);position:relative;overflow:hidden;display:grid;place-items:center;color:var(--cream);font-weight:800;font-size:20px}
+.wipebox::before{content:'';position:absolute;inset:0;background:var(--orange);transform:translateY(101%);transition:transform 380ms cubic-bezier(.32,.72,.28,1)}
+.wipebox:hover::before{transform:translateY(0)}
+.wipebox span{position:relative;z-index:1;transition:color 200ms 150ms}
+.wipebox:hover span{color:var(--ink)}
+.stampbox{height:120px;border-radius:12px;background:var(--cream);color:var(--orange);display:grid;place-items:center}
+.stampbox .stamp{transform:rotate(-6deg) scale(1);transition:transform var(--snap)}
+.stampbox:hover .stamp{transform:rotate(-2deg) scale(1.18)}
+
+/* dev spec tables */
+.dev{width:100%;border-collapse:collapse;max-width:1180px}
+.dev th{text-align:left;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cream40);padding:0 18px 12px 0;border-bottom:1px solid var(--cream16)}
+.dev td{padding:11px 18px 11px 0;border-bottom:1px solid var(--cream16);font:400 13px/1.55 var(--mono);vertical-align:top;color:var(--cream)}
+.dev td:first-child{font-weight:600;white-space:nowrap}
+.dev td .dim{color:var(--cream40)}
+.dev td .hot{color:var(--orange)}
+pre.tree{font:400 13px/1.7 var(--mono);color:var(--cream);background:rgba(244,239,228,.04);border:1px solid var(--cream16);border-radius:16px;padding:22px 26px;overflow-x:auto;max-width:760px}
+pre.tree b{color:var(--orange);font-weight:600}
+pre.tree i{color:var(--cream40);font-style:normal}
+
+/* extra live demos */
+.fillbars{height:120px;border-radius:12px;background:var(--cream);color:var(--ink);display:grid;place-items:center}
+.fillbars .sig.big i{transition:height 220ms cubic-bezier(.2,.9,.3,1.15),opacity 220ms}
+.fillbars .sig.big i.on{height:4px;opacity:.16;background:currentColor}
+.fillbars:hover .sig.big i.on{opacity:1;background:var(--orange)}
+.fillbars:hover .sig.big i.on:nth-child(1){height:14px;transition-delay:0ms}
+.fillbars:hover .sig.big i.on:nth-child(2){height:22px;transition-delay:60ms}
+.fillbars:hover .sig.big i.on:nth-child(3){height:30px;transition-delay:120ms}
+.fillbars:hover .sig.big i.on:nth-child(4){height:38px;transition-delay:180ms}
+.eqbox{height:120px;border-radius:12px;background:var(--green);display:grid;place-items:center;color:var(--cream)}
+.eqbox .sig i{opacity:1;background:var(--cream);animation:eq 900ms ease-in-out infinite}
+.eqbox .sig i:nth-child(2){animation-delay:120ms}
+.eqbox .sig i:nth-child(3){animation-delay:240ms}
+.eqbox .sig i:nth-child(4){animation-delay:360ms}
+.eqbox .sig i:nth-child(5){animation-delay:480ms}
+@keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1.6)}}
+.shakebox{height:120px;border-radius:12px;background:var(--cream);color:var(--ink);display:grid;place-items:center}
+.shakebox .cap140{font:500 13px var(--mono);color:var(--orange)}
+.shakebox:hover .cap140{animation:shake 240ms cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-4px)}}
+
+@media (max-width:600px){.doc{padding:40px 18px 80px}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<header class="doc-head">
+  <div class="k">nearcast v2 · design system + screens · function unchanged from v1</div>
+  <h1>Cast it.</h1>
+  <p>The v1 skin read enterprise: sage panels, banner stacks, five tabs, polite copy. All of it is gone. A cast is now a poster that fills the screen, color does the categorizing, and the app talks like a person with somewhere to be. Trust stays visible because that is the product.</p>
+</header>
+
+<!-- ================= 00 ================= -->
+<div class="secnum">00</div>
+<h2 class="sec">The call</h2>
+<p class="sub">Primary: Gen Z, 17 to 27. Nearcast moves real-world plans through vouched trust chains, which is adult social-graph behavior; a meetup app should not court under-16s. Gen Alpha still gets the parts that transfer: gesture nav, system lines under ten words, motion doing the explaining. Nothing is averaged between the two.</p>
+<ul class="rule-list">
+  <li><b>Posters, not cards</b><span>One cast fills the viewport. The feed is a vertical snap through flat color blocks, TikTok's chrome discipline without its scroll trap: casts expire, the feed ends.</span></li>
+  <li><b>Color is the category</b><span>Ten categories, ten flat fields: social orange, sports yellow, food salmon, music ink, travel green, games cobalt, arts lavender, learning sky, networking slate, help cream. One category per cast.</span></li>
+  <li><b>The name always shows too</b><span>The category renders in type above the headline, so color is never the only carrier and the poster reads for colorblind users. The ask ("need two", "face value") lives in the headline words, where people write it anyway.</span></li>
+  <li><b>Chrome never changes</b><span>Ink and orange stay the only chrome colors. Buttons, the rail, and sheets look identical on every category; only the field moves. Pills follow the opposite-pole rule so they always read as controls.</span></li>
+  <li><b>Three nav points</b><span>Feed, cast, activity. Profile lives behind the avatar dot. Five tabs was two too many.</span></li>
+  <li><b>Trust stays loud</b><span>Vouch count and the "why you" line ride on every poster. Privacy disclosures are one mono line, not a banner. This is the non-negotiable product rule, restyled, never removed.</span></li>
+  <li><b>No pressure mechanics</b><span>Expiry is a fact ("gone 10pm"), never a countdown. No streaks, no guilt copy, nothing that works by making you feel bad for leaving.</span></li>
+  <li><b>Reputation is receipts</b><span>Nobody rates anybody. Signal is built from confirmed attendance, and the reward is range (who your next cast reaches), not rank. Section 05.</span></li>
+</ul>
+
+<!-- ================= 01 ================= -->
+<div class="secnum" style="margin-top:96px">01</div>
+<h2 class="sec" style="margin-top:8px">Color</h2>
+<p class="sub">Ink and cream are the neutrals and the entire chrome. Every other color belongs to exactly one category and appears only as a poster field, a selected chip, or a preview tint. Orange doubles as the brand and the social category.</p>
+<div class="swatches">
+  <div class="sw ink"><div class="name">Ink</div><div class="hex mono">#14120E · text, chrome</div></div>
+  <div class="sw cream"><div class="name">Cream</div><div class="hex mono">#F4EFE4 · resting surface</div></div>
+  <div class="sw" style="background:#FF4D00;color:#14120E"><div class="name">social</div><div class="hex mono">#FF4D00 · ink type</div></div>
+  <div class="sw" style="background:#FFC633;color:#14120E"><div class="name">sports</div><div class="hex mono">#FFC633 · ink type</div></div>
+  <div class="sw" style="background:#FFA38B;color:#14120E"><div class="name">food + drinks</div><div class="hex mono">#FFA38B · ink type</div></div>
+  <div class="sw" style="background:#14120E;color:#F4EFE4;border:1px solid rgba(244,239,228,.16)"><div class="name">music + nightlife</div><div class="hex mono">#14120E · cream type</div></div>
+  <div class="sw" style="background:#17442E;color:#F4EFE4"><div class="name">travel + outdoors</div><div class="hex mono">#17442E · cream type</div></div>
+  <div class="sw" style="background:#2B5BE3;color:#F4EFE4"><div class="name">games</div><div class="hex mono">#2B5BE3 · cream type</div></div>
+  <div class="sw" style="background:#A98BDE;color:#14120E"><div class="name">arts + making</div><div class="hex mono">#A98BDE · ink type</div></div>
+  <div class="sw" style="background:#8FC1E3;color:#14120E"><div class="name">learning</div><div class="hex mono">#8FC1E3 · ink type</div></div>
+  <div class="sw" style="background:#46647A;color:#F4EFE4"><div class="name">networking</div><div class="hex mono">#46647A · cream type</div></div>
+  <div class="sw" style="background:#F4EFE4;color:#14120E;border:1px solid rgba(244,239,228,.16)"><div class="name">help + favors</div><div class="hex mono">#F4EFE4 · ink type</div></div>
+</div>
+<p class="defense">every category declares its own foreground, ink or cream, and every pairing clears large-type contrast. social keeps brand orange because people are the brand; music is the ink poster (night); help + favors is the cream corkboard note. no gradients, no tints, no elevation shadows on surfaces.</p>
+
+<!-- ================= 02 ================= -->
+<div class="secnum" style="margin-top:96px">02</div>
+<h2 class="sec" style="margin-top:8px">Type</h2>
+<p class="sub">Two families. Bricolage Grotesque carries everything a person says: its warped grotesque shapes read flyer, not SaaS. IBM Plex Mono carries everything the system knows: place, vouches, expiry, reasons. That split is the whole hierarchy; there are no dividers or card borders anywhere in the app.</p>
+<div class="spec"><div class="lab">cast / 46 · 800 · -2.5%</div><div class="t-cast">badminton after work. need two.</div></div>
+<div class="spec"><div class="lab">title / 30 · 800</div><div class="t-title">who sees it?</div></div>
+<div class="spec"><div class="lab">body / 17 · 400</div><div class="t-body">easy doubles, intermediate is fine. court's booked, split is ₹80.</div></div>
+<div class="spec"><div class="lab">meta / 13 · plex mono</div><div class="t-meta">indiranagar · 3 vouches · gone 10pm</div></div>
+<div class="spec"><div class="lab">category / 12 · mono caps</div><div class="t-tag" style="color:var(--orange)">sports&nbsp;&nbsp;·&nbsp;&nbsp;music + nightlife&nbsp;&nbsp;·&nbsp;&nbsp;help + favors</div></div>
+
+<!-- ================= 03 ================= -->
+<div class="secnum" style="margin-top:96px">03</div>
+<h2 class="sec" style="margin-top:8px">Seven primitives</h2>
+<p class="sub">Poster, bar, sheet, row, tag, field, bars. Every screen below is built from these and nothing else; each one appears in at least two screens. If a screen seems to need an eighth, the screen is wrong.</p>
+<ul class="rule-list">
+  <li><b>poster</b><span>full-bleed category-colored block: category tag, cast headline, tappable caster pill, meta line, why line, bar. used: feed, cast-sent, recap, empty, detail underlay.</span></li>
+  <li><b>bar</b><span>one 58px button plus at most one quiet text action. used: every screen with an action.</span></li>
+  <li><b>sheet</b><span>bottom sheet for everything secondary: detail, reach, request note. progressive disclosure lives here, not in chrome.</span></li>
+  <li><b>row</b><span>mono-subtitled list line. used: activity, your casts, profile.</span></li>
+  <li><b>tag</b><span>mono caps chip for categories and states (new / matched / draft). used: posters, rows, compose, filter, onboarding.</span></li>
+  <li><b>field</b><span>display-size text input, orange caret, no border. typing looks like the poster it becomes. used: compose, request note.</span></li>
+  <li><b>bars</b><span>the one data visual: five signal bars, filled by attendance facts only. never a number in public. used: detail sheet, profile, recap.</span></li>
+</ul>
+
+<!-- ================= 04 ================= -->
+<div class="secnum" style="margin-top:96px">04</div>
+<h2 class="sec" style="margin-top:8px">Screens</h2>
+<p class="sub">Every frame is live HTML. The first feed frame actually scrolls: drag it. Gestures are captioned under each frame; buttons exist as the fallback, not the default.</p>
+
+<h3 style="font-size:20px;font-weight:800;margin:36px 0 0">Feed</h3>
+<div class="board">
+
+  <!-- FEED (live scroll) -->
+  <div class="wrap">
+    <div class="cap">Feed <span class="g">live · drag to snap</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="feedstream">
+
+        <section class="poster lets">
+          <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
+          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
+          <div>
+            <div class="p-meta">indiranagar · 3 vouches · gone 10pm</div>
+            <div class="p-why">why you: you play nearby on weekday evenings</div>
+            <div class="p-bar bar">
+              <button class="btn on-ink">I'm in</button>
+              <button class="quiet">skip</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="poster need">
+          <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
+          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">arts + making</span>someone to split a ceramics slot saturday morning.</div>
+          <div>
+            <div class="p-meta">hsr · 1 vouch · gone friday</div>
+            <div class="p-why">why you: you saved a ceramics cast last week</div>
+            <div class="p-bar bar">
+              <button class="btn on-ink">I'm in</button>
+              <button class="quiet">skip</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="poster got">
+          <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot oncream"><i>PS</i></span></div>
+          <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">music + nightlife</span>extra concert ticket for thursday. face value.</div>
+          <div>
+            <div class="p-meta">koramangala · 2 vouches · gone thu</div>
+            <div class="p-why">why you: two of your circles overlap</div>
+            <div class="p-bar bar">
+              <button class="btn on-cream">I'm in</button>
+              <button class="quiet">skip</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+      <div class="rail"><span class="on">near</span><span class="castplus">+</span><span>activity</span></div>
+    </div></div>
+    <p class="gesture"><b>swipe ↑↓</b> next cast · <b>swipe ↑ on text</b> opens detail · <b>swipe ←</b> activity page · scrolling past a cast already skips it; the skip button just means "less like this" · rail mirrors every gesture</p>
+  </div>
+
+  <!-- DETAIL SHEET -->
+  <div class="wrap">
+    <div class="cap">Detail <span class="g">sheet over poster</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <section class="poster lets" style="height:100%">
+        <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
+        <div class="p-cast" style="opacity:.5"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
+      </section>
+      <div class="scrim"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <h2>Aarav cast this</h2>
+        <div class="t-meta" style="color:var(--ink40);margin-top:2px">indiranagar · 1 trusted link · your circle vouches</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+          <span class="sig"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="t-meta">31 plans made real · 0 flakes</span>
+        </div>
+        <p class="t-body" style="margin:16px 0 0">easy doubles, intermediate is fine. court's booked, split is ₹80.</p>
+        <p class="s-note">exact court + contact stay hidden until you're both in</p>
+        <div class="bar" style="margin-top:20px">
+          <button class="btn on-orange">I'm in</button>
+          <button class="quiet" style="color:var(--ink)">skip</button>
+        </div>
+      </div>
+    </div></div>
+    <p class="gesture"><b>drag ↓</b> dismiss sheet · receipts show at the decision moment: attendance facts, never a rating. no follower counts, no profiles to scroll</p>
+  </div>
+
+  <!-- FEED EMPTY -->
+  <div class="wrap">
+    <div class="cap">Feed · empty <span class="g">the feed ends honestly</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <section class="poster quietbg">
+        <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot" style="background:var(--ink)"><i style="color:var(--cream)">PS</i></span></div>
+        <div class="p-cast">quiet.<br/><span style="opacity:.4">nothing cast near you right now.</span></div>
+        <div>
+          <div class="p-bar bar">
+            <button class="btn on-orange">cast something</button>
+          </div>
+        </div>
+      </section>
+    </div></div>
+    <p class="gesture">no infinite filler. when the nearby casts run out, the feed says so and hands you the flare.</p>
+  </div>
+
+  <!-- FEED OFFLINE + ERROR -->
+  <div class="wrap">
+    <div class="cap">Feed · no signal <span class="g">stale is labeled, not hidden</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="strip">no signal · showing from 9:41</div>
+      <section class="poster lets" style="filter:saturate(.55) brightness(.92)">
+        <div class="p-top"><span class="p-verb">nearcast</span><span class="p-dot"><i>PS</i></span></div>
+        <div class="p-cast"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
+        <div>
+          <div class="p-meta">indiranagar · 3 vouches · gone 10pm</div>
+          <div class="p-bar bar">
+            <button class="btn on-ink is-wait">I'm in</button>
+          </div>
+        </div>
+      </section>
+    </div></div>
+    <p class="gesture">joins queue while offline. load failure gets one line on cream: <b>"feed didn't load. pull to retry."</b></p>
+  </div>
+
+</div>
+
+<h3 style="font-size:20px;font-weight:800;margin:20px 0 0">Cast</h3>
+<div class="board">
+
+  <!-- COMPOSE -->
+  <div class="wrap">
+    <div class="cap">Compose <span class="g">one screen, one field</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="appbody">
+        <div class="a-top"><span class="wordmark" style="color:var(--ink40)">CAST</span><button class="xbtn">×</button></div>
+        <div class="verbs">
+          <span class="v" style="background:#FFC633;border-color:#FFC633;color:#14120E">sports</span><span class="v">social</span><span class="v">games</span>
+        </div>
+        <div class="field" role="textbox" aria-label="your cast">badminton near indiranagar after work. need two.<span style="color:var(--orange)">|</span></div>
+        <div class="f-count" style="margin-top:10px">49/140</div>
+        <div style="margin-top:auto">
+          <div class="row"><div class="r-main"><b>area</b><div class="r-sub">indiranagar · stays approximate</div></div><span class="tag line" style="color:var(--ink40)">edit</span></div>
+          <div class="row"><div class="r-main"><b>time</b><div class="r-sub">tonight, 8pm · gone 10pm</div></div><span class="tag line" style="color:var(--ink40)">edit</span></div>
+          <div class="t-meta" style="color:var(--ink40);margin:14px 0 16px">draft saved. only you see it.</div>
+          <div class="bar"><button class="btn on-ink">next: who sees it</button></div>
+        </div>
+      </div>
+    </div></div>
+    <p class="gesture">140 characters, hard cap: a cast is one breath. the verb tint previews the poster while you type.</p>
+  </div>
+
+  <!-- REACH SHEET -->
+  <div class="wrap">
+    <div class="cap">Reach <span class="g">sheet · the trust dial</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="appbody" style="opacity:.45">
+        <div class="a-top"><span class="wordmark" style="color:var(--ink40)">CAST</span><button class="xbtn">×</button></div>
+        <div class="field">badminton near indiranagar after work. need two.</div>
+      </div>
+      <div class="scrim"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <h2>who sees it?</h2>
+        <div style="margin-top:14px">
+          <div class="reach"><div class="r-copy"><b>your circles</b><span>24 people you trust</span></div><span class="pick"></span></div>
+          <div class="reach"><div class="r-copy"><b>friends of circles</b><span>one trusted link away</span></div><span class="pick on"></span></div>
+          <div class="reach"><div class="r-copy"><b>nearby with context</b><span>strangers who share a thread</span></div><span class="pick"></span></div>
+          <div class="reach"><div class="r-copy"><b>approved areas</b><span>widest. still not public.</span></div><span class="pick"></span></div>
+        </div>
+        <p class="s-note">wider reach never happens on its own.</p>
+        <div class="bar" style="margin-top:18px"><button class="btn on-orange">cast it</button></div>
+      </div>
+    </div></div>
+    <p class="gesture">the four reach levels are v1's, untouched. informed expansion is a product law; the sheet just makes it one decision.</p>
+  </div>
+
+  <!-- CAST SENT -->
+  <div class="wrap">
+    <div class="cap">Sent <span class="g">the payoff frame</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <section class="poster lets">
+        <div class="p-top"><span class="p-verb">nearcast</span><button class="xbtn" style="color:var(--ink)">×</button></div>
+        <div class="p-cast"><span class="stamp" style="margin-bottom:18px">OUT</span><br/><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton near indiranagar after work. need two.</div>
+        <div>
+          <div class="p-meta">friends of circles · gone 10pm</div>
+          <div class="p-why">you'll hear the second someone's in.</div>
+          <div class="p-bar bar">
+            <button class="btn on-ink">done</button>
+          </div>
+        </div>
+      </section>
+    </div></div>
+    <p class="gesture">the confirmation is your own poster, stamped. the stamp rotates in with overshoot (--snap). failure reuses this frame in ink: <b>"didn't send. tap to retry."</b></p>
+  </div>
+
+</div>
+
+<h3 style="font-size:20px;font-weight:800;margin:20px 0 0">Activity · joining · you</h3>
+<div class="board">
+
+  <!-- ACTIVITY -->
+  <div class="wrap">
+    <div class="cap">Activity <span class="g">rows, two sections, no filters</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="appbody">
+        <div class="a-top"><span class="a-title">activity</span><span class="p-dot" style="background:var(--ink)"><i style="color:var(--cream)">PS</i></span></div>
+        <div class="t-tag" style="color:var(--orange);margin:14px 0 2px">your move</div>
+        <div class="row"><div class="r-main"><b>Riya's in</b><div class="r-sub">"can do 7pm" · 4m ago</div></div><span class="tag hot">new</span></div>
+        <div class="row"><div class="r-main"><b>Arjun moved it to 7:30</b><div class="r-sub">18m ago</div></div><span class="tag ok">matched</span></div>
+        <div class="t-tag" style="color:var(--ink40);margin:28px 0 2px">your casts</div>
+        <div class="row"><div class="r-main"><b>badminton after work</b><div class="r-sub">live · 2 in · gone 10pm</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
+        <div class="row"><div class="r-main"><b>ceramics slot</b><div class="r-sub">draft · only you</div></div><span class="tag dim">draft</span></div>
+      </div>
+      <div class="rail"><span>near</span><span class="castplus">+</span><span class="on">activity</span></div>
+    </div></div>
+    <p class="gesture"><b>tap row</b> opens its sheet · <b>hold row</b> archives (undo line shows for 4s) · <b>swipe →</b> back to feed. rows never own horizontal gestures; that axis belongs to the pager. v1's three filter pills are gone; two sections sort themselves.</p>
+  </div>
+
+  <!-- ACTIVITY EMPTY -->
+  <div class="wrap">
+    <div class="cap">Activity · empty <span class="g"></span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="appbody">
+        <div class="a-top"><span class="a-title">activity</span><span class="p-dot" style="background:var(--ink)"><i style="color:var(--cream)">PS</i></span></div>
+        <div style="margin:auto 0">
+          <div class="p-cast" style="font-size:40px">nothing yet.</div>
+          <div class="t-meta" style="color:var(--ink40);margin-top:12px">when someone's in, it lands here.</div>
+        </div>
+        <div class="bar"><button class="btn on-orange">cast something</button></div>
+      </div>
+    </div></div>
+    <p class="gesture">same empty pattern as the feed: state the fact, hand over the flare. never a sad illustration.</p>
+  </div>
+
+  <!-- REQUEST SHEET -->
+  <div class="wrap">
+    <div class="cap">Joining <span class="g">note sheet · sending → sent inline</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <section class="poster lets" style="height:100%">
+        <div class="p-cast" style="opacity:.4;margin-top:90px"><span class="t-tag" style="display:block;margin-bottom:14px">sports</span>badminton after work. need two.</div>
+      </section>
+      <div class="scrim"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <h2>tell Aarav</h2>
+        <div class="field" style="font-size:26px;margin-top:14px" role="textbox" aria-label="your note">happy to join. bringing an extra racquet.<span style="color:var(--orange)">|</span></div>
+        <div class="f-count" style="margin-top:8px">41/140</div>
+        <p class="s-note">he gets your first name + this note. nothing else.</p>
+        <div class="bar" style="margin-top:16px">
+          <button class="btn on-orange">send it</button>
+          <button class="quiet" style="color:var(--ink)">never mind</button>
+        </div>
+      </div>
+    </div></div>
+    <p class="gesture">after send, the bar swaps for <span class="stamp" style="font-size:11px;border-width:2px;padding:4px 8px">SENT</span> + one line: <b>"aarav decides. you'll hear here."</b> empty note: button stays dead until one character exists; no error banner needed.</p>
+  </div>
+
+  <!-- YOU -->
+  <div class="wrap">
+    <div class="cap">You <span class="g">behind the avatar dot</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="appbody">
+        <div class="a-top"><span class="a-title">Piyush</span><button class="xbtn">×</button></div>
+        <div class="t-meta" style="color:var(--ink40)">indiranagar · 3 circles vouch for you</div>
+        <div style="display:flex;align-items:flex-end;gap:16px;margin-top:24px">
+          <span class="sig big"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">signal: strong</div>
+            <div class="t-meta" style="color:var(--ink40);margin-top:3px">your cast reaches ~240 people · only you see this</div>
+          </div>
+        </div>
+        <div style="margin-top:20px">
+          <div class="row"><div class="r-main"><b>receipts</b><div class="r-sub">31 plans made real · last: badminton, tuesday</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
+          <div class="row"><div class="r-main"><b>circles</b><div class="r-sub">3 circles · 24 people</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
+          <div class="row"><div class="r-main"><b>areas</b><div class="r-sub">indiranagar, koramangala · always approximate</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
+          <div class="row"><div class="r-main"><b>quiet hours</b><div class="r-sub">10pm to 7am</div></div><span class="tag ok">on</span></div>
+          <div class="row"><div class="r-main"><b>blocked</b><div class="r-sub">nobody</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
+        </div>
+        <div style="margin-top:auto">
+          <p class="s-note" style="margin-bottom:16px">exact places + contacts stay hidden until both sides say yes.</p>
+          <button class="quiet" style="color:var(--ink)">sign out</button>
+        </div>
+      </div>
+    </div></div>
+    <p class="gesture">no settings tree. signal, five rows, one privacy sentence, out. the identity flex is receipts and vouches, not a profile page.</p>
+  </div>
+
+</div>
+
+<!-- ================= 05 ================= -->
+<div class="secnum" style="margin-top:72px">05</div>
+<h2 class="sec" style="margin-top:8px">Signal</h2>
+<p class="sub">The reason to come back when you have no plan to make. One reputation object with three faces, and every input is an attendance fact, so "strong signal" can only ever mean "shows up", never "charming".</p>
+<ul class="rule-list">
+  <li><b>receipts · public</b><span>a plan both sides confirm happened becomes a permanent log line: "31 plans made real · last: badminton, tuesday". facts, not judgment. nobody rates anybody, ever.</span></li>
+  <li><b>range · private</b><span>strong signal widens who your next cast actually reaches; flaking on a confirmed plan narrows it for a while. reputation pays out as utility, not vanity. only you see the number.</span></li>
+  <li><b>recap · monthly</b><span>a shareable poster in the verb colors. identity expression, zero pressure, and the organic-growth surface off-platform.</span></li>
+  <li><b>guardrails</b><span>no rating UI exists. absence never decays anything. nothing public is a comparable number: public is a log, private is a reach. new users start mid-signal, never at zero.</span></li>
+</ul>
+<div class="board">
+
+  <!-- YOU · SIGNAL THIN -->
+  <div class="wrap">
+    <div class="cap">Signal · thin <span class="g">the flake case, stated flat</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <div class="appbody">
+        <div class="a-top"><span class="a-title">Piyush</span><button class="xbtn">×</button></div>
+        <div class="t-meta" style="color:var(--ink40)">indiranagar · 3 circles vouch for you</div>
+        <div style="display:flex;align-items:flex-end;gap:16px;margin-top:24px">
+          <span class="sig big"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
+          <div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">signal: thin</div>
+            <div class="t-meta" style="color:var(--ink40);margin-top:3px">you skipped tuesday's confirmed plan · range narrowed for now</div>
+          </div>
+        </div>
+        <p class="s-note" style="margin-top:14px">it recovers the next time you show up. nothing decays while you're gone.</p>
+        <div style="margin-top:16px">
+          <div class="row"><div class="r-main"><b>receipts</b><div class="r-sub">30 plans made real · 1 flake</div></div><span class="tag line" style="color:var(--ink40)">→</span></div>
+        </div>
+        <div style="margin-top:auto">
+          <div class="bar"><button class="btn on-orange">cast something</button></div>
+        </div>
+      </div>
+    </div></div>
+    <p class="gesture">the only thing that lowers signal is skipping a plan you confirmed. no countdown, no shame copy, and the recovery path is named in the same breath.</p>
+  </div>
+
+  <!-- RECAP POSTER -->
+  <div class="wrap">
+    <div class="cap">Recap · march <span class="g">monthly, shareable, yours</span></div>
+    <div class="device"><div class="screen"><div class="island"></div>
+      <section class="poster got">
+        <div class="p-top"><span class="p-verb">march recap</span><button class="xbtn" style="color:var(--cream)">×</button></div>
+        <div class="p-cast">6 plans made real.</div>
+        <div>
+          <div class="p-meta">2 people you'd never met · tuesdays are your night</div>
+          <div class="p-why">share it or don't. it's yours.</div>
+          <div class="p-bar bar">
+            <button class="btn on-cream">share the poster</button>
+            <button class="quiet">keep it</button>
+          </div>
+        </div>
+      </section>
+    </div></div>
+    <p class="gesture">reuses the poster primitive verbatim: recap is just a cast about your month. no comparisons to anyone else, no rank, no percentile.</p>
+  </div>
+
+</div>
+
+<!-- ================= 06 ================= -->
+<div class="secnum" style="margin-top:72px">06</div>
+<h2 class="sec" style="margin-top:8px">Voice</h2>
+<p class="sub">Second person, present tense, everywhere. Buttons say what the user says ("I'm in", "cast it", "send it"). System lines are mono, lowercase, under ten words, and always name the next move. No slang, no exclamation marks, no apologizing.</p>
+<table class="strings">
+  <thead><tr><th>v1 said</th><th>v2 says</th></tr></thead>
+  <tbody>
+    <tr><td class="old">Request to join</td><td class="new">I'm in</td></tr>
+    <tr><td class="old">Broadcast intent</td><td class="new">cast it</td></tr>
+    <tr><td class="old">What do you need, offer, or want to do?</td><td class="new"><span class="m">WHAT KIND OF PLAN?</span> + ten category chips. the ask moved into the headline words.</td></tr>
+    <tr><td class="old">Why you're seeing this: Nearby and relevant to your preferences.</td><td class="new"><span class="m">why you: you play nearby on weekday evenings</span></td></tr>
+    <tr><td class="old">3 origin confirmations</td><td class="new"><span class="m">3 vouches</span></td></tr>
+    <tr><td class="old">Ends tonight</td><td class="new"><span class="m">gone 10pm</span></td></tr>
+    <tr><td class="old">Draft saved privately</td><td class="new"><span class="m">draft saved. only you see it.</span></td></tr>
+    <tr><td class="old">Aarav will see your first name and response.</td><td class="new"><span class="m">he gets your first name + this note. nothing else.</span></td></tr>
+    <tr><td class="old">Request sent. You'll get a note here as soon as Aarav responds.</td><td class="new"><span class="m">sent. aarav decides. you'll hear here.</span></td></tr>
+    <tr><td class="old">Something went wrong. We couldn't load your feed. Pull down to try again.</td><td class="new"><span class="m">feed didn't load. pull to retry.</span></td></tr>
+    <tr><td class="old">You are offline. You will see the latest intents once you reconnect.</td><td class="new"><span class="m">no signal · showing from 9:41</span></td></tr>
+    <tr><td class="old">Nothing to show yet. Trusted intents nearby will appear here.</td><td class="new">quiet. nothing cast near you right now.</td></tr>
+    <tr><td class="old">Not relevant</td><td class="new">skip</td></tr>
+    <tr><td class="old">Contact details hidden until accepted</td><td class="new"><span class="m">exact court + contact stay hidden until you're both in</span></td></tr>
+    <tr><td class="old">Needs your attention</td><td class="new"><span class="m">YOUR MOVE</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">31 plans made real · 0 flakes</span> · receipts at the decision moment</td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">your cast reaches ~240 people · only you see this</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">it recovers the next time you show up. nothing decays while you're gone.</span></td></tr>
+    <tr><td class="old">What do you need, offer, or want to do? (verbs)</td><td class="new"><span class="m">WHAT KIND OF PLAN?</span> + ten category chips</td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">your poster goes out in sports.</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">where, roughly?</span> · <span class="m">casts show the area only. the exact spot stays hidden.</span></td></tr>
+    <tr><td class="old">(no equivalent in v1)</td><td class="new"><span class="m">resets when you leave the feed. your feed never narrows silently.</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 07 ================= -->
+<div class="secnum" style="margin-top:96px">07</div>
+<h2 class="sec" style="margin-top:8px">Motion &amp; micro-interactions</h2>
+<p class="sub">Three curves, used everywhere, never per-screen. State changes move like objects: posters wipe, sheets slide with weight, confirmations stamp with overshoot. Nothing crossfades, nothing loops except the loader, and no animation blocks input.</p>
+<ul class="rule-list" style="max-width:680px">
+  <li><b class="mono" style="font-size:13px">--press · 120ms</b><span>timing, cubic-bezier(.3,.7,.4,1). every tap scales to .96 on touch-down. input is never silent.</span></li>
+  <li><b class="mono" style="font-size:13px">--snap · 220ms</b><span>overshoot arrival. reanimated spring: damping 14 · stiffness 280 · mass 0.9. stamps, tags, bars, radio picks.</span></li>
+  <li><b class="mono" style="font-size:13px">--slide · 300ms</b><span>decisive move, no bounce. reanimated spring: damping 22 · stiffness 220 · mass 1. sheets, strips, wipes.</span></li>
+</ul>
+<div class="motionrow">
+  <div class="mdemo"><span class="lab">press · tap it</span><button class="btn on-orange">I'm in</button></div>
+  <div class="mdemo"><span class="lab">wipe · hover it</span><div class="wipebox"><span>next cast</span></div></div>
+  <div class="mdemo"><span class="lab">snap · hover it</span><div class="stampbox"><span class="stamp">SENT</span></div></div>
+  <div class="mdemo"><span class="lab">bars fill · hover it</span><div class="fillbars"><span class="sig big"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div></div>
+  <div class="mdemo"><span class="lab">loader · the only loop</span><div class="eqbox"><span class="sig"><i></i><i></i><i></i><i></i><i></i></span></div></div>
+  <div class="mdemo"><span class="lab">cap hit · hover it</span><div class="shakebox"><span class="cap140">140/140</span></div></div>
+</div>
+
+<p class="sub" style="margin-top:40px">The full catalog. Every animated moment in the app, with its trigger, spec, and haptic. If an interaction is not in this table, it does not animate.</p>
+<table class="dev">
+  <thead><tr><th>interaction</th><th>trigger</th><th>animation</th><th>haptic</th></tr></thead>
+  <tbody>
+    <tr><td>button press</td><td>touch-down / up</td><td>scale 1→.96 --press; release springs back --snap</td><td class="dim">none</td></tr>
+    <tr><td>poster arrive</td><td>feed snap settles</td><td>verb tag + headline rise 10px + fade in 200ms; meta follows 60ms later</td><td class="dim">none</td></tr>
+    <tr><td>skip</td><td>tap skip on a poster</td><td>poster exits left with −2° rotation, 240ms --slide; next cast rises into place. scrolling past a cast is the passive skip and animates nothing extra</td><td>impactLight</td></tr>
+    <tr><td>sheet present</td><td>swipe ↑ on poster text / route push</td><td>translateY 100%→0 --slide; scrim fades to 45% in 200ms linear</td><td>impactLight on settle</td></tr>
+    <tr><td>sheet dismiss</td><td>drag ↓ past 30% height or velocity &gt; 0.5pt/ms</td><td>follows finger 1:1; commits 260ms; else springs back --snap</td><td class="dim">none</td></tr>
+    <tr><td>category pick</td><td>tap a category chip in compose</td><td>chip fills its category color instantly; the poster-tint strip below the rows swaps color 180ms; chip scales .95→1 --snap</td><td>selection</td></tr>
+    <tr><td>filter apply</td><td>tap show N casts</td><td>sheet dismisses --slide; feed re-renders; the filter pill fades in below the top row and stays until cleared</td><td>selection</td></tr>
+    <tr><td>cap hit</td><td>141st character</td><td>counter shakes ±4px, 240ms, 3 cycles; input hard-stops. no red, no error line</td><td>notificationWarning</td></tr>
+    <tr><td>cast it</td><td>tap on reach sheet</td><td>bar label fades 80ms → loader bars; on ok, route replaces to sent frame; OUT stamp lands scale 1.4→1 · rotate −12°→−6° --snap</td><td>impactMedium on stamp</td></tr>
+    <tr><td>send it (join)</td><td>tap in note sheet</td><td>same label→loader swap; on ok SENT stamp --snap, sheet auto-dismisses after 900ms</td><td>notificationSuccess</td></tr>
+    <tr><td>send failed</td><td>request error</td><td>bar label swaps to "didn't send. tap to retry." 120ms fade; no shake, no banner</td><td>notificationWarning</td></tr>
+    <tr><td>bars fill</td><td>profile / detail sheet first appears (per session)</td><td>each lit bar grows from 4px height, --snap, 60ms stagger left→right</td><td class="dim">none</td></tr>
+    <tr><td>bars drain</td><td>range narrows while visible</td><td>lost bars shrink to 4px + dim, 300ms, no stagger; recovery note fades in 200ms after</td><td class="dim">none · never punish with haptics</td></tr>
+    <tr><td>receipts count-up</td><td>profile first view per session</td><td>0→n over 600ms ease-out; skipped entirely under reduce-motion</td><td class="dim">none</td></tr>
+    <tr><td>tag NEW arrives</td><td>activity row inserts</td><td>row height animates in --slide; tag lands --snap and pulses once scale 1→1.06→1 over 600ms. never loops</td><td class="dim">none (arrival already notified)</td></tr>
+    <tr><td>row press</td><td>touch-down</td><td>background ink 4% fades in 80ms, out 200ms</td><td class="dim">none</td></tr>
+    <tr><td>row archive</td><td>long-press 400ms</td><td>row scales to .97 at 300ms as the hint; on commit the row collapses --slide and an undo line holds its place for 4s</td><td>impactLight on commit</td></tr>
+    <tr><td>rail fade</td><td>vertical scroll starts / snap settles</td><td>rail fades out 150ms on scroll, back in 200ms on settle. never moves, only fades</td><td class="dim">none</td></tr>
+    <tr><td>match confirmed</td><td>both sides in</td><td>activity row tag flips to MATCHED with --snap</td><td>notificationSuccess</td></tr>
+    <tr><td>pull to refresh</td><td>overscroll 70pt</td><td>equalizer loader (5 bars, 900ms loop) appears after 150ms delay; feed settles --slide</td><td>impactLight when refresh commits</td></tr>
+    <tr><td>offline strip</td><td>connectivity lost / regained</td><td>slides down --slide; retracts 200ms after reconnect</td><td class="dim">none</td></tr>
+    <tr><td>recap share</td><td>tap share the poster</td><td>poster scales to .94 as native share sheet presents over it</td><td>impactLight</td></tr>
+    <tr><td>keyboard</td><td>field focus</td><td>bar + sheet track the keyboard frame 1:1 (native curve, never a fixed duration)</td><td class="dim">none</td></tr>
+  </tbody>
+</table>
+<p class="defense">haptics fire only on state changes the user caused or must notice. nothing vibrates on scroll, arrival animations, or passive events.</p>
+
+<!-- ================= 08 ================= -->
+<div class="secnum" style="margin-top:96px">08</div>
+<h2 class="sec" style="margin-top:8px">Navigation</h2>
+<p class="sub">No tab bar exists. The root is a two-page horizontal pager (feed ↔ activity) with one rail floating over both; everything else is a native iOS presentation. The whole model fits in six sentences:</p>
+<ul class="rule-list" style="max-width:680px;margin-bottom:36px">
+  <li><b>up / down</b><span>next or previous cast. vertical is always content.</span></li>
+  <li><b>left / right</b><span>feed ↔ activity. horizontal is always pages, so no row or poster ever owns a horizontal swipe.</span></li>
+  <li><b>swipe up on text, or tap</b><span>opens that thing's sheet (cast detail, activity row). drag down closes it.</span></li>
+  <li><b>the + on the rail</b><span>compose, as a full-screen modal, from anywhere.</span></li>
+  <li><b>the avatar dot</b><span>you, as a sheet. drag down to leave.</span></li>
+  <li><b>the rail</b><span>near · + · activity. mirrors every gesture as a tap, fades while you scroll, returns when you settle. buttons are the fallback, never the only way.</span></li>
+</ul>
+<pre class="tree">root <i>· horizontal pager, react-native-pager-view</i>
+├── <b>/</b>            feed          <i>no chrome, vertical snap</i>
+└── <b>/activity</b>    activity      <i>swipe ← from feed, or rail tap</i>
+
+<b>/compose</b>        cast          <i>fullScreenModal, slides up</i>
+  └── reach step               <i>push inside the modal stack, native edge-swipe back</i>
+      └── sent frame           <i>replace — no back to the form</i>
+<b>/cast/[id]</b>      detail sheet  <i>formSheet · detents .55 / .92 · grabber on</i>
+  └── <b>/join/[id]</b>  note sheet  <i>formSheet · .55, stacks over detail</i>
+<b>/you</b>            profile       <i>pageSheet, from avatar dot</i>
+<b>/filter</b>         session lens  <i>pageSheet, from the NEARCAST wordmark</i>
+<b>/area</b>           area picker   <i>fullScreenModal, from compose · field pinned top, results scroll under it</i>
+<b>/recap/[month]</b>  recap         <i>fullScreenModal</i></pre>
+<table class="dev" style="margin-top:28px">
+  <thead><tr><th>rule</th><th>spec</th></tr></thead>
+  <tbody>
+    <tr><td>pager</td><td>feed ↔ activity, standard UIScrollView paging feel. the horizontal axis belongs to the pager alone: skipping a cast is a button, archiving a row is a long-press</td></tr>
+    <tr><td>rail</td><td>one ink pill, bottom center at home-indicator inset + 8: near · + (32×32, r10, orange) · activity. current page reads orange. posters and lists reserve 96pt of bottom padding for it. fades during scroll per the catalog; hidden while any sheet or modal is up</td></tr>
+    <tr><td>modal dismiss</td><td>compose: interactive swipe-down enabled while the field is empty; once dirty, dismiss asks one sheet: "keep draft / toss it". drafts keep by default</td></tr>
+    <tr><td>sheet stacking</td><td>max two deep (detail → join). anything deeper is a design failure, not a nav case</td></tr>
+    <tr><td>back</td><td>native interactive pop everywhere a push exists (reach step). no custom back buttons; the × closes modals, drag closes sheets</td></tr>
+    <tr><td>state restore</td><td>cold start returns to feed. a cast mid-compose restores its draft, not its screen</td></tr>
+    <tr><td>deep links</td><td>nearcast://cast/[id] opens the detail sheet over a fresh feed; expired id renders the "this one's gone" frame</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 09 ================= -->
+<div class="secnum" style="margin-top:96px">09</div>
+<h2 class="sec" style="margin-top:8px">Component specs</h2>
+<p class="sub">Exact values for the seven primitives, states included. Points, not pixels. Anything not listed inherits the type and color sections and does not exist.</p>
+<table class="dev">
+  <thead><tr><th>primitive</th><th>box</th><th>states</th></tr></thead>
+  <tbody>
+    <tr><td>poster</td><td>full-bleed · padding: x24, top safe+24, bottom safe+16 · headline 46/1.0, −2.5%, clamps 34–52 under dynamic type, max 6 lines then truncates with "…more" opening the sheet</td><td>category sets background and foreground; caster pill and avatar dot take the opposite pole; ended = desaturated 55% + ENDED tag; offline = saturate .55 + strip</td></tr>
+    <tr><td>bar</td><td>button 58h · r16 · x-pad 20 · font 800 17 · icon 18 · gap 10 · quiet action 44h min target</td><td>pressed scale .96 · disabled opacity .45, no haptic · loading = label→equalizer bars, width locked</td></tr>
+    <tr><td>sheet</td><td>r28 top · pad 24, top 14 · grabber 40×4 r99 ink12 · scrim ink 45%</td><td>detents .55 / .92 · drag-dismiss per catalog · keyboard pushes sheet, never overlaps the field</td></tr>
+    <tr><td>row</td><td>min 64h · pad-y 16 · hairline top ink12 · title 17/600 · sub mono 12 ink40 · right slot: tag or →</td><td>pressed bg ink 4% · long-press archives, undo line replaces the row for 4s · rows never own horizontal gestures (pager axis)</td></tr>
+    <tr><td>tag</td><td>mono 11/600 caps · ls .12em · pad 6×9 · r6</td><td>hot = orange/ink · ok = green/cream · dim = ink12/ink40 · line = no fill</td></tr>
+    <tr><td>field</td><td>display 34/1.08 · no border, no background · caret orange 2pt · placeholder ink12 · counter mono 12 right</td><td>compose cap 140, placeholder "what's the plan?" · note cap 140, placeholder "one line. why you're in." · counter tints orange at 120 · cap-hit shake per catalog · primary bar stays dead at 0 characters</td></tr>
+    <tr><td>bars</td><td>small: 5×w5 g3 r2, h 7/11/15/19/23 · big: w10 g5 r3, h 14/22/30/38/46 · lit = orange, unlit = currentColor 16%</td><td>fill/drain per catalog · loader variant loops 900ms · never annotated with a public number</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 10 ================= -->
+<div class="secnum" style="margin-top:96px">10</div>
+<h2 class="sec" style="margin-top:8px">Screens × states</h2>
+<p class="sub">The acceptance matrix. A screen ships when every cell it owns renders the exact string below; cells marked — cannot occur by construction.</p>
+<table class="dev">
+  <thead><tr><th>screen</th><th>loading</th><th>empty</th><th>error</th><th>offline</th></tr></thead>
+  <tbody>
+    <tr><td>feed</td><td>equalizer center, 150ms delay</td><td>"quiet. nothing cast near you right now." + cast something · filtered: "nothing cast in those categories right now." + show everything</td><td>"feed didn't load. pull to retry."</td><td>strip "no signal · showing from 9:41", posters desaturate, joins queue</td></tr>
+    <tr><td>detail sheet</td><td>sheet skeleton: bars + two dim lines</td><td>"this one's gone. it ended or got filled." + back</td><td>"couldn't load it. tap to retry."</td><td>read-only from cache; bar disabled with "no signal"</td></tr>
+    <tr><td>compose</td><td class="dim">—</td><td class="dim">— (placeholder is the empty state)</td><td>"didn't send. tap to retry." on the bar</td><td>"casts when you're back online." — cast queues</td></tr>
+    <tr><td>activity</td><td>equalizer center</td><td>"nothing yet. when someone's in, it lands here." + cast something</td><td>"couldn't load activity. pull to retry."</td><td>cached rows + strip</td></tr>
+    <tr><td>profile</td><td>bars fill counts as the load state</td><td class="dim">— (new users start mid-signal with 0 receipts: "no plans made real yet. join one.")</td><td>"couldn't load. pull to retry."</td><td>cached, toggles disabled</td></tr>
+    <tr><td>recap</td><td class="dim">— (generated server-side, arrives whole)</td><td>month with no plans gets no recap. absence of a poster, not a sad one</td><td class="dim">—</td><td class="dim">—</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 11 ================= -->
+<div class="secnum" style="margin-top:96px">11</div>
+<h2 class="sec" style="margin-top:8px">Platform</h2>
+<p class="sub">The rules that make it feel native instead of themed. Expo SDK 57, React Native, iOS-first.</p>
+<table class="dev">
+  <thead><tr><th>concern</th><th>rule</th></tr></thead>
+  <tbody>
+    <tr><td>safe areas</td><td>posters and modals draw edge-to-edge and pad content by inset; the wordmark row sits at top inset + 4; floating cast button at bottom inset + 8. nothing hugs the notch or the home indicator</td></tr>
+    <tr><td>touch targets</td><td>44×44 minimum everywhere. quiet actions and the avatar dot get invisible hit-slop to reach it</td></tr>
+    <tr><td>dynamic type</td><td>body, meta, and rows follow the system size fully. the cast headline scales with UIFontMetrics but clamps 34–52; a poster that overflows scrolls inside itself rather than truncating someone's words</td></tr>
+    <tr><td>reduce motion</td><td>every translate/scale/rotate in the catalog becomes a 120ms opacity fade. snap scrolling, haptics, and the loader stay. count-up renders final value instantly</td></tr>
+    <tr><td>voiceover</td><td>poster reads as one element: "sports. badminton after work, need two. indiranagar, 3 vouches, gone 10pm. why you: …". actions are real buttons after the content. bars read "signal: strong, 4 of 5" — the private number is never spoken aloud in public contexts</td></tr>
+    <tr><td>contrast</td><td>ink on orange 5.6:1, ink on yellow 9.8:1, cream on green 9.1:1 — every text pairing clears AA at its used size. the unlit bar (16% current color) is decorative and exempt</td></tr>
+    <tr><td>haptics map</td><td>expo-haptics: selection → selectionAsync · impactLight/Medium → impactAsync(.Light/.Medium) · notificationSuccess/Warning → notificationAsync. android falls back to its nearest effect, never a raw vibrate</td></tr>
+    <tr><td>fonts</td><td>@expo-google-fonts/bricolage-grotesque (400/600/800) + @expo-google-fonts/ibm-plex-mono (400/500/600), loaded before splash hides — the current root layout already does this pattern</td></tr>
+    <tr><td>feed impl</td><td>FlatList, pagingEnabled, snapToInterval = viewport height, decelerationRate "fast", windowSize 3. posters render offscreen at ±1</td></tr>
+    <tr><td>springs</td><td>reanimated: --snap = withSpring(damping 14, stiffness 280, mass .9) · --slide = withSpring(damping 22, stiffness 220, mass 1) · --press = withTiming(120, bezier(.3,.7,.4,1))</td></tr>
+    <tr><td>focus (a11y / keyboard)</td><td>focus ring = 2pt orange offset 2, radius follows the element. no default blue</td></tr>
+  </tbody>
+</table>
+
+<p class="t-meta" style="color:var(--cream40);margin-top:96px;border-top:1px solid var(--cream16);padding-top:20px">nearcast v2 · sections 00–06 say what it is, 07–11 say how to build it · open in a browser, everything is inspectable · fixture data throughout, nothing fabricated ships</p>
+
+</div>
+</body>
+</html>
