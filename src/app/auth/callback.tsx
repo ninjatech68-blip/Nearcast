@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarButton } from '@/design-system/components/button';
 import { fontFamily, tokens } from '@/design-system/tokens';
-import { completeAuthFromUrl, exchangeAuthCode } from '@/features/auth/auth';
+import { completeAuthFromUrl, describeCallbackError, exchangeAuthCode } from '@/features/auth/auth';
 
 /**
  * The magic-link landing screen. The email link opens the app at
@@ -21,7 +21,12 @@ import { completeAuthFromUrl, exchangeAuthCode } from '@/features/auth/auth';
  */
 export default function AuthCallbackScreen() {
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ code?: string; error?: string; error_description?: string }>();
+  const params = useLocalSearchParams<{
+    code?: string;
+    error?: string;
+    error_code?: string;
+    error_description?: string;
+  }>();
   const [error, setError] = useState<string | null>(null);
   const handled = useRef(false);
 
@@ -30,12 +35,20 @@ export default function AuthCallbackScreen() {
     handled.current = true;
 
     void (async () => {
-      if (params.error || params.error_description) {
-        setError('that sign-in link didn’t work. ask for a new one.');
+      // Supabase rejects a bad link at the verify and redirects here
+      // with the reason in the URL. Say what it actually was — a link
+      // that was already spent is a different problem from one that
+      // timed out, and only one of them is fixed by asking again.
+      if (params.error || params.error_code || params.error_description) {
+        setError(describeCallbackError({
+          error: first(params.error),
+          error_code: first(params.error_code),
+          error_description: first(params.error_description),
+        }));
         return;
       }
 
-      const code = Array.isArray(params.code) ? params.code[0] : params.code;
+      const code = first(params.code);
       const result = code
         ? await exchangeAuthCode(code)
         : await completeAuthFromUrl((await Linking.getInitialURL()) ?? '');
@@ -73,6 +86,11 @@ export default function AuthCallbackScreen() {
       ) : null}
     </View>
   );
+}
+
+/** expo-router hands a repeated query param back as an array. */
+function first(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
 }
 
 const styles = StyleSheet.create({

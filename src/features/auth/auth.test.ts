@@ -45,6 +45,7 @@ const {
   restoreSession,
   signOut,
   requiresLink,
+  describeCallbackError,
 } = await import('./auth');
 
 function clientWith(auth: Record<string, unknown>) {
@@ -188,5 +189,56 @@ describe('isAuthCallbackUrl', () => {
     expect(isAuthCallbackUrl('https://nearcast.app/auth/callback?code=x')).toBe(true);
     expect(isAuthCallbackUrl('nearcast://cast/123')).toBe(false);
     expect(isAuthCallbackUrl('')).toBe(false);
+  });
+});
+
+/**
+ * WHAT TONIGHT COST US.
+ *
+ * Supabase does not fail a bad magic link at the code exchange — it
+ * rejects the verify itself and redirects back to the app with `error`,
+ * `error_code` and `error_description` in the URL. The callback screen
+ * saw those params, printed one fixed sentence, and dropped the reason
+ * on the floor. So a phone that could not sign in said only "that
+ * sign-in link didn't work", and separating "already used" from
+ * "expired" from "not allowed" took a database query and three rounds of
+ * guessing.
+ *
+ * The reason is right there in the URL. Read it.
+ */
+describe('describeCallbackError', () => {
+  it('says a spent link may have been used, not just expired', () => {
+    // THE ONE THAT MATTERS. otp_expired is what Supabase returns for a
+    // link that was already consumed — by a newer request, or by a
+    // corporate mail scanner that fetched it on delivery. Telling
+    // someone "expired" about a link that arrived ten seconds ago reads
+    // as a lie, and sends them to re-request instead of to the cause.
+    const message = describeCallbackError({
+      error: 'access_denied',
+      error_code: 'otp_expired',
+      error_description: 'Email link is invalid or has expired',
+    });
+    expect(message).toMatch(/already used|used/i);
+    expect(message).toMatch(/new one|again/i);
+  });
+
+  it('reads the code even when no description comes back', () => {
+    expect(describeCallbackError({ error_code: 'otp_expired' })).toMatch(/used|expired/i);
+  });
+
+  it('falls back to something actionable on an error it has never seen', () => {
+    const message = describeCallbackError({ error: 'server_error' });
+    expect(message.length).toBeGreaterThan(0);
+    expect(message).toMatch(/new one|again|try/i);
+  });
+
+  it('never leaks a raw error code at someone', () => {
+    for (const params of [
+      { error_code: 'otp_expired' },
+      { error: 'access_denied' },
+      { error: 'server_error', error_description: 'Unexpected failure' },
+    ]) {
+      expect(describeCallbackError(params)).not.toMatch(/otp_expired|access_denied|server_error/);
+    }
   });
 });

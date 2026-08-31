@@ -39,6 +39,46 @@ export function authRedirectUrl(): string {
   return Linking.createURL('auth/callback');
 }
 
+/**
+ * A rejected magic link, in words.
+ *
+ * Supabase does not fail a bad link at the code exchange. It rejects the
+ * verify itself and redirects back to the app with `error`, `error_code`
+ * and `error_description` in the URL — so the reason is handed to us and
+ * the callback screen used to print one fixed sentence over the top of
+ * it. "That sign-in link didn't work" is true of every cause and useful
+ * for none.
+ *
+ * `otp_expired` is the one worth naming properly. It is what comes back
+ * for a link that was already CONSUMED, which in practice means one of
+ * two things and rarely the passage of time: a newer request invalidated
+ * it, or a corporate mail scanner fetched the URL on delivery and spent
+ * the single use before anyone tapped it. Saying "expired" to someone
+ * holding an email that arrived ten seconds ago reads as a lie, and
+ * sends them to request another link — which is exactly the loop that
+ * will fail again.
+ */
+export function describeCallbackError(params: {
+  error?: string;
+  error_code?: string;
+  error_description?: string;
+}): string {
+  const code = (params.error_code ?? '').toLowerCase();
+  const description = (params.error_description ?? '').toLowerCase();
+  const kind = (params.error ?? '').toLowerCase();
+
+  if (code.includes('otp_expired') || description.includes('invalid or has expired')) {
+    return 'that link was already used, or a newer one replaced it. ask for a new one and open only the latest email.';
+  }
+  if (code.includes('expired') || description.includes('expired')) {
+    return 'that link expired. ask for a new one.';
+  }
+  if (kind.includes('access_denied') || code.includes('access_denied')) {
+    return 'that link is no longer valid. ask for a new one.';
+  }
+  return 'that sign-in link didn\u2019t work. ask for a new one.';
+}
+
 /** Supabase failure modes → something a person can act on. */
 function readableError(error: unknown): string {
   const raw = error instanceof Error ? error.message : String(error ?? '');
