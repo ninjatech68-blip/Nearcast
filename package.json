@@ -56,7 +56,7 @@
     "test:watch": "vitest",
     "bundle:ios": "expo export --platform ios --output-dir dist",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run bundle:ios",
-    "db:test": "supabase test db --db-url \"$SUPABASE_DB_URL\"",
+    "db:test": "node scripts/require-db-url.mjs && supabase test db --db-url \"$SUPABASE_DB_URL\"",
     "db:types": "supabase gen types typescript --linked > src/infrastructure/supabase/database.types.ts",
     "preflight:release": "node scripts/preflight-release.mjs",
     "db:push": "supabase db push",

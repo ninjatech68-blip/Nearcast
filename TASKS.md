@@ -32,9 +32,18 @@ build that depends on one machine being reachable cannot be given to a tester.
 | `npm run db:test` | Runs database and permission tests against `SUPABASE_DB_URL` |
 | `npm run db:types` | Generates TypeScript types from the linked project |
 
-The database is a hosted Supabase project. `supabase link --project-ref <ref>`
-once, then these commands act on it. `SUPABASE_DB_URL` is the project's
-connection string and is a secret: keep it out of git.
+The database is a hosted Supabase project. Two things once, then these commands
+act on it:
+
+```bash
+supabase link --project-ref <ref>
+export SUPABASE_DB_URL="postgresql://postgres:...@db.<ref>.supabase.co:5432/postgres"
+```
+
+The connection string is in the dashboard under Project Settings -> Database ->
+Connection string (URI). It contains the database password, so it is exported in
+the shell and never committed — not even to `.env`, which npm does not read for
+scripts. Put the export line in `~/.zshrc` to keep it across sessions.
 
 ## Demo Data
 
