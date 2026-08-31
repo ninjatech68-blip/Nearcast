@@ -48,7 +48,12 @@ npm run db:start
 npm run db:reset
 npm run db:test
 npm run db:types
+npm run design:detect
 ```
+
+## Design Quality
+
+Impeccable is installed project-wide as a Claude Code skill (`.claude/skills/impeccable/`) and applies to every UI surface in `src/`. Its design vocabulary is `/impeccable <command> [target]` (`shape`, `audit`, `critique`, `polish`, `harden`, and others; type `/impeccable` for the full list). `PRODUCT.md` and `DESIGN.md` are its design context and stay the governing visual contract. `npm run design:detect` runs the deterministic anti-pattern rules without an agent; shared detector settings live in `.impeccable/config.json`.
 
 ## Definition Of Done
 

@@ -1,0 +1,19 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      "supabase/**",
+      "docs/**",
+      "**/*.test.ts",
+      "**/*.test.tsx"
+    ],
+    "ignoreValues": [],
+    "designSystem": {
+      "enabled": true
+    }
+  },
+  "hook": {
+    "consent": "accepted"
+  },
+  "updateCheck": true
+}

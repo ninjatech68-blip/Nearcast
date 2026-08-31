@@ -50,3 +50,9 @@ supabase/.temp/
 /android
 /build/
 /work/
+
+# Impeccable (ephemeral; tracked: config.json, design.json, critique/*.md)
+.impeccable/config.local.json
+.impeccable/*.png
+.impeccable/live/sessions/
+.impeccable/live/previews/
