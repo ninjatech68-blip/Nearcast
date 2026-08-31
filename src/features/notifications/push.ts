@@ -13,10 +13,12 @@
  * private-group name — only a type and ids. See supabase/functions/send-push.
  */
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
 import { tokens } from '@/design-system/tokens';
 import { getSupabase } from '@/infrastructure/supabase/client';
+
+import { shouldAttemptRegistration, type RegistrationTrigger } from './registration-policy';
 
 type PermissionResult = { status: string; granted?: boolean; canAskAgain?: boolean };
 type Subscription = { remove: () => void };
@@ -173,9 +175,15 @@ export async function enablePush(): Promise<PushOutcome> {
   }
 }
 
-/** Re-register on launch when already granted — tokens can rotate. No-op otherwise. */
-export async function refreshPushRegistration(): Promise<void> {
+let lastAttemptAt: number | null = null;
+
+/** Re-register when already granted — tokens can rotate. No-op otherwise. */
+export async function refreshPushRegistration(
+  trigger: RegistrationTrigger = 'signed-in',
+): Promise<void> {
   if (!Notifications) return;
+  if (!shouldAttemptRegistration(trigger, lastAttemptAt, Date.now())) return;
+  lastAttemptAt = Date.now();
   try {
     const perm = await Notifications.getPermissionsAsync();
     if (!(perm.granted ?? perm.status === 'granted')) return;
@@ -184,6 +192,31 @@ export async function refreshPushRegistration(): Promise<void> {
   } catch {
     // best-effort background upkeep
   }
+}
+
+/**
+ * Re-check registration every time the app returns to the foreground.
+ *
+ * The only way to grant notification permission after declining it is
+ * the iOS Settings toggle, and coming back from Settings is a RESUME,
+ * never a sign-in. Registration ran on `me.signedIn` alone, so a phone
+ * that declined the prompt — or lost permission to a delete-and-
+ * reinstall, which resets it — stayed silent for the life of the
+ * install, with nothing written down anywhere to say why:
+ * `refreshPushRegistration` returns at the permission check without
+ * writing a row or raising an error. A real device sat in exactly that
+ * state for four hours, signed in and holding a live presence lease,
+ * its token frozen at the value it had before the reinstall.
+ *
+ * Throttled by `shouldAttemptRegistration`, because a resume also fires
+ * every time someone flicks to another app and back, and registration
+ * costs a native token fetch plus a network round-trip.
+ */
+export function watchPushRegistration(): () => void {
+  const sub = AppState.addEventListener('change', (next) => {
+    if (next === 'active') void refreshPushRegistration('resumed');
+  });
+  return () => sub.remove();
 }
 
 /** Fetch the Expo push token and store it against the signed-in user. */

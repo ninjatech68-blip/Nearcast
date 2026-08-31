@@ -16,7 +16,11 @@ import { tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
 import { useProfileSync } from '@/features/me/use-profile-sync';
 import { restoreSession } from '@/features/auth/auth';
-import { configureNotifications, refreshPushRegistration } from '@/features/notifications/push';
+import {
+  configureNotifications,
+  refreshPushRegistration,
+  watchPushRegistration,
+} from '@/features/notifications/push';
 import { useNotificationRouting } from '@/features/notifications/routing';
 import { refreshConversations, shellPollInterval, subscribeToActivity } from '@/features/chat/chat';
 import { refreshInteractions } from '@/features/casts/store';
@@ -107,8 +111,13 @@ export default function RootLayout() {
     void configureNotifications();
   }, []);
   useEffect(() => {
-    if (me.signedIn) void refreshPushRegistration();
+    if (me.signedIn) void refreshPushRegistration('signed-in');
   }, [me.signedIn]);
+  // Sign-in is not the only moment permission can change. Granting it in
+  // iOS Settings — the only route back after declining the prompt, or
+  // after a reinstall reset it — produces a resume and nothing else, so
+  // without this the phone never registers again.
+  useEffect(() => watchPushRegistration(), []);
 
   // persisted writes are debounced, so a change made in the last
   // ~120ms before a force-quit would be lost. flush when the app
