@@ -5,9 +5,21 @@ on:
   push:
     branches: [main]
 
+# Least privilege: neither job writes to the repository.
+permissions:
+  contents: read
+
+# The database job binds fixed host ports (54321-54324) via `supabase start`,
+# so two runs on the same ref race for them. Superseded PR runs are cancelled;
+# runs on main are allowed to finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   app:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,6 +35,7 @@ jobs:
 
   database:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

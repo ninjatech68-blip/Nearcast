@@ -45,7 +45,7 @@ export default function TabsLayout() {
       })}>
       <Tabs.Screen name="index" options={{ title: 'For You' }} />
       <Tabs.Screen name="activity" options={{ title: 'Activity' }} />
-      <Tabs.Screen name="broadcast" options={{ title: 'Broadcast' }} />
+      <Tabs.Screen name="broadcast" options={{ title: 'Cast' }} />
       <Tabs.Screen name="messages" options={{ title: 'Messages' }} />
       <Tabs.Screen name="you" options={{ title: 'You' }} />
     </Tabs>

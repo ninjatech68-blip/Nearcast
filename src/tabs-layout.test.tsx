@@ -39,7 +39,7 @@ describe('TabsLayout', () => {
     expect(tabScreens).toEqual([
       { name: 'index', title: 'For You' },
       { name: 'activity', title: 'Activity' },
-      { name: 'broadcast', title: 'Broadcast' },
+      { name: 'broadcast', title: 'Cast' },
       { name: 'messages', title: 'Messages' },
       { name: 'you', title: 'You' },
     ]);

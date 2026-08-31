@@ -1,5 +1,6 @@
 export const featuredIntent = {
   id: 'badminton-tonight',
+  nearby: true,
   primitive: 'I need',
   title: 'Two people for badminton tonight',
   summary: 'Join a friendly doubles game tonight. Intermediate level is fine.',
@@ -15,6 +16,7 @@ export const featuredIntent = {
 
 export const secondIntent = {
   id: 'walk-and-talk',
+  nearby: false,
   primitive: 'I want to',
   title: 'Walk and talk this evening',
   summary: 'Easy evening walk and conversation.',
