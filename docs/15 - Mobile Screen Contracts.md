@@ -32,7 +32,6 @@ Unauthenticated routes are sign-in, public intent, and policy pages. Authenticat
 | Match room | Coordinate now? | IntentStatusHeader, persisted messages, released fields | Only match parties; no typing/presence in MVP |
 | Resolution | What happened? | Factual outcome and dispute option | Reliability changes only from confirmed outcomes |
 | Report/block | Protect me? | Reason, consequence, confirmation | Block takes effect immediately without exposing enforcement detail |
-| Profile settings | Change what others see, or leave? | Display name, avatar, approximate area, interests, privacy summaries, export, sign out, delete | Exact address never stored here; deletion states permanence and offers export first |
 
 ## Component APIs
 
@@ -53,5 +52,4 @@ Core flows support dynamic type, screen-reader order, 48x48 minimum targets, tex
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined mobile navigation, complete state coverage, screen responsibilities, and component boundaries |
-| 2026-08-31 | Added the Profile settings screen to the MVP table. MUST-003 requires the fields and document 12 requires in-app account deletion, but no screen owned them. Match room was already specified and is unchanged. |
 | 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

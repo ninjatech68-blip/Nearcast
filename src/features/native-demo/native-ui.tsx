@@ -54,14 +54,13 @@ type IntentSummary = {
   metadata: string;
   primitive: string;
   reason: string;
-  requestNote?: string;
   title: string;
   trust: string;
 };
 
 export function IntentCard({ intent, onOpen }: { intent: IntentSummary; onOpen: () => void }) {
   return (
-    <Pressable accessibilityLabel={`Open cast: ${intent.title}`} accessibilityRole="button" onPress={onOpen} style={styles.intentCard}>
+    <Pressable accessibilityLabel={`Open intent: ${intent.title}`} accessibilityRole="button" onPress={onOpen} style={styles.intentCard}>
       <View style={styles.cardTopRow}>
         <PrimitiveChip label={intent.primitive} />
         <SymbolIcon color={tokens.semantic.color.textMuted} fallback="S" name="bookmark" />
@@ -71,33 +70,13 @@ export function IntentCard({ intent, onOpen }: { intent: IntentSummary; onOpen: 
       <Text style={styles.intentTrust}>{intent.trust}</Text>
       <View style={styles.reasonPill}>
         <SymbolIcon fallback="W" name="sparkles" size={16} />
-        <Text style={styles.reasonText}>{intent.reason}</Text>
+        <Text style={styles.reasonText}>Why this reached you: {intent.reason}</Text>
       </View>
       <View style={styles.cardBottomRow}>
         <Text style={styles.intentMeta}>{intent.expiry}</Text>
         <Text style={styles.textAction}>{intent.action}</Text>
       </View>
-      {intent.requestNote ? <Text style={styles.requestNote}>{intent.requestNote}</Text> : null}
     </Pressable>
-  );
-}
-
-export function TeachingNote({ body, onDismiss, title }: { body: string; onDismiss: () => void; title: string }) {
-  return (
-    <View style={styles.teachingNote}>
-      <View style={styles.teachingHeader}>
-        <SymbolIcon fallback="i" name="info.circle" size={16} />
-        <Text accessibilityRole="header" style={styles.teachingTitle}>{title}</Text>
-        <Pressable
-          accessibilityLabel="Dismiss explanation"
-          accessibilityRole="button"
-          hitSlop={{ bottom: 12, left: 12, right: 12, top: 12 }}
-          onPress={onDismiss}>
-          <SymbolIcon color={tokens.semantic.color.textSecondary} fallback="X" name="xmark" size={16} />
-        </Pressable>
-      </View>
-      <Text style={styles.teachingBody}>{body}</Text>
-    </View>
   );
 }
 
@@ -134,7 +113,7 @@ export function ProfileBlock({ initials, name, area, context, hiddenContact, onO
   }
 
   return (
-    <Pressable accessibilityLabel={`Open ${name}'s profile`} accessibilityRole="button" onPress={onOpen} style={styles.profileBlock}>
+    <Pressable accessibilityLabel={`Open broadcaster profile for ${name}`} accessibilityRole="button" onPress={onOpen} style={styles.profileBlock}>
       {content}
     </Pressable>
   );
@@ -224,11 +203,6 @@ const styles = StyleSheet.create({
   profileName: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
   reasonPill: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', padding: 12, borderRadius: 12, backgroundColor: tokens.semantic.color.trustSurface },
   reasonText: { flex: 1, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.trustText },
-  requestNote: { fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.textSecondary },
-  teachingNote: { gap: 8, padding: 14, borderWidth: 1, borderColor: tokens.semantic.color.borderDefault, borderRadius: 14, backgroundColor: tokens.semantic.color.backgroundSurface },
-  teachingHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  teachingTitle: { flex: 1, fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textPrimary },
-  teachingBody: { fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.textSecondary },
   rowCopy: { flex: 1 },
   rowMeta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
   rowTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },

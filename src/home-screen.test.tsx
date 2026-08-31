@@ -28,14 +28,14 @@ describe('HomeScreen', () => {
     expect(view.getByText('For You')).toBeTruthy();
     expect(view.getByText('Around you')).toBeTruthy();
     expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Shown because you play nearby on weekday evenings.")).toBeTruthy();
+    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
   });
 
   it('opens intent detail from the primary feed card', async () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Open cast: Two people for badminton tonight' }));
+    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
 
     expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
   });

@@ -9,7 +9,7 @@ import { ActionTray, Group, IconLine, PrimitiveChip, PrivacyStrip, ProfileBlock,
 export default function IntentDetailScreen() {
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <TopBar title="Cast" onBack={() => router.back()} />
+      <TopBar title="Intent" onBack={() => router.back()} />
       <ScrollView contentContainerStyle={styles.content}>
         <Group>
           <View style={styles.summary}>
@@ -46,7 +46,7 @@ export default function IntentDetailScreen() {
           <View style={styles.reasonPanel}>
             <SymbolIcon fallback="W" name="person.2" size={28} />
             <View style={styles.reasonCopy}>
-              <Text style={styles.reasonText}>{featuredIntent.reason}</Text>
+              <Text style={styles.reasonText}>Why this reached you: {featuredIntent.reason}</Text>
               <Text style={styles.reasonMeta}>Origin circle stays private.</Text>
             </View>
           </View>
@@ -66,7 +66,7 @@ export default function IntentDetailScreen() {
           </Group>
         </Section>
       </ScrollView>
-      <ActionTray primaryLabel="Ask to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
+      <ActionTray primaryLabel="Request to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
     </SafeAreaView>
   );
 }

@@ -45,9 +45,9 @@ describe('native page set', () => {
     const view = await render(<HomeScreen />);
 
     expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Shown because you play nearby on weekday evenings.")).toBeTruthy();
+    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
 
-    await user.press(view.getByRole('button', { name: 'Open cast: Two people for badminton tonight' }));
+    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
 
     expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
   });
@@ -56,16 +56,16 @@ describe('native page set', () => {
     const user = userEvent.setup();
     const view = await render(<IntentDetailScreen />);
 
-    expect(view.getByText('Cast')).toBeTruthy();
+    expect(view.getByText('Intent')).toBeTruthy();
     expect(view.getByText('Posted by')).toBeTruthy();
     expect(view.getByText('Aarav')).toBeTruthy();
     expect(view.getByText('Area approximate')).toBeTruthy();
     expect(view.getByText('Exact place hidden')).toBeTruthy();
 
-    await user.press(view.getByRole('button', { name: "Open Aarav's profile" }));
+    await user.press(view.getByRole('button', { name: 'Open broadcaster profile for Aarav' }));
     expect(mockPush).toHaveBeenCalledWith('/profile/aarav');
 
-    await user.press(view.getByRole('button', { name: 'Ask to join' }));
+    await user.press(view.getByRole('button', { name: 'Request to join' }));
     expect(mockPush).toHaveBeenCalledWith('/request/badminton-tonight');
   });
 
@@ -82,7 +82,7 @@ describe('native page set', () => {
   it('uses a bottom sheet style request screen with disclosure', async () => {
     const view = await render(<RequestSheetScreen />);
 
-    expect(view.getByText('Ask to join')).toBeTruthy();
+    expect(view.getByText('Request to join')).toBeTruthy();
     expect(view.getByText('Aarav will see your first name and response.')).toBeTruthy();
     expect(view.getByText('Exact contact details stay hidden')).toBeTruthy();
     expect(view.getByPlaceholderText('Add a short note')).toBeTruthy();
@@ -90,7 +90,7 @@ describe('native page set', () => {
 
   it('shows minimal activity and messages tabs', async () => {
     const activity = await render(<ActivityScreen />);
-    expect(activity.getByText('No one has asked to join yet')).toBeTruthy();
+    expect(activity.getByText('No responses yet')).toBeTruthy();
     expect(activity.getByText('Two people for badminton tonight')).toBeTruthy();
 
     const messages = await render(<MessagesScreen />);

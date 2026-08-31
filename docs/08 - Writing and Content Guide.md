@@ -3,7 +3,7 @@
 ## Document Control
 
 - **Status:** Product-language source of truth
-- **Last updated:** 2026-08-31
+- **Last updated:** 2026-08-24
 - **Design sources:** [App Design Foundation](./17 - Mobile App Design Foundation.md) and [Design System Specification](./07 - Design System Specification.md)
 - **Governed by:** [Nearcast Documentation Reference](./00 - Start Here - Nearcast Project Reference.md)
 
@@ -26,28 +26,6 @@ Nearcast does not sound promotional, mysterious, overly familiar, judgmental, or
 
 ## Canonical Terminology
 
-Nearcast keeps two registers. **Interface terminology** is what a person reads on screen. **Domain terminology** is what the product, architecture, API, and database call the same things. The two tables below map onto each other one-to-one; neither may drift from the other without an entry in this document's change log.
-
-### Interface Terminology
-
-This is the language of every user-facing string. It is the register a first-time user is expected to understand without product knowledge.
-
-| Use | Meaning | Domain term | Avoid |
-|---|---|---|---|
-| Cast | A plan invitation broadcast to a chosen reach | Intent + Broadcast | Post, listing, event, blast, drop |
-| Ask to join | Send a private join request to the host | Response | Join, RSVP, or any wording implying automatic acceptance |
-| Circles | People connected to you who can vouch for your follow-through | Trust context | Followers, friends, network size as status |
-| Signal | A plain-language description of your follow-through on casts | Reliability | Score, rating, percentage, points, reputation number, social credit |
-| Receipts | The record of casts that actually happened | Confirmation history | Badges, trophies, streaks, activity counts |
-
-`Signal` is deliberately qualitative. It describes follow-through in words and never as a number, bar, percentage, or rank. A numeric or comparative Signal would be a trust score, which [Trust Privacy and Safety](./04%20-%20Trust%20Privacy%20and%20Safety.md) and the Design System both prohibit.
-
-`Circles` names the people who can vouch for someone. It does not name a reach tier; reach keeps its own labels so a person is never asked to read one word two ways in the same flow.
-
-### Domain Terminology
-
-This is the language of the PRD, architecture, permissions, API contracts, database schema, and `src/features/`. It does not appear in user-facing strings.
-
 | Use | Meaning | Avoid |
 |---|---|---|
 | Intent | A temporary need, offer, or proposed action | Post, listing, event as universal terms |
@@ -63,36 +41,34 @@ This is the language of the PRD, architecture, permissions, API contracts, datab
 
 ## Core Prompts
 
-- Composer kind: `What kind of cast is this?`
-- Composer statement: `What's the invite?`
-- Reach: `Who can see this cast?`
+- Composer: `What do you need, offer, or want to do?`
+- Reach: `How far should this intent travel?`
 - Recommendation explanation: `Why you're seeing this`
 - Response disclosure: `What will be shared`
 - Acceptance disclosure: `What becomes visible after you accept`
-- Resolution: `Was your cast resolved?`
+- Resolution: `Was your intent resolved?`
 
 ## Button Vocabulary
 
-Buttons use interface terminology. The domain term for each action is in brackets and never appears on screen.
-
 ### Creation
 
-- Review cast. [review intent]
-- Post cast. [broadcast intent]
+- Review intent.
+- Preview broadcast.
+- Broadcast intent.
 - Save draft.
 - Adjust reach.
-- Resolve cast. [resolve intent]
-- Withdraw cast. [withdraw intent]
+- Resolve intent.
+- Withdraw intent.
 
 ### Response
 
 - I can help.
 - I can recommend someone.
 - I'm interested.
-- Ask to join. [submit response]
+- Request to join.
 - Make an offer.
 - Ask a question.
-- Withdraw request. [withdraw response]
+- Withdraw response.
 
 ### Decision
 
@@ -133,24 +109,24 @@ Avoid:
 
 | State | Label | Supporting copy |
 |---|---|---|
-| Draft | Draft | Only you can see this cast. |
+| Draft | Draft | Only you can see this intent. |
 | Live | Live | Visible within your selected reach. |
-| Response pending | Request received | Review before sharing more information. |
+| Response pending | Response received | Review before sharing more information. |
 | Matched | Matched | Temporary coordination is available. |
-| Resolved | Resolved | This cast is closed to new requests. |
+| Resolved | Resolved | This intent is closed to new responses. |
 | Expired | Expired | The response window ended. |
-| Withdrawn | Withdrawn | The host closed this cast. |
+| Withdrawn | Withdrawn | The broadcaster closed this intent. |
 | Restricted | Under review | Some actions are temporarily unavailable. |
 
 ## Empty And Error Copy
 
-### No Relevant Casts
+### No Relevant Intents
 
-`Nothing relevant is active right now. Adjust your preferences or post a cast.`
+`Nothing relevant is active right now. Adjust your preferences or broadcast an intent.`
 
-### No Requests
+### No Responses
 
-`No one has asked to join yet. You can wait, edit the cast, or expand its reach.`
+`No relevant responses yet. You can wait, edit the intent, or expand its reach.`
 
 ### Offline Draft
 
@@ -158,7 +134,7 @@ Avoid:
 
 ### Publish Failure
 
-`Your cast wasn't posted. Review your connection and try again.`
+`Your intent wasn't published. Review your connection and try again.`
 
 ### Permission Denied
 
@@ -170,11 +146,11 @@ Do not reveal whether hidden private records exist.
 
 ### Declined Response
 
-`The host didn't accept this request. No additional details were shared.`
+`The broadcaster didn't accept this response. No additional details were shared.`
 
 ### Block Confirmation
 
-`You will no longer see or receive casts, requests, or messages from this person.`
+`You will no longer see or receive intents, responses, or messages from this person.`
 
 ### Report Confirmation
 
@@ -195,10 +171,10 @@ Avoid accusatory language before moderation is complete.
 
 Examples:
 
-- `Someone asked to join your cast.`
+- `A relevant response arrived for your intent.`
 - `Your response was accepted.`
 - `An accepted participant updated the coordination room.`
-- `Your cast closes soon with two requests awaiting review.`
+- `Your intent expires soon with two responses awaiting review.`
 
 Never send `We miss you`, `People are waiting`, or manufactured FOMO.
 
@@ -226,5 +202,3 @@ Never send `We miss you`, `People are waiting`, or manufactured FOMO.
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined Nearcast terminology, voice, UI patterns, notifications, and safety language |
-| 2026-08-31 | Split terminology into interface and domain registers. Adopted Cast, Ask to join, Circles, Signal, and Receipts as user-facing language, mapped to the unchanged domain terms. Defined Signal as qualitative only, because the source brief's "public reputation" framing would otherwise be a trust score prohibited by document 04 and the Design System. |
-| 2026-08-31 | Carried the interface register through Core Prompts, Button Vocabulary, Status Language, empty/error copy, and notification examples, so no user-facing string still reads `intent`. Kept `Continue` out of the composer: the guide allows generics only when no clearer verb exists, and `Review cast` is clearer. |

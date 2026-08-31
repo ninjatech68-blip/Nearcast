@@ -28,9 +28,7 @@ Users may broadcast `I need`, `I offer`, or `I want to` intents. Every delivered
 
 ## Brand Commitments
 
-Nearcast should feel calm, credible, human, quietly optimistic, and native. The interface should be minimal, trust-aware, and useful rather than promotional, viral, or social-media-like.
-
-Terminology runs in two registers, defined in [`docs/08 - Writing and Content Guide.md`](docs/08%20-%20Writing%20and%20Content%20Guide.md). User-facing copy uses Cast, Ask to join, Circles, Signal, and Receipts. The domain model, API, and database keep Intent, Broadcast, Reach, Origin, Confirmation, Response, Match, Resolve, Trust context, and Reliability. Signal is qualitative language about follow-through and must never render as a score, rating, percentage, or rank.
+Nearcast should feel calm, credible, human, quietly optimistic, and native. The interface should be minimal, trust-aware, and useful rather than promotional, viral, or social-media-like. Current product terminology uses Intent, Broadcast, Reach, Origin, Confirmation, Response, Match, Resolve, Trust context, and Reliability.
 
 ## Evidence on Hand
 

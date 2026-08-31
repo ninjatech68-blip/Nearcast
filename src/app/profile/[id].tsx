@@ -15,7 +15,7 @@ export default function BroadcasterProfileScreen() {
           <ProfileBlock {...broadcaster} />
         </Group>
 
-        <Section title="Current cast">
+        <Section title="Current intent">
           <Group>
             <MiniIntentRow metadata={featuredIntent.metadata} status={featuredIntent.status} title={featuredIntent.title} />
           </Group>
@@ -39,7 +39,7 @@ export default function BroadcasterProfileScreen() {
           </Group>
         </Section>
       </ScrollView>
-      <ActionTray primaryLabel="Ask to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
+      <ActionTray primaryLabel="Request to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
     </SafeAreaView>
   );
 }

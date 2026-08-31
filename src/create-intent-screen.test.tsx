@@ -19,8 +19,8 @@ describe('CreateIntentScreen', () => {
     const user = userEvent.setup();
     const view = await render(<CreateIntentScreen />);
 
-    await user.type(view.getByLabelText("What's the invite?"), 'Need two helpers for Saturday');
-    await user.press(view.getByRole('button', { name: 'Review cast' }));
+    await user.type(view.getByLabelText('Intent statement'), 'Need two helpers for Saturday');
+    await user.press(view.getByRole('button', { name: 'Review intent' }));
 
     expect(mockDismiss).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({ pathname: '/preview', params: { primitive: 'request', statement: 'Need two helpers for Saturday' } });
