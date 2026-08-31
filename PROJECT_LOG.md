@@ -79,3 +79,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-31 | Adopted release builds on real devices as the only run path, with a preflight that catches an unreachable Supabase URL before building |
 | 2026-08-31 | Removed every local dependency: hosted Supabase, EAS cloud builds, no simulator and no Metro |
 | 2026-08-31 | Completed joining with an area step, so a new member reaches a feed that can actually fill |
+| 2026-08-31 | Added a bounded demo feed seed for scroll testing, with the fabrication-rule exception recorded in AGENTS.md |

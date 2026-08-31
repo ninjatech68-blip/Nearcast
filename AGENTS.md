@@ -19,6 +19,7 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 ## Non-Negotiable Product Rules
 
 - Never fabricate users, confirmations, responses, availability, or activity counts.
+  The one exception is developer demo data, bounded in "Demo Data" below.
 - Never expand intent reach without an informed user action.
 - Never expose private-group identity or membership.
 - Never store exact location or contact details in discoverable intent rows.
@@ -34,7 +35,7 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 - Enable RLS on every exposed table. Use explicit policies and test allowed and denied paths.
 - Put privileged lifecycle transitions in server-controlled database functions or Edge Functions; make transitions idempotent.
 - Write a failing test before production behavior. Run `npm run verify` before claiming app changes complete.
-- Run `npm run db:test` after schema or RLS changes when the local Supabase stack is available.
+- Run `npm run db:test` against the staging project after schema or RLS changes.
 - Never commit `.env`, service-role keys, access tokens, or production data.
 
 ## Commands
@@ -77,6 +78,33 @@ is no development profile, deliberately.
 The preflight runs first. Release builds inline `EXPO_PUBLIC_*` at bundle time,
 so it rejects a URL that is http, loopback, or a private network address before
 a build starts rather than after.
+
+## Demo Data
+
+`supabase/seeds/demo-feed.sql` inserts demo broadcasters and live intents so the
+home feed has enough cards to scroll, order and lay out against. It is not a
+migration and `npm run db:push` never applies it. Automatic seeding is off in
+`supabase/config.toml` for the same reason.
+
+This sits against the first product rule, so its boundary is stated rather than
+assumed. The rule exists to stop a user being shown activity that did not
+happen. A developer who runs this file against a staging project misleads
+nobody, because the person running it knows exactly what the rows are. The rule
+is broken the moment that data shares a project with a real tester, who cannot
+tell demo rows from real ones.
+
+So:
+
+- Run it only against a staging project used by the team.
+- Never run it against a project a real alpha tester touches.
+- Every demo account uses `@demo.nearcast.invalid`, so demo rows stay
+  identifiable in the database even though the feed reads normally.
+- The file refuses to run if the project already holds responses or matches,
+  which is the cheapest available signal that real people have used it.
+
+Demo data never substitutes for a product surface. Confirmation counts,
+availability and response state still come from real actions only: the seed
+creates intents to look at, not activity to believe.
 
 ## Definition Of Done
 

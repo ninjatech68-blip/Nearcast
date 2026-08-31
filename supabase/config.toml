@@ -64,11 +64,12 @@ enabled = true
 schema_paths = []
 
 [db.seed]
-# If enabled, seeds the database after migrations during a db reset.
-enabled = true
-# Specifies an ordered list of seed files to load during db reset.
-# Supports glob patterns relative to supabase directory: "./seeds/*.sql"
-sql_paths = ["./seed.sql"]
+# Off deliberately. Demo data fabricates broadcasters and intents, which the
+# product rules forbid showing to a real user, so it is never applied
+# automatically. Run supabase/seeds/demo-feed.sql by hand against a staging
+# project when you want a scrollable feed. See "Demo Data" in AGENTS.md.
+enabled = false
+sql_paths = []
 
 [db.network_restrictions]
 # Enable management of network restrictions.

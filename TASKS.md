@@ -36,8 +36,23 @@ The database is a hosted Supabase project. `supabase link --project-ref <ref>`
 once, then these commands act on it. `SUPABASE_DB_URL` is the project's
 connection string and is a secret: keep it out of git.
 
+## Demo Data
+
+`supabase/seeds/demo-feed.sql` fills a staging project with demo intents so the
+home feed can be scrolled. It is not a migration and no command applies it
+automatically. Run it deliberately:
+
+```bash
+psql "$SUPABASE_DB_URL" -f supabase/seeds/demo-feed.sql
+```
+
+Staging only. It refuses to run once the project holds real responses or
+matches, and never against a project a real tester uses. See "Demo Data" in
+`AGENTS.md` for why the boundary matters.
+
 ## Change Log
 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Added a plain-language command guide |
+| 2026-08-31 | Added the demo feed seed and its staging-only boundary |
