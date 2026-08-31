@@ -35,7 +35,7 @@ describe('HomeScreen', () => {
     const user = userEvent.setup();
     const view = await render(<HomeScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
+    await user.press(view.getByRole('button', { name: 'Open cast: Two people for badminton tonight' }));
 
     expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
   });

@@ -22,7 +22,7 @@ export default function HomeScreen() {
 
         <View style={styles.filterRow}>
           <View style={styles.filterPill}><Text style={styles.filterText}>Nearby</Text></View>
-          <View style={styles.filterPill}><Text style={styles.filterText}>All intents</Text></View>
+          <View style={styles.filterPill}><Text style={styles.filterText}>All casts</Text></View>
         </View>
 
         {teachingVisible ? (

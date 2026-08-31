@@ -47,7 +47,7 @@ describe('native page set', () => {
     expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
     expect(view.getByText("Shown because you play nearby on weekday evenings.")).toBeTruthy();
 
-    await user.press(view.getByRole('button', { name: 'Open intent: Two people for badminton tonight' }));
+    await user.press(view.getByRole('button', { name: 'Open cast: Two people for badminton tonight' }));
 
     expect(mockPush).toHaveBeenCalledWith('/intent/badminton-tonight');
   });
@@ -56,13 +56,13 @@ describe('native page set', () => {
     const user = userEvent.setup();
     const view = await render(<IntentDetailScreen />);
 
-    expect(view.getByText('Intent')).toBeTruthy();
+    expect(view.getByText('Cast')).toBeTruthy();
     expect(view.getByText('Posted by')).toBeTruthy();
     expect(view.getByText('Aarav')).toBeTruthy();
     expect(view.getByText('Area approximate')).toBeTruthy();
     expect(view.getByText('Exact place hidden')).toBeTruthy();
 
-    await user.press(view.getByRole('button', { name: 'Open broadcaster profile for Aarav' }));
+    await user.press(view.getByRole('button', { name: "Open Aarav's profile" }));
     expect(mockPush).toHaveBeenCalledWith('/profile/aarav');
 
     await user.press(view.getByRole('button', { name: 'Ask to join' }));

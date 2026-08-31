@@ -9,7 +9,7 @@ import { ActionTray, Group, IconLine, PrimitiveChip, PrivacyStrip, ProfileBlock,
 export default function IntentDetailScreen() {
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <TopBar title="Intent" onBack={() => router.back()} />
+      <TopBar title="Cast" onBack={() => router.back()} />
       <ScrollView contentContainerStyle={styles.content}>
         <Group>
           <View style={styles.summary}>

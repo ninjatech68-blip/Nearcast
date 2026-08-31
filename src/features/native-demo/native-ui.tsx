@@ -61,7 +61,7 @@ type IntentSummary = {
 
 export function IntentCard({ intent, onOpen }: { intent: IntentSummary; onOpen: () => void }) {
   return (
-    <Pressable accessibilityLabel={`Open intent: ${intent.title}`} accessibilityRole="button" onPress={onOpen} style={styles.intentCard}>
+    <Pressable accessibilityLabel={`Open cast: ${intent.title}`} accessibilityRole="button" onPress={onOpen} style={styles.intentCard}>
       <View style={styles.cardTopRow}>
         <PrimitiveChip label={intent.primitive} />
         <SymbolIcon color={tokens.semantic.color.textMuted} fallback="S" name="bookmark" />
@@ -134,7 +134,7 @@ export function ProfileBlock({ initials, name, area, context, hiddenContact, onO
   }
 
   return (
-    <Pressable accessibilityLabel={`Open broadcaster profile for ${name}`} accessibilityRole="button" onPress={onOpen} style={styles.profileBlock}>
+    <Pressable accessibilityLabel={`Open ${name}'s profile`} accessibilityRole="button" onPress={onOpen} style={styles.profileBlock}>
       {content}
     </Pressable>
   );

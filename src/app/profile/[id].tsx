@@ -15,7 +15,7 @@ export default function BroadcasterProfileScreen() {
           <ProfileBlock {...broadcaster} />
         </Group>
 
-        <Section title="Current intent">
+        <Section title="Current cast">
           <Group>
             <MiniIntentRow metadata={featuredIntent.metadata} status={featuredIntent.status} title={featuredIntent.title} />
           </Group>
