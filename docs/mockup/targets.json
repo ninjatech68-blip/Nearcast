@@ -1,25 +1,206 @@
 [
-  { "file": "src/app/onboarding/index.tsx", "prefix": "ob" },
-  { "file": "src/app/signin.tsx", "prefix": "signin" },
-  { "file": "src/app/auth/callback.tsx", "prefix": "callback" },
-  { "file": "src/app/chat/[id].tsx", "prefix": "chat" },
-  { "file": "src/app/compose.tsx", "prefix": "compose" },
-  { "file": "src/app/profile-edit.tsx", "prefix": "profileedit" },
-  { "file": "src/app/circles.tsx", "prefix": "circles" },
-  { "file": "src/app/receipts.tsx", "prefix": "receipts" },
-  { "file": "src/design-system/components/poster.tsx", "prefix": "poster" },
-  { "file": "src/design-system/components/dock.tsx", "prefix": "dock" },
-  { "file": "src/design-system/components/button.tsx", "prefix": "button" },
-  { "file": "src/design-system/components/row.tsx", "prefix": "row" },
-  { "file": "src/design-system/components/sheet.tsx", "prefix": "sheet" },
-  { "file": "src/design-system/components/field.tsx", "prefix": "dsfield" },
-  { "file": "src/design-system/components/tag.tsx", "prefix": "tag" },
-  { "file": "src/design-system/components/face.tsx", "prefix": "face" },
-  { "file": "src/design-system/components/bars.tsx", "prefix": "bars" },
-  { "file": "src/design-system/components/stamp.tsx", "prefix": "stamp" },
-  { "file": "src/design-system/components/page.tsx", "prefix": "page" },
-  { "file": "src/features/casts/alerts-page.tsx", "prefix": "alerts" },
-  { "file": "src/features/casts/feed-page.tsx", "prefix": "feed" },
-  { "file": "src/features/chat/chats-page.tsx", "prefix": "chats" },
-  { "file": "src/features/me/you-page.tsx", "prefix": "you" }
+ {
+  "file": "src/app/_layout.tsx",
+  "prefix": "layout"
+ },
+ {
+  "file": "src/app/area.tsx",
+  "prefix": "area"
+ },
+ {
+  "file": "src/app/areas.tsx",
+  "prefix": "areas"
+ },
+ {
+  "file": "src/app/blocked.tsx",
+  "prefix": "blocked"
+ },
+ {
+  "file": "src/app/circles.tsx",
+  "prefix": "circles"
+ },
+ {
+  "file": "src/app/compose.tsx",
+  "prefix": "compose"
+ },
+ {
+  "file": "src/app/delete-account.tsx",
+  "prefix": "deleteaccount"
+ },
+ {
+  "file": "src/app/filter.tsx",
+  "prefix": "filter"
+ },
+ {
+  "file": "src/app/index.tsx",
+  "prefix": "index"
+ },
+ {
+  "file": "src/app/media-send.tsx",
+  "prefix": "mediasend"
+ },
+ {
+  "file": "src/app/media-view.tsx",
+  "prefix": "mediaview"
+ },
+ {
+  "file": "src/app/name.tsx",
+  "prefix": "name"
+ },
+ {
+  "file": "src/app/pick-location.tsx",
+  "prefix": "picklocation"
+ },
+ {
+  "file": "src/app/profile-edit.tsx",
+  "prefix": "profileedit"
+ },
+ {
+  "file": "src/app/recap.tsx",
+  "prefix": "recap"
+ },
+ {
+  "file": "src/app/receipts.tsx",
+  "prefix": "receipts"
+ },
+ {
+  "file": "src/app/signin.tsx",
+  "prefix": "signin"
+ },
+ {
+  "file": "src/app/reflect/[id].tsx",
+  "prefix": "reflectid"
+ },
+ {
+  "file": "src/app/cast/[id].tsx",
+  "prefix": "castid"
+ },
+ {
+  "file": "src/app/auth/callback.tsx",
+  "prefix": "authcallback"
+ },
+ {
+  "file": "src/app/report/[id].tsx",
+  "prefix": "reportid"
+ },
+ {
+  "file": "src/app/plan/[id].tsx",
+  "prefix": "planid"
+ },
+ {
+  "file": "src/app/legal/guidelines.tsx",
+  "prefix": "legalguidelines"
+ },
+ {
+  "file": "src/app/legal/privacy.tsx",
+  "prefix": "legalprivacy"
+ },
+ {
+  "file": "src/app/legal/terms.tsx",
+  "prefix": "legalterms"
+ },
+ {
+  "file": "src/app/caster/[id].tsx",
+  "prefix": "casterid"
+ },
+ {
+  "file": "src/app/edit-cast/[id].tsx",
+  "prefix": "editcastid"
+ },
+ {
+  "file": "src/app/chat/[id].tsx",
+  "prefix": "chatid"
+ },
+ {
+  "file": "src/app/vouch/[id].tsx",
+  "prefix": "vouchid"
+ },
+ {
+  "file": "src/app/onboarding/index.tsx",
+  "prefix": "onboardingindex"
+ },
+ {
+  "file": "src/app/invite/[key].tsx",
+  "prefix": "invitekey"
+ },
+ {
+  "file": "src/app/join/[id].tsx",
+  "prefix": "joinid"
+ },
+ {
+  "file": "src/design-system/components/bars.tsx",
+  "prefix": "dsbars"
+ },
+ {
+  "file": "src/design-system/components/button.tsx",
+  "prefix": "dsbutton"
+ },
+ {
+  "file": "src/design-system/components/dock.tsx",
+  "prefix": "dsdock"
+ },
+ {
+  "file": "src/design-system/components/error-boundary.tsx",
+  "prefix": "dserrorboundary"
+ },
+ {
+  "file": "src/design-system/components/face.tsx",
+  "prefix": "dsface"
+ },
+ {
+  "file": "src/design-system/components/field.tsx",
+  "prefix": "dsfield"
+ },
+ {
+  "file": "src/design-system/components/glyph.tsx",
+  "prefix": "dsglyph"
+ },
+ {
+  "file": "src/design-system/components/lens.tsx",
+  "prefix": "dslens"
+ },
+ {
+  "file": "src/design-system/components/page.tsx",
+  "prefix": "dspage"
+ },
+ {
+  "file": "src/design-system/components/poster.tsx",
+  "prefix": "dsposter"
+ },
+ {
+  "file": "src/design-system/components/refreshing.tsx",
+  "prefix": "dsrefreshing"
+ },
+ {
+  "file": "src/design-system/components/row.tsx",
+  "prefix": "dsrow"
+ },
+ {
+  "file": "src/design-system/components/sheet.tsx",
+  "prefix": "dssheet"
+ },
+ {
+  "file": "src/design-system/components/stamp.tsx",
+  "prefix": "dsstamp"
+ },
+ {
+  "file": "src/design-system/components/tag.tsx",
+  "prefix": "dstag"
+ },
+ {
+  "file": "src/features/casts/alerts-page.tsx",
+  "prefix": "alerts"
+ },
+ {
+  "file": "src/features/casts/feed-page.tsx",
+  "prefix": "feed"
+ },
+ {
+  "file": "src/features/chat/chats-page.tsx",
+  "prefix": "chats"
+ },
+ {
+  "file": "src/features/me/you-page.tsx",
+  "prefix": "you"
+ }
 ]
