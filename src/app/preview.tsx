@@ -24,7 +24,7 @@ export default function PreviewIntentScreen() {
         <Group>
           <View style={styles.previewCard}>
             <PrimitiveChip label={primitiveLabel} />
-            <Text style={styles.statement}>{statement || 'Your intent preview will appear here.'}</Text>
+            <Text style={styles.statement}>{statement || 'Your cast preview will appear here.'}</Text>
             <View style={styles.expiryRow}>
               <SymbolIcon fallback="E" name="clock" size={16} />
               <Text style={styles.meta}>Expires today, 10:00 PM</Text>
@@ -33,7 +33,7 @@ export default function PreviewIntentScreen() {
         </Group>
       </Section>
 
-      <Section title="Who can see this?">
+      <Section title="Who can see this cast?">
         <Group>
           {reachLevels.map(([title, body], index) => {
             const selected = title === 'Adjacent network';
@@ -54,7 +54,7 @@ export default function PreviewIntentScreen() {
       </Section>
 
       <View style={styles.footer}>
-        <Button label="Broadcast intent" onPress={() => undefined} />
+        <Button label="Post cast" onPress={() => undefined} />
       </View>
     </ScrollView>
   );
