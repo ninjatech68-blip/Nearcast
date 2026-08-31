@@ -48,10 +48,6 @@
     "vitest": "^4.1.11"
   },
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:unit && npm run test:components",
@@ -60,14 +56,12 @@
     "test:watch": "vitest",
     "bundle:ios": "expo export --platform ios --output-dir dist",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run bundle:ios",
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:reset": "supabase db reset",
-    "db:test": "supabase test db",
-    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts",
-    "preflight:device": "node scripts/preflight-device.mjs",
-    "ios:device": "npm run preflight:device && expo run:ios --device --configuration Release",
-    "android:device": "npm run preflight:device && expo run:android --device --variant release"
+    "db:test": "supabase test db --db-url \"$SUPABASE_DB_URL\"",
+    "db:types": "supabase gen types typescript --linked > src/infrastructure/supabase/database.types.ts",
+    "preflight:release": "node scripts/preflight-release.mjs",
+    "db:push": "supabase db push",
+    "build:preview": "npm run preflight:release && eas build --profile preview",
+    "build:production": "npm run preflight:release && eas build --profile production"
   },
   "jest": {
     "preset": "jest-expo",

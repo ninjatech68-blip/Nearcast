@@ -42,32 +42,41 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 ```bash
 npm install
 cp .env.example .env
-npm run ios:device
-npm run android:device
 npm run verify
-npm run db:start
-npm run db:reset
+npm run build:preview
+npm run db:push
 npm run db:test
 npm run db:types
 ```
 
-## Running The App
+## Nothing Runs Locally
 
-Build release configuration onto a real device. Do not use the simulator, and
-do not run a Metro dev server.
+The database is a hosted Supabase project, builds happen on EAS, and the app
+talks to the internet. There is no local Supabase stack, no simulator, and no
+Metro dev server. Everything is in git and reachable over the network.
 
-A release build embeds the JavaScript bundle in the binary, so what runs is
-exactly what was built. A dev-client build fetches its bundle from whatever
-Metro instance answers on port 8081, which has already caused a build of this
+This is not a preference. A build that depends on one machine being reachable
+cannot be handed to a tester, and a dev-client build fetches its bundle from
+whatever Metro answers on port 8081 — which has already caused a build of this
 app to load an unrelated project's JavaScript.
 
-`npm run ios:device` and `npm run android:device` run a preflight first.
-Release builds inline `EXPO_PUBLIC_*` values at bundle time, so a loopback
-Supabase URL becomes a binary that cannot reach anything and fails with no
-useful message on the phone. The preflight rejects that before the build.
+## Database
 
-Point `EXPO_PUBLIC_SUPABASE_URL` at this machine's LAN address, not
-`127.0.0.1`. `ipconfig getifaddr en0` prints it.
+Migrations are pushed to the hosted project with `npm run db:push` after
+`supabase link`. `npm run db:test` runs pgTAP against `SUPABASE_DB_URL`, and
+`npm run db:types` regenerates types from the linked project. Never point these
+at a local stack.
+
+## Builds
+
+`npm run build:preview` produces a release build on EAS with internal
+distribution: an installable link for registered devices. `npm run
+build:production` produces store builds. Both are release configuration; there
+is no development profile, deliberately.
+
+The preflight runs first. Release builds inline `EXPO_PUBLIC_*` at bundle time,
+so it rejects a URL that is http, loopback, or a private network address before
+a build starts rather than after.
 
 ## Definition Of Done
 

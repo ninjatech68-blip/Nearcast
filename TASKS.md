@@ -7,17 +7,12 @@ This file explains the project commands in plain language.
 | Command | What it does |
 |---|---|
 | `npm install` | Installs the app dependencies |
-| `npm run ios:device` | Builds release and installs on a connected iPhone |
-| `npm run android:device` | Builds release and installs on a connected Android device |
-| `npm run preflight:device` | Checks `.env` is usable from a phone before building |
+| `npm run build:preview` | Cloud release build, installable on registered devices |
+| `npm run build:production` | Cloud release build for the stores |
+| `npm run preflight:release` | Checks `.env` points at the hosted project before building |
 
-Real devices and release builds only. The simulator and the Metro dev server
-are not used: a release build carries its own JavaScript, so what runs is what
-was built.
-
-`npm run start`, `npm run ios`, `npm run android` and `npm run web` remain in
-`package.json` for tooling that expects them, and are not part of this
-workflow.
+Nothing runs locally. No simulator, no Metro dev server, no local database. A
+build that depends on one machine being reachable cannot be given to a tester.
 
 ## Quality Tasks
 
@@ -33,11 +28,13 @@ workflow.
 
 | Command | What it does |
 |---|---|
-| `npm run db:start` | Starts the local Supabase database |
-| `npm run db:stop` | Stops the local Supabase database |
-| `npm run db:reset` | Rebuilds the local database from migrations and seed data |
-| `npm run db:test` | Runs database and permission tests |
-| `npm run db:types` | Generates TypeScript types from the local database |
+| `npm run db:push` | Applies migrations to the hosted Supabase project |
+| `npm run db:test` | Runs database and permission tests against `SUPABASE_DB_URL` |
+| `npm run db:types` | Generates TypeScript types from the linked project |
+
+The database is a hosted Supabase project. `supabase link --project-ref <ref>`
+once, then these commands act on it. `SUPABASE_DB_URL` is the project's
+connection string and is a secret: keep it out of git.
 
 ## Change Log
 
