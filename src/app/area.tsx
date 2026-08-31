@@ -20,14 +20,12 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import {
   areasNearMe,
-  makeSessionToken,
   resolveSuggestion,
   searchAreas,
   suggestAreas,
   type AreaSuggestion,
 } from '@/features/casts/area-lookup';
 import * as NativePlaces from '@/features/casts/native-places';
-import { placesEnabled } from '@/features/casts/places-api';
 import { setDraftArea } from '@/features/casts/store';
 import { addApprovedArea, setHomeAreaFromOnboarding } from '@/features/me/me-store';
 
@@ -70,7 +68,6 @@ export default function AreaScreen() {
   const [suggestions, setSuggestions] = useState<readonly AreaSuggestion[]>([]);
   // one session token across a typing session — costs less with the
   // Google Places billing model. regenerated after a pick.
-  const [sessionToken, setSessionToken] = useState<string>(() => makeSessionToken());
   const [status, setStatus] = useState<Status>('idle');
   const [region, setRegion] = useState<Region>(DEFAULT_REGION);
   const [pin, setPin] = useState<LatLng | null>(null);
@@ -102,7 +99,7 @@ export default function AreaScreen() {
     }
     const handle = setTimeout(async () => {
       setStatus('searching');
-      const next = await suggestAreas(query, sessionToken, {
+      const next = await suggestAreas(query, {
         latitude: region.latitude,
         longitude: region.longitude,
         span: Math.max(region.latitudeDelta, region.longitudeDelta),
@@ -112,7 +109,7 @@ export default function AreaScreen() {
     }, 250);
     return () => clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, sessionToken]);
+  }, [query]);
 
   async function locate() {
     setStatus('locating');
@@ -178,10 +175,9 @@ export default function AreaScreen() {
 
   function backendLabel(): string {
     // one-line hint of which suggestion backend is providing rows.
-    // tap-through to confirm: MapKit = native module linked; Places
-    // = google key set; geocode = neither, using expo-location.
+    // which tier answered: the native completer when the module is in
+    // the binary, expo-location's geocode otherwise. Both run on device.
     if (NativePlaces.isAvailable()) return 'via Apple Maps';
-    if (placesEnabled()) return 'via Google Places';
     return 'via geocode (limited)';
   }
 
@@ -205,7 +201,6 @@ export default function AreaScreen() {
     // fresh session token for the next autocomplete run — Places
     // bills per (autocomplete+details) session, so rotating after a
     // pick starts a new billable session.
-    setSessionToken(makeSessionToken());
   }
 
   function choose(area: string) {

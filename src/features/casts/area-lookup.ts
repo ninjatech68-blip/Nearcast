@@ -1,6 +1,5 @@
 import * as Location from 'expo-location';
 
-import { makeSessionToken, placeDetails, placesAutocomplete, placesEnabled } from './places-api';
 import * as NativePlaces from './native-places';
 
 /**
@@ -27,12 +26,10 @@ export type AreaSuggestion = {
   full: string;
   /** the coordinate used only to pin the map — never persisted */
   coord?: { latitude: number; longitude: number };
-  /** google places id, if the suggestion came from that backend */
+  /** identifier from the native completer, if that produced this */
   placeId?: string;
-  /** shared session token for cheaper Places billing */
-  sessionToken?: string;
   /** which backend produced this — decides how resolve() looks up the coord */
-  source?: 'native' | 'places' | 'geocode';
+  source?: 'native' | 'geocode';
 };
 
 function namesFrom(address: Location.LocationGeocodedAddress): string[] {
@@ -95,17 +92,16 @@ export type AreaLookupResult =
  * address (what the list row shows), and a coord (only for pinning
  * the map — never persisted).
  *
- * When Google Places is enabled, this returns POI-level results like
- * "Social, Elante Mall, Sector 26, Chandigarh". Otherwise it falls
- * back to expo-location's neighborhood-only geocode.
+ * On iOS the native completer returns POI-level results like
+ * "Social, Elante Mall, Sector 26, Chandigarh". Elsewhere this falls back
+ * to expo-location's neighbourhood-only geocode.
  *
- * Pass a stable sessionToken across a typing session — the caller
- * should keep the same token across calls until a pick is made, then
- * regenerate one.
+ * Every tier runs on the device. Nothing here tells a third party which
+ * places a person is asking about, which is the whole reason an
+ * approximate area exists.
  */
 export async function suggestAreas(
   query: string,
-  sessionToken?: string,
   bias?: { latitude: number; longitude: number; span?: number },
 ): Promise<readonly AreaSuggestion[]> {
   const trimmed = query.trim();
@@ -125,21 +121,15 @@ export async function suggestAreas(
     }
   }
 
-  // Second choice: Google Places Autocomplete (POI + street level).
-  if (placesEnabled() && sessionToken) {
-    const predictions = await placesAutocomplete(trimmed, sessionToken, { countryCode: 'in' });
-    if (predictions !== null && predictions.length > 0) {
-      return predictions.map((p) => ({
-        name: p.primary.toLowerCase(),
-        full: p.secondary ? `${p.primary}, ${p.secondary}` : p.primary,
-        placeId: p.placeId,
-        sessionToken,
-        source: 'places' as const,
-      }));
-    }
-  }
-
-  // Fallback: expo-location geocode + reverse-geocode.
+  // Fallback: expo-location geocode + reverse-geocode. On-device, like the
+  // completer above.
+  //
+  // A Google Places tier used to sit between the two. It was removed: it
+  // needed EXPO_PUBLIC_GOOGLE_PLACES_API_KEY, which a release build inlines
+  // into the bundle where anyone can read it, and it sent every area a
+  // person typed to a third party. On iOS it was never reached anyway,
+  // because the native completer above answers first. Android loses the
+  // POI-level results and falls through to the geocode below.
   try {
     const matches = await Location.geocodeAsync(trimmed);
     const suggestions: AreaSuggestion[] = [];
@@ -178,9 +168,10 @@ export async function suggestAreas(
 }
 
 /**
- * resolve a picked suggestion to a coord (for the map pin). When the
- * suggestion has a placeId we call Places Details; otherwise the
- * coord is already on the suggestion.
+ * resolve a picked suggestion to a coord (for the map pin). The native
+ * completer hands back an identifier rather than a coordinate, so that
+ * one is looked up; everything else already carries its coord or falls
+ * back to an on-device geocode.
  */
 export async function resolveSuggestion(
   suggestion: AreaSuggestion,
@@ -188,10 +179,6 @@ export async function resolveSuggestion(
   if (suggestion.coord) return suggestion.coord;
   if (suggestion.source === 'native' && suggestion.placeId) {
     const detail = await NativePlaces.resolve(suggestion.placeId);
-    if (detail) return { latitude: detail.latitude, longitude: detail.longitude };
-  }
-  if (suggestion.source === 'places' && suggestion.placeId && suggestion.sessionToken) {
-    const detail = await placeDetails(suggestion.placeId, suggestion.sessionToken);
     if (detail) return { latitude: detail.latitude, longitude: detail.longitude };
   }
   try {
@@ -202,8 +189,6 @@ export async function resolveSuggestion(
   }
   return null;
 }
-
-export { makeSessionToken };
 
 /**
  * Where am I, as a single area with its point.
