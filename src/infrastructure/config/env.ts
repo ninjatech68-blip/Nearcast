@@ -23,6 +23,137 @@ export function parsePublicEnv(source: Record<string, unknown>): PublicEnv {
 }
 
 /**
+ * Absent, invalid, or configured — three states, not two.
+ *
+ * `parsePublicEnv` throws on anything malformed, and the Supabase client
+ * used to read every throw as "no backend is configured" and fall through
+ * to fixtures. That conflated two very different situations. Nothing
+ * supplied is a deliberate fixture build. A misspelled `EXPO_PUBLIC_APP_ENV`
+ * beside a perfectly good project URL is a mistake, and answering it with
+ * fabricated data that a tester cannot distinguish from real activity is
+ * the worst available response: it breaks the first product rule, and it
+ * breaks it invisibly.
+ *
+ * So absence and invalidity are separated here, and every problem is
+ * reported at once so one rebuild fixes all of them.
+ *
+ * Pure: no React Native, no Supabase.
+ */
+
+export type EnvClassification =
+  | { kind: 'absent' }
+  | { kind: 'invalid'; problems: string[] }
+  | { kind: 'configured'; env: PublicEnv };
+
+const ENV_KEYS = [
+  'EXPO_PUBLIC_SUPABASE_URL',
+  'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+  'EXPO_PUBLIC_APP_ENV',
+] as const;
+
+function supplied(value: unknown): boolean {
+  return typeof value === 'string' && value.trim() !== '';
+}
+
+export function classifyPublicEnv(source: Record<string, unknown>): EnvClassification {
+  // `EXPO_PUBLIC_APP_ENV` alone is not configuration: `.env.example` ships
+  // it set to `local` with the other two blank, which is the fixture build.
+  const hasBackend =
+    supplied(source.EXPO_PUBLIC_SUPABASE_URL) ||
+    supplied(source.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+
+  if (!hasBackend) return { kind: 'absent' };
+
+  const trimmed: Record<string, unknown> = {};
+  for (const key of ENV_KEYS) {
+    const value = source[key];
+    trimmed[key] = typeof value === 'string' ? value.trim() : value;
+  }
+
+  const parsed = publicEnvSchema.safeParse(trimmed);
+
+  if (parsed.success) {
+    return {
+      kind: 'configured',
+      env: {
+        supabaseUrl: parsed.data.EXPO_PUBLIC_SUPABASE_URL,
+        supabasePublishableKey: parsed.data.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+        appEnv: parsed.data.EXPO_PUBLIC_APP_ENV,
+      },
+    };
+  }
+
+  // One line per variable, naming the variable, because the person reading
+  // this is looking at a build log or a blocked screen, not a stack trace.
+  const problems = parsed.error.issues.map((issue) => {
+    const key = issue.path[0];
+    const name = typeof key === 'string' ? key : 'config';
+
+    if (name === 'EXPO_PUBLIC_APP_ENV') {
+      return `${name} must be one of local, staging, production`;
+    }
+    if (name === 'EXPO_PUBLIC_SUPABASE_URL') {
+      return `${name} must be a full URL, such as https://your-ref.supabase.co`;
+    }
+    if (name === 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY') {
+      return `${name} is missing`;
+    }
+    return `${name}: ${issue.message}`;
+  });
+
+  return { kind: 'invalid', problems };
+}
+
+/** How the app is running, as far as data is concerned. */
+export type BackendMode = 'live' | 'fixtures' | 'misconfigured';
+
+/**
+ * Whether this build must refuse to run, and what to say.
+ *
+ * A release build on fixtures shows a person activity that did not happen,
+ * and unlike a developer they have no way to tell. The rule against
+ * fabricating activity does not carve out an exception for "we forgot the
+ * environment file", so the build is stopped rather than logged about.
+ *
+ * Fixtures stay legitimate outside a release build: that is how the test
+ * suites run and how a screen can be worked on offline. A misconfiguration
+ * is blocked in both, because nobody ever means it.
+ */
+export function releaseBlock(input: {
+  isRelease: boolean;
+  mode: BackendMode;
+  reason: string;
+}): { title: string; detail: string } | null {
+  if (input.mode === 'misconfigured') {
+    return {
+      title: 'This build is misconfigured',
+      detail: input.reason,
+    };
+  }
+
+  if (input.mode === 'fixtures' && input.isRelease) {
+    return {
+      title: 'This build has no backend',
+      detail:
+        'Nothing here would be real. Set EXPO_PUBLIC_SUPABASE_URL and ' +
+        'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY for the hosted project and ' +
+        'build again.',
+    };
+  }
+
+  return null;
+}
+
+/**
+ * True in a release build. `__DEV__` is absent under the test runners, and
+ * "not a release build" is the safe reading there: a test asserting the
+ * blocked screen passes its own flag explicitly.
+ */
+export function isReleaseBuild(): boolean {
+  return typeof __DEV__ === 'boolean' ? !__DEV__ : false;
+}
+
+/**
  * A Supabase URL that only resolves on a home / office network:
  * loopback, a .local mDNS name, or an RFC-1918 private LAN IP. A build
  * pointed at one of these works next to the machine running Supabase

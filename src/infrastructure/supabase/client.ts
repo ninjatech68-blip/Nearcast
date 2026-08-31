@@ -2,7 +2,11 @@ import 'react-native-url-polyfill/auto';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-import { isLocalNetworkUrl, parsePublicEnv } from '@/infrastructure/config/env';
+import {
+  classifyPublicEnv,
+  isLocalNetworkUrl,
+  type BackendMode,
+} from '@/infrastructure/config/env';
 import type { Database } from '@/infrastructure/supabase/database.types';
 
 /**
@@ -13,39 +17,64 @@ import type { Database } from '@/infrastructure/supabase/database.types';
  * load meant importing this file without a .env crashed the app on
  * launch, before any screen could say why.
  *
- * More importantly the app has to run in two modes during the
- * backend migration:
+ * There are three modes, not two, and the difference matters:
  *
- *   CONFIGURED   — a real Supabase project. Auth, and eventually
- *                  every store, talks to it.
- *   UNCONFIGURED — no .env. The app runs entirely on the local
- *                  fixture stores, exactly as it does today.
+ *   LIVE          — a real Supabase project. Auth and the stores talk
+ *                   to it.
+ *   FIXTURES      — nothing configured at all. The app runs on local
+ *                   fixture stores. Legitimate for the test suites and
+ *                   for working on a screen offline; refused in a
+ *                   release build, because a tester cannot tell fixture
+ *                   data from real activity.
+ *   MISCONFIGURED — something was configured and is wrong. Never
+ *                   answered with fixtures, in any build.
  *
- * Keeping unconfigured working is not a nicety: it is how the app
- * stays demoable and testable while the stores are ported one at a
- * time, and it is why every caller must handle a null client rather
- * than assume one.
+ * Fixtures are why every caller must handle a null client rather than
+ * assume one. `backendMode()` is how the release gate tells the last two
+ * apart, which the old code could not: it read every parse failure as
+ * "no backend" and served invented data over a valid project URL.
  */
 
 export type NearcastClient = SupabaseClient<Database>;
 
-type Resolution = { client: NearcastClient | null; reason: string };
+type Resolution = {
+  client: NearcastClient | null;
+  reason: string;
+  mode: BackendMode;
+};
 
 let resolved: Resolution | null = null;
 
 function resolve(): Resolution {
-  // Parse the env FIRST, on its own. A parse failure means no backend is
-  // configured — the fixture build — which is the legitimate fall-through.
-  let env;
-  try {
-    env = parsePublicEnv({
-      EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
-      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-      EXPO_PUBLIC_APP_ENV: process.env.EXPO_PUBLIC_APP_ENV,
-    });
-  } catch {
-    return { client: null, reason: 'no EXPO_PUBLIC_SUPABASE_* config — running on local fixtures' };
+  // Classify the env FIRST. Absent and invalid are different answers, and
+  // conflating them is what let a typo serve fabricated data: every parse
+  // failure used to be read as "no backend", so a misspelled APP_ENV beside
+  // a real project URL quietly became a fixture build.
+  const classified = classifyPublicEnv({
+    EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    EXPO_PUBLIC_APP_ENV: process.env.EXPO_PUBLIC_APP_ENV,
+  });
+
+  if (classified.kind === 'absent') {
+    return {
+      client: null,
+      mode: 'fixtures',
+      reason: 'no EXPO_PUBLIC_SUPABASE_* config — running on local fixtures',
+    };
   }
+
+  if (classified.kind === 'invalid') {
+    const message = classified.problems.join('; ');
+    console.error(`[nearcast] backend config is invalid: ${message}`);
+
+    // Deliberately NOT 'fixtures'. Someone meant to configure a backend and
+    // got it wrong; answering with invented data hides the mistake behind a
+    // working-looking app.
+    return { client: null, mode: 'misconfigured', reason: message };
+  }
+
+  const env = classified.env;
 
   // From here the backend IS configured. If client creation fails, that
   // is a real error — surface it, and do NOT silently serve fabricated
@@ -84,15 +113,15 @@ function resolve(): Resolution {
         `app will only work on the same Wi-Fi. Point EXPO_PUBLIC_SUPABASE_URL ` +
         `at your hosted https://<project-ref>.supabase.co and rebuild.`;
       console.warn(`[nearcast] ${warning}`);
-      return { client, reason: warning };
+      return { client, mode: 'live', reason: warning };
     }
 
-    return { client, reason: `connected to ${env.supabaseUrl}` };
+    return { client, mode: 'live', reason: `connected to ${env.supabaseUrl}` };
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
     const message = `backend is configured but the client failed to start: ${detail}`;
     console.error(`[nearcast] ${message}`);
-    return { client: null, reason: message };
+    return { client: null, mode: 'misconfigured', reason: message };
   }
 }
 
@@ -114,6 +143,14 @@ export function isBackendConfigured(): boolean {
 /** Human-readable, for the dev diagnostics row on the you sheet. */
 export function backendStatus(): string {
   return resolution().reason;
+}
+
+/**
+ * Live, fixtures, or misconfigured. The release gate reads this to decide
+ * whether the app may run at all.
+ */
+export function backendMode(): BackendMode {
+  return resolution().mode;
 }
 
 /** test-only: forget the memoised resolution so env changes take effect. */

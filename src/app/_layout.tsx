@@ -24,6 +24,7 @@ import {
 import { useNotificationRouting } from '@/features/notifications/routing';
 import { refreshConversations, shellPollInterval, subscribeToActivity } from '@/features/chat/chat';
 import { refreshInteractions } from '@/features/casts/store';
+import { ReleaseGate } from '@/infrastructure/config/release-gate';
 import { usePoll } from '@/infrastructure/net/use-poll';
 import { flushWrites } from '@/infrastructure/persistence/storage';
 
@@ -167,6 +168,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
+      <ReleaseGate>
       <Stack
       screenOptions={{
         headerShown: false,
@@ -212,6 +214,7 @@ export default function RootLayout() {
       <Stack.Screen name="legal/privacy" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/guidelines" options={{ presentation: 'modal' }} />
       </Stack>
+      </ReleaseGate>
     </SafeAreaProvider>
   );
 }
