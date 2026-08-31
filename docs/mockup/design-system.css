@@ -233,29 +233,30 @@ body.mockup {
 }
 .phone[data-field] .wordmark { color: var(--fg); opacity: 0.7; }
 
-/* BarButton — component.bar: 58 tall, 16 radius, 20 side padding */
+/* BarButton — src/design-system/components/button.tsx.
+   The variant names the background the button PAINTS, not the ground it
+   sits on: onOrange is an orange button with ink text, which is what
+   onboarding uses on a cream screen. Disabled is opacity, not a
+   different fill. */
 .bar {
-  display: flex; align-items: center; justify-content: center;
-  height: var(--bar-height); border-radius: var(--r-bar);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--bar-height); border-radius: var(--r-bar);
   padding: 0 var(--bar-padding-x); border: 0; width: 100%;
   font-family: var(--font-display); font-weight: 800;
-  font-size: 19px; letter-spacing: -0.2px;
-  background: var(--ink); color: var(--cream); cursor: default;
+  font-size: 17px; letter-spacing: -0.15px; cursor: default;
 }
-.bar--onCream   { background: var(--ink);  color: var(--cream); }
-.bar--onOrange  { background: var(--cream); color: var(--ink); }
-.bar--pole      { background: var(--pole-bg); color: var(--pole-fg); }
-.bar--disabled  { background: var(--ink12); color: var(--ink40); }
-.bar--loading   { background: var(--ink);  color: var(--cream45); }
+.bar--onInk    { background: var(--ink);    color: var(--cream); }
+.bar--onCream  { background: var(--cream);  color: var(--ink); }
+.bar--onOrange { background: var(--accent); color: var(--ink); }
+.bar--disabled { opacity: 0.45; }
 
-/* QuietAction — a 44pt text-only affordance */
+/* QuietAction — 44pt target, opacity 0.6, displaySemi 14 */
 .quiet {
-  min-height: var(--quiet-min-height);
+  min-height: var(--quiet-min-height); width: 100%;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-text); font-weight: 400; font-size: 17px;
-  color: var(--ink40); background: none; border: 0;
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
+  color: inherit; opacity: 0.6; background: none; border: 0;
 }
-.phone[data-field] .quiet { color: var(--fg); opacity: 0.7; }
 
 /* Field — component.field, the compose input */
 .field {
@@ -422,3 +423,51 @@ body.mockup {
 }
 .notice--offline { background: var(--yellow); }
 .notice--error { background: var(--accent); color: var(--cream); }
+
+/* ==========================================================================
+   onboarding — src/app/onboarding/index.tsx `styles`
+   These are the screen's OWN values, not the design system's. The title is
+   34/36 at -0.8 (not tokens.typography.title), the hint is 15/22, the
+   screen pads 24, and the input carries a 1.5px ACCENT border in its
+   resting state — the orange outline is normal, not an error.
+   ========================================================================== */
+.ob-screen { padding: 0 24px; background: var(--cream); }
+.ob-top { min-height: 44px; display: flex; align-items: center; justify-content: space-between; }
+.ob-chevron { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 30px; color: var(--ink); }
+.ob-help { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--text-muted-on-cream); }
+.ob-progress { display: flex; margin-top: 6px; margin-bottom: 20px; }
+.ob-progress > i { flex: 1; height: 3px; border-radius: 4px; background: var(--hairline-on-cream); }
+.ob-progress > i + i { margin-left: 6px; }
+.ob-progress > i.on { background: var(--accent); }
+.ob-title { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 36px;
+  letter-spacing: -0.8px; color: var(--ink); margin: 8px 0 0; }
+.ob-hint { font-family: var(--font-text); font-weight: 400; font-size: 15px; line-height: 22px;
+  color: var(--text-muted-on-cream); margin: 12px 0 22px; }
+.ob-input {
+  display: flex; align-items: center; width: 100%; min-height: 56px;
+  border-radius: var(--r-control); border: 1.5px solid var(--accent);
+  padding: 0 14px; font-family: var(--font-text); font-size: 18px; color: var(--ink);
+  background: none;
+}
+.ob-input::placeholder, .ob-input.placeholder { color: var(--text-muted-on-cream); }
+.ob-tagsRow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ob-tag { min-height: 36px; padding: 0 14px; border-radius: var(--r-pill);
+  background: var(--ink); color: var(--cream); display: flex; align-items: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase; }
+.ob-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ob-chip { min-height: 40px; padding: 0 14px; border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-on-cream); color: var(--text-muted-on-cream);
+  display: flex; align-items: center; background: none;
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase; }
+.ob-chip.on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.ob-pickRow { min-height: 56px; margin-top: 18px; padding: 14px 0;
+  border-bottom: 1px solid var(--hairline-on-cream);
+  display: flex; align-items: center; justify-content: space-between; }
+.ob-pickValue { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--ink); }
+.ob-pickPlaceholder { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--text-muted-on-cream); }
+.ob-pickSub { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px;
+  color: var(--text-muted-on-cream); margin-top: 4px; }
+.ob-pickChevron { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--ink); }
+.ob-actions { display: flex; flex-direction: column; gap: 2px; padding-bottom: 4px; }

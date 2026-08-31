@@ -240,29 +240,30 @@ body.mockup {
 }
 .phone[data-field] .wordmark { color: var(--fg); opacity: 0.7; }
 
-/* BarButton — component.bar: 58 tall, 16 radius, 20 side padding */
+/* BarButton — src/design-system/components/button.tsx.
+   The variant names the background the button PAINTS, not the ground it
+   sits on: onOrange is an orange button with ink text, which is what
+   onboarding uses on a cream screen. Disabled is opacity, not a
+   different fill. */
 .bar {
-  display: flex; align-items: center; justify-content: center;
-  height: var(--bar-height); border-radius: var(--r-bar);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--bar-height); border-radius: var(--r-bar);
   padding: 0 var(--bar-padding-x); border: 0; width: 100%;
   font-family: var(--font-display); font-weight: 800;
-  font-size: 19px; letter-spacing: -0.2px;
-  background: var(--ink); color: var(--cream); cursor: default;
+  font-size: 17px; letter-spacing: -0.15px; cursor: default;
 }
-.bar--onCream   { background: var(--ink);  color: var(--cream); }
-.bar--onOrange  { background: var(--cream); color: var(--ink); }
-.bar--pole      { background: var(--pole-bg); color: var(--pole-fg); }
-.bar--disabled  { background: var(--ink12); color: var(--ink40); }
-.bar--loading   { background: var(--ink);  color: var(--cream45); }
+.bar--onInk    { background: var(--ink);    color: var(--cream); }
+.bar--onCream  { background: var(--cream);  color: var(--ink); }
+.bar--onOrange { background: var(--accent); color: var(--ink); }
+.bar--disabled { opacity: 0.45; }
 
-/* QuietAction — a 44pt text-only affordance */
+/* QuietAction — 44pt target, opacity 0.6, displaySemi 14 */
 .quiet {
-  min-height: var(--quiet-min-height);
+  min-height: var(--quiet-min-height); width: 100%;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-text); font-weight: 400; font-size: 17px;
-  color: var(--ink40); background: none; border: 0;
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
+  color: inherit; opacity: 0.6; background: none; border: 0;
 }
-.phone[data-field] .quiet { color: var(--fg); opacity: 0.7; }
 
 /* Field — component.field, the compose input */
 .field {
@@ -430,6 +431,54 @@ body.mockup {
 .notice--offline { background: var(--yellow); }
 .notice--error { background: var(--accent); color: var(--cream); }
 
+/* ==========================================================================
+   onboarding — src/app/onboarding/index.tsx `styles`
+   These are the screen's OWN values, not the design system's. The title is
+   34/36 at -0.8 (not tokens.typography.title), the hint is 15/22, the
+   screen pads 24, and the input carries a 1.5px ACCENT border in its
+   resting state — the orange outline is normal, not an error.
+   ========================================================================== */
+.ob-screen { padding: 0 24px; background: var(--cream); }
+.ob-top { min-height: 44px; display: flex; align-items: center; justify-content: space-between; }
+.ob-chevron { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 30px; color: var(--ink); }
+.ob-help { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--text-muted-on-cream); }
+.ob-progress { display: flex; margin-top: 6px; margin-bottom: 20px; }
+.ob-progress > i { flex: 1; height: 3px; border-radius: 4px; background: var(--hairline-on-cream); }
+.ob-progress > i + i { margin-left: 6px; }
+.ob-progress > i.on { background: var(--accent); }
+.ob-title { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 36px;
+  letter-spacing: -0.8px; color: var(--ink); margin: 8px 0 0; }
+.ob-hint { font-family: var(--font-text); font-weight: 400; font-size: 15px; line-height: 22px;
+  color: var(--text-muted-on-cream); margin: 12px 0 22px; }
+.ob-input {
+  display: flex; align-items: center; width: 100%; min-height: 56px;
+  border-radius: var(--r-control); border: 1.5px solid var(--accent);
+  padding: 0 14px; font-family: var(--font-text); font-size: 18px; color: var(--ink);
+  background: none;
+}
+.ob-input::placeholder, .ob-input.placeholder { color: var(--text-muted-on-cream); }
+.ob-tagsRow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ob-tag { min-height: 36px; padding: 0 14px; border-radius: var(--r-pill);
+  background: var(--ink); color: var(--cream); display: flex; align-items: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase; }
+.ob-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ob-chip { min-height: 40px; padding: 0 14px; border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-on-cream); color: var(--text-muted-on-cream);
+  display: flex; align-items: center; background: none;
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase; }
+.ob-chip.on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.ob-pickRow { min-height: 56px; margin-top: 18px; padding: 14px 0;
+  border-bottom: 1px solid var(--hairline-on-cream);
+  display: flex; align-items: center; justify-content: space-between; }
+.ob-pickValue { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--ink); }
+.ob-pickPlaceholder { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--text-muted-on-cream); }
+.ob-pickSub { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px;
+  color: var(--text-muted-on-cream); margin-top: 4px; }
+.ob-pickChevron { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--ink); }
+.ob-actions { display: flex; flex-direction: column; gap: 2px; padding-bottom: 4px; }
+
 .band { max-width:1200px; margin:56px auto 24px; font-family:var(--font-mono); font-weight:600;
   font-size:12px; letter-spacing:1.9px; text-transform:uppercase; color:var(--ink40);
   border-top:1px solid var(--ink12); padding-top:18px; }
@@ -437,9 +486,10 @@ body.mockup {
 <body class="mockup">
 <div class="sheetnote">
 <h1>onboarding, both branches</h1>
-<p>Every value here — colour, type size, tracking, radius, the 56px dock row, the 104px poster reserve —
-is read from <code>src/design-system/tokens.ts</code>. Copy is verbatim from the screen source.
-Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS insets (59 top, 34 bottom).</p>
+<p>Rebuilt from each screen&rsquo;s own <code>StyleSheet.create</code>, not from the design system alone.
+The onboarding title is 34/36 at &minus;0.8 (not <code>typography.title</code>), the hint 15/22, the screen pads 24,
+the rail is 3px bars with 6px gaps, and the CTA is <code>onOrange</code> &mdash; an orange button with ink text,
+which is the washed-out tan button in the device photo. Disabled is opacity 0.45, not a grey fill.</p>
 </div>
 <h2 class="band">A · open signup (this branch)</h2><div class="rack">
 <figure class="slot"><div class="phone"><div class="island"></div>
@@ -448,22 +498,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HELLO</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what should we call you?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <div style="margin-top:26px"><input class="input" placeholder="first name"></div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" placeholder="first name">
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar bar--disabled">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange bar--disabled">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/01-name</b><em>step 1 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
@@ -473,22 +521,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HELLO</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what should we call you?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <div style="margin-top:26px"><input class="input input--focus" value="Piyush" style="font-family:var(--font-text)"></div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" value="Piyush">
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>filled</b><em>next enables only once a name exists</em></figcaption></figure>
@@ -500,22 +546,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HOME</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HOME</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">where&rsquo;s home, roughly?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">the neighbourhood, not the address. we keep it approximate.</p>
-    <div style="margin-top:26px"><div class="row" style="border-top:1px solid var(--hairline-on-cream)"><div class="row__body"><div class="row__title">Sector 17</div><div class="row__meta">chandigarh &middot; approximate</div></div><span class="row__end">change</span></div></div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where&rsquo;s home, roughly?</h2>
+    <p class="ob-hint">the neighbourhood, not the address. we keep it approximate.</p>
+    <div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div><div class="ob-pickSub">chandigarh &middot; approximate</div></div><span class="ob-pickChevron">&#8250;</span></div>
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/02-home</b><em>step 2 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
@@ -527,22 +571,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; AREAS</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; AREAS</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">where else are you around?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
-    <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:8px"><span class="tag tag--on">sector 17</span><span class="tag tag--on">elante</span><span class="tag">+ add a neighborhood</span></div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where else are you around?</h2>
+    <p class="ob-hint">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
+    <div class="ob-tagsRow"><span class="ob-tag">sector 17</span><span class="ob-tag">elante</span></div><div class="ob-pickRow"><span class="ob-pickPlaceholder">add a neighborhood</span><span class="ob-pickChevron">&#8250;</span></div>
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/03-areas</b><em>step 3 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
@@ -554,22 +596,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; INTERESTS</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INTERESTS</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what are you actually into?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
-    <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:8px"><span class="tag">social</span><span class="tag">sports</span><span class="tag tag--on">food + drinks</span><span class="tag">music + nightlife</span><span class="tag">travel + outdoors</span><span class="tag tag--on">games</span><span class="tag tag--on">arts + making</span><span class="tag">learning</span><span class="tag">networking</span><span class="tag">help + favors</span></div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what are you actually into?</h2>
+    <p class="ob-hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
+    <div class="ob-chips"><span class="ob-chip">social</span><span class="ob-chip">sports</span><span class="ob-chip on">food + drinks</span><span class="ob-chip">music + nightlife</span><span class="ob-chip">travel + outdoors</span><span class="ob-chip on">games</span><span class="ob-chip on">arts + making</span><span class="ob-chip">learning</span><span class="ob-chip">networking</span><span class="ob-chip">help + favors</span></div>
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">looks good</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/04-interests</b><em>step 4 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
@@ -581,22 +621,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; PUSH</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; PUSH</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">two pings. that&rsquo;s it.</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">two pings. that&rsquo;s it.</h2>
+    <p class="ob-hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
     
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar bar--onCream">turn on push</button><button class="quiet">not now</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">turn on push</button><button class="quiet">not now</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/05-push</b><em>step 5 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
@@ -607,22 +645,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HELLO</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what should we call you?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <div style="margin-top:26px"><input class="input" placeholder="first name"></div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" placeholder="first name">
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar bar--disabled">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange bar--disabled">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/01-name</b><em>step 1 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
@@ -632,22 +668,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HELLO</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what should we call you?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <div style="margin-top:26px"><input class="input input--focus" value="Piyush" style="font-family:var(--font-text)"></div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" value="Piyush">
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>filled</b><em>next enables only once a name exists</em></figcaption></figure>
@@ -659,22 +693,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; INVITATION</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INVITATION</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">got an invitation?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
-    <div style="margin-top:26px"><input class="input input--error" placeholder="invitation code"></div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">got an invitation?</h2>
+    <p class="ob-hint">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
+    <input class="ob-input" placeholder="invitation code">
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/02-invite</b><em>step 2 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
@@ -684,22 +716,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; INVITATION</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INVITATION</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">got an invitation?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
-    <div style="margin-top:26px"><input class="input input--error" value="ca00112f&hellip;" style="font-family:var(--font-mono);font-size:13px"></div><div class="notice notice--error" style="margin-top:12px">that code is not valid, or it has already been used. ask whoever invited you for another.</div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">got an invitation?</h2>
+    <p class="ob-hint">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
+    <input class="ob-input" value="ca00112f8&hellip;" style="font-family:var(--font-mono);font-size:14px"><div class="notice notice--error" style="margin-top:14px">that code is not valid, or it has already been used. ask whoever invited you for another.</div>
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">join</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">join</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>rejected</b><em>redeem_invite logs every attempt, valid or not</em></figcaption></figure>
@@ -711,22 +741,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HOME</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HOME</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">where&rsquo;s home, roughly?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">the neighbourhood, not the address. we keep it approximate.</p>
-    <div style="margin-top:26px"><div class="row" style="border-top:1px solid var(--hairline-on-cream)"><div class="row__body"><div class="row__title">Sector 17</div><div class="row__meta">chandigarh &middot; approximate</div></div><span class="row__end">change</span></div></div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where&rsquo;s home, roughly?</h2>
+    <p class="ob-hint">the neighbourhood, not the address. we keep it approximate.</p>
+    <div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div><div class="ob-pickSub">chandigarh &middot; approximate</div></div><span class="ob-pickChevron">&#8250;</span></div>
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/03-home</b><em>step 3 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
@@ -738,22 +766,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; AREAS</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; AREAS</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">where else are you around?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
-    <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:8px"><span class="tag tag--on">sector 17</span><span class="tag tag--on">elante</span><span class="tag">+ add a neighborhood</span></div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where else are you around?</h2>
+    <p class="ob-hint">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
+    <div class="ob-tagsRow"><span class="ob-tag">sector 17</span><span class="ob-tag">elante</span></div><div class="ob-pickRow"><span class="ob-pickPlaceholder">add a neighborhood</span><span class="ob-pickChevron">&#8250;</span></div>
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/04-areas</b><em>step 4 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
@@ -765,22 +791,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; INTERESTS</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INTERESTS</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what are you actually into?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
-    <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:8px"><span class="tag">social</span><span class="tag">sports</span><span class="tag tag--on">food + drinks</span><span class="tag">music + nightlife</span><span class="tag">travel + outdoors</span><span class="tag tag--on">games</span><span class="tag tag--on">arts + making</span><span class="tag">learning</span><span class="tag">networking</span><span class="tag">help + favors</span></div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what are you actually into?</h2>
+    <p class="ob-hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
+    <div class="ob-chips"><span class="ob-chip">social</span><span class="ob-chip">sports</span><span class="ob-chip on">food + drinks</span><span class="ob-chip">music + nightlife</span><span class="ob-chip">travel + outdoors</span><span class="ob-chip on">games</span><span class="ob-chip on">arts + making</span><span class="ob-chip">learning</span><span class="ob-chip">networking</span><span class="ob-chip">help + favors</span></div>
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">looks good</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/05-interests</b><em>step 5 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
@@ -792,22 +816,20 @@ Device is an iPhone 16 Pro at its logical size (402&times;874) with real iOS ins
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; PUSH</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; PUSH</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">two pings. that&rsquo;s it.</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">two pings. that&rsquo;s it.</h2>
+    <p class="ob-hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
     
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar bar--onCream">turn on push</button><button class="quiet">not now</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">turn on push</button><button class="quiet">not now</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/06-push</b><em>step 6 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>

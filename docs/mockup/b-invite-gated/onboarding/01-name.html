@@ -14,22 +14,20 @@
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HELLO</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what should we call you?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <div style="margin-top:26px"><input class="input" placeholder="first name"></div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" placeholder="first name">
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar bar--disabled">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange bar--disabled">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/01-name</b><em>step 1 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
@@ -39,22 +37,20 @@
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
 </span></div>
-<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; HELLO</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    <div class="rail"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">what should we call you?</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <div style="margin-top:26px"><input class="input input--focus" value="Piyush" style="font-family:var(--font-text)"></div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" value="Piyush">
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
-    <button class="bar">next</button>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
   </div>
 </div>
 <div class="home-indicator"></div></div><figcaption><b>filled</b><em>next enables only once a name exists</em></figcaption></figure>

@@ -50,29 +50,33 @@ def rail(total, on):
         f'<i class="{"on" if i < on else ""}"></i>' for i in range(total)) + '</div>'
 
 def onboarding(step_label, total, index, title, hint, control, extra=''):
-    """One onboarding step. Matches src/app/onboarding/index.tsx layout:
-    back chevron + wordmark + rail, scrolling body, actions pinned bottom."""
-    return f'''<div class="canvas">
-  <div class="pad" style="padding-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <span style="font-family:var(--font-display);font-weight:800;font-size:30px;line-height:30px">&#8249;</span>
-      <span class="wordmark">NEARCAST &middot; {step_label}</span>
-      <span class="wordmark" style="font-size:15px">?</span>
-    </div>
-    {rail(total, index)}
+    """One onboarding step, laid out from src/app/onboarding/index.tsx.
+
+    Structure is the screen's: a 44pt top row (back chevron, wordmark, help),
+    the progress rail, a ScrollView, then actions pinned to the bottom. Every
+    measurement below is that file's own StyleSheet, not the design system's —
+    the title is 34/36 at -0.8, the hint 15/22, the screen pads 24.
+    """
+    return f'''<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; {step_label}</span>
+    <span class="ob-help">?</span>
   </div>
-  <div class="pad" style="flex:1;padding-top:26px">
-    <h2 class="t-title" style="margin:0 0 10px">{title}</h2>
-    <p class="t-body" style="margin:0;color:var(--ink40)">{hint}</p>
+  <div class="ob-progress">{"".join(f'<i class="{"on" if i < index else ""}"></i>' for i in range(total))}</div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">{title}</h2>
+    <p class="ob-hint">{hint}</p>
     {extra}
   </div>
-  <div class="pad" style="padding-bottom:calc(var(--inset-bottom) + 14px);display:flex;flex-direction:column;gap:6px">
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
     {control}
   </div>
 </div>'''
 
-NEXT = '<button class="bar">next</button>'
-NEXT_OFF = '<button class="bar bar--disabled">next</button>'
+NEXT = '<button class="bar bar--onOrange">next</button>'
+NEXT_OFF = '<button class="bar bar--onOrange bar--disabled">next</button>'
+LOOKS_GOOD = '<button class="bar bar--onOrange">looks good</button>'
 
 # ---------------------------------------------------------------- steps
 def steps(gated):
@@ -103,17 +107,17 @@ COPY = {
 }
 
 EXTRA = {
- 'name': '<div style="margin-top:26px"><input class="input" placeholder="first name"></div>',
- 'invite': '<div style="margin-top:26px"><input class="input input--error" placeholder="invitation code"></div>',
- 'home': '<div style="margin-top:26px"><div class="row" style="border-top:1px solid var(--hairline-on-cream)">'
-         '<div class="row__body"><div class="row__title">Sector 17</div>'
-         '<div class="row__meta">chandigarh &middot; approximate</div></div>'
-         '<span class="row__end">change</span></div></div>',
- 'areas': '<div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:8px">'
-          '<span class="tag tag--on">sector 17</span><span class="tag tag--on">elante</span>'
-          '<span class="tag">+ add a neighborhood</span></div>',
- 'interests': '<div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:8px">'
-   + ''.join(f'<span class="tag{" tag--on" if t in ("games","food + drinks","arts + making") else ""}">{t}</span>'
+ 'name': '<input class="ob-input" placeholder="first name">',
+ 'invite': '<input class="ob-input" placeholder="invitation code">',
+ 'home': '<div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div>'
+         '<div class="ob-pickSub">chandigarh &middot; approximate</div></div>'
+         '<span class="ob-pickChevron">&#8250;</span></div>',
+ 'areas': '<div class="ob-tagsRow"><span class="ob-tag">sector 17</span>'
+          '<span class="ob-tag">elante</span></div>'
+          '<div class="ob-pickRow"><span class="ob-pickPlaceholder">add a neighborhood</span>'
+          '<span class="ob-pickChevron">&#8250;</span></div>',
+ 'interests': '<div class="ob-chips">'
+   + ''.join(f'<span class="ob-chip{" on" if t in ("games","food + drinks","arts + making") else ""}">{t}</span>'
              for t in ['social','sports','food + drinks','music + nightlife','travel + outdoors',
                        'games','arts + making','learning','networking','help + favors'])
    + '</div>',
@@ -121,7 +125,9 @@ EXTRA = {
 }
 
 CONTROL = {
- 'push': '<button class="bar bar--onCream">turn on push</button><button class="quiet">not now</button>',
+ 'push': '<button class="bar bar--onOrange">turn on push</button>'
+         '<button class="quiet">not now</button>',
+ 'interests': LOOKS_GOOD,
 }
 
 def build_branch(slug, gated, label):
@@ -137,15 +143,14 @@ def build_branch(slug, gated, label):
         # the empty / invalid variant, where the step has an input to get wrong
         if s == 'name':
             body2 = onboarding(step_label, total, i, title, hint, NEXT,
-                '<div style="margin-top:26px"><input class="input input--focus" value="Piyush" '
-                'style="font-family:var(--font-text)"></div>')
+                '<input class="ob-input" value="Piyush">')
             slots.append((phone(body2), '<b>filled</b><em>next enables only once a name exists</em>'))
         if s == 'invite':
             body2 = onboarding(step_label, total, i, title, hint,
-                '<button class="bar">join</button>',
-                '<div style="margin-top:26px"><input class="input input--error" '
-                'value="ca00112f&hellip;" style="font-family:var(--font-mono);font-size:13px"></div>'
-                '<div class="notice notice--error" style="margin-top:12px">that code is not valid, '
+                '<button class="bar bar--onOrange">join</button>',
+                '<input class="ob-input" value="ca00112f8&hellip;" '
+                'style="font-family:var(--font-mono);font-size:14px">'
+                '<div class="notice notice--error" style="margin-top:14px">that code is not valid, '
                 'or it has already been used. ask whoever invited you for another.</div>')
             slots.append((phone(body2), '<b>rejected</b><em>redeem_invite logs every attempt, valid or not</em>'))
         note = (f'Onboarding step {i} of {total} on the <code>{label}</code> branch. '
