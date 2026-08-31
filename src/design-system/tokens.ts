@@ -102,7 +102,12 @@ export const tokens = {
        *  fill of `fg`, glyph cut from the field — so it needs no ring;
        *  the ring only ever existed to rescue an accent fill on the
        *  social field, where button and poster were the same orange. */
-      cast: { size: 36, radius: 12, top: 4 },
+      // 30% larger than it was (36), because at 36 it read as one more
+      // mark rather than the one action in the row. `top` is negative
+      // to keep the chip centred on the same midpoint as the marks
+      // (iconTop + icon/2 = 22) now that it is taller than the line;
+      // the chip is absolutely positioned, so this shifts nothing else.
+      cast: { size: 46, radius: 15, top: -1 },
       /** ground-coloured, so it is invisible on a poster and stops list
        *  rows colliding with the marks on the cream screens. */
       scrim: 130,

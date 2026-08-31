@@ -120,8 +120,13 @@ describe('dock', () => {
     const markMid = dock.iconTop + dock.icon / 2;
     const castMid = dock.cast.top + dock.cast.size / 2;
     expect(castMid).toBe(markMid);
-    // and the label line clears the tallest thing above it
-    expect(dock.labelTop).toBeGreaterThan(dock.cast.top + dock.cast.size);
+    // The label line clears the marks. It is NOT compared against the
+    // cast chip any more: the chip is taller than the mark line by
+    // design and its column prints no label, so there is nothing under
+    // it to collide with.
+    expect(dock.labelTop).toBeGreaterThan(dock.iconTop + dock.icon * dock.selectedScale);
+    // the chip is the largest shape in the row, and stays so
+    expect(dock.cast.size).toBeGreaterThan(dock.icon * dock.selectedScale);
     // the selected mark grows about the centre of a fixed box, so it can
     // never push the label line down as selection moves along the row
     expect(dock.selectedScale).toBeGreaterThan(1);
@@ -171,10 +176,17 @@ describe('dock', () => {
     // both copies are hidden: the pressable row is what a screen reader
     // walks. Without hiding them it heard "chats" three times before it
     // reached alerts.
-    for (const label of ['near', 'chats', 'alerts', 'you', 'cast']) {
+    for (const label of ['near', 'chats', 'alerts', 'you']) {
       expect(view.queryAllByText(label, { includeHiddenElements: true }).length).toBe(2);
       expect(view.queryAllByText(label)).toHaveLength(0);
     }
+    // The cast chip prints no label at all, in any layer. It is a filled
+    // action with the glyph punched out of it, so a word underneath
+    // repeats the shape — and beside four tab labels it read as stray
+    // text sitting behind the button, which is how it was reported.
+    expect(view.queryAllByText('cast', { includeHiddenElements: true })).toHaveLength(0);
+    // and it is still reachable, by its accessibility label
+    expect(view.getByRole('button', { name: 'cast something' })).toBeTruthy();
     // and each slot is reachable exactly once, through its own control
     for (const [name, count] of [['near', 0], ['chats', 2], ['alerts', 3], ['you', 0]] as const) {
       const label = count > 0 ? `${name}, ${count} waiting` : name;

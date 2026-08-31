@@ -196,12 +196,24 @@ describe('home pager', () => {
     expect(view.getAllByText('NEARCAST').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('opens the detail sheet from the headline and the join sheet from the bar', async () => {
-    const user = userEvent.setup();
+  /**
+   * The feed IS the cast page: one cast fills the screen, with its own
+   * words, area, reason and actions. Tapping the headline used to push
+   * /cast/[id], which opened a second, smaller copy of what was already
+   * on screen. There is nothing to open, so the headline is no longer a
+   * button at all.
+   */
+  it('does not open a second copy of the cast already on screen', async () => {
     const view = await render(<HomeScreen />);
 
-    await user.press(view.getByRole('button', { name: 'Open cast: badminton after work. need two.' }));
-    expect(mockPush).toHaveBeenCalledWith('/cast/badminton-after-work');
+    expect(
+      view.queryByRole('button', { name: 'Open cast: badminton after work. need two.' }),
+    ).toBeNull();
+  });
+
+  it('opens the join sheet from the bar', async () => {
+    const user = userEvent.setup();
+    const view = await render(<HomeScreen />);
 
     await user.press(view.getAllByRole('button', { name: 'ask to join' })[0]);
     expect(mockPush).toHaveBeenCalledWith('/join/badminton-after-work');

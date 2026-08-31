@@ -224,7 +224,15 @@ function MarkRow({
                 <Mark slot={slot} fg={fg} initials={initials} photo={photo} selected={on} />
               </View>
             )}
-            <Text style={[styles.label, on ? styles.labelOn : null, { color: fg }]}>{slot.label}</Text>
+            {/* No label under the cast chip. It is a filled action with the
+                glyph punched out of it, so a word underneath repeats what
+                the shape already says — and next to four tab labels it
+                reads as stray text sitting behind the button. The
+                pressable keeps its accessibility label, so a screen reader
+                still announces it. */}
+            {slot.kind === 'cast' ? null : (
+              <Text style={[styles.label, on ? styles.labelOn : null, { color: fg }]}>{slot.label}</Text>
+            )}
           </View>
         );
       })}

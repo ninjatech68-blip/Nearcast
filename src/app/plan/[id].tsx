@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
 import { BarButton, QuietAction } from '@/design-system/components/button';
 import { Face } from '@/design-system/components/face';
@@ -8,6 +8,9 @@ import { Tag } from '@/design-system/components/tag';
 import { category as categoryTokens, fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { usePlanDetail } from '@/features/casts/plan-detail';
+import { getCast } from '@/features/casts/store';
+import { shareMessageFor } from '@/features/sharing/share-link';
+import { shareLinkForSlug } from '@/features/sharing/remote-share';
 
 /**
  * The plan detail: what a plan actually is, for someone in it.
@@ -21,6 +24,34 @@ import { usePlanDetail } from '@/features/casts/plan-detail';
 export default function PlanDetailScreen() {
   const { id, chat } = useLocalSearchParams<{ id: string; chat?: string }>();
   const { plan, loading } = usePlanDetail(id);
+
+  /**
+   * The share slug comes from the store rather than `plan_detail`.
+   *
+   * `my_casts` already carries it, filtered to casts you own, and this
+   * screen is only reached from the list that reads `my_casts` — so the
+   * value is loaded before we get here. Adding it to `plan_detail` too
+   * would mean a second migration and another push for one field that is
+   * already in memory. Undefined hides the button rather than offering a
+   * link that cannot be built.
+   */
+  const shareSlug = id ? getCast(id)?.shareSlug : undefined;
+
+  /**
+   * The system share sheet, so Nearcast never learns where the link went.
+   * Sharing into a WhatsApp group must not tell us the group exists.
+   */
+  async function share() {
+    if (!shareSlug || !plan) return;
+
+    const link = shareLinkForSlug(shareSlug);
+
+    try {
+      await Share.share({ message: shareMessageFor(plan.statement, link), url: link.url });
+    } catch {
+      // Dismissing the sheet throws on iOS. Nothing to report.
+    }
+  }
 
   if (loading) {
     return (
@@ -119,10 +150,13 @@ export default function PlanDetailScreen() {
                 it too. What was missing was saying so: the button simply
                 vanished, which reads as a missing feature rather than a
                 rule, and that is exactly how it was reported. */}
+            {shareSlug === undefined ? null : (
+              <BarButton label="share this cast" variant="onOrange" onPress={() => void share()} />
+            )}
             {plan.participantCount === 0 && plan.status === 'live' ? (
               <BarButton
                 label="edit this cast"
-                variant="onOrange"
+                variant="onCream"
                 onPress={() => router.push(`/edit-cast/${plan.intentId}`)}
               />
             ) : (

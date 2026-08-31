@@ -276,7 +276,6 @@ function SkippablePoster({ cast, lensOn, onSkip }: { cast: CastDetail; lensOn: b
       <Poster
         cast={cast}
         topRight={<Lens color={fg} on={lensOn} onPress={() => router.push('/filter')} />}
-        onOpen={() => router.push(`/cast/${cast.id}`)}
         caster={{
           line: `${cast.by.toLowerCase()} · ${cast.receipts.line.split(' · ')[0]}`,
           photo: facePhotos[cast.byId],
