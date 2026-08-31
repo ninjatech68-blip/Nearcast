@@ -12,7 +12,8 @@ This file explains the project commands in plain language.
 | `npm run ios:build` | Local Xcode release build, installed over USB |
 | `npm run preflight:release` | Checks the environment points at the hosted project before a build |
 
-There is no development server and no simulator target. A development build
+The build commands go through `npx eas-cli`, so no global install is
+needed. There is no development server and no simulator target. A development build
 fetches its JavaScript from whatever answers on port 8081, which has already
 put another project's app on a phone here. Release builds embed the bundle, so
 the app runs anywhere, and that is the only shape a tester can be given.

@@ -102,11 +102,14 @@ Expo project the one in `app.json` (`extra.eas.projectId`).
 
 The bundle identifier changed on 2026-08-31: the app had been building as
 `com.piyushsharma.trvlai.test` under the name `TrvlAI Test`, a different
-product's identity, through fifteen builds. Two consequences for push:
+product's identity, through fifteen builds. One consequence for push, and one non-consequence:
 
-- **A push key must be registered against the new identifier.** The old
-  registration does not carry over, so notifications stay silent until this
-  step is repeated.
+- **The push key carries over; the tokens do not.** An APNs auth key is
+  issued to the Apple team, not to one app, so the existing key works for
+  the new identifier without any action. The first build under
+  `com.piyushsharma.nearcast` reused key `YVA6Q57NS8` exactly as it should.
+  An earlier version of this note claimed the key had to be re-registered.
+  That was wrong.
 - **The push tokens already in `device_push_tokens` are dead.** A token is
   issued per app identity, so the three stored for the old app will never
   deliver again. Each device re-registers on first launch of the new app,

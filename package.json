@@ -77,8 +77,8 @@
     "db:test:hosted": "node scripts/require-db-url.mjs && supabase test db --db-url \"$SUPABASE_DB_URL\"",
     "db:stop": "./scripts/db-local.sh stop",
     "preflight:release": "node scripts/preflight-release.mjs",
-    "build:preview": "npm run preflight:release && eas build --profile preview --platform ios",
-    "build:production": "npm run preflight:release && eas build --profile production --platform ios",
+    "build:preview": "npm run preflight:release && npx eas-cli build --profile preview --platform ios",
+    "build:production": "npm run preflight:release && npx eas-cli build --profile production --platform ios",
     "verify:db": "npm run db:test"
   },
   "jest": {
