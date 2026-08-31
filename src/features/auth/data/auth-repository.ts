@@ -40,6 +40,33 @@ export type MembershipFacts = {
   hasHomeArea: boolean;
 };
 
+export type MyProfile = { displayName: string; homeArea: string | null };
+
+/**
+ * The signed-in member's own profile.
+ *
+ * Only the fields the You tab shows. There is no reliability history here yet —
+ * that is Plan 05 — and an invented one would be worse than its absence.
+ */
+export async function fetchMyProfile(): Promise<MyProfile | null> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session === null) return null;
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('display_name, city')
+    .eq('id', session.user.id)
+    .maybeSingle();
+
+  if (error !== null) throw error;
+  if (data === null) return null;
+
+  return { displayName: data.display_name, homeArea: data.city };
+}
+
 export async function fetchMembershipFacts(): Promise<MembershipFacts> {
   const {
     data: { session },
