@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { render, userEvent } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 
 const mockPush = jest.fn();
 const mockBack = jest.fn();
@@ -24,10 +24,6 @@ jest.mock('expo-symbols', () => {
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const HomeScreen = require('./app/(tabs)/index').default;
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const IntentDetailScreen = require('./app/intent/[id]').default;
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const BroadcasterProfileScreen = require('./app/profile/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const RequestSheetScreen = require('./app/request/[id]').default;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -76,32 +72,14 @@ describe('native page set', () => {
     expect(await view.findByText(/Nothing right now/)).toBeTruthy();
   });
 
-  it('shows recipient intent detail with profile and request paths', async () => {
-    const user = userEvent.setup();
-    const view = await render(<IntentDetailScreen />);
-
-    expect(view.getByText('Intent')).toBeTruthy();
-    expect(view.getByText('Posted by')).toBeTruthy();
-    expect(view.getByText('Aarav')).toBeTruthy();
-    expect(view.getByText('Area approximate')).toBeTruthy();
-    expect(view.getByText('Exact place hidden')).toBeTruthy();
-
-    await user.press(view.getByRole('button', { name: 'Open broadcaster profile for Aarav' }));
-    expect(mockPush).toHaveBeenCalledWith('/profile/aarav');
-
-    await user.press(view.getByRole('button', { name: 'Request to join' }));
-    expect(mockPush).toHaveBeenCalledWith('/request/badminton-tonight');
-  });
-
-  it('keeps broadcaster profile minimal and contextual', async () => {
-    const view = await render(<BroadcasterProfileScreen />);
-
-    expect(view.getByText('Profile')).toBeTruthy();
-    expect(view.getByText('One trusted connection')).toBeTruthy();
-    expect(view.getByText('Contact details hidden until accepted')).toBeTruthy();
-    expect(view.queryByText('Trust score')).toBeNull();
-    expect(view.queryByText('followers')).toBeNull();
-  });
+  // The intent detail screen is now data-backed; its behaviour is covered in
+  // intent-detail.test.tsx. The two assertions that used to live here checked
+  // that it rendered a fixture and pushed a hardcoded slug, which is exactly
+  // the bug: they passed while no card in the feed could open its own intent.
+  //
+  // The broadcaster profile screen was removed rather than rewritten. It showed
+  // an invented person, and a real one needs the contextual reliability history
+  // that Plan 05 defines, so there is nothing honest to render yet.
 
   it('uses a bottom sheet style response screen with disclosure', async () => {
     const view = await render(<RequestSheetScreen />);

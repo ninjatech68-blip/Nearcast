@@ -131,3 +131,4 @@ Every feed card has a valid explanation, blocked users never receive each other'
 | 2026-08-31 | Completed controlled reach expansion with a three-way gate and immediate reduction |
 | 2026-08-31 | Fixed publishing to generate deliveries and to store the approximate point discovery measures against |
 | 2026-08-31 | Added a curated place table so an area resolves to a point server-side, with no third-party geocoder and no coordinate in the app |
+| 2026-08-31 | Fixed the feed card to honour the broadcaster's first-name choice, which only the public link had respected |

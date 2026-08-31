@@ -1097,6 +1097,35 @@ export type Database = {
         Args: { target_intent: string }
         Returns: number
       }
+      delivered_intent: {
+        Args: { target_intent: string }
+        Returns: {
+          approximate_place: string | null
+          broadcaster_first_name: string | null
+          confirmation_count: number
+          currency: string | null
+          deadline_at: string | null
+          delivery_id: string
+          distance_band: string | null
+          expires_at: string
+          intent_id: string
+          is_hidden: boolean
+          is_saved: boolean
+          my_response_status: Database["public"]["Enums"]["response_status"]
+          price_minor: number | null
+          primitive: Database["public"]["Enums"]["intent_primitive"]
+          published_at: string | null
+          quantity: number | null
+          reason_code: string
+          reason_text: string
+          requirements: Json
+          response_action: string
+          starts_at: string | null
+          statement: string
+          status: Database["public"]["Enums"]["intent_status"]
+          viewer_has_confirmed: boolean
+        }[]
+      }
       home_feed: {
         Args: { page_size?: number }
         Returns: {

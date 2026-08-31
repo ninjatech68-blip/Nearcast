@@ -131,3 +131,4 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 | 2026-08-30 | Completed temporary messaging on Gifted Chat with room expiry and a send-message database function |
 | 2026-08-30 | Completed contextual response with delivery-based eligibility and a transactional notification |
 | 2026-08-30 | Completed the broadcaster inbox and atomic acceptance, with concurrency proved across two connections |
+| 2026-08-31 | Made the response CTA reachable: the intent detail screen now reads the intent it was opened for, so a delivered recipient can actually respond |

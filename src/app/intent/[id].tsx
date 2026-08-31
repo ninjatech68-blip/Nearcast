@@ -1,55 +1,172 @@
-import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Button } from '@/design-system/components/button';
 import { tokens } from '@/design-system/tokens';
-import { broadcaster, featuredIntent } from '@/features/native-demo/nearcast-fixtures';
-import { ActionTray, Group, IconLine, PrimitiveChip, PrivacyStrip, ProfileBlock, Section, SymbolIcon, TopBar } from '@/features/native-demo/native-ui';
+import { fetchDeliveredIntent } from '@/features/intents/detail/data/detail-repository';
+import {
+  listContextFacts,
+  resolveResponseAvailability,
+  type DeliveredIntent,
+} from '@/features/intents/detail/domain/detail';
+import { describeConfirmations } from '@/features/sharing/domain/public-intent';
+import { Group, PrimitiveChip, PrivacyStrip, Section, TopBar } from '@/features/native-demo/native-ui';
 
+type DetailState =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'unavailable' }
+  | { status: 'ready'; intent: DeliveredIntent };
+
+/**
+ * The intent detail screen.
+ *
+ * Everything shown here came from `delivered_intent` for the id in the route, so
+ * two different cards open two different screens. That sounds obvious and is
+ * worth stating: an earlier version of this screen rendered a fixture and
+ * ignored the id, which meant every card in the feed opened the same invented
+ * intent and the response action pointed at a slug that did not exist.
+ *
+ * A row the server declines to return is "not available" rather than an error.
+ * The two are different: an undelivered id, a restricted broadcaster and a block
+ * all legitimately return nothing, and none of them is a fault the person can
+ * retry their way out of.
+ */
 export default function IntentDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [state, setState] = useState<DetailState>({ status: 'loading' });
+  const [reloadToken, setReloadToken] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const intent = await fetchDeliveredIntent(id);
+
+        if (cancelled) return;
+
+        setState(
+          intent === null
+            ? { status: 'unavailable' }
+            : { status: 'ready', intent },
+        );
+      } catch {
+        if (!cancelled) setState({ status: 'error' });
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, reloadToken]);
+
+  const respond = useCallback((intent: DeliveredIntent) => {
+    // The real intent id, so the response reaches the intent that was opened.
+    router.push({
+      pathname: '/request/[id]',
+      params: {
+        id: intent.intentId,
+        ...(intent.broadcasterFirstName === null
+          ? {}
+          : { firstName: intent.broadcasterFirstName }),
+      },
+    });
+  }, []);
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <TopBar title="Intent" onBack={() => router.back()} />
+
+      {state.status === 'loading' && (
+        <View style={styles.centred}>
+          <ActivityIndicator color={tokens.semantic.color.actionPrimary} />
+        </View>
+      )}
+
+      {state.status === 'error' && (
+        <View style={styles.centred}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Try loading this intent again"
+            onPress={() => setReloadToken((token) => token + 1)}>
+            <Text style={styles.retry}>We could not load this. Tap to try again.</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {state.status === 'unavailable' && (
+        <View style={styles.centred}>
+          <Text style={styles.unavailable}>
+            This is not available to you any more.
+          </Text>
+        </View>
+      )}
+
+      {state.status === 'ready' && (
+        <ReadyDetail intent={state.intent} onRespond={respond} />
+      )}
+    </SafeAreaView>
+  );
+}
+
+function ReadyDetail({
+  intent,
+  onRespond,
+}: {
+  intent: DeliveredIntent;
+  onRespond: (intent: DeliveredIntent) => void;
+}) {
+  const availability = resolveResponseAvailability(intent, new Date());
+  const facts = listContextFacts(intent);
+
+  return (
+    <>
       <ScrollView contentContainerStyle={styles.content}>
         <Group>
           <View style={styles.summary}>
-            <PrimitiveChip label={featuredIntent.primitive} />
-            <Text style={styles.title}>{featuredIntent.title}</Text>
-            <Text style={styles.meta}>{featuredIntent.metadata}</Text>
-            <View style={styles.expiryPill}>
-              <SymbolIcon fallback="E" name="clock" size={16} />
-              <Text style={styles.expiryText}>{featuredIntent.expiry}</Text>
-            </View>
+            <PrimitiveChip label={intent.primitive} />
+            <Text accessibilityRole="header" style={styles.title}>
+              {intent.statement}
+            </Text>
+            <Text style={styles.meta}>
+              {intent.broadcasterFirstName ?? 'Someone nearby'}
+            </Text>
           </View>
         </Group>
 
-        <Section title="Posted by">
+        <Section title="Details">
           <Group>
-            <ProfileBlock {...broadcaster} onOpen={() => router.push('/profile/aarav')} />
-          </Group>
-        </Section>
-
-        <Section title="What they need">
-          <Group>
-            <View style={styles.context}>
-              <Text style={styles.body}>{featuredIntent.summary}</Text>
-              <View style={styles.chipRow}>
-                {featuredIntent.chips.map((chip) => (
-                  <View key={chip} style={styles.infoChip}><Text style={styles.infoChipText}>{chip}</Text></View>
-                ))}
-              </View>
+            <View style={styles.facts}>
+              {facts.map((fact) => (
+                <View key={`${fact.label}:${fact.detail}`} style={styles.factRow}>
+                  <Text style={styles.factLabel}>{fact.label}</Text>
+                  <Text style={styles.factDetail}>{fact.detail}</Text>
+                </View>
+              ))}
             </View>
           </Group>
         </Section>
 
         <Section>
           <View style={styles.reasonPanel}>
-            <SymbolIcon fallback="W" name="person.2" size={28} />
-            <View style={styles.reasonCopy}>
-              <Text style={styles.reasonText}>Why this reached you: {featuredIntent.reason}</Text>
-              <Text style={styles.reasonMeta}>Origin circle stays private.</Text>
-            </View>
+            <Text accessibilityLabel="Why you see this" style={styles.reasonText}>
+              {intent.reasonText}
+            </Text>
+            <Text style={styles.reasonMeta}>Where this came from stays private.</Text>
           </View>
+        </Section>
+
+        <Section title="Confirmations">
+          <Group>
+            <Text accessibilityLabel="Confirmation status" style={styles.confirmations}>
+              {describeConfirmations(intent.confirmationCount, intent.viewerHasConfirmed)}
+            </Text>
+          </Group>
         </Section>
 
         <Section>
@@ -57,36 +174,38 @@ export default function IntentDetailScreen() {
             <PrivacyStrip />
           </Group>
         </Section>
-
-        <Section>
-          <Group>
-            <View style={styles.hiddenRow}>
-              <IconLine fallback="H" icon="lock" text="Hidden until accepted. Exact place and contact details." />
-            </View>
-          </Group>
-        </Section>
       </ScrollView>
-      <ActionTray primaryLabel="Request to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
-    </SafeAreaView>
+
+      <View style={styles.tray}>
+        {availability.kind === 'open' ? (
+          <Button label={availability.label} onPress={() => onRespond(intent)} />
+        ) : (
+          <Text accessibilityRole="alert" style={styles.trayNotice}>
+            {availability.label}
+          </Text>
+        )}
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: tokens.semantic.color.backgroundCanvas },
+  centred: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: tokens.primitive.space[5] },
   content: { paddingHorizontal: 20, paddingBottom: 26 },
   summary: { gap: 12, padding: 16 },
   title: { fontFamily: 'Manrope_700Bold', fontSize: 24, lineHeight: 30, color: tokens.semantic.color.textPrimary },
   meta: { fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textSecondary },
-  expiryPill: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: tokens.semantic.color.trustSurface },
-  expiryText: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.trustText },
-  context: { gap: 14, padding: 16 },
-  body: { fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 23, color: tokens.semantic.color.textPrimary },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  infoChip: { paddingHorizontal: 10, paddingVertical: 7, borderRadius: 10, backgroundColor: tokens.semantic.color.backgroundSubtle },
-  infoChipText: { fontFamily: 'Manrope_600SemiBold', fontSize: 12, color: tokens.semantic.color.textSecondary },
-  reasonPanel: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, backgroundColor: tokens.semantic.color.trustSurface },
-  reasonCopy: { flex: 1 },
+  facts: { gap: 12, padding: 16 },
+  factRow: { flexDirection: 'row', gap: 12, justifyContent: 'space-between' },
+  factLabel: { fontFamily: 'Manrope_600SemiBold', fontSize: 13, color: tokens.semantic.color.textMuted },
+  factDetail: { flexShrink: 1, textAlign: 'right', fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
+  reasonPanel: { gap: 3, padding: 14, borderRadius: 16, backgroundColor: tokens.semantic.color.trustSurface },
   reasonText: { fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.trustText },
-  reasonMeta: { marginTop: 3, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.trustText },
-  hiddenRow: { paddingHorizontal: 16, paddingBottom: 14 },
+  reasonMeta: { fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 18, color: tokens.semantic.color.trustText },
+  confirmations: { padding: 16, fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textSecondary },
+  tray: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 20, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: tokens.semantic.color.borderDefault, backgroundColor: tokens.semantic.color.backgroundSurface },
+  trayNotice: { textAlign: 'center', fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textSecondary },
+  retry: { textAlign: 'center', fontFamily: 'Manrope_600SemiBold', fontSize: 15, color: tokens.semantic.color.actionPrimary },
+  unavailable: { textAlign: 'center', fontFamily: 'Manrope_400Regular', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textSecondary },
 });
