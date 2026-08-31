@@ -471,3 +471,69 @@ body.mockup {
   color: var(--text-muted-on-cream); margin-top: 4px; }
 .ob-pickChevron { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--ink); }
 .ob-actions { display: flex; flex-direction: column; gap: 2px; padding-bottom: 4px; }
+
+/* ==========================================================================
+   poster — src/design-system/components/poster.tsx
+   The feed's signature screen. Padding 24, a 36pt top row, the cast at
+   46/46/-1.15 capped at 335 wide, and the caster pill taking the field's
+   poles. `bar` sits 20 below with a 2px gap to the quiet action.
+   ========================================================================== */
+.po-screen { padding: 0 24px; }
+.po-top { min-height: 36px; display: flex; align-items: center; justify-content: space-between; }
+.po-middle { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.po-categoryTag { font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 12px;
+  letter-spacing: 1.9px; text-transform: uppercase; margin-bottom: 14px; }
+.po-cast { font-family: var(--font-display); font-weight: 800; font-size: 46px; line-height: 46px;
+  letter-spacing: -1.15px; max-width: 335px; margin: 0; }
+.po-casterPill { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
+  min-height: 38px; padding: 0 12px; border-radius: var(--r-pill); margin-bottom: 12px;
+  background: var(--pole-bg); color: var(--pole-fg);
+  font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 19px; }
+.po-meta { font-family: var(--font-mono); font-weight: 500; font-size: 13px; line-height: 20px; }
+.po-why { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px;
+  margin-top: 6px; opacity: 0.62; }
+.po-bar { margin-top: 20px; display: flex; flex-direction: column; gap: 2px; }
+
+/* ==========================================================================
+   chat — src/app/chat/[id].tsx
+   Screen pads 18. Bubbles are radius 18 with a 5px notch on the sending
+   corner; mine is INK in committed code (the device build paints it
+   verbGot green — an uncommitted local change). Read ticks are accent.
+   ========================================================================== */
+.ch-screen { padding: 0 18px; background: var(--cream); }
+.ch-header { display: flex; align-items: center; gap: 6px; min-height: 52px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--hairline-on-cream); }
+.ch-chevron { font-family: var(--font-text); font-size: 30px; line-height: 32px; color: var(--ink); width: 30px; }
+.ch-who { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.ch-avatar { width: 44px; height: 44px; border-radius: 999px; background: var(--ink); color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 13px; flex: 0 0 auto; }
+.ch-name { font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--ink); }
+.ch-sub { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px; color: var(--text-muted-on-cream); }
+.ch-open { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--accent); }
+.ch-thread { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 16px 0; overflow: hidden; }
+.ch-row { max-width: 82%; display: flex; flex-direction: column; }
+.ch-row.mine { align-self: flex-end; align-items: flex-end; }
+.ch-row.theirs { align-self: flex-start; align-items: flex-start; }
+.ch-bubble { padding: 10px 14px; border-radius: 18px;
+  font-family: var(--font-text); font-size: 15px; line-height: 21px; }
+.ch-row.mine .ch-bubble { background: var(--ink); color: var(--cream); border-bottom-right-radius: 5px; }
+.ch-row.theirs .ch-bubble { background: var(--background-subtle); color: var(--ink); border-bottom-left-radius: 5px; }
+.ch-row.mine.green .ch-bubble { background: var(--verb-got); }
+.ch-metaRow { display: flex; align-items: center; gap: 4px; margin: 3px 4px 0; }
+.ch-time { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px; color: var(--text-muted-on-cream); }
+.ch-tick { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted-on-cream); }
+.ch-tick.read { color: var(--accent); }
+.ch-system { align-self: center; max-width: 86%; padding: 7px 12px; margin: 4px 0;
+  border-radius: var(--r-pill); background: var(--background-subtle);
+  font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px;
+  color: var(--text-muted-on-cream); text-align: center; }
+.ch-composer { display: flex; align-items: flex-end; gap: 10px; padding-top: 10px;
+  border-top: 1px solid var(--hairline-on-cream); }
+.ch-input { flex: 1; min-height: 44px; border-radius: 22px; background: var(--background-subtle);
+  padding: 12px 16px; font-family: var(--font-text); font-size: 15px; color: var(--text-muted-on-cream); }
+.ch-plus { width: 38px; height: 38px; border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-on-cream); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-text); font-size: 24px; line-height: 26px; color: var(--ink); flex: 0 0 auto; }
+.ch-send { width: 44px; height: 44px; border-radius: 999px; background: var(--ink12);
+  display: flex; align-items: center; justify-content: center; color: var(--cream); flex: 0 0 auto; }

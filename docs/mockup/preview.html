@@ -1,0 +1,1029 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nearcast — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>/* ==========================================================================
+   Nearcast — mockup design system
+   --------------------------------------------------------------------------
+   Ported value-for-value from src/design-system/tokens.ts. Every colour,
+   size, line-height, letter-spacing and radius below is the number the app
+   actually renders with; nothing here is eyeballed. If a value looks odd,
+   it is odd in the app too, and tokens.ts is the place to change it.
+
+   Units: the app measures in React Native points, which are CSS px at 1x.
+   So 1pt = 1px here and the numbers transfer directly.
+   ========================================================================== */
+
+
+
+:root {
+  /* ---- primitive.color ---- */
+  --ink: #14120E;
+  --cream: #F4EFE4;
+  --orange: #FF4D00;
+  --yellow: #FFC633;
+  --green: #17442E;
+  --ink40: rgba(20, 18, 14, 0.4);
+  --ink12: rgba(20, 18, 14, 0.12);
+  --ink08: rgba(20, 18, 14, 0.08);
+  --ink04: rgba(20, 18, 14, 0.04);
+  --cream45: rgba(244, 239, 228, 0.45);
+  --cream16: rgba(244, 239, 228, 0.16);
+  --scrim: rgba(20, 18, 14, 0.45);
+
+  /* ---- semantic.color ---- */
+  --accent: var(--orange);
+  --verb-need: var(--yellow);
+  --verb-got: var(--green);
+  --verb-lets: var(--orange);
+  --text-on-cream: var(--ink);
+  --text-muted-on-cream: var(--ink40);
+  --hairline-on-cream: var(--ink12);
+  --pressed-on-cream: var(--ink04);
+  --background-subtle: var(--ink08);
+
+  /* ---- primitive.space ---- */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px; --s5: 20px;
+  --s6: 24px; --s7: 28px; --s8: 32px; --s10: 40px; --s12: 48px;
+
+  /* ---- primitive.radius ---- */
+  --r-tag: 6px; --r-chip: 10px; --r-control: 14px;
+  --r-bar: 16px; --r-poster: 0px; --r-sheet: 28px; --r-pill: 999px;
+
+  /* ---- fontFamily ---- */
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-text: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* ---- component geometry ---- */
+  --bar-height: 58px;
+  --bar-padding-x: 20px;
+  --quiet-min-height: 44px;
+  --dock-control: 56px;
+  --dock-icon: 24px;
+  --dock-icon-top: 10px;
+  --dock-label-top: 42px;
+  --dock-inactive: 0.7;
+  --dock-selected-scale: 1.12;
+  --cast-size: 36px;
+  --cast-radius: 12px;
+  --cast-top: 4px;
+  --dock-scrim: 130px;
+  --row-min-height: 64px;
+  --sheet-radius: 28px;
+  --sheet-padding: 24px;
+  --poster-bottom-reserve: 104px;
+  --min-target: 44px;
+
+  /* ---- device frame: iPhone 16 Pro logical size, and its insets ---- */
+  --screen-w: 402px;
+  --screen-h: 874px;
+  --inset-top: 59px;
+  --inset-bottom: 34px;
+}
+
+/* ==========================================================================
+   category fields — src/design-system/tokens.ts `category`
+   Each owns a flat poster field with a DECLARED foreground. Cream alone
+   would fail on six of ten (1.37:1 on sports; exactly 1.00:1 on help,
+   which is the same colour), which is why `fg` is a token and not a rule.
+   ========================================================================== */
+[data-field='social']     { --field: #FF4D00; --fg: var(--ink);   --field-label: 'social'; }
+[data-field='sports']     { --field: #FFC633; --fg: var(--ink);   --field-label: 'sports'; }
+[data-field='food']       { --field: #FFA38B; --fg: var(--ink);   --field-label: 'food + drinks'; }
+[data-field='music']      { --field: #14120E; --fg: var(--cream); --field-label: 'music + nightlife'; }
+[data-field='travel']     { --field: #17442E; --fg: var(--cream); --field-label: 'travel + outdoors'; }
+[data-field='games']      { --field: #2B5BE3; --fg: var(--cream); --field-label: 'games'; }
+[data-field='arts']       { --field: #A98BDE; --fg: var(--ink);   --field-label: 'arts + making'; }
+[data-field='learning']   { --field: #8FC1E3; --fg: var(--ink);   --field-label: 'learning'; }
+[data-field='networking'] { --field: #46647A; --fg: var(--cream); --field-label: 'networking'; }
+[data-field='help']       { --field: #F4EFE4; --fg: var(--ink);   --field-label: 'help + favors'; }
+
+/* the opposite-pole rule (tokens.ts `polesFor`): a control on a poster
+   takes the field's foreground as its BACKGROUND, so it always reads as a
+   control rather than as part of the picture. */
+[data-field] { --pole-bg: var(--fg); }
+[data-field='social'], [data-field='sports'], [data-field='food'],
+[data-field='arts'], [data-field='learning'], [data-field='help'] { --pole-fg: var(--cream); }
+[data-field='music'], [data-field='travel'],
+[data-field='games'], [data-field='networking'] { --pole-fg: var(--ink); }
+
+/* ==========================================================================
+   typography — tokens.typography, exact sizes and tracking
+   ========================================================================== */
+.t-cast        { font-family: var(--font-display); font-weight: 800; font-size: 46px; line-height: 46px; letter-spacing: -1.15px; }
+.t-title       { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 32px; letter-spacing: -0.6px; }
+.t-screenTitle { font-family: var(--font-display); font-weight: 800; font-size: 38px; line-height: 40px; letter-spacing: -0.95px; }
+.t-body        { font-family: var(--font-text);    font-weight: 400; font-size: 17px; line-height: 25px; }
+.t-meta        { font-family: var(--font-mono);    font-weight: 500; font-size: 13px; line-height: 20px; }
+.t-metaSmall   { font-family: var(--font-mono);    font-weight: 400; font-size: 12px; line-height: 19px; }
+.t-tag         { font-family: var(--font-mono);    font-weight: 600; font-size: 12px; line-height: 12px; letter-spacing: 1.9px; text-transform: uppercase; }
+.t-tagSmall    { font-family: var(--font-mono);    font-weight: 600; font-size: 11px; line-height: 11px; letter-spacing: 1.3px; text-transform: uppercase; }
+
+/* the compose field is its own scale — component.field */
+.t-field { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 37px; letter-spacing: -0.7px; }
+
+/* ==========================================================================
+   page chrome
+   ========================================================================== */
+* { box-sizing: border-box; }
+
+body.mockup {
+  margin: 0;
+  padding: 40px 24px 80px;
+  background: #E7E2D7;
+  font-family: var(--font-mono);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheetnote {
+  max-width: 860px;
+  margin: 0 auto 32px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--ink40);
+}
+.sheetnote h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 32px;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.sheetnote code {
+  font-family: var(--font-mono);
+  background: var(--ink08);
+  padding: 1px 5px;
+  border-radius: var(--r-tag);
+  color: var(--ink);
+}
+.sheetnote a { color: var(--ink); }
+
+/* a row of phones, so variants of one screen sit side by side */
+.rack { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; align-items: flex-start; }
+.slot { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.slot > figcaption {
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase; color: var(--ink40);
+  max-width: var(--screen-w); text-align: center;
+}
+.slot > figcaption b { color: var(--ink); font-weight: 600; }
+.slot > figcaption em { display: block; font-weight: 400; letter-spacing: 0; text-transform: none; font-size: 12px; line-height: 17px; margin-top: 4px; }
+
+/* ==========================================================================
+   the device
+   ========================================================================== */
+.phone {
+  position: relative;
+  width: var(--screen-w);
+  height: var(--screen-h);
+  border-radius: 54px;
+  background: var(--cream);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 12px #1c1a17,
+    0 0 0 13px #3a3733,
+    0 24px 60px rgba(20, 18, 14, 0.28);
+  isolation: isolate;
+}
+.phone[data-field] { background: var(--field); color: var(--fg); }
+
+/* status bar: real iOS metrics, so the 59px top inset is honest */
+.statusbar {
+  position: absolute; inset: 0 0 auto 0; height: var(--inset-top);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 34px 0 38px; z-index: 40;
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  font-weight: 600; font-size: 16px; letter-spacing: 0.2px;
+  color: inherit; padding-top: 12px;
+}
+.statusbar .glyphs { display: flex; align-items: center; gap: 6px; }
+.statusbar svg { display: block; }
+
+/* the notch / dynamic island */
+.island {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  width: 124px; height: 36px; border-radius: 999px; background: #000; z-index: 45;
+}
+
+/* home indicator */
+.home-indicator {
+  position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%);
+  width: 140px; height: 5px; border-radius: 999px;
+  background: currentColor; opacity: 0.32; z-index: 46;
+}
+
+/* the scrollable body between the insets */
+.canvas {
+  position: absolute; inset: 0;
+  padding-top: var(--inset-top);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   components — mirrors src/design-system/components/*
+   ========================================================================== */
+
+/* wordmark line at the top of a full screen */
+.wordmark {
+  font-family: var(--font-mono); font-weight: 600; font-size: 12px;
+  line-height: 12px; letter-spacing: 1.9px; text-transform: uppercase;
+  color: var(--ink40);
+}
+.phone[data-field] .wordmark { color: var(--fg); opacity: 0.7; }
+
+/* BarButton — src/design-system/components/button.tsx.
+   The variant names the background the button PAINTS, not the ground it
+   sits on: onOrange is an orange button with ink text, which is what
+   onboarding uses on a cream screen. Disabled is opacity, not a
+   different fill. */
+.bar {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--bar-height); border-radius: var(--r-bar);
+  padding: 0 var(--bar-padding-x); border: 0; width: 100%;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 17px; letter-spacing: -0.15px; cursor: default;
+}
+.bar--onInk    { background: var(--ink);    color: var(--cream); }
+.bar--onCream  { background: var(--cream);  color: var(--ink); }
+.bar--onOrange { background: var(--accent); color: var(--ink); }
+.bar--disabled { opacity: 0.45; }
+
+/* QuietAction — 44pt target, opacity 0.6, displaySemi 14 */
+.quiet {
+  min-height: var(--quiet-min-height); width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
+  color: inherit; opacity: 0.6; background: none; border: 0;
+}
+
+/* Field — component.field, the compose input */
+.field {
+  width: 100%; border: 0; background: none; resize: none;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 34px; line-height: 37px; letter-spacing: -0.7px;
+  color: var(--ink);
+}
+.field::placeholder { color: var(--ink40); }
+
+/* a bordered single-line input (name, invite code) */
+.input {
+  width: 100%; height: 58px; border-radius: var(--r-control);
+  border: 1px solid var(--hairline-on-cream); background: none;
+  padding: 0 18px; font-family: var(--font-text); font-size: 17px;
+  color: var(--ink);
+}
+.input::placeholder { color: var(--ink40); }
+.input--focus { border-color: var(--accent); }
+.input--error { border-color: var(--accent); }
+
+/* Tag — a category or area chip */
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 12px; border-radius: var(--r-tag);
+  border: 1px solid var(--hairline-on-cream);
+  font-family: var(--font-mono); font-weight: 600; font-size: 12px;
+  letter-spacing: 1.3px; text-transform: uppercase; color: var(--ink);
+  background: none;
+}
+.tag--on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+/* Pill — a person chip on a poster (opposite-pole rule) */
+.pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  height: 48px; padding: 0 16px 0 6px; border-radius: var(--r-pill);
+  background: var(--pole-bg); color: var(--pole-fg);
+  font-family: var(--font-mono); font-weight: 500; font-size: 13px;
+}
+.pill .face {
+  width: 36px; height: 36px; border-radius: 999px;
+  background: var(--pole-fg); color: var(--pole-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px; letter-spacing: 0.6px;
+}
+
+/* Face — an avatar */
+.face-lg {
+  width: 56px; height: 56px; border-radius: 999px;
+  background: var(--ink); color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 15px; letter-spacing: 0.6px;
+  flex: 0 0 auto;
+}
+
+/* Row — component.row, a list line */
+.row {
+  min-height: var(--row-min-height);
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0; border-bottom: 1px solid var(--hairline-on-cream);
+}
+.row__body { flex: 1; min-width: 0; }
+.row__title { font-family: var(--font-display); font-weight: 800; font-size: 19px; line-height: 24px; letter-spacing: -0.3px; }
+.row__meta { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px; color: var(--ink40); margin-top: 2px; }
+.row__end { font-family: var(--font-mono); font-size: 13px; color: var(--ink40); flex: 0 0 auto; }
+
+/* Stamp — a state badge (ENDED, PENDING) */
+.stamp {
+  display: inline-flex; align-items: center; height: 28px; padding: 0 10px;
+  border-radius: var(--r-tag); background: var(--ink12); color: var(--ink40);
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase;
+}
+
+/* progress rail across the top of onboarding */
+.rail { display: flex; gap: 6px; margin-top: 14px; }
+.rail i { flex: 1; height: 2px; background: var(--ink12); border-radius: 2px; }
+.rail i.on { background: var(--accent); }
+
+/* the screen's own content column */
+.pad { padding: 0 28px; }
+
+/* ==========================================================================
+   the dock — component.dock, five marks on no surface at all
+   The cast chip takes the field's poles: fill of `fg`, glyph cut from the
+   field, so the `+` reads as a hole punched through to the poster.
+   ========================================================================== */
+.dock {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 30;
+  height: calc(var(--dock-control) + var(--inset-bottom));
+  padding-bottom: var(--inset-bottom);
+  display: flex; align-items: flex-start;
+}
+.dock__col {
+  flex: 1; position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: var(--dock-icon-top); min-height: var(--dock-control);
+}
+.dock__mark {
+  width: var(--dock-icon); height: var(--dock-icon);
+  display: flex; align-items: center; justify-content: center;
+  opacity: var(--dock-inactive);
+}
+.dock__col.on .dock__mark { opacity: 1; transform: scale(var(--dock-selected-scale)); }
+.dock__label {
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px;
+  line-height: 11px; letter-spacing: 1.3px; text-transform: uppercase;
+  margin-top: calc(var(--dock-label-top) - var(--dock-icon-top) - var(--dock-icon));
+}
+.dock__col.on .dock__label { font-weight: 600; }
+.dock__cast {
+  position: absolute; top: var(--cast-top);
+  width: var(--cast-size); height: var(--cast-size);
+  border-radius: var(--cast-radius);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--fg, var(--ink)); color: var(--field, var(--cream));
+}
+.dock__count {
+  position: absolute; top: 2px; left: 50%; margin-left: 5px;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--accent); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 10px; line-height: 13px;
+}
+.phone:not([data-field]) .dock { color: var(--ink); }
+.phone:not([data-field]) .dock__cast { background: var(--ink); color: var(--cream); }
+
+/* the band a poster keeps clear for the dock */
+.poster-reserve { height: var(--poster-bottom-reserve); flex: 0 0 auto; }
+
+/* ==========================================================================
+   sheets — component.sheet, a modal over a scrim
+   ========================================================================== */
+.scrim { position: absolute; inset: 0; background: var(--scrim); z-index: 20; }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 25;
+  background: var(--cream); color: var(--ink);
+  border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+  padding: var(--sheet-padding) var(--sheet-padding) calc(var(--sheet-padding) + var(--inset-bottom));
+}
+.sheet__grab { width: 44px; height: 4px; border-radius: 2px; background: var(--ink12); margin: 0 auto 18px; }
+
+/* ==========================================================================
+   states — loading, empty, error, offline
+   ========================================================================== */
+.state {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; padding: 0 40px; text-align: center;
+}
+.state__title { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.4px; }
+.state__note { font-family: var(--font-text); font-size: 15px; line-height: 22px; color: var(--ink40); }
+
+.skeleton { background: var(--ink08); border-radius: var(--r-tag); }
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+}
+
+.notice {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px 14px; border-radius: var(--r-chip);
+  background: var(--ink08);
+  font-family: var(--font-mono); font-size: 12px; line-height: 18px; color: var(--ink);
+}
+.notice--offline { background: var(--yellow); }
+.notice--error { background: var(--accent); color: var(--cream); }
+
+/* ==========================================================================
+   onboarding — src/app/onboarding/index.tsx `styles`
+   These are the screen's OWN values, not the design system's. The title is
+   34/36 at -0.8 (not tokens.typography.title), the hint is 15/22, the
+   screen pads 24, and the input carries a 1.5px ACCENT border in its
+   resting state — the orange outline is normal, not an error.
+   ========================================================================== */
+.ob-screen { padding: 0 24px; background: var(--cream); }
+.ob-top { min-height: 44px; display: flex; align-items: center; justify-content: space-between; }
+.ob-chevron { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 30px; color: var(--ink); }
+.ob-help { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--text-muted-on-cream); }
+.ob-progress { display: flex; margin-top: 6px; margin-bottom: 20px; }
+.ob-progress > i { flex: 1; height: 3px; border-radius: 4px; background: var(--hairline-on-cream); }
+.ob-progress > i + i { margin-left: 6px; }
+.ob-progress > i.on { background: var(--accent); }
+.ob-title { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 36px;
+  letter-spacing: -0.8px; color: var(--ink); margin: 8px 0 0; }
+.ob-hint { font-family: var(--font-text); font-weight: 400; font-size: 15px; line-height: 22px;
+  color: var(--text-muted-on-cream); margin: 12px 0 22px; }
+.ob-input {
+  display: flex; align-items: center; width: 100%; min-height: 56px;
+  border-radius: var(--r-control); border: 1.5px solid var(--accent);
+  padding: 0 14px; font-family: var(--font-text); font-size: 18px; color: var(--ink);
+  background: none;
+}
+.ob-input::placeholder, .ob-input.placeholder { color: var(--text-muted-on-cream); }
+.ob-tagsRow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ob-tag { min-height: 36px; padding: 0 14px; border-radius: var(--r-pill);
+  background: var(--ink); color: var(--cream); display: flex; align-items: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase; }
+.ob-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ob-chip { min-height: 40px; padding: 0 14px; border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-on-cream); color: var(--text-muted-on-cream);
+  display: flex; align-items: center; background: none;
+  font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 11px;
+  letter-spacing: 1.3px; text-transform: uppercase; }
+.ob-chip.on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.ob-pickRow { min-height: 56px; margin-top: 18px; padding: 14px 0;
+  border-bottom: 1px solid var(--hairline-on-cream);
+  display: flex; align-items: center; justify-content: space-between; }
+.ob-pickValue { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--ink); }
+.ob-pickPlaceholder { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--text-muted-on-cream); }
+.ob-pickSub { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px;
+  color: var(--text-muted-on-cream); margin-top: 4px; }
+.ob-pickChevron { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--ink); }
+.ob-actions { display: flex; flex-direction: column; gap: 2px; padding-bottom: 4px; }
+
+/* ==========================================================================
+   poster — src/design-system/components/poster.tsx
+   The feed's signature screen. Padding 24, a 36pt top row, the cast at
+   46/46/-1.15 capped at 335 wide, and the caster pill taking the field's
+   poles. `bar` sits 20 below with a 2px gap to the quiet action.
+   ========================================================================== */
+.po-screen { padding: 0 24px; }
+.po-top { min-height: 36px; display: flex; align-items: center; justify-content: space-between; }
+.po-middle { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.po-categoryTag { font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 12px;
+  letter-spacing: 1.9px; text-transform: uppercase; margin-bottom: 14px; }
+.po-cast { font-family: var(--font-display); font-weight: 800; font-size: 46px; line-height: 46px;
+  letter-spacing: -1.15px; max-width: 335px; margin: 0; }
+.po-casterPill { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
+  min-height: 38px; padding: 0 12px; border-radius: var(--r-pill); margin-bottom: 12px;
+  background: var(--pole-bg); color: var(--pole-fg);
+  font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 19px; }
+.po-meta { font-family: var(--font-mono); font-weight: 500; font-size: 13px; line-height: 20px; }
+.po-why { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px;
+  margin-top: 6px; opacity: 0.62; }
+.po-bar { margin-top: 20px; display: flex; flex-direction: column; gap: 2px; }
+
+/* ==========================================================================
+   chat — src/app/chat/[id].tsx
+   Screen pads 18. Bubbles are radius 18 with a 5px notch on the sending
+   corner; mine is INK in committed code (the device build paints it
+   verbGot green — an uncommitted local change). Read ticks are accent.
+   ========================================================================== */
+.ch-screen { padding: 0 18px; background: var(--cream); }
+.ch-header { display: flex; align-items: center; gap: 6px; min-height: 52px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--hairline-on-cream); }
+.ch-chevron { font-family: var(--font-text); font-size: 30px; line-height: 32px; color: var(--ink); width: 30px; }
+.ch-who { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.ch-avatar { width: 44px; height: 44px; border-radius: 999px; background: var(--ink); color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 600; font-size: 13px; flex: 0 0 auto; }
+.ch-name { font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--ink); }
+.ch-sub { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px; color: var(--text-muted-on-cream); }
+.ch-open { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--accent); }
+.ch-thread { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 16px 0; overflow: hidden; }
+.ch-row { max-width: 82%; display: flex; flex-direction: column; }
+.ch-row.mine { align-self: flex-end; align-items: flex-end; }
+.ch-row.theirs { align-self: flex-start; align-items: flex-start; }
+.ch-bubble { padding: 10px 14px; border-radius: 18px;
+  font-family: var(--font-text); font-size: 15px; line-height: 21px; }
+.ch-row.mine .ch-bubble { background: var(--ink); color: var(--cream); border-bottom-right-radius: 5px; }
+.ch-row.theirs .ch-bubble { background: var(--background-subtle); color: var(--ink); border-bottom-left-radius: 5px; }
+.ch-row.mine.green .ch-bubble { background: var(--verb-got); }
+.ch-metaRow { display: flex; align-items: center; gap: 4px; margin: 3px 4px 0; }
+.ch-time { font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px; color: var(--text-muted-on-cream); }
+.ch-tick { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted-on-cream); }
+.ch-tick.read { color: var(--accent); }
+.ch-system { align-self: center; max-width: 86%; padding: 7px 12px; margin: 4px 0;
+  border-radius: var(--r-pill); background: var(--background-subtle);
+  font-family: var(--font-mono); font-weight: 400; font-size: 12px; line-height: 19px;
+  color: var(--text-muted-on-cream); text-align: center; }
+.ch-composer { display: flex; align-items: flex-end; gap: 10px; padding-top: 10px;
+  border-top: 1px solid var(--hairline-on-cream); }
+.ch-input { flex: 1; min-height: 44px; border-radius: 22px; background: var(--background-subtle);
+  padding: 12px 16px; font-family: var(--font-text); font-size: 15px; color: var(--text-muted-on-cream); }
+.ch-plus { width: 38px; height: 38px; border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-on-cream); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-text); font-size: 24px; line-height: 26px; color: var(--ink); flex: 0 0 auto; }
+.ch-send { width: 44px; height: 44px; border-radius: 999px; background: var(--ink12);
+  display: flex; align-items: center; justify-content: center; color: var(--cream); flex: 0 0 auto; }
+
+.band{max-width:1200px;margin:56px auto 24px;font-family:var(--font-mono);font-weight:600;font-size:12px;
+letter-spacing:1.9px;text-transform:uppercase;color:var(--ink40);border-top:1px solid var(--ink12);padding-top:18px}
+</style></head><body class="mockup">
+<div class="sheetnote"><h1>nearcast — screens so far</h1>
+<p>Built from each screen&rsquo;s own <code>StyleSheet.create</code>. Onboarding, the feed poster across
+three of the ten category fields, and the chat thread in both branches.</p></div>
+<h2 class="band">onboarding · A (open signup)</h2><div class="rack">
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" placeholder="first name">
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange bar--disabled">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/01-name</b><em>step 1 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" value="Piyush">
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>filled</b><em>next enables only once a name exists</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HOME</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where&rsquo;s home, roughly?</h2>
+    <p class="ob-hint">the neighbourhood, not the address. we keep it approximate.</p>
+    <div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div><div class="ob-pickSub">chandigarh &middot; approximate</div></div><span class="ob-pickChevron">&#8250;</span></div>
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/02-home</b><em>step 2 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; AREAS</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where else are you around?</h2>
+    <p class="ob-hint">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
+    <div class="ob-tagsRow"><span class="ob-tag">sector 17</span><span class="ob-tag">elante</span></div><div class="ob-pickRow"><span class="ob-pickPlaceholder">add a neighborhood</span><span class="ob-pickChevron">&#8250;</span></div>
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/03-areas</b><em>step 3 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INTERESTS</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what are you actually into?</h2>
+    <p class="ob-hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
+    <div class="ob-chips"><span class="ob-chip">social</span><span class="ob-chip">sports</span><span class="ob-chip on">food + drinks</span><span class="ob-chip">music + nightlife</span><span class="ob-chip">travel + outdoors</span><span class="ob-chip on">games</span><span class="ob-chip on">arts + making</span><span class="ob-chip">learning</span><span class="ob-chip">networking</span><span class="ob-chip">help + favors</span></div>
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">looks good</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/04-interests</b><em>step 4 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; PUSH</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">two pings. that&rsquo;s it.</h2>
+    <p class="ob-hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
+    
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">turn on push</button><button class="quiet">not now</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/05-push</b><em>step 5 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
+</div><h2 class="band">onboarding · B (invite-gated)</h2><div class="rack">
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" placeholder="first name">
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange bar--disabled">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/01-name</b><em>step 1 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HELLO</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what should we call you?</h2>
+    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
+    <input class="ob-input" value="Piyush">
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>filled</b><em>next enables only once a name exists</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INVITATION</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">got an invitation?</h2>
+    <p class="ob-hint">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
+    <input class="ob-input" placeholder="invitation code">
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/02-invite</b><em>step 2 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INVITATION</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">got an invitation?</h2>
+    <p class="ob-hint">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
+    <input class="ob-input" value="ca00112f8&hellip;" style="font-family:var(--font-mono);font-size:14px"><div class="notice notice--error" style="margin-top:14px">that code is not valid, or it has already been used. ask whoever invited you for another.</div>
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">join</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>rejected</b><em>redeem_invite logs every attempt, valid or not</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; HOME</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where&rsquo;s home, roughly?</h2>
+    <p class="ob-hint">the neighbourhood, not the address. we keep it approximate.</p>
+    <div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div><div class="ob-pickSub">chandigarh &middot; approximate</div></div><span class="ob-pickChevron">&#8250;</span></div>
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/03-home</b><em>step 3 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; AREAS</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">where else are you around?</h2>
+    <p class="ob-hint">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
+    <div class="ob-tagsRow"><span class="ob-tag">sector 17</span><span class="ob-tag">elante</span></div><div class="ob-pickRow"><span class="ob-pickPlaceholder">add a neighborhood</span><span class="ob-pickChevron">&#8250;</span></div>
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">next</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/04-areas</b><em>step 4 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; INTERESTS</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">what are you actually into?</h2>
+    <p class="ob-hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
+    <div class="ob-chips"><span class="ob-chip">social</span><span class="ob-chip">sports</span><span class="ob-chip on">food + drinks</span><span class="ob-chip">music + nightlife</span><span class="ob-chip">travel + outdoors</span><span class="ob-chip on">games</span><span class="ob-chip on">arts + making</span><span class="ob-chip">learning</span><span class="ob-chip">networking</span><span class="ob-chip">help + favors</span></div>
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">looks good</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/05-interests</b><em>step 5 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
+
+
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ob-screen">
+  <div class="ob-top">
+    <span class="ob-chevron">&#8249;</span>
+    <span class="wordmark">NEARCAST &middot; PUSH</span>
+    <span class="ob-help">?</span>
+  </div>
+  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+  <div style="flex:1;overflow:hidden">
+    <h2 class="ob-title">two pings. that&rsquo;s it.</h2>
+    <p class="ob-hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
+    
+  </div>
+  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
+    <button class="bar bar--onOrange">turn on push</button><button class="quiet">not now</button>
+  </div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/06-push</b><em>step 6 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
+</div><h2 class="band">feed</h2><div class="rack">
+<figure class="slot"><div class="phone" data-field="social"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas po-screen">
+  <div class="po-top"><span class="wordmark">NEARCAST</span><span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span></div>
+  <div class="po-middle">
+    <div class="po-categoryTag">SOCIAL</div>
+    <h1 class="po-cast">chai + catch-up this evening, anyone around?</h1>
+  </div>
+  <div>
+    <div class="po-casterPill"><span>AA</span><span>aarav</span><span>&middot;</span><span>&#8250;</span></div>
+    <div class="po-meta">nearby &middot; gone in 28d</div>
+    <div class="po-why">why you: demo cast &middot; shown to every tester &#8250;</div>
+    <div class="po-bar"><button class="bar bar--onInk">ask to join</button><button class="quiet">skip</button></div>
+  </div>
+  <div class="poster-reserve"></div>
+</div><div class="dock"><div class="dock__col on"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><span class="dock__label">near</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4A2.5 2.5 0 0 1 13.5 13H8l-3.4 2.6a.4.4 0 0 1-.6-.3V13a1 1 0 0 1-1-1z"/><path d="M8 16.5A2.5 2.5 0 0 0 10.5 19H16l3.4 2.6a.4.4 0 0 0 .6-.3V19a1 1 0 0 0 1-1v-4a2.5 2.5 0 0 0-2.5-2.5"/></svg></div><span class="dock__label">chats</span></div><div class="dock__col"><div class="dock__cast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><span class="dock__label">cast</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9a6 6 0 0 0-6-6z"/><path d="M10.2 18a1.9 1.9 0 0 0 3.6 0"/></svg></div><span class="dock__label">alerts</span></div><div class="dock__col"><div class="dock__mark"><span style="width:24px;height:24px;border-radius:999px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:9px;letter-spacing:.3px">PS</span></div><span class="dock__label">you</span></div></div>
+<div class="home-indicator"></div></div><figcaption><b>social</b><em>field #social &middot; caster pill takes the poles</em></figcaption></figure>
+<figure class="slot"><div class="phone" data-field="arts"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas po-screen">
+  <div class="po-top"><span class="wordmark">NEARCAST</span><span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span></div>
+  <div class="po-middle">
+    <div class="po-categoryTag">ARTS + MAKING</div>
+    <h1 class="po-cast">sketching in the park sunday morning.</h1>
+  </div>
+  <div>
+    <div class="po-casterPill"><span>RO</span><span>rohan</span><span>&middot;</span><span>&#8250;</span></div>
+    <div class="po-meta">nearby &middot; gone in 29d</div>
+    <div class="po-why">why you: demo cast &middot; shown to every tester &#8250;</div>
+    <div class="po-bar"><button class="bar bar--onInk">ask to join</button><button class="quiet">skip</button></div>
+  </div>
+  <div class="poster-reserve"></div>
+</div><div class="dock"><div class="dock__col on"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><span class="dock__label">near</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4A2.5 2.5 0 0 1 13.5 13H8l-3.4 2.6a.4.4 0 0 1-.6-.3V13a1 1 0 0 1-1-1z"/><path d="M8 16.5A2.5 2.5 0 0 0 10.5 19H16l3.4 2.6a.4.4 0 0 0 .6-.3V19a1 1 0 0 0 1-1v-4a2.5 2.5 0 0 0-2.5-2.5"/></svg></div><span class="dock__label">chats</span></div><div class="dock__col"><div class="dock__cast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><span class="dock__label">cast</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9a6 6 0 0 0-6-6z"/><path d="M10.2 18a1.9 1.9 0 0 0 3.6 0"/></svg></div><span class="dock__label">alerts</span></div><div class="dock__col"><div class="dock__mark"><span style="width:24px;height:24px;border-radius:999px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:9px;letter-spacing:.3px">PS</span></div><span class="dock__label">you</span></div></div>
+<div class="home-indicator"></div></div><figcaption><b>arts</b><em>field #arts + making &middot; caster pill takes the poles</em></figcaption></figure>
+<figure class="slot"><div class="phone" data-field="games"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas po-screen">
+  <div class="po-top"><span class="wordmark">NEARCAST</span><span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span></div>
+  <div class="po-middle">
+    <div class="po-categoryTag">GAMES</div>
+    <h1 class="po-cast">board games night, teaching Catan to newbies.</h1>
+  </div>
+  <div>
+    <div class="po-casterPill"><span>NI</span><span>nisha</span><span>&middot;</span><span>&#8250;</span></div>
+    <div class="po-meta">nearby &middot; gone in 29d</div>
+    <div class="po-why">why you: demo cast &middot; shown to every tester &#8250;</div>
+    <div class="po-bar"><button class="bar bar--onInk">ask to join</button><button class="quiet">skip</button></div>
+  </div>
+  <div class="poster-reserve"></div>
+</div><div class="dock"><div class="dock__col on"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><span class="dock__label">near</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4A2.5 2.5 0 0 1 13.5 13H8l-3.4 2.6a.4.4 0 0 1-.6-.3V13a1 1 0 0 1-1-1z"/><path d="M8 16.5A2.5 2.5 0 0 0 10.5 19H16l3.4 2.6a.4.4 0 0 0 .6-.3V19a1 1 0 0 0 1-1v-4a2.5 2.5 0 0 0-2.5-2.5"/></svg></div><span class="dock__label">chats</span></div><div class="dock__col"><div class="dock__cast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><span class="dock__label">cast</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9a6 6 0 0 0-6-6z"/><path d="M10.2 18a1.9 1.9 0 0 0 3.6 0"/></svg></div><span class="dock__label">alerts</span></div><div class="dock__col"><div class="dock__mark"><span style="width:24px;height:24px;border-radius:999px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:9px;letter-spacing:.3px">PS</span></div><span class="dock__label">you</span></div></div>
+<div class="home-indicator"></div></div><figcaption><b>games</b><em>field #games &middot; caster pill takes the poles</em></figcaption></figure>
+</div><h2 class="band">chat · A (ink bubbles, committed)</h2><div class="rack">
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ch-screen">
+  <div class="ch-header">
+    <span class="ch-chevron">&#8249;</span>
+    <div class="ch-who"><span class="ch-avatar">SS</span>
+      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
+    <span class="ch-open">open &middot;&middot;&middot;</span>
+  </div>
+  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div></div>
+  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><span class="ch-plus">+</span><div class="ch-input">message</div><span class="ch-send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg></span></div></div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>live</b><em>read ticks in accent; my bubble notches 5px bottom-right</em></figcaption></figure>
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ch-screen">
+  <div class="ch-header">
+    <span class="ch-chevron">&#8249;</span>
+    <div class="ch-who"><span class="ch-avatar">SS</span>
+      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
+    <span class="ch-open">open &middot;&middot;&middot;</span>
+  </div>
+  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div><div class="ch-system">this chat has ended. the plan is done.</div></div>
+  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><div class="ch-input" style="opacity:.5">this chat has ended</div></div></div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>ended</b><em>composer disabled, a system capsule states why</em></figcaption></figure>
+</div><h2 class="band">chat · B (green bubbles, as on the device)</h2><div class="rack">
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ch-screen">
+  <div class="ch-header">
+    <span class="ch-chevron">&#8249;</span>
+    <div class="ch-who"><span class="ch-avatar">SS</span>
+      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
+    <span class="ch-open">open &middot;&middot;&middot;</span>
+  </div>
+  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine green"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div></div>
+  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><span class="ch-plus">+</span><div class="ch-input">message</div><span class="ch-send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg></span></div></div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>live</b><em>read ticks in accent; my bubble notches 5px bottom-right</em></figcaption></figure>
+<figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div>
+<div class="canvas ch-screen">
+  <div class="ch-header">
+    <span class="ch-chevron">&#8249;</span>
+    <div class="ch-who"><span class="ch-avatar">SS</span>
+      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
+    <span class="ch-open">open &middot;&middot;&middot;</span>
+  </div>
+  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine green"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div><div class="ch-system">this chat has ended. the plan is done.</div></div>
+  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><div class="ch-input" style="opacity:.5">this chat has ended</div></div></div>
+</div>
+<div class="home-indicator"></div></div><figcaption><b>ended</b><em>composer disabled, a system capsule states why</em></figcaption></figure>
+</div></body></html>
