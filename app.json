@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "TrvlAI Test",
+    "name": "Nearcast",
     "slug": "nearcast",
     "version": "0.1.1",
     "orientation": "portrait",
@@ -8,7 +8,7 @@
     "scheme": "nearcast",
     "userInterfaceStyle": "light",
     "ios": {
-      "bundleIdentifier": "com.piyushsharma.trvlai.test",
+      "bundleIdentifier": "com.piyushsharma.nearcast",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -17,8 +17,18 @@
         "dark": "./assets/images/icon-dark.png",
         "tinted": "./assets/images/icon-tinted.png"
       },
-      "_universalLinksNote": "To enable Universal Links: host apple-app-site-association at https://<domain>/.well-known/, then set \"associatedDomains\": [\"applinks:<domain>\"] here and add https://<domain>/auth/callback to Supabase Redirect URLs. Until then the nearcast:// scheme handles the callback.",
-      "buildNumber": "15"
+      "_universalLinksNote": "Universal Links are NOT configured, and MUST-021 needs them: a share link must open the app when it is installed. It requires a domain we serve apple-app-site-association from at https://<domain>/.well-known/. Once that exists, add \"associatedDomains\": [\"applinks:<domain>\"] here and add https://<domain>/auth/callback to the Supabase redirect URLs. Until then the nearcast:// scheme handles the callback and a share link opens the web fallback.",
+      "buildNumber": "1",
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "package": "com.piyushsharma.nearcast.dev",

@@ -97,8 +97,20 @@ npx eas credentials --platform ios
 # Push Notifications → set up a Push Key (upload the .p8, or let it create one)
 ```
 
-The bundle identifier there must be `com.piyushsharma.trvlai.test` and
-the Expo project the one in `app.json` (`extra.eas.projectId`).
+The bundle identifier there must be `com.piyushsharma.nearcast` and the
+Expo project the one in `app.json` (`extra.eas.projectId`).
+
+The bundle identifier changed on 2026-08-31: the app had been building as
+`com.piyushsharma.trvlai.test` under the name `TrvlAI Test`, a different
+product's identity, through fifteen builds. Two consequences for push:
+
+- **A push key must be registered against the new identifier.** The old
+  registration does not carry over, so notifications stay silent until this
+  step is repeated.
+- **The push tokens already in `device_push_tokens` are dead.** A token is
+  issued per app identity, so the three stored for the old app will never
+  deliver again. Each device re-registers on first launch of the new app,
+  and the sender's invalid-token handling prunes the old rows.
 
 ## Step 2 — deploy the sender
 
