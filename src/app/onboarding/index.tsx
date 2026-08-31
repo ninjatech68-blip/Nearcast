@@ -18,6 +18,7 @@ import {
 import { myCurrentArea } from '@/features/casts/area-lookup';
 import { describeInviteOutcome, redeemInvite } from '@/features/auth/invite';
 import { isBackendConfigured } from '@/infrastructure/supabase/client';
+import { track } from '@/features/analytics/track';
 import { enablePush } from '@/features/notifications/push';
 
 type Step = 'name' | 'invite' | 'home' | 'areas' | 'interests' | 'push';
@@ -149,18 +150,32 @@ export default function OnboardingScreen() {
     }
   }
 
+  /**
+   * The end of joining. `area_precision_band` is a band by design: the
+   * taxonomy has no room for a coordinate and this event could not carry
+   * one if it tried, because the allow-list would drop it.
+   */
+  function noteOnboardingDone() {
+    void track('onboarding_completed', {
+      steps_completed: order.length,
+      area_precision_band: me.homeArea.trim() === '' ? 'none' : 'neighbourhood',
+    });
+  }
+
   async function askPush() {
     // real permission prompt + token registration; degrades to a no-op
     // when the native module isn't in the binary. push is a convenience,
     // never a gate — whatever the outcome, onboarding completes.
     const outcome = await enablePush();
     setPushGranted(outcome === 'granted');
+    noteOnboardingDone();
     setOnboardingDone();
     router.replace('/');
   }
 
   function skipPush() {
     setPushGranted(false);
+    noteOnboardingDone();
     setOnboardingDone();
     router.replace('/');
   }

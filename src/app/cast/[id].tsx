@@ -11,6 +11,7 @@ import { facePhotos, isVerified } from '@/features/casts/faces';
 import { cancelCast, getCast, useJoinsISent, withdrawJoin } from '@/features/casts/store';
 import { shareMessageFor } from '@/features/sharing/share-link';
 import { shareLinkForSlug } from '@/features/sharing/remote-share';
+import { track } from '@/features/analytics/track';
 
 /**
  * the detail sheet. receipts show at the decision moment:
@@ -159,6 +160,9 @@ export default function CastDetailScreen() {
 
     try {
       await Share.share({ message: shareMessageFor(cast.body, link), url: link.url });
+      // The channel is the system sheet, not the app it went to: Nearcast
+      // must not learn which group a link was shared into.
+      void track('intent_shared', { intent_id: cast.id, channel: 'system' });
     } catch {
       // Dismissing the share sheet throws on iOS. Nothing to report.
     }

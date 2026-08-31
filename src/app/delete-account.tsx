@@ -7,6 +7,7 @@ import { SheetNote, SheetShell } from '@/design-system/components/sheet';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { signOut, useMe } from '@/features/me/me-store';
+import { deleteMyAccount } from '@/features/me/delete-account';
 
 const CONFIRM_WORD = 'delete';
 
@@ -20,10 +21,16 @@ const CONFIRM_WORD = 'delete';
  * the other person's record. So we say exactly that rather than
  * implying a clean erase.
  *
- * production: this posts a deletion request, the server tombstones
- * the profile immediately (so you vanish from every feed and
- * caster sheet on the next read) and hard-deletes within 30 days.
- * here it wipes the device and returns to signin.
+ * The server tombstones the profile: the name other people saw is
+ * replaced, the account is marked restricted so every discovery and
+ * delivery path already filters it out, live casts are withdrawn, open
+ * requests are withdrawn, push tokens are removed and the analytics
+ * identifier is cleared. A retention job hard-deletes after the window in
+ * the community policy.
+ *
+ * Tombstone rather than erase, and the copy says so: the other side of a
+ * conversation and any report made about this person have to survive, which
+ * MUST-054 requires and an erase would take with it.
  */
 export default function DeleteAccountScreen() {
   const me = useMe();
@@ -31,6 +38,42 @@ export default function DeleteAccountScreen() {
   const [working, setWorking] = useState(false);
 
   const armed = typed.trim().toLowerCase() === CONFIRM_WORD;
+
+  /**
+   * Server first, device second. Wiping the device before the server
+   * succeeded would leave the account alive with nobody able to reach the
+   * screen that deletes it.
+   */
+  async function remove() {
+    setWorking(true);
+    haptic('warning');
+
+    try {
+      const done = await deleteMyAccount();
+
+      if (!done) {
+        setWorking(false);
+        Alert.alert(
+          'not deleted',
+          'this build has no backend, so there is no account to delete.',
+          [{ text: 'ok' }],
+        );
+        return;
+      }
+    } catch {
+      setWorking(false);
+      Alert.alert(
+        'not deleted',
+        'we could not reach the server. your account is unchanged. check your connection and try again.',
+        [{ text: 'ok' }],
+      );
+      return;
+    }
+
+    // signOut wipes every persisted store and resets in-memory state.
+    signOut();
+    router.replace('/signin');
+  }
 
   function confirm() {
     if (!armed) return;
@@ -43,14 +86,7 @@ export default function DeleteAccountScreen() {
           text: 'delete',
           style: 'destructive',
           onPress: () => {
-            setWorking(true);
-            haptic('warning');
-            // signOut wipes every persisted store and resets in-memory
-            // state — the same guarantee deletion needs on-device.
-            setTimeout(() => {
-              signOut();
-              router.replace('/signin');
-            }, 400);
+            void remove();
           },
         },
       ],

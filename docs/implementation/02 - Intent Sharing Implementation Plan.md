@@ -12,10 +12,10 @@
 
 **Files:** `src/features/auth/`, `src/app/invite/[token].tsx`, `src/app/sign-in.tsx`, `supabase/functions/redeem-invite/`
 
-- [ ] Test expired, used, valid, and rate-limited invitation tokens.
-- [ ] Implement OTP sign-in and create a minimal profile only after invite redemption.
-- [ ] Use generic authentication errors and secure session persistence.
-- [ ] Verify sign-out removes local session and protected routes redirect.
+- [x] Test expired, used, valid, and rate-limited invitation tokens.
+- [x] Implement OTP sign-in and create a minimal profile only after invite redemption.
+- [x] Use generic authentication errors and secure session persistence.
+- [x] Verify sign-out removes local session and protected routes redirect.
 
 ## Task 2: Draft And Review
 
@@ -39,10 +39,10 @@
 
 **Files:** `src/app/i/[shareSlug].tsx`, `src/features/sharing/`, `supabase/functions/confirm-intent/`
 
-- [ ] Test anonymous projection contains only the API contract fields.
-- [ ] Add universal link routing and WhatsApp/system share action.
-- [ ] Require authentication for one genuine confirmation per user and forbid self-confirmation.
-- [ ] Render honest zero/one/many confirmation states without origin membership.
+- [x] Test anonymous projection contains only the API contract fields.
+- [~] System share action done; universal link routing blocked on a domain serving apple-app-site-association.
+- [x] Require authentication for one genuine confirmation per user and forbid self-confirmation.
+- [x] Render honest zero/one/many confirmation states without origin membership.
 
 ## Task 5: Owner Lifecycle
 
@@ -61,3 +61,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created intent creation and sharing implementation plan |
+| 2026-08-31 | Closed the invitation gate, and built the public share link and genuine confirmation |

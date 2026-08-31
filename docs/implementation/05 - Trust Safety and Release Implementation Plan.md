@@ -28,16 +28,16 @@
 
 **Files:** moderation migration/functions, private operator runbook
 
-- [ ] Test moderator authorization from app metadata, not user metadata.
+- [x] Test moderator authorization from app metadata, not user metadata.
 - [ ] Add immutable action audit and restriction restoration to captured safe state.
-- [ ] Implement account deletion and retention jobs against the policy outline.
+- [~] Account deletion implemented and tested; the retention job that hard-deletes tombstoned profiles is still to write.
 
 ## Task 4: Privacy-Safe Telemetry
 
 **Files:** `src/infrastructure/analytics/`, `src/infrastructure/observability/`
 
-- [ ] Test the analytics allowlist and Sentry scrubber with prohibited sample data.
-- [ ] Implement the funnel and reliability metrics from the analytics plan.
+- [~] The analytics allow-list is implemented and tested with prohibited sample data; no Sentry scrubber, because there is no Sentry yet.
+- [~] The taxonomy and the write path exist, with four funnel events wired (onboarding_completed, intent_shared, intent_link_opened, origin_confirmation_submitted). The remaining twenty-one call sites are still to place.
 - [ ] Add alerts for auth failures, function errors, notification backlog, and report backlog.
 
 ## Task 5: Alpha Release
@@ -58,3 +58,4 @@ All Permissions Matrix tests pass, one report can be actioned end to end, accoun
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created trust, safety, analytics, operations, and release implementation plan |
+| 2026-08-31 | Added rate limits, the analytics taxonomy allow-list, and account deletion that actually deletes |

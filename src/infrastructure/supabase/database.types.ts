@@ -1038,6 +1038,35 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          enabled: boolean
+          kind: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          kind: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          kind?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       presence_reports: {
         Row: {
           created_at: string
@@ -1177,6 +1206,7 @@ export type Database = {
           avatar_path: string | null
           city: string | null
           created_at: string
+          deleted_at: string | null
           display_name: string
           id: string
           is_restricted: boolean
@@ -1187,6 +1217,7 @@ export type Database = {
           avatar_path?: string | null
           city?: string | null
           created_at?: string
+          deleted_at?: string | null
           display_name: string
           id: string
           is_restricted?: boolean
@@ -1197,6 +1228,7 @@ export type Database = {
           avatar_path?: string | null
           city?: string | null
           created_at?: string
+          deleted_at?: string | null
           display_name?: string
           id?: string
           is_restricted?: boolean
@@ -1473,6 +1505,7 @@ export type Database = {
         Args: { target_response_id: string }
         Returns: undefined
       }
+      delete_my_account: { Args: never; Returns: undefined }
       edit_cast: {
         Args: {
           new_category: Database["public"]["Enums"]["cast_category"]

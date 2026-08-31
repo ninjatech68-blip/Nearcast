@@ -7,6 +7,7 @@ import { SheetShell } from '@/design-system/components/sheet';
 import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { useMe } from '@/features/me/me-store';
+import { track } from '@/features/analytics/track';
 import { describeConfirmations } from '@/features/sharing/share-link';
 import {
   confirmPublicCast,
@@ -58,6 +59,11 @@ export default function SharedCastScreen() {
 
       if (!cancelled) {
         setState({ status: 'ready', cast, count: cast.confirmationCount, mine });
+        void track('intent_link_opened', {
+          intent_id: cast.id,
+          authenticated: me.signedIn,
+          referrer_class: 'share_link',
+        });
       }
     })();
 
@@ -77,6 +83,12 @@ export default function SharedCastScreen() {
 
     if (result.kind === 'confirmed') {
       setState({ ...state, count: result.count, mine: true });
+      // A bucket, not a position: "you were the third" is a fact about the
+      // circle's size, and the circle stays private.
+      void track('origin_confirmation_submitted', {
+        intent_id: state.cast.id,
+        confirmation_position_bucket: result.count === 1 ? 'first' : 'later',
+      });
     } else if (result.kind === 'not_a_member') {
       setProblem('you need an invitation before you can confirm a cast.');
     } else {

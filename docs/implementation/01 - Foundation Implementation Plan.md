@@ -53,3 +53,4 @@ A clean clone runs app and database checks without undocumented steps, authentic
 | 2026-08-24 | Selected Expo Jest with React Native Testing Library for component interaction tests |
 | 2026-08-24 | Verified local Supabase reset, pgTAP, owned-schema lint, and generated database types |
 | 2026-08-25 | Verified the local composer preview route on iOS and Android development builds and fixed Android runtime warning sources found during verification |
+| 2026-08-31 | Database tests joined `npm run verify`, hermetically, so the schema is covered by the same gate as the app |

@@ -15,7 +15,8 @@
 
 ## Accounts And Identity
 
-- **MUST-001:** Users must authenticate with Google or Apple during private alpha.
+- **MUST-001:** Users must authenticate with an email one-time code during private alpha. Accounts are invite-only: a verified identity is not membership, and a profile exists only after an invitation is redeemed.
+- **MUST-001a:** Google and Apple sign-in are deferred to public beta. Amended 2026-08-31: the app has only ever implemented email one-time codes, and the requirement said otherwise for six days. Apple sign-in also obliges the App Store review requirement to offer it alongside any other social provider, which is cost the closed alpha does not need to carry.
 - **MUST-002:** Every user must have a stable internal identifier independent of email or phone.
 - **MUST-003:** Profiles must support display name, avatar, approximate home area, interests, verification state, and contextual reliability summaries.
 - **MUST-004:** Users must be able to delete their account and request deletion of associated personal data.
@@ -73,7 +74,7 @@
 - **MUST-052:** Messages must be limited to accepted participants and authorized support staff.
 - **MUST-053:** Users must be able to block or report from the coordination channel.
 - **MUST-054:** Closing an intent must stop new responses while preserving necessary safety history.
-- **MAY-050:** Media messaging, voice notes, typing indicators, and presence are deferred.
+- **MAY-050:** Voice notes and typing indicators are deferred. Amended 2026-08-31: photo and GIF messaging, approximate location shares, read receipts and conversation presence are implemented and have been on real devices. The requirement deferred all of it, and Plan 04 Task 4 said to exclude it, while the code shipped it — recorded here because a requirement the code contradicts protects nobody.
 
 ## Resolution And Trust
 

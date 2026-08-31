@@ -38,14 +38,14 @@
 
 - [ ] Test membership, closed room, block, body length, idempotency, reconnect, and missed-message fetch.
 - [ ] Persist before private-channel broadcast and unsubscribe on unmount.
-- [ ] Exclude typing, presence, media, voice, and live location.
+- [~] Voice excluded. Media, presence, read receipts and approximate location shares are implemented; MAY-050 amended 2026-08-31 to match rather than leaving the plan contradicting the code.
 
 ## Task 5: Notifications
 
 **Files:** `supabase/functions/process-notifications/`, `src/infrastructure/notifications/`
 
-- [ ] Test preference, generic payload, retry cap, invalid token, and deep-link reauthorization.
-- [ ] Send object IDs and generic copy only through Expo Push Service.
+- [x] Test preference, generic payload, retry cap, invalid token, and deep-link reauthorization.
+- [x] Send object IDs and generic copy only through Expo Push Service.
 
 ## Exit Gate
 
@@ -56,3 +56,4 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created response, acceptance, coordination, and notification implementation plan |
+| 2026-08-31 | Added granular notification preferences, and reconciled MAY-050 with the media and presence already shipped |

@@ -49,3 +49,4 @@ Every feed card has a valid explanation, blocked users never receive each other'
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created discovery and controlled reach implementation plan |
+| 2026-08-31 | Removed the Google Places tier, so no area a person types leaves the device |

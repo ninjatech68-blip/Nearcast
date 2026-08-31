@@ -63,3 +63,10 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded native homepage UX pass |
 | 2026-08-25 | Recorded native minimal design-system exploration checkpoint |
 | 2026-08-25 | Recorded native minimal page implementation checkpoint |
+| 2026-08-31 | Consolidated two divergent builds onto one trunk: adopted the shipped build, then rebuilt on it what only the other branch had |
+| 2026-08-31 | Made a release build refuse to run on fixtures, closing the path that could show a tester fabricated activity |
+| 2026-08-31 | Gated membership on an invitation; publishing and profile sync no longer create members |
+| 2026-08-31 | Took the Nearcast Apple identity from TrvlAI Test, and added the privacy manifest |
+| 2026-08-31 | Built the public share link and genuine confirmation, and closed a policy that exposed who confirmed |
+| 2026-08-31 | Added rate limits on the four paths MUST-077 names |
+| 2026-08-31 | Added notification preferences, the analytics taxonomy allow-list, and real account deletion |
