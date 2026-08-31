@@ -1,35 +1,30 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8">
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>onboarding &amp;middot; home — Nearcast mockup</title>
+<title>onboarding &middot; home — Nearcast</title>
 <link rel="stylesheet" href="../../design-system.css">
-</head>
-<body class="mockup">
-<div class="sheetnote"><h1>onboarding &amp;middot; home</h1><p>Onboarding step 2 of 5 on the <code>chat-push-notification-review</code> branch. Copy is verbatim from <code>src/app/onboarding/index.tsx</code>; type, colour and spacing come from <code>tokens.ts</code>.</p></div>
-<div class="rack">
-<figure class="slot"><div class="phone"><div class="island"></div>
+<link rel="stylesheet" href="../../screens.css">
+</head><body class="mockup">
+<div class="sheetnote"><h1>onboarding &middot; home</h1><p>Mirrored node-for-node from <code>src/app/onboarding/index.tsx</code>. Every class is <code>ob__*</code>, transpiled by <code>rn2css.js</code> from that file&rsquo;s own <code>StyleSheet.create</code> with the real token object resolved. The only inline values are the two the screen computes itself: <code>paddingTop: insets.top + 16</code> and <code>paddingBottom: max(insets.bottom, 12)</code>.</p></div>
+<div class="rack"><figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; HOME</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">where&rsquo;s home, roughly?</h2>
-    <p class="ob-hint">the neighbourhood, not the address. we keep it approximate.</p>
-    <div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div><div class="ob-pickSub">chandigarh &middot; approximate</div></div><span class="ob-pickChevron">&#8250;</span></div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; HOME</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/02-home</b><em>step 2 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
-</div>
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">where&rsquo;s home, roughly?</span>
+      <span class="rn-text ob__hint">the neighbourhood, not the address. we keep it approximate.</span>
+      <div class="rn-view rn-row ob__pickRow"><div class="rn-view ob__pickText"><span class="rn-text ob__pickValue">Sector 17</span><span class="rn-text ob__pickSub">chandigarh &middot; approximate</span></div><span class="rn-text ob__pickChevron">&#8250;</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/02-home</b><em>step 2 of 5 &middot; chat-push-notification-review</em></figcaption></figure></div>
 </body></html>

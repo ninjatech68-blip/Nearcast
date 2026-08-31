@@ -1,8 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nearcast — mockup</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Nearcast — transpiled</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>/* ==========================================================================
    Nearcast — mockup design system
@@ -544,486 +542,2057 @@ body.mockup {
 .ch-send { width: 44px; height: 44px; border-radius: 999px; background: var(--ink12);
   display: flex; align-items: center; justify-content: center; color: var(--cream); flex: 0 0 auto; }
 
+/* React Native box-model defaults, so a div behaves like a View.
+   These are the differences that silently break a hand-built mockup. */
+.rn-view { display: flex; flex-direction: column; align-items: stretch;
+  flex-shrink: 0; position: relative; min-height: 0; min-width: 0; box-sizing: border-box; }
+.rn-text { display: block; box-sizing: border-box; margin: 0; }
+.rn-row  { flex-direction: row; }
+.rn-scroll { overflow: hidden; }
+
+
+/* src/app/onboarding/index.tsx — transpiled from its own StyleSheet.create */
+.ob__backTap {
+  min-width: 28px;
+  min-height: 28px;
+  align-items: flex-start;
+  justify-content: center;
+}
+.ob__chevron {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 30px;
+  color: #14120E;
+}
+.ob__pickRow {
+  min-height: 56px;
+  margin-top: 18px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  border-bottom-width: 1px;
+  border-style: solid;
+  border-bottom-color: rgba(20,18,14,0.12);
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.ob__pickText {
+  flex: 1 1 0%;
+}
+.ob__pickValue {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #14120E;
+}
+.ob__pickSub {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 4px;
+}
+.ob__pickPlaceholder {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: rgba(20,18,14,0.4);
+}
+.ob__pickChevron {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: #14120E;
+}
+.ob__screen {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.ob__flex {
+  flex: 1 1 0%;
+}
+.ob__top {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+.ob__wordmark {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 1.9px;
+  color: rgba(20,18,14,0.4);
+}
+.ob__helpTap {
+  min-width: 44px;
+  min-height: 44px;
+  align-items: flex-end;
+  justify-content: center;
+}
+.ob__help {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: rgba(20,18,14,0.4);
+}
+.ob__progress {
+  flex-direction: row;
+  margin-top: 6px;
+  margin-bottom: 20px;
+}
+.ob__progressBar {
+  flex: 1 1 0%;
+  height: 3px;
+  border-radius: 4px;
+  background-color: rgba(20,18,14,0.12);
+}
+.ob__progressOn {
+  background-color: #FF4D00;
+}
+.ob__title {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 34px;
+  line-height: 36px;
+  letter-spacing: -0.8px;
+  color: #14120E;
+  margin-top: 8px;
+}
+.ob__hint {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 22px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 12px;
+  margin-bottom: 22px;
+}
+.ob__input {
+  min-height: 56px;
+  border-radius: 14px;
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: #FF4D00;
+  padding-left: 14px;
+  padding-right: 14px;
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  color: #14120E;
+}
+.ob__tagsRow {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.ob__tag {
+  min-height: 36px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 999px;
+  background-color: #14120E;
+  justify-content: center;
+}
+.ob__tagText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: #F4EFE4;
+}
+.ob__chips {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ob__chip {
+  min-height: 40px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 999px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(20,18,14,0.12);
+  justify-content: center;
+}
+.ob__chipText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: rgba(20,18,14,0.4);
+}
+.ob__actions {
+  gap: 2px;
+  padding-bottom: 4px;
+}
+
+/* src/app/signin.tsx — transpiled from its own StyleSheet.create */
+.signin__screen {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+.signin__flex {
+  flex: 1 1 0%;
+}
+.signin__scrollBody {
+  flex-grow: 1;
+}
+.signin__header {
+  margin-top: 24px;
+}
+.signin__spacer {
+  height: 36px;
+}
+.signin__wordmark {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 1.9px;
+  color: rgba(20,18,14,0.4);
+  margin-bottom: 16px;
+}
+.signin__title {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 48px;
+  letter-spacing: -1.2px;
+  color: #14120E;
+}
+.signin__sub {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 25px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 14px;
+}
+.signin__sentTitle {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.6px;
+  color: #14120E;
+  margin-bottom: 6px;
+}
+.signin__form {
+  gap: 12px;
+}
+.signin__segment {
+  flex-direction: row;
+  padding: 4px;
+  border-radius: 14px;
+  background-color: rgba(20,18,14,0.12);
+  gap: 4px;
+}
+.signin__segmentTab {
+  flex: 1 1 0%;
+  min-height: 40px;
+  border-radius: 11px;
+  align-items: center;
+  justify-content: center;
+}
+.signin__segmentTabOn {
+  background-color: #F4EFE4;
+}
+.signin__segmentText {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: rgba(20,18,14,0.4);
+}
+.signin__segmentTextOn {
+  color: #14120E;
+}
+.signin__input {
+  min-height: 56px;
+  border-radius: 14px;
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: #FF4D00;
+  padding-left: 14px;
+  padding-right: 14px;
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  color: #14120E;
+}
+.signin__note {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(20,18,14,0.4);
+}
+.signin__emailChip {
+  align-self: flex-start;
+  max-width: 100%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 14px;
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: #FF4D00;
+  background-color: #F4EFE4;
+}
+.signin__emailChipText {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #14120E;
+}
+.signin__noteDim {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.12);
+}
+.signin__error {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FF4D00;
+}
+.signin__legalRow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.signin__legalLink {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(20,18,14,0.4);
+  text-decoration: underline;
+}
+.signin__legalDot {
+  color: rgba(20,18,14,0.12);
+}
+
+/* src/app/auth/callback.tsx — transpiled from its own StyleSheet.create */
+.callback__screen {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+.callback__wordmark {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 1.9px;
+  color: rgba(20,18,14,0.4);
+}
+.callback__middle {
+  flex: 1 1 0%;
+  justify-content: center;
+  gap: 12px;
+}
+.callback__title {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.6px;
+  color: #14120E;
+}
+.callback__note {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 25px;
+  color: rgba(20,18,14,0.4);
+}
+
+/* src/app/chat/[id].tsx — transpiled from its own StyleSheet.create */
+.chat__sendError {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: #FF4D00;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-bottom: 6px;
+}
+.chat__plusBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(20,18,14,0.12);
+  align-items: center;
+  justify-content: center;
+}
+.chat__plusText {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 26px;
+  color: #14120E;
+}
+.chat__request {
+  align-self: center;
+  max-width: 86%;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  padding-left: 14px;
+  padding-right: 14px;
+  margin-bottom: 8px;
+  border-radius: 28px;
+  background-color: rgba(20,18,14,0.08);
+}
+.chat__requestBody {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(20,18,14,0.4);
+  text-align: center;
+}
+.chat__requestActions {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  min-height: 44px;
+}
+.chat__requestNo {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(20,18,14,0.4);
+}
+.chat__requestYes {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #FF4D00;
+}
+.chat__plusBtnOn {
+  background-color: #14120E;
+  border-color: #14120E;
+}
+.chat__plusTextOn {
+  color: #F4EFE4;
+}
+.chat__tray {
+  flex-direction: row;
+  justify-content: space-around;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  background-color: rgba(20,18,14,0.08);
+}
+.chat__tile {
+  align-items: center;
+  gap: 8px;
+  min-width: 84px;
+}
+.chat__tileDisc {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  align-items: center;
+  justify-content: center;
+  background-color: #FF4D00;
+}
+.chat__tileGlyph {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 22px;
+  color: #F4EFE4;
+}
+.chat__tileLabel {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: rgba(20,18,14,0.4);
+}
+.chat__bubbleMedia {
+  padding: 4px;
+  overflow: hidden;
+}
+.chat__media {
+  width: 220px;
+  max-width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(20,18,14,0.08);
+}
+.chat__mediaImage {
+  width: 100%;
+  height: 100%;
+}
+.chat__mediaPending {
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
+}
+.chat__caption {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+.chat__locHint {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+.chat__screen {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+.chat__flex {
+  flex: 1 1 0%;
+}
+.chat__center {
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.chat__gone {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: #14120E;
+}
+.chat__back {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #FF4D00;
+}
+.chat__header {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-height: 52px;
+  border-bottom-width: 1px;
+  border-style: solid;
+  border-bottom-color: rgba(20,18,14,0.12);
+  padding-bottom: 8px;
+}
+.chat__backTap {
+  width: 30px;
+  min-height: 44px;
+  justify-content: center;
+}
+.chat__chevron {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 32px;
+  color: #14120E;
+}
+.chat__who {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 0%;
+  min-width: 0px;
+}
+.chat__whoCopy {
+  flex: 1 1 0%;
+  min-width: 0px;
+}
+.chat__name {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #14120E;
+}
+.chat__sub {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+}
+.chat__thread {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  gap: 10px;
+}
+.chat__matchedNote {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  text-align: center;
+  margin-bottom: 8px;
+}
+.chat__olderBtn {
+  align-self: center;
+  min-height: 36px;
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(20,18,14,0.12);
+  background-color: rgba(20,18,14,0.08);
+  justify-content: center;
+}
+.chat__olderBtnDim {
+  opacity: 0.7;
+}
+.chat__olderText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: #14120E;
+}
+.chat__systemRow {
+  align-self: center;
+  max-width: 86%;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 999px;
+  background-color: rgba(20,18,14,0.08);
+}
+.chat__systemText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  text-align: center;
+}
+.chat__bubbleRow {
+  max-width: 82%;
+}
+.chat__rowMine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.chat__rowTheirs {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+.chat__bubble {
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius: 18px;
+}
+.chat__mine {
+  background-color: #14120E;
+  border-bottom-right-radius: 5px;
+}
+.chat__theirs {
+  background-color: rgba(20,18,14,0.08);
+  border-bottom-left-radius: 5px;
+}
+.chat__bubbleText {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 21px;
+}
+.chat__mineText {
+  color: #F4EFE4;
+}
+.chat__theirsText {
+  color: #14120E;
+}
+.chat__time {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 3px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.chat__metaRow {
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+.chat__tick {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 3px;
+  margin-right: 4px;
+}
+.chat__tickRead {
+  color: #FF4D00;
+}
+.chat__tickFailed {
+  color: #FF4D00;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+}
+.chat__bubbleFailed {
+  opacity: 0.55;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #FF4D00;
+}
+.chat__netBanner {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 14px;
+  background-color: rgba(20,18,14,0.08);
+  margin-bottom: 8px;
+}
+.chat__netBannerText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: #14120E;
+  text-align: center;
+}
+.chat__composer {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 10px;
+  padding-top: 10px;
+  border-top-width: 1px;
+  border-style: solid;
+  border-top-color: rgba(20,18,14,0.12);
+}
+.chat__input {
+  flex: 1 1 0%;
+  min-height: 44px;
+  max-height: 120px;
+  border-radius: 22px;
+  background-color: rgba(20,18,14,0.08);
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  color: #14120E;
+}
+.chat__sendBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  background-color: #FF4D00;
+  align-items: center;
+  justify-content: center;
+}
+.chat__sendDim {
+  opacity: 0.4;
+}
+.chat__sendText {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: #14120E;
+}
+.chat__expiryTap {
+  align-items: flex-end;
+  min-height: 44px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.chat__expiryPill {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.chat__expiryLabel {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 12px;
+  letter-spacing: 1.3px;
+  color: #FF4D00;
+}
+.chat__expiryDots {
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+}
+.chat__expiryDot {
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 1.25px;
+  background-color: #FF4D00;
+}
+.chat__endedRow {
+  padding-top: 12px;
+  border-top-width: 1px;
+  border-style: solid;
+  border-top-color: rgba(20,18,14,0.12);
+  align-items: center;
+}
+.chat__endedText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+}
+
+/* src/app/compose.tsx — transpiled from its own StyleSheet.create */
+.compose__screen {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.compose__flex {
+  flex: 1 1 0%;
+}
+.compose__top {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+.compose__wordmark {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 1.9px;
+  color: rgba(20,18,14,0.4);
+}
+.compose__closeTarget {
+  min-width: 44px;
+  min-height: 44px;
+  align-items: flex-end;
+  justify-content: center;
+}
+.compose__close {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 30px;
+  color: #14120E;
+}
+.compose__progress {
+  flex-direction: row;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.compose__progressBar {
+  flex: 1 1 0%;
+  height: 3px;
+  border-radius: 4px;
+  background-color: rgba(20,18,14,0.12);
+}
+.compose__progressOn {
+  background-color: #FF4D00;
+}
+.compose__label {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: rgba(20,18,14,0.4);
+  margin-bottom: 10px;
+}
+.compose__chips {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.compose__chip {
+  min-height: 38px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 999px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(20,18,14,0.12);
+  justify-content: center;
+}
+.compose__chipText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: rgba(20,18,14,0.4);
+}
+.compose__detailsTitle {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 32px;
+  letter-spacing: -0.6px;
+  color: #14120E;
+  margin-bottom: 8px;
+}
+.compose__detailBlock {
+  margin-top: 12px;
+}
+.compose__detailRow {
+  min-height: 64px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-top-width: 1px;
+  border-style: solid;
+  border-top-color: rgba(20,18,14,0.12);
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+.compose__detailTitle {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.2px;
+  color: #14120E;
+}
+.compose__detailSub {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 3px;
+}
+.compose__detailAction {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: rgba(20,18,14,0.4);
+}
+.compose__expand {
+  padding-bottom: 18px;
+  gap: 12px;
+}
+.compose__expandNote {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+}
+.compose__radiusBlock {
+  min-height: 64px;
+  padding-top: 16px;
+  padding-bottom: 12px;
+  border-top-width: 1px;
+  border-style: solid;
+  border-top-color: rgba(20,18,14,0.12);
+}
+.compose__radiusRow {
+  flex-direction: row;
+  gap: 8px;
+  margin-top: 12px;
+}
+.compose__radiusPill {
+  flex: 1 1 0%;
+  min-height: 52px;
+  border-radius: 14px;
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: rgba(20,18,14,0.12);
+  align-items: center;
+  justify-content: center;
+}
+.compose__radiusPillOn {
+  background-color: #14120E;
+  border-color: #14120E;
+}
+.compose__radiusPillText {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #14120E;
+}
+.compose__radiusPillTextOn {
+  color: #F4EFE4;
+}
+.compose__radiusNote {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 12px;
+}
+.compose__preview {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+.compose__swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+}
+.compose__previewText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  flex: 1 1 0%;
+}
+.compose__previewName {
+  color: #14120E;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+}
+.compose__saved {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 14px;
+}
+.compose__detailsActions {
+  gap: 2px;
+  padding-bottom: 4px;
+}
+.compose__sendError {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: #FF4D00;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.compose__sentNote {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  margin-bottom: 14px;
+  opacity: 0.7;
+}
+
+/* src/app/profile-edit.tsx — transpiled from its own StyleSheet.create */
+.profileedit__rows {
+  margin-top: 18px;
+}
+.profileedit__leave {
+  margin-top: auto;
+  padding-top: 24px;
+  align-items: center;
+}
+
+/* src/app/circles.tsx — transpiled from its own StyleSheet.create */
+.circles__scroll {
+  flex: 1 1 0%;
+}
+.circles__lead {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+.circles__members {
+  padding-left: 4px;
+  padding-bottom: 12px;
+  gap: 10px;
+}
+.circles__member {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+.circles__memberName {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #14120E;
+}
+.circles__memberArea {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-left: auto;
+}
+.circles__empty {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+}
+.circles__actions {
+  margin-top: 14px;
+}
+
+/* src/app/receipts.tsx — transpiled from its own StyleSheet.create */
+.receipts__flex {
+  flex: 1 1 0%;
+}
+.receipts__summary {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.3px;
+  color: #14120E;
+  margin-top: 4px;
+}
+.receipts__rows {
+  margin-top: 18px;
+}
+.receipts__emptyBlock {
+  margin-top: 32px;
+}
+.receipts__emptyHead {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 30px;
+  letter-spacing: -0.6px;
+  color: #14120E;
+}
+.receipts__emptySub {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 10px;
+}
+.receipts__actions {
+  margin-top: 18px;
+  gap: 2px;
+}
+
+/* src/design-system/components/poster.tsx — transpiled from its own StyleSheet.create */
+.poster__poster {
+  flex: 1 1 0%;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.poster__top {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+}
+.poster__wordmark {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 1.9px;
+}
+.poster__middle {
+  flex: 1 1 0%;
+  justify-content: center;
+}
+.poster__badge {
+  margin-bottom: 18px;
+}
+.poster__categoryTag {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 1.9px;
+  margin-bottom: 14px;
+}
+.poster__cast {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 46px;
+  line-height: 46px;
+  letter-spacing: -1.15px;
+  max-width: 335px;
+}
+.poster__casterPill {
+  align-self: flex-start;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.poster__casterText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 19px;
+}
+.poster__meta {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+}
+.poster__why {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  margin-top: 6px;
+}
+.poster__bar {
+  margin-top: 20px;
+  gap: 2px;
+}
+
+/* src/design-system/components/dock.tsx — transpiled from its own StyleSheet.create */
+.dock__dock {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+}
+.dock__layer {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+.dock__row {
+  flex: 1 1 0%;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.dock__column {
+  flex: 1 1 0%;
+  align-items: center;
+  padding-top: 10px;
+  min-height: 56px;
+}
+.dock__markBox {
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+}
+.dock__label {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.dock__labelOn {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+}
+.dock__avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.dock__avatarPhoto {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+}
+.dock__avatarInitials {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+}
+.dock__cast {
+  position: absolute;
+  top: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+}
+.dock__castTouch {
+  position: absolute;
+  top: 4px;
+  width: 36px;
+  height: 36px;
+}
+.dock__count {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  margin-left: 5px;
+  min-width: 18px;
+  height: 18px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 9px;
+  background-color: #FF4D00;
+  align-items: center;
+  justify-content: center;
+}
+.dock__countText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 13px;
+  color: #14120E;
+}
+
+/* src/design-system/components/button.tsx — transpiled from its own StyleSheet.create */
+.button__bar {
+  min-height: 58px;
+  border-radius: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 10px;
+}
+.button__disabled {
+  opacity: 0.45;
+}
+.button__label {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.15px;
+}
+.button__quiet {
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+}
+.button__quietPressed {
+  opacity: 0.35;
+}
+.button__quietLabel {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+}
+.button__loaderRow {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.button__loader {
+  flex-direction: row;
+  align-items: center;
+  gap: 3px;
+  height: 23px;
+}
+.button__loaderBar {
+  width: 5px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+/* src/design-system/components/row.tsx — transpiled from its own StyleSheet.create */
+.row__row {
+  min-height: 64px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-top-width: 1px;
+  border-style: solid;
+  border-top-color: rgba(20,18,14,0.12);
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+.row__pressed {
+  background-color: rgba(20,18,14,0.04);
+}
+.row__copy {
+  flex: 1 1 0%;
+  min-width: 0px;
+}
+.row__title {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.2px;
+  color: #14120E;
+}
+.row__sub {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 3px;
+}
+
+/* src/design-system/components/sheet.tsx — transpiled from its own StyleSheet.create */
+.sheet__shell {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 10px;
+  padding-bottom: 30px;
+}
+.sheet__grabber {
+  align-self: center;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: rgba(20,18,14,0.12);
+  margin-bottom: 18px;
+}
+.sheet__head {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.sheet__title {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 32px;
+  letter-spacing: -0.6px;
+  color: #14120E;
+  flex-shrink: 1;
+}
+.sheet__note {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 12px;
+}
+
+/* src/design-system/components/field.tsx — transpiled from its own StyleSheet.create */
+.dsfield__input {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  padding: 0px;
+  min-height: 120px;
+}
+.dsfield__counter {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  text-align: right;
+  margin-top: 8px;
+}
+.dsfield__counterWarn {
+  color: #FF4D00;
+}
+
+/* src/design-system/components/tag.tsx — transpiled from its own StyleSheet.create */
+.tag__base {
+  padding-left: 9px;
+  padding-right: 9px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+.tag__hot {
+  background-color: #FF4D00;
+}
+.tag__ok {
+  background-color: #17442E;
+}
+.tag__dim {
+  background-color: rgba(20,18,14,0.12);
+}
+.tag__line {
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.tag__text {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+
+/* src/design-system/components/face.tsx — transpiled from its own StyleSheet.create */
+.face__fallback {
+  background-color: #14120E;
+  align-items: center;
+  justify-content: center;
+}
+.face__initials {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  color: #F4EFE4;
+}
+.face__initialsLarge {
+  font-size: 20px;
+}
+.face__badge {
+  position: absolute;
+  background-color: #FF4D00;
+  align-items: center;
+  justify-content: center;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #F4EFE4;
+}
+.face__badgeMark {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 600;
+  color: #14120E;
+}
+
+/* src/design-system/components/bars.tsx — transpiled from its own StyleSheet.create */
+.bars__row {
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+/* src/design-system/components/stamp.tsx — transpiled from its own StyleSheet.create */
+.stamp__stamp {
+  align-self: flex-start;
+  border-width: 2.5px;
+  border-style: solid;
+  border-radius: 8px;
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.stamp__text {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+/* src/design-system/components/page.tsx — transpiled from its own StyleSheet.create */
+.page__page {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.page__head {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 44px;
+}
+.page__title {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 38px;
+  line-height: 40px;
+  letter-spacing: -0.95px;
+  color: #14120E;
+}
+.page__body {
+  flex: 1 1 0%;
+  margin-top: 4px;
+}
+.page__refreshSlot {
+  position: absolute;
+  top: 6px;
+  left: 0px;
+  right: 0px;
+  align-items: center;
+  z-index: 2;
+}
+.page__fade {
+  position: absolute;
+  left: -24px;
+  right: -24px;
+  bottom: 0px;
+  justify-content: flex-end;
+}
+
+/* src/features/casts/alerts-page.tsx — transpiled from its own StyleSheet.create */
+.alerts__strip {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+.alerts__tab {
+  min-height: 38px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 999px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(20,18,14,0.12);
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.alerts__tabOn {
+  background-color: #14120E;
+  border-color: #14120E;
+}
+.alerts__tabLabel {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: rgba(20,18,14,0.4);
+  text-transform: uppercase;
+}
+.alerts__tabLabelOn {
+  color: #F4EFE4;
+}
+.alerts__tabCount {
+  min-width: 18px;
+  height: 18px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 9px;
+  background-color: #FF4D00;
+  align-items: center;
+  justify-content: center;
+}
+.alerts__tabCountOn {
+  background-color: #FF4D00;
+}
+.alerts__tabCountText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 13px;
+  color: #14120E;
+}
+.alerts__tabCountTextOn {
+  color: #14120E;
+}
+
+/* src/features/casts/feed-page.tsx — transpiled from its own StyleSheet.create */
+.feed__refreshSlot {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  align-items: center;
+}
+.feed__empty {
+  flex: 1 1 0%;
+  background-color: #F4EFE4;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.feed__emptyTop {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+}
+.feed__wordmark {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 1.9px;
+  color: rgba(20,18,14,0.4);
+}
+.feed__emptyMiddle {
+  flex: 1 1 0%;
+  justify-content: center;
+}
+.feed__emptyHead {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 46px;
+  line-height: 46px;
+  letter-spacing: -1.15px;
+  color: #14120E;
+}
+.feed__emptySub {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 34px;
+  line-height: 38px;
+  letter-spacing: -0.85px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 8px;
+}
+.feed__filterPill {
+  position: absolute;
+  left: 24px;
+  min-height: 36px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 999px;
+  background-color: #14120E;
+  justify-content: center;
+}
+.feed__filterPillText {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1.3px;
+  color: #F4EFE4;
+  text-transform: uppercase;
+}
+.feed__filterPillClear {
+  color: #FF4D00;
+}
+
+/* src/features/me/you-page.tsx — transpiled from its own StyleSheet.create */
+.you__name {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 32px;
+  letter-spacing: -0.6px;
+  color: #14120E;
+  margin-top: 14px;
+}
+.you__line {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 6px;
+}
+.you__signalBlock {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+.you__signalCopy {
+  flex: 1 1 0%;
+}
+.you__signalWord {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 24px;
+  letter-spacing: -0.45px;
+  color: #14120E;
+}
+.you__signalVisibility {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 19px;
+  color: rgba(20,18,14,0.4);
+  margin-top: 4px;
+}
+.you__rows {
+  margin-top: 22px;
+}
+.you__door {
+  margin-top: 20px;
+}
+
 .band{max-width:1200px;margin:56px auto 24px;font-family:var(--font-mono);font-weight:600;font-size:12px;
 letter-spacing:1.9px;text-transform:uppercase;color:var(--ink40);border-top:1px solid var(--ink12);padding-top:18px}
 </style></head><body class="mockup">
-<div class="sheetnote"><h1>nearcast — screens so far</h1>
-<p>Built from each screen&rsquo;s own <code>StyleSheet.create</code>. Onboarding, the feed poster across
-three of the ten category fields, and the chat thread in both branches.</p></div>
-<h2 class="band">onboarding · A (open signup)</h2><div class="rack">
+<div class="sheetnote"><h1>onboarding — transpiled, not traced</h1>
+<p>Styles are machine-transpiled from each screen&rsquo;s own <code>StyleSheet.create</code> with the real
+token object resolved; markup mirrors the JSX node for node. <code>.rn-view</code> restores React Native&rsquo;s
+box model (column flex by default, <code>flex:1</code> meaning <code>1 1 0%</code>), which is where a
+hand-built mockup silently drifts.</p></div>
+<h2 class="band">onboarding · A (open signup)</h2><div class="rack"><figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; HELLO</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
+</div>
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">what should we call you?</span>
+      <span class="rn-text ob__hint">your first name is all anyone else on nearcast sees. no last names, no handles.</span>
+      <div class="rn-view ob__input rn-row" style="align-items:center"><span class="rn-text" style="color:#14120E1F">first name</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E;opacity:.45"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/01-name</b><em>step 1 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; HELLO</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">what should we call you?</h2>
-    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <input class="ob-input" placeholder="first name">
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange bar--disabled">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; HOME</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/01-name</b><em>step 1 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">where&rsquo;s home, roughly?</span>
+      <span class="rn-text ob__hint">the neighbourhood, not the address. we keep it approximate.</span>
+      <div class="rn-view rn-row ob__pickRow"><div class="rn-view ob__pickText"><span class="rn-text ob__pickValue">Sector 17</span><span class="rn-text ob__pickSub">chandigarh &middot; approximate</span></div><span class="rn-text ob__pickChevron">&#8250;</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/02-home</b><em>step 2 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; HELLO</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">what should we call you?</h2>
-    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <input class="ob-input" value="Piyush">
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; AREAS</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>filled</b><em>next enables only once a name exists</em></figcaption></figure>
-
-
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">where else are you around?</span>
+      <span class="rn-text ob__hint">add the neighborhoods you spend time in. casts near any of these can reach you.</span>
+      <div class="rn-view rn-row ob__tagsRow"><div class="rn-view ob__tag"><span class="rn-text ob__tagText">sector 17</span></div><div class="rn-view ob__tag"><span class="rn-text ob__tagText">elante</span></div></div><div class="rn-view rn-row ob__pickRow"><div class="rn-view ob__pickText"><span class="rn-text ob__pickPlaceholder">add a neighborhood</span></div><span class="rn-text ob__pickChevron">&#8250;</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/03-areas</b><em>step 3 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; HOME</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">where&rsquo;s home, roughly?</h2>
-    <p class="ob-hint">the neighbourhood, not the address. we keep it approximate.</p>
-    <div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div><div class="ob-pickSub">chandigarh &middot; approximate</div></div><span class="ob-pickChevron">&#8250;</span></div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; INTERESTS</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/02-home</b><em>step 2 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
-
-
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">what are you actually into?</span>
+      <span class="rn-text ob__hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</span>
+      <div class="rn-view rn-row ob__chips"><div class="rn-view ob__chip"><span class="rn-text ob__chipText">social</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">sports</span></div><div class="rn-view ob__chip" style="background-color:#14120E;border-color:#14120E"><span class="rn-text ob__chipText" style="color:#F4EFE4">food + drinks</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">music + nightlife</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">travel + outdoors</span></div><div class="rn-view ob__chip" style="background-color:#14120E;border-color:#14120E"><span class="rn-text ob__chipText" style="color:#F4EFE4">games</span></div><div class="rn-view ob__chip" style="background-color:#14120E;border-color:#14120E"><span class="rn-text ob__chipText" style="color:#F4EFE4">arts + making</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">learning</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">networking</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">help + favors</span></div></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">looks good</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/04-interests</b><em>step 4 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; AREAS</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">where else are you around?</h2>
-    <p class="ob-hint">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
-    <div class="ob-tagsRow"><span class="ob-tag">sector 17</span><span class="ob-tag">elante</span></div><div class="ob-pickRow"><span class="ob-pickPlaceholder">add a neighborhood</span><span class="ob-pickChevron">&#8250;</span></div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; PUSH</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/03-areas</b><em>step 3 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
-
-
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">two pings. that&rsquo;s it.</span>
+      <span class="rn-text ob__hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</span>
+      
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">turn on push</span></div><div class="rn-view button__quiet"><span class="rn-text button__quietLabel" style="color:#14120E">not now</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/05-push</b><em>step 5 of 5 &middot; chat-push-notification-review</em></figcaption></figure></div><h2 class="band">onboarding · B (invite-gated)</h2><div class="rack"><figure class="slot"><div class="phone"><div class="island"></div>
+<div class="statusbar"><span>9:41</span><span class="glyphs">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
+<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; HELLO</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
+</div>
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">what should we call you?</span>
+      <span class="rn-text ob__hint">your first name is all anyone else on nearcast sees. no last names, no handles.</span>
+      <div class="rn-view ob__input rn-row" style="align-items:center"><span class="rn-text" style="color:#14120E1F">first name</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E;opacity:.45"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/01-name</b><em>step 1 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; INTERESTS</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">what are you actually into?</h2>
-    <p class="ob-hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
-    <div class="ob-chips"><span class="ob-chip">social</span><span class="ob-chip">sports</span><span class="ob-chip on">food + drinks</span><span class="ob-chip">music + nightlife</span><span class="ob-chip">travel + outdoors</span><span class="ob-chip on">games</span><span class="ob-chip on">arts + making</span><span class="ob-chip">learning</span><span class="ob-chip">networking</span><span class="ob-chip">help + favors</span></div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">looks good</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; INVITATION</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/04-interests</b><em>step 4 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
-
-
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">got an invitation?</span>
+      <span class="rn-text ob__hint">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</span>
+      <div class="rn-view ob__input rn-row" style="align-items:center"><span class="rn-text" style="color:#14120E1F">invitation code</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/02-invite</b><em>step 2 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; PUSH</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">two pings. that&rsquo;s it.</h2>
-    <p class="ob-hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
-    
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">turn on push</button><button class="quiet">not now</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; HOME</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>a-open/onboarding/05-push</b><em>step 5 of 5 &middot; chat-push-notification-review</em></figcaption></figure>
-</div><h2 class="band">onboarding · B (invite-gated)</h2><div class="rack">
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">where&rsquo;s home, roughly?</span>
+      <span class="rn-text ob__hint">the neighbourhood, not the address. we keep it approximate.</span>
+      <div class="rn-view rn-row ob__pickRow"><div class="rn-view ob__pickText"><span class="rn-text ob__pickValue">Sector 17</span><span class="rn-text ob__pickSub">chandigarh &middot; approximate</span></div><span class="rn-text ob__pickChevron">&#8250;</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/03-home</b><em>step 3 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; HELLO</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">what should we call you?</h2>
-    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <input class="ob-input" placeholder="first name">
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange bar--disabled">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; AREAS</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/01-name</b><em>step 1 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">where else are you around?</span>
+      <span class="rn-text ob__hint">add the neighborhoods you spend time in. casts near any of these can reach you.</span>
+      <div class="rn-view rn-row ob__tagsRow"><div class="rn-view ob__tag"><span class="rn-text ob__tagText">sector 17</span></div><div class="rn-view ob__tag"><span class="rn-text ob__tagText">elante</span></div></div><div class="rn-view rn-row ob__pickRow"><div class="rn-view ob__pickText"><span class="rn-text ob__pickPlaceholder">add a neighborhood</span></div><span class="rn-text ob__pickChevron">&#8250;</span></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">next</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/04-areas</b><em>step 4 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; HELLO</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">what should we call you?</h2>
-    <p class="ob-hint">your first name is all anyone else on nearcast sees. no last names, no handles.</p>
-    <input class="ob-input" value="Piyush">
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; INTERESTS</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>filled</b><em>next enables only once a name exists</em></figcaption></figure>
-
-
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">what are you actually into?</span>
+      <span class="rn-text ob__hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</span>
+      <div class="rn-view rn-row ob__chips"><div class="rn-view ob__chip"><span class="rn-text ob__chipText">social</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">sports</span></div><div class="rn-view ob__chip" style="background-color:#14120E;border-color:#14120E"><span class="rn-text ob__chipText" style="color:#F4EFE4">food + drinks</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">music + nightlife</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">travel + outdoors</span></div><div class="rn-view ob__chip" style="background-color:#14120E;border-color:#14120E"><span class="rn-text ob__chipText" style="color:#F4EFE4">games</span></div><div class="rn-view ob__chip" style="background-color:#14120E;border-color:#14120E"><span class="rn-text ob__chipText" style="color:#F4EFE4">arts + making</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">learning</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">networking</span></div><div class="rn-view ob__chip"><span class="rn-text ob__chipText">help + favors</span></div></div>
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">looks good</span></div></div>
+  </div>
+</div><div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/05-interests</b><em>step 5 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
 <figure class="slot"><div class="phone"><div class="island"></div>
 <div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1" opacity=".35"/></svg>
 <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
 <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; INVITATION</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">got an invitation?</h2>
-    <p class="ob-hint">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
-    <input class="ob-input" placeholder="invitation code">
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
+</span></div><div class="rn-view ob__screen" style="position:absolute;inset:0;padding-top:75px;padding-bottom:34px">
+  <div class="rn-view ob__flex">
+    <div class="rn-view rn-row ob__top">
+  <div class="rn-view ob__backTap"><span class="rn-text ob__chevron">&#8249;</span></div>
+  <span class="rn-text ob__wordmark">NEARCAST &middot; PUSH</span>
+  <div class="rn-view ob__helpTap"><span class="rn-text ob__help">?</span></div>
 </div>
-<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/02-invite</b><em>step 2 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; INVITATION</span>
-    <span class="ob-help">?</span>
+    <div class="rn-view rn-row ob__progress"><div class="rn-view ob__progressBar ob__progressOn"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div><div class="rn-view ob__progressBar ob__progressOn" style="margin-left:6px"></div></div>
+    <div class="rn-view rn-scroll ob__flex">
+      <span class="rn-text ob__title">two pings. that&rsquo;s it.</span>
+      <span class="rn-text ob__hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</span>
+      
+    </div>
+    <div class="rn-view ob__actions"><div class="rn-view rn-row button__bar" style="background-color:#FF4D00;color:#14120E"><span class="rn-text button__label">turn on push</span></div><div class="rn-view button__quiet"><span class="rn-text button__quietLabel" style="color:#14120E">not now</span></div></div>
   </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">got an invitation?</h2>
-    <p class="ob-hint">nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do not matter.</p>
-    <input class="ob-input" value="ca00112f8&hellip;" style="font-family:var(--font-mono);font-size:14px"><div class="notice notice--error" style="margin-top:14px">that code is not valid, or it has already been used. ask whoever invited you for another.</div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">join</button>
-  </div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>rejected</b><em>redeem_invite logs every attempt, valid or not</em></figcaption></figure>
-
-
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; HOME</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">where&rsquo;s home, roughly?</h2>
-    <p class="ob-hint">the neighbourhood, not the address. we keep it approximate.</p>
-    <div class="ob-pickRow"><div><div class="ob-pickValue">Sector 17</div><div class="ob-pickSub">chandigarh &middot; approximate</div></div><span class="ob-pickChevron">&#8250;</span></div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/03-home</b><em>step 3 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
-
-
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; AREAS</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">where else are you around?</h2>
-    <p class="ob-hint">add the neighborhoods you spend time in. casts near any of these can reach you.</p>
-    <div class="ob-tagsRow"><span class="ob-tag">sector 17</span><span class="ob-tag">elante</span></div><div class="ob-pickRow"><span class="ob-pickPlaceholder">add a neighborhood</span><span class="ob-pickChevron">&#8250;</span></div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">next</button>
-  </div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/04-areas</b><em>step 4 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
-
-
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; INTERESTS</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">what are you actually into?</h2>
-    <p class="ob-hint">pick a few. delivery uses this to decide when a stranger&rsquo;s cast is worth showing you.</p>
-    <div class="ob-chips"><span class="ob-chip">social</span><span class="ob-chip">sports</span><span class="ob-chip on">food + drinks</span><span class="ob-chip">music + nightlife</span><span class="ob-chip">travel + outdoors</span><span class="ob-chip on">games</span><span class="ob-chip on">arts + making</span><span class="ob-chip">learning</span><span class="ob-chip">networking</span><span class="ob-chip">help + favors</span></div>
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">looks good</button>
-  </div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/05-interests</b><em>step 5 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
-
-
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ob-screen">
-  <div class="ob-top">
-    <span class="ob-chevron">&#8249;</span>
-    <span class="wordmark">NEARCAST &middot; PUSH</span>
-    <span class="ob-help">?</span>
-  </div>
-  <div class="ob-progress"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
-  <div style="flex:1;overflow:hidden">
-    <h2 class="ob-title">two pings. that&rsquo;s it.</h2>
-    <p class="ob-hint">when someone asks to join your plan, and when a plan you asked to join says yes. nothing else, ever. a ping never carries the note, the place, or who it&rsquo;s from. that stays in the app. off whenever you like.</p>
-    
-  </div>
-  <div class="ob-actions" style="padding-bottom:calc(var(--inset-bottom) + 4px)">
-    <button class="bar bar--onOrange">turn on push</button><button class="quiet">not now</button>
-  </div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/06-push</b><em>step 6 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure>
-</div><h2 class="band">feed</h2><div class="rack">
-<figure class="slot"><div class="phone" data-field="social"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas po-screen">
-  <div class="po-top"><span class="wordmark">NEARCAST</span><span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span></div>
-  <div class="po-middle">
-    <div class="po-categoryTag">SOCIAL</div>
-    <h1 class="po-cast">chai + catch-up this evening, anyone around?</h1>
-  </div>
-  <div>
-    <div class="po-casterPill"><span>AA</span><span>aarav</span><span>&middot;</span><span>&#8250;</span></div>
-    <div class="po-meta">nearby &middot; gone in 28d</div>
-    <div class="po-why">why you: demo cast &middot; shown to every tester &#8250;</div>
-    <div class="po-bar"><button class="bar bar--onInk">ask to join</button><button class="quiet">skip</button></div>
-  </div>
-  <div class="poster-reserve"></div>
-</div><div class="dock"><div class="dock__col on"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><span class="dock__label">near</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4A2.5 2.5 0 0 1 13.5 13H8l-3.4 2.6a.4.4 0 0 1-.6-.3V13a1 1 0 0 1-1-1z"/><path d="M8 16.5A2.5 2.5 0 0 0 10.5 19H16l3.4 2.6a.4.4 0 0 0 .6-.3V19a1 1 0 0 0 1-1v-4a2.5 2.5 0 0 0-2.5-2.5"/></svg></div><span class="dock__label">chats</span></div><div class="dock__col"><div class="dock__cast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><span class="dock__label">cast</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9a6 6 0 0 0-6-6z"/><path d="M10.2 18a1.9 1.9 0 0 0 3.6 0"/></svg></div><span class="dock__label">alerts</span></div><div class="dock__col"><div class="dock__mark"><span style="width:24px;height:24px;border-radius:999px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:9px;letter-spacing:.3px">PS</span></div><span class="dock__label">you</span></div></div>
-<div class="home-indicator"></div></div><figcaption><b>social</b><em>field #social &middot; caster pill takes the poles</em></figcaption></figure>
-<figure class="slot"><div class="phone" data-field="arts"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas po-screen">
-  <div class="po-top"><span class="wordmark">NEARCAST</span><span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span></div>
-  <div class="po-middle">
-    <div class="po-categoryTag">ARTS + MAKING</div>
-    <h1 class="po-cast">sketching in the park sunday morning.</h1>
-  </div>
-  <div>
-    <div class="po-casterPill"><span>RO</span><span>rohan</span><span>&middot;</span><span>&#8250;</span></div>
-    <div class="po-meta">nearby &middot; gone in 29d</div>
-    <div class="po-why">why you: demo cast &middot; shown to every tester &#8250;</div>
-    <div class="po-bar"><button class="bar bar--onInk">ask to join</button><button class="quiet">skip</button></div>
-  </div>
-  <div class="poster-reserve"></div>
-</div><div class="dock"><div class="dock__col on"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><span class="dock__label">near</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4A2.5 2.5 0 0 1 13.5 13H8l-3.4 2.6a.4.4 0 0 1-.6-.3V13a1 1 0 0 1-1-1z"/><path d="M8 16.5A2.5 2.5 0 0 0 10.5 19H16l3.4 2.6a.4.4 0 0 0 .6-.3V19a1 1 0 0 0 1-1v-4a2.5 2.5 0 0 0-2.5-2.5"/></svg></div><span class="dock__label">chats</span></div><div class="dock__col"><div class="dock__cast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><span class="dock__label">cast</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9a6 6 0 0 0-6-6z"/><path d="M10.2 18a1.9 1.9 0 0 0 3.6 0"/></svg></div><span class="dock__label">alerts</span></div><div class="dock__col"><div class="dock__mark"><span style="width:24px;height:24px;border-radius:999px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:9px;letter-spacing:.3px">PS</span></div><span class="dock__label">you</span></div></div>
-<div class="home-indicator"></div></div><figcaption><b>arts</b><em>field #arts + making &middot; caster pill takes the poles</em></figcaption></figure>
-<figure class="slot"><div class="phone" data-field="games"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas po-screen">
-  <div class="po-top"><span class="wordmark">NEARCAST</span><span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span></div>
-  <div class="po-middle">
-    <div class="po-categoryTag">GAMES</div>
-    <h1 class="po-cast">board games night, teaching Catan to newbies.</h1>
-  </div>
-  <div>
-    <div class="po-casterPill"><span>NI</span><span>nisha</span><span>&middot;</span><span>&#8250;</span></div>
-    <div class="po-meta">nearby &middot; gone in 29d</div>
-    <div class="po-why">why you: demo cast &middot; shown to every tester &#8250;</div>
-    <div class="po-bar"><button class="bar bar--onInk">ask to join</button><button class="quiet">skip</button></div>
-  </div>
-  <div class="poster-reserve"></div>
-</div><div class="dock"><div class="dock__col on"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><span class="dock__label">near</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h8A2.5 2.5 0 0 1 16 6.5v4A2.5 2.5 0 0 1 13.5 13H8l-3.4 2.6a.4.4 0 0 1-.6-.3V13a1 1 0 0 1-1-1z"/><path d="M8 16.5A2.5 2.5 0 0 0 10.5 19H16l3.4 2.6a.4.4 0 0 0 .6-.3V19a1 1 0 0 0 1-1v-4a2.5 2.5 0 0 0-2.5-2.5"/></svg></div><span class="dock__label">chats</span></div><div class="dock__col"><div class="dock__cast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><span class="dock__label">cast</span></div><div class="dock__col"><div class="dock__mark"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9a6 6 0 0 0-6-6z"/><path d="M10.2 18a1.9 1.9 0 0 0 3.6 0"/></svg></div><span class="dock__label">alerts</span></div><div class="dock__col"><div class="dock__mark"><span style="width:24px;height:24px;border-radius:999px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:9px;letter-spacing:.3px">PS</span></div><span class="dock__label">you</span></div></div>
-<div class="home-indicator"></div></div><figcaption><b>games</b><em>field #games &middot; caster pill takes the poles</em></figcaption></figure>
-</div><h2 class="band">chat · A (ink bubbles, committed)</h2><div class="rack">
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ch-screen">
-  <div class="ch-header">
-    <span class="ch-chevron">&#8249;</span>
-    <div class="ch-who"><span class="ch-avatar">SS</span>
-      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
-    <span class="ch-open">open &middot;&middot;&middot;</span>
-  </div>
-  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div></div>
-  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><span class="ch-plus">+</span><div class="ch-input">message</div><span class="ch-send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg></span></div></div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>live</b><em>read ticks in accent; my bubble notches 5px bottom-right</em></figcaption></figure>
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ch-screen">
-  <div class="ch-header">
-    <span class="ch-chevron">&#8249;</span>
-    <div class="ch-who"><span class="ch-avatar">SS</span>
-      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
-    <span class="ch-open">open &middot;&middot;&middot;</span>
-  </div>
-  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div><div class="ch-system">this chat has ended. the plan is done.</div></div>
-  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><div class="ch-input" style="opacity:.5">this chat has ended</div></div></div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>ended</b><em>composer disabled, a system capsule states why</em></figcaption></figure>
-</div><h2 class="band">chat · B (green bubbles, as on the device)</h2><div class="rack">
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ch-screen">
-  <div class="ch-header">
-    <span class="ch-chevron">&#8249;</span>
-    <div class="ch-who"><span class="ch-avatar">SS</span>
-      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
-    <span class="ch-open">open &middot;&middot;&middot;</span>
-  </div>
-  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine green"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div></div>
-  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><span class="ch-plus">+</span><div class="ch-input">message</div><span class="ch-send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg></span></div></div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>live</b><em>read ticks in accent; my bubble notches 5px bottom-right</em></figcaption></figure>
-<figure class="slot"><div class="phone"><div class="island"></div>
-<div class="statusbar"><span>9:41</span><span class="glyphs">
-<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
-<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.5 5.8 8.3a3.1 3.1 0 0 1 4.4 0zM3.6 6.1a6.2 6.2 0 0 1 8.8 0l1.4-1.4a8.2 8.2 0 0 0-11.6 0z"/></svg>
-<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
-</span></div>
-<div class="canvas ch-screen">
-  <div class="ch-header">
-    <span class="ch-chevron">&#8249;</span>
-    <div class="ch-who"><span class="ch-avatar">SS</span>
-      <div><div class="ch-name">SS</div><div class="ch-sub">4 plans together</div></div></div>
-    <span class="ch-open">open &middot;&middot;&middot;</span>
-  </div>
-  <div class="ch-thread"><div class="ch-system">you matched on <b>chai + catch-up this evening</b></div><div class="ch-row mine green"><div class="ch-bubble">Fjj need</div><div class="ch-metaRow"><span class="ch-time">9:04 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Do</div><div class="ch-metaRow"><span class="ch-time">9:26 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row theirs"><div class="ch-bubble">Cool</div><div class="ch-metaRow"><span class="ch-time">5:23 PM</span></div></div><div class="ch-row mine green"><div class="ch-bubble">Cm</div><div class="ch-metaRow"><span class="ch-time">5:24 PM</span><span class="ch-tick read">&#10003;&#10003;</span></div></div><div class="ch-row mine green"><div class="ch-bubble">FFL</div><div class="ch-metaRow"><span class="ch-time">7:30 PM</span><span class="ch-tick">&#10003;&#10003;</span></div></div><div class="ch-system">this chat has ended. the plan is done.</div></div>
-  <div style="padding-bottom:calc(var(--inset-bottom) + 6px)"><div class="ch-composer"><div class="ch-input" style="opacity:.5">this chat has ended</div></div></div>
-</div>
-<div class="home-indicator"></div></div><figcaption><b>ended</b><em>composer disabled, a system capsule states why</em></figcaption></figure>
-</div></body></html>
+</div><div class="home-indicator"></div></div><figcaption><b>b-invite-gated/onboarding/06-push</b><em>step 6 of 6 &middot; gifted-chat-integration-eval</em></figcaption></figure></div></body></html>
