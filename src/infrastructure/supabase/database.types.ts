@@ -746,6 +746,42 @@ export type Database = {
           },
         ]
       }
+      message_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          message_id: string
+          reactor_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          message_id: string
+          reactor_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          message_id?: string
+          reactor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reactions_reactor_id_fkey"
+            columns: ["reactor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_receipts: {
         Row: {
           delivered_at: string | null
@@ -798,6 +834,7 @@ export type Database = {
           media_thumb_path: string | null
           media_width: number | null
           place_label: string | null
+          reply_to_id: string | null
           sender_id: string | null
         }
         Insert: {
@@ -815,6 +852,7 @@ export type Database = {
           media_thumb_path?: string | null
           media_width?: number | null
           place_label?: string | null
+          reply_to_id?: string | null
           sender_id?: string | null
         }
         Update: {
@@ -832,6 +870,7 @@ export type Database = {
           media_thumb_path?: string | null
           media_width?: number | null
           place_label?: string | null
+          reply_to_id?: string | null
           sender_id?: string | null
         }
         Relationships: [
@@ -841,6 +880,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_same_conversation"
+            columns: ["reply_to_id", "conversation_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id", "conversation_id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
@@ -1747,6 +1793,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      reactions_for_message: {
+        Args: { target_message_id: string }
+        Returns: Json
+      }
       record_notification_failure: {
         Args: { error_code: string; outbox_id: string }
         Returns: string
@@ -1836,6 +1886,10 @@ export type Database = {
           plans: number
           receipts: number
         }[]
+      }
+      toggle_message_reaction: {
+        Args: { reaction_emoji: string; target_message_id: string }
+        Returns: Json
       }
       touch_conversation_presence: {
         Args: { target_conversation_id: string }
