@@ -39,7 +39,7 @@ export default function BroadcasterProfileScreen() {
           </Group>
         </Section>
       </ScrollView>
-      <ActionTray primaryLabel="Request to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
+      <ActionTray primaryLabel="Ask to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
     </SafeAreaView>
   );
 }

@@ -26,6 +26,28 @@ Nearcast does not sound promotional, mysterious, overly familiar, judgmental, or
 
 ## Canonical Terminology
 
+Nearcast keeps two registers. **Interface terminology** is what a person reads on screen. **Domain terminology** is what the product, architecture, API, and database call the same things. The two tables below map onto each other one-to-one; neither may drift from the other without an entry in this document's change log.
+
+### Interface Terminology
+
+This is the language of every user-facing string. It is the register a first-time user is expected to understand without product knowledge.
+
+| Use | Meaning | Domain term | Avoid |
+|---|---|---|---|
+| Cast | A plan invitation broadcast to a chosen reach | Intent + Broadcast | Post, listing, event, blast, drop |
+| Ask to join | Send a private join request to the host | Response | Join, RSVP, or any wording implying automatic acceptance |
+| Circles | People connected to you who can vouch for your follow-through | Trust context | Followers, friends, network size as status |
+| Signal | A plain-language description of your follow-through on casts | Reliability | Score, rating, percentage, points, reputation number, social credit |
+| Receipts | The record of casts that actually happened | Confirmation history | Badges, trophies, streaks, activity counts |
+
+`Signal` is deliberately qualitative. It describes follow-through in words and never as a number, bar, percentage, or rank. A numeric or comparative Signal would be a trust score, which [Trust Privacy and Safety](./04%20-%20Trust%20Privacy%20and%20Safety.md) and the Design System both prohibit.
+
+`Circles` names the people who can vouch for someone. It does not name a reach tier; reach keeps its own labels so a person is never asked to read one word two ways in the same flow.
+
+### Domain Terminology
+
+This is the language of the PRD, architecture, permissions, API contracts, database schema, and `src/features/`. It does not appear in user-facing strings.
+
 | Use | Meaning | Avoid |
 |---|---|---|
 | Intent | A temporary need, offer, or proposed action | Post, listing, event as universal terms |
@@ -202,3 +224,4 @@ Never send `We miss you`, `People are waiting`, or manufactured FOMO.
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined Nearcast terminology, voice, UI patterns, notifications, and safety language |
+| 2026-08-31 | Split terminology into interface and domain registers. Adopted Cast, Ask to join, Circles, Signal, and Receipts as user-facing language, mapped to the unchanged domain terms. Defined Signal as qualitative only, because the source brief's "public reputation" framing would otherwise be a trust score prohibited by document 04 and the Design System. |

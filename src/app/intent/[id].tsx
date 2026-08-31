@@ -46,7 +46,7 @@ export default function IntentDetailScreen() {
           <View style={styles.reasonPanel}>
             <SymbolIcon fallback="W" name="person.2" size={28} />
             <View style={styles.reasonCopy}>
-              <Text style={styles.reasonText}>Why this reached you: {featuredIntent.reason}</Text>
+              <Text style={styles.reasonText}>{featuredIntent.reason}</Text>
               <Text style={styles.reasonMeta}>Origin circle stays private.</Text>
             </View>
           </View>
@@ -66,7 +66,7 @@ export default function IntentDetailScreen() {
           </Group>
         </Section>
       </ScrollView>
-      <ActionTray primaryLabel="Request to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
+      <ActionTray primaryLabel="Ask to join" secondaryLabel="Not relevant" onPrimary={() => router.push('/request/badminton-tonight')} />
     </SafeAreaView>
   );
 }

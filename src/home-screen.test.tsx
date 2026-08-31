@@ -28,7 +28,7 @@ describe('HomeScreen', () => {
     expect(view.getByText('For You')).toBeTruthy();
     expect(view.getByText('Around you')).toBeTruthy();
     expect(view.getByText('Two people for badminton tonight')).toBeTruthy();
-    expect(view.getByText("Why this reached you: You play nearby on weekday evenings.")).toBeTruthy();
+    expect(view.getByText("Shown because you play nearby on weekday evenings.")).toBeTruthy();
   });
 
   it('opens intent detail from the primary feed card', async () => {

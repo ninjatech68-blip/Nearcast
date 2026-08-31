@@ -13,7 +13,7 @@ export default function RequestSheetScreen() {
         <TopBar title="Request" onBack={() => router.back()} />
         <ScrollView contentContainerStyle={styles.content} keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
           <View style={styles.sheet}>
-            <Text accessibilityRole="header" style={styles.title}>Request to join</Text>
+            <Text accessibilityRole="header" style={styles.title}>Ask to join</Text>
             <Text style={styles.body}>Aarav will see your first name and response.</Text>
             <Section>
               <NoteInput placeholder="Add a short note" />

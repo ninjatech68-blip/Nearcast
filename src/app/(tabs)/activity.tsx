@@ -16,14 +16,14 @@ export default function ActivityScreen() {
             <View style={styles.emptyRow}>
               <View style={styles.emptyIcon}><SymbolIcon fallback="R" name="tray" /></View>
               <View style={styles.emptyCopy}>
-                <Text style={styles.title}>No responses yet</Text>
-                <Text style={styles.body}>When someone is interested, you will see it here.</Text>
+                <Text style={styles.title}>No one has asked to join yet</Text>
+                <Text style={styles.body}>When someone asks to join a cast, it appears here.</Text>
               </View>
             </View>
           </Group>
         </Section>
 
-        <Section title="Your broadcasts">
+        <Section title="Your casts">
           <Group>
             <MiniIntentRow metadata={`${featuredIntent.metadata} · Live`} status={featuredIntent.expiry} title={featuredIntent.title} />
             <View style={styles.divider} />

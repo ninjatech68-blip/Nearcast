@@ -22,6 +22,29 @@ export default function YouScreen() {
             </View>
           </Group>
         </Section>
+
+        <Section title="Trust">
+          <Group>
+            <View style={styles.trustRow}>
+              <Text style={styles.trustTitle}>No circles yet</Text>
+              <Text style={styles.trustBody}>Join a few casts and people you meet can vouch for you.</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.trustRow}>
+              <Text style={styles.trustTitle}>Signal building</Text>
+              <Text style={styles.trustBody}>Signal grows as casts you join or host actually happen.</Text>
+            </View>
+          </Group>
+        </Section>
+
+        <Section title="Receipts">
+          <Group>
+            <View style={styles.trustRow}>
+              <Text style={styles.trustTitle}>Your receipts</Text>
+              <Text style={styles.trustBody}>A record of casts that actually happened.</Text>
+            </View>
+          </Group>
+        </Section>
       </ScrollView>
     </SafeAreaView>
   );
@@ -36,4 +59,8 @@ const styles = StyleSheet.create({
   copy: { flex: 1 },
   name: { fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28, color: tokens.semantic.color.textPrimary },
   meta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
+  trustRow: { padding: 16 },
+  trustTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
+  trustBody: { marginTop: 4, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.textSecondary },
+  divider: { height: 1, marginHorizontal: 16, backgroundColor: tokens.semantic.color.borderDefault },
 });
