@@ -1369,6 +1369,13 @@ export type Database = {
         Args: { max_rows?: number }
         Returns: number
       }
+      confirm_intent: {
+        Args: { requested_share_slug: string }
+        Returns: {
+          confirmation_count: number
+          viewer_has_confirmed: boolean
+        }[]
+      }
       conversation_messages: {
         Args: { target_conversation_id: string }
         Returns: {
@@ -1555,6 +1562,8 @@ export type Database = {
           intent_id: string
           matched_count: number
           pending_count: number
+          share_link_enabled: boolean
+          share_slug: string
           starts_at: string
           statement: string
           status: Database["public"]["Enums"]["intent_status"]
@@ -1798,6 +1807,10 @@ export type Database = {
       touch_conversation_presence: {
         Args: { target_conversation_id: string }
         Returns: undefined
+      }
+      viewer_has_confirmed: {
+        Args: { requested_share_slug: string }
+        Returns: boolean
       }
       vouches_for_me: {
         Args: never

@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
 import { SignalBars } from '@/design-system/components/bars';
 import { BarButton, QuietAction } from '@/design-system/components/button';
@@ -9,6 +9,8 @@ import { haptic } from '@/design-system/haptics';
 import { fontFamily, tokens } from '@/design-system/tokens';
 import { facePhotos, isVerified } from '@/features/casts/faces';
 import { cancelCast, getCast, useJoinsISent, withdrawJoin } from '@/features/casts/store';
+import { shareMessageFor } from '@/features/sharing/share-link';
+import { shareLinkForSlug } from '@/features/sharing/remote-share';
 
 /**
  * the detail sheet. receipts show at the decision moment:
@@ -94,8 +96,16 @@ export default function CastDetailScreen() {
   function renderActions() {
     if (!cast) return null;
     if (cast.byId === 'me') {
+      // MUST-020: every published cast has its own link, and this is where
+      // the caster gets it. Offered only when the public link is on, so the
+      // action never hands out a link nobody can open.
+      const canShare = cast.shareSlug !== undefined && cast.shareLinkEnabled !== false;
+
       return (
         <>
+          {canShare ? (
+            <BarButton label="share this cast" variant="onOrange" onPress={openShare} />
+          ) : null}
           <BarButton label="back" variant="onCream" onPress={() => router.back()} />
           <QuietAction label="cancel this cast" color={tokens.semantic.color.ink} onPress={openCancel} />
         </>
@@ -132,6 +142,26 @@ export default function CastDetailScreen() {
         },
       },
     ]);
+  }
+
+  /**
+   * Hand the caster their own link to paste wherever they like.
+   *
+   * The sheet is the system one, so Nearcast never learns where the link
+   * went: sharing into a WhatsApp group must not tell us the group exists,
+   * which is the same rule that keeps the origin circle private.
+   */
+  async function openShare() {
+    if (!cast?.shareSlug) return;
+
+    haptic('selection');
+    const link = shareLinkForSlug(cast.shareSlug);
+
+    try {
+      await Share.share({ message: shareMessageFor(cast.body, link), url: link.url });
+    } catch {
+      // Dismissing the share sheet throws on iOS. Nothing to report.
+    }
   }
 
   function openCancel() {

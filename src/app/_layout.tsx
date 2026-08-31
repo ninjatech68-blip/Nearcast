@@ -146,6 +146,11 @@ export default function RootLayout() {
     const inSignin = first === 'signin';
     const inOnboarding = first === 'onboarding';
     const inLegal = first === 'legal';
+    // MUST-022: a link recipient must be able to read the cast before
+    // installing or signing up, so the shared-cast route is open in both
+    // directions. It is the one screen a stranger can reach, and it reads
+    // through the only query granted to `anon`.
+    const inSharedCast = first === 'i';
     // the area picker is a step WITHIN onboarding (pick home / add a
     // neighbourhood), reached as its own screen. without excusing it,
     // the gate below sees "not in onboarding, not done" and yanks the
@@ -154,11 +159,18 @@ export default function RootLayout() {
     // the magic-link callback runs before the session exists; excusing it
     // keeps the gate from yanking it to /signin mid-exchange.
     const inAuthCallback = first === 'auth';
-    if (!me.signedIn && !inSignin && !inLegal && !inAuthCallback) {
+    if (!me.signedIn && !inSignin && !inLegal && !inAuthCallback && !inSharedCast) {
       router.replace('/signin');
       return;
     }
-    if (me.signedIn && !me.onboardingDone && !inOnboarding && !inLegal && !inArea) {
+    if (
+      me.signedIn &&
+      !me.onboardingDone &&
+      !inOnboarding &&
+      !inLegal &&
+      !inArea &&
+      !inSharedCast
+    ) {
       router.replace('/onboarding');
     }
   }, [fontsReady, me.signedIn, me.onboardingDone, segments]);
@@ -210,6 +222,7 @@ export default function RootLayout() {
       <Stack.Screen name="receipts" options={{ presentation: 'modal' }} />
       <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />
       <Stack.Screen name="report/[id]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="i/[slug]" options={{ presentation: 'card', animation: 'fade' }} />
       <Stack.Screen name="legal/terms" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/privacy" options={{ presentation: 'modal' }} />
       <Stack.Screen name="legal/guidelines" options={{ presentation: 'modal' }} />

@@ -37,6 +37,13 @@ export type CastDetail = PosterData & {
    * but nothing surfaces or asks about it.
    */
   slotsWanted?: number;
+  /**
+   * The public share slug, on your OWN casts only. `my_casts` is filtered
+   * to the caster, so this never carries someone else's link.
+   */
+  shareSlug?: string;
+  /** false when the caster switched the public link off */
+  shareLinkEnabled?: boolean;
   /** who has sent a note but not yet been accepted or declined */
   pendingJoins?: readonly PendingJoin[];
   /** who the caster has already accepted — these people have chat access */

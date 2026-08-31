@@ -22,6 +22,10 @@ export type RemoteMyCast = {
   status: string;
   pending_count: number;
   matched_count: number;
+  /** the caster's own share slug, for building the public link */
+  share_slug: string;
+  /** false when the caster switched the public link off */
+  share_link_enabled: boolean;
 };
 
 export type RemotePendingJoin = {

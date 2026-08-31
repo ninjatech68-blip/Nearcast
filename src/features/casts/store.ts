@@ -748,6 +748,8 @@ function buildMyCast(row: RemoteMyCast, pendings: readonly RemotePendingJoin[]):
     },
     matched: [],
     pendingJoins: joins,
+    shareSlug: row.share_slug,
+    shareLinkEnabled: row.share_link_enabled,
   };
 }
 
