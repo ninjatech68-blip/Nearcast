@@ -53,7 +53,7 @@ Components must reference semantic or component tokens. Raw values may appear on
 | `stone.50` | `#F8F7F3` | App canvas |
 | `stone.100` | `#EFEEE8` | Subtle surface |
 | `stone.200` | `#DFDED6` | Border |
-| `stone.500` | `#777A72` | Secondary text |
+| `stone.500` | `#6A6D65` | Muted text |
 | `stone.700` | `#444A44` | Supporting ink |
 | `amber.50` | `#FFF5DF` | Warning surface |
 | `amber.600` | `#A85F08` | Expiry and caution |

@@ -35,3 +35,10 @@ export const broadcaster = {
   context: 'One trusted connection',
   hiddenContact: 'Contact details hidden until accepted',
 };
+
+/** A cast the viewer hosts, distinct from the ones they ask to join. */
+export const ownCast = {
+  id: 'chess-sunday',
+  title: 'Chess at the park on Sunday',
+  expiry: 'Open for another 7 hours',
+};

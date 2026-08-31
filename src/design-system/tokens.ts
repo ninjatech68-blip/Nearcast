@@ -10,7 +10,7 @@ const primitive = {
     stone50: '#F8F7F3',
     stone100: '#EFEEE8',
     stone200: '#DFDED6',
-    stone500: '#777A72',
+    stone500: '#6A6D65',
     stone700: '#444A44',
     amber50: '#FFF5DF',
     amber600: '#A85F08',

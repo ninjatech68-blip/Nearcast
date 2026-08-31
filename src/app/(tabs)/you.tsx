@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { tokens } from '@/design-system/tokens';
@@ -37,6 +38,19 @@ export default function YouScreen() {
           </Group>
         </Section>
 
+        <Section title="Settings">
+          <Group>
+            <Pressable
+              accessibilityLabel="Edit profile"
+              accessibilityRole="button"
+              onPress={() => router.push('/profile/edit')}
+              style={styles.settingsRow}>
+              <Text style={styles.trustTitle}>Edit profile</Text>
+              <Text style={styles.trustBody}>Name, area, interests, privacy, and account.</Text>
+            </Pressable>
+          </Group>
+        </Section>
+
         <Section title="Receipts">
           <Group>
             <View style={styles.trustRow}>
@@ -60,6 +74,7 @@ const styles = StyleSheet.create({
   name: { fontFamily: 'Manrope_700Bold', fontSize: 22, lineHeight: 28, color: tokens.semantic.color.textPrimary },
   meta: { marginTop: 2, fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, color: tokens.semantic.color.textMuted },
   trustRow: { padding: 16 },
+  settingsRow: { minHeight: 56, justifyContent: 'center', padding: 16 },
   trustTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 15, lineHeight: 21, color: tokens.semantic.color.textPrimary },
   trustBody: { marginTop: 4, fontFamily: 'Manrope_400Regular', fontSize: 13, lineHeight: 19, color: tokens.semantic.color.textSecondary },
   divider: { height: 1, marginHorizontal: 16, backgroundColor: tokens.semantic.color.borderDefault },

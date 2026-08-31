@@ -56,6 +56,8 @@ export default function RootLayout() {
       <Stack.Screen name="preview" options={{ title: 'Review cast' }} />
       <Stack.Screen name="intent/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="profile/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="profile/edit" options={{ title: 'Edit profile', presentation: 'modal' }} />
+      <Stack.Screen name="match/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="request/[id]" options={{ headerShown: false, presentation: 'modal' }} />
     </Stack>
   );

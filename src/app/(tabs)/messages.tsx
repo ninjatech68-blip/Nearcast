@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { tokens } from '@/design-system/tokens';
@@ -13,14 +14,18 @@ export default function MessagesScreen() {
 
         <Section title="Active rooms">
           <Group>
-            <View style={styles.roomRow}>
+            <Pressable
+              accessibilityLabel={`Open your room with ${broadcaster.name} about Badminton tonight`}
+              accessibilityRole="button"
+              onPress={() => router.push('/match/badminton-tonight')}
+              style={styles.roomRow}>
               <View style={styles.avatar}><Text style={styles.avatarText}>{broadcaster.initials}</Text></View>
               <View style={styles.roomCopy}>
                 <Text style={styles.title}>Badminton tonight</Text>
                 <Text style={styles.body}>{broadcaster.name}</Text>
                 <Text style={styles.status}>Awaiting confirmation</Text>
               </View>
-            </View>
+            </Pressable>
           </Group>
         </Section>
 
