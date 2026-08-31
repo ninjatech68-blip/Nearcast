@@ -7,7 +7,10 @@
     "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
     "@expo-google-fonts/manrope": "^0.4.2",
     "@expo/ui": "~57.0.13",
+    "@kesha-antonov/react-native-chat": "^4.4.0",
+    "@lodev09/react-native-true-sheet": "^3.11.12",
     "@react-native-community/datetimepicker": "^9.1.0",
+    "@shopify/flash-list": "^2.3.2",
     "@supabase/supabase-js": "^2.112.4",
     "expo": "~57.0.16",
     "expo-constants": "~57.0.14",
@@ -33,10 +36,12 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.2",
     "react-native-gesture-handler": "~2.32.0",
+    "react-native-keyboard-controller": "^1.22.4",
     "react-native-maps": "^1.27.2",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
+    "react-native-svg": "^15.15.5",
     "react-native-url-polyfill": "^4.0.0",
     "react-native-view-shot": "^5.1.0",
     "react-native-web": "~0.21.0",
@@ -88,7 +93,17 @@
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
-    }
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|@kesha-antonov/react-native-chat|react-native-keyboard-controller|@shopify/flash-list|@lodev09/react-native-true-sheet))"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest/setup.ts"
+    ],
+    "resolver": "<rootDir>/node_modules/react-native-worklets/jest/resolver.js",
+    "setupFiles": [
+      "<rootDir>/node_modules/react-native-gesture-handler/jestSetup.js"
+    ]
   },
   "private": true
 }
