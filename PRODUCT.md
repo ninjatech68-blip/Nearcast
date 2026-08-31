@@ -8,7 +8,7 @@ adaptive
 
 ## Users
 
-Nearcast serves adults in invitation-only local trust networks, starting with one dense Bengaluru network connected through adjacent closed circles. The primary user has a specific temporary need, offer, or plan that may need to travel beyond one group without becoming fully public.
+Nearcast serves adults in local trust networks, starting with one dense Bengaluru network connected through adjacent closed circles. Sign-up is open; trust comes from connections and provenance, not from a gated door. The primary user has a specific temporary need, offer, or plan that may need to travel beyond one group without becoming fully public.
 
 ## Product Purpose
 

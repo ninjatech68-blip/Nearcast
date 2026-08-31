@@ -100,7 +100,7 @@ Intent arises
 
 The MVP includes:
 
-- Invitation-based account creation and profiles.
+- Open account creation and profiles.
 - Create, preview, edit, publish, expire, withdraw, and resolve an intent.
 - Three intent primitives with category-neutral natural-language creation.
 - Approximate location, time, expiry, requirements, and optional price.
@@ -135,7 +135,7 @@ Detailed requirements live in [MVP Requirements](./02 - First Version Requiremen
 
 ## Initial Launch Strategy
 
-Launch an invitation-only alpha within one dense Bengaluru network containing several adjacent WhatsApp circles. Allow multiple intent categories while constraining geography and network distance. Seed activity through real participants and genuine origin confirmations, never fabricated counts.
+Launch a limited alpha within one dense Bengaluru network containing several adjacent WhatsApp circles. Scale is controlled by recruitment, not by an invitation gate. Allow multiple intent categories while constraining geography and network distance. Seed activity through real participants and genuine origin confirmations, never fabricated counts.
 
 ## Success Metrics
 
@@ -165,7 +165,7 @@ Launch an invitation-only alpha within one dense Bengaluru network containing se
 
 | Risk | Product Response |
 |---|---|
-| Sparse relevant supply | Limit launch geography and invite adjacent existing circles |
+| Sparse relevant supply | Limit launch geography and recruit adjacent existing circles |
 | Users distrust outsiders | Progressive disclosure, provenance, approval, block/report, contextual reliability |
 | Fake or inflated momentum | Count only real confirmations and completed interactions |
 | Feed becomes noisy | Finite feed, relevance explanations, feedback controls, expiry |
@@ -193,3 +193,4 @@ The MVP is ready for closed alpha only when a user can complete the full broadca
 | Date | Change |
 |---|---|
 | 2026-08-24 | Established the category-agnostic, trust-aware intent product baseline |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

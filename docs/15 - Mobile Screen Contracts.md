@@ -13,14 +13,13 @@ Every data screen must define loading, empty, error with retry, offline or queue
 
 ## Navigation
 
-Unauthenticated routes are invitation, sign-in, public intent, and policy pages. Authenticated primary destinations are Home, My Intents, Activity, and Profile. Creation is a full-screen modal. Response, reach, privacy, resolution, report, and disclosure decisions use sheets. Match coordination is a dedicated screen.
+Unauthenticated routes are sign-in, public intent, and policy pages. Authenticated primary destinations are Home, My Intents, Activity, and Profile. Creation is a full-screen modal. Response, reach, privacy, resolution, report, and disclosure decisions use sheets. Match coordination is a dedicated screen.
 
 ## MVP Screens
 
 | Screen | Primary decision | Required content | Sensitive constraints |
 |---|---|---|---|
-| Invitation | Join this network? | Inviter context, product promise, policy links | Do not expose group membership |
-| Sign in | Verify access? | Email/phone OTP, recovery | Generic errors prevent account enumeration |
+| Sign in | Create an account or return? | Google/Apple sign-in, recovery | Generic errors prevent account enumeration |
 | Home | Inspect or create? | Finite intent list, WhyYouSeeThis, create action | No infinite-feed mechanics or fabricated activity |
 | Intent composer | What is the intent? | Primitive, statement, suggestions, draft state | Draft remains local/private |
 | Intent review | Publish with these terms? | Structured context, expiry, reach, PrivacyDisclosure | Exact details never enter public context |
@@ -55,3 +54,4 @@ Core flows support dynamic type, screen-reader order, 48x48 minimum targets, tex
 |---|---|
 | 2026-08-24 | Defined mobile navigation, complete state coverage, screen responsibilities, and component boundaries |
 | 2026-08-31 | Added the Profile settings screen to the MVP table. MUST-003 requires the fields and document 12 requires in-app account deletion, but no screen owned them. Match room was already specified and is unchanged. |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

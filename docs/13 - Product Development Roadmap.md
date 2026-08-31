@@ -49,7 +49,7 @@ A clean checkout can run the app, local database, tests, and one authenticated s
 
 ### Outcomes
 
-- An invited user can create, preview, publish, edit, withdraw, expire, and resolve an intent.
+- A signed-in user can create, preview, publish, edit, withdraw, expire, and resolve an intent.
 - Every intent has a privacy-safe HTTPS link.
 - A WhatsApp recipient can inspect the intent without installing the app.
 - Authenticated recipients can provide genuine origin confirmation.
@@ -143,7 +143,7 @@ All Permissions Matrix and safety tests pass, a report can be reviewed and actio
 
 ### Cohort
 
-Invite 30-50 adults from one dense Bengaluru network spanning several adjacent WhatsApp circles. Allow multiple intent categories while moderating every report manually.
+Recruit 30-50 adults from one dense Bengaluru network spanning several adjacent WhatsApp circles. Allow multiple intent categories while moderating every report manually.
 
 ### Learning Goals
 
@@ -178,7 +178,7 @@ These are validation thresholds, not growth targets. Failing a threshold trigger
 
 ### Outcomes
 
-- Expand to 200-500 invited users within adjacent networks.
+- Expand to 200-500 users within adjacent networks.
 - Improve matching based on measured feedback.
 - Add phone verification for elevated-risk actions.
 - Formalize moderation and support response times.
@@ -205,7 +205,7 @@ Choose one path based on evidence:
 
 ### Expand
 
-Open adjacent Bengaluru networks while preserving controlled invitations and moderation capacity.
+Open adjacent Bengaluru networks while preserving controlled growth and moderation capacity.
 
 ### Focus
 
@@ -252,3 +252,4 @@ Roadmap changes may alter sequence and timing but may not silently alter PRD sco
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created solo-team, evidence-gated roadmap from foundation through launch decision |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

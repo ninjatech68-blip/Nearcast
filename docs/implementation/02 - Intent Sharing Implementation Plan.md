@@ -2,18 +2,18 @@
 
 > **For agentic workers:** Execute checkbox tasks in order with test-first changes and one coherent commit per task.
 
-**Goal:** Let an invited user create, review, publish, share, edit, withdraw, expire, and resolve a privacy-safe intent.
+**Goal:** Let a signed-in user create, review, publish, share, edit, withdraw, expire, and resolve a privacy-safe intent.
 
 **Architecture:** Drafts remain local until publish. Server functions own state transitions; the app consumes privacy-specific view models rather than raw rows.
 
 **Tech Stack:** Expo Router, Supabase Auth/Edge Functions/Postgres, Zod, Expo Linking and Share.
 
-## Task 1: Invitation And Authentication
+## Task 1: Authentication
 
-**Files:** `src/features/auth/`, `src/app/invite/[token].tsx`, `src/app/sign-in.tsx`, `supabase/functions/redeem-invite/`
+**Files:** `src/features/auth/`, `src/app/sign-in.tsx`
 
-- [ ] Test expired, used, valid, and rate-limited invitation tokens.
-- [ ] Implement OTP sign-in and create a minimal profile only after invite redemption.
+- [ ] Test valid, cancelled, and rate-limited sign-in attempts.
+- [ ] Implement Google and Apple sign-in and create a minimal profile on first sign-in.
 - [ ] Use generic authentication errors and secure session persistence.
 - [ ] Verify sign-out removes local session and protected routes redirect.
 
@@ -61,3 +61,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created intent creation and sharing implementation plan |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

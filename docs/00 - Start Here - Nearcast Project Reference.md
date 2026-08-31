@@ -78,7 +78,7 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 
 ## Product Assumptions
 
-- Initial launch is an invitation-only alpha within one dense Bengaluru network containing adjacent WhatsApp circles.
+- Initial launch is a limited alpha within one dense Bengaluru network containing adjacent WhatsApp circles. The cohort is limited by who is recruited, not by an invitation gate; sign-up is open.
 - The product is category-agnostic but geography- and trust-constrained.
 - Users may broadcast `I need`, `I offer`, or `I want to` intents.
 - WhatsApp is an entry and sharing channel, not a data source controlled by Nearcast.
@@ -111,3 +111,4 @@ Every document must include a `Change Log` section. Material decisions require u
 | 2026-08-24 | Added implementation guide, mobile/API contracts, phase plans, and AI engineering governance |
 | 2026-08-24 | Added explicit greenfield project starting point |
 | 2026-08-25 | Recorded approved mobile design-system direction in design governance |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

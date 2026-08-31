@@ -118,10 +118,11 @@
 
 ## MVP Acceptance Scenario
 
-The MVP passes functional acceptance when an invited user can create an intent, share it into a WhatsApp circle, receive genuine confirmations, expand its reach, deliver it to an eligible adjacent user, receive a response, accept that response, coordinate privately, resolve the intent, and update contextual trust without exposing the origin group or exact location prematurely.
+The MVP passes functional acceptance when a signed-in user can create an intent, share it into a WhatsApp circle, receive genuine confirmations, expand its reach, deliver it to an eligible adjacent user, receive a response, accept that response, coordinate privately, resolve the intent, and update contextual trust without exposing the origin group or exact location prematurely.
 
 ## Change Log
 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined closed-alpha functional and non-functional requirements |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

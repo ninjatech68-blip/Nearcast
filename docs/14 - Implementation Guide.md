@@ -51,8 +51,8 @@ Nearcast must be implemented from scratch inside this repository. Do not import 
 | Environment | Data | Distribution | Required gate |
 |---|---|---|---|
 | Local | Seed personas only | Expo development build | Unit, type, lint, migration, pgTAP |
-| Staging | Invited test accounts | Internal EAS channel | CI green and manual privacy smoke test |
-| Production | Real invited users | Store/TestFlight production channel | Release checklist, rollback, privacy review, no S0/S1 defects |
+| Staging | Internal test accounts | Internal EAS channel | CI green and manual privacy smoke test |
+| Production | Real users | Store/TestFlight production channel | Release checklist, rollback, privacy review, no S0/S1 defects |
 
 ## Definition Of Ready
 
@@ -76,3 +76,4 @@ A task is done only when positive and negative permission paths pass, retries ca
 |---|---|
 | 2026-08-24 | Added executable repository conventions and AI-assisted delivery workflow |
 | 2026-08-24 | Added explicit greenfield implementation rule |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |

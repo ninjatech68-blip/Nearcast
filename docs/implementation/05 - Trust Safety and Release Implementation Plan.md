@@ -47,7 +47,7 @@
 - [ ] Build development and preview binaries for iOS and Android.
 - [ ] Run full unit, RLS, Edge Function, E2E, accessibility, and privacy smoke suites.
 - [ ] Confirm backups, rollback migration, support contact, moderation rota, and kill switches.
-- [ ] Invite only the approved Bengaluru cohort and review every report manually.
+- [ ] Recruit only the approved Bengaluru cohort and review every report manually.
 
 ## Exit Gate
 
@@ -58,3 +58,4 @@ All Permissions Matrix tests pass, one report can be actioned end to end, accoun
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created trust, safety, analytics, operations, and release implementation plan |
+| 2026-08-31 | Removed invitation-gated access. Nearcast is not invite-only: sign-up is open and the alpha cohort is limited by recruitment rather than by a token gate. |
