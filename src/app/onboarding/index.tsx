@@ -16,9 +16,11 @@ import {
   useMe,
 } from '@/features/me/me-store';
 import { myCurrentArea } from '@/features/casts/area-lookup';
+import { describeInviteOutcome, redeemInvite } from '@/features/auth/invite';
+import { isBackendConfigured } from '@/infrastructure/supabase/client';
 import { enablePush } from '@/features/notifications/push';
 
-type Step = 'name' | 'home' | 'areas' | 'interests' | 'push';
+type Step = 'name' | 'invite' | 'home' | 'areas' | 'interests' | 'push';
 
 /**
  * onboarding: four steps + push permission. this is what turns the
@@ -33,6 +35,9 @@ export default function OnboardingScreen() {
   const me = useMe();
   const [step, setStep] = useState<Step>('name');
   const [name, setLocalName] = useState(me.name);
+  const [inviteToken, setInviteToken] = useState('');
+  const [inviteProblem, setInviteProblem] = useState<string | null>(null);
+  const [redeeming, setRedeeming] = useState(false);
   const [interests, setLocalInterests] = useState<readonly Category[]>(me.interests);
   // 'pending' doubles as the locating state — the effect's first
   // setState lands only after the await, so nothing sets state
@@ -67,7 +72,18 @@ export default function OnboardingScreen() {
   const step1Ready = name.trim().length > 0;
   const step2Ready = me.homeArea.trim().length > 0;
 
-  const order: readonly Step[] = ['name', 'home', 'areas', 'interests', 'push'];
+  /**
+   * The invitation step exists only when there is a server to redeem
+   * against. A fixture build has no membership to grant, and inventing one
+   * to get past the step would be fabricating exactly what the gate
+   * protects. Release builds always have a backend: ReleaseGate stops them
+   * otherwise, so this branch cannot hide the gate from a real tester.
+   */
+  const gated = isBackendConfigured();
+
+  const order: readonly Step[] = gated
+    ? ['name', 'invite', 'home', 'areas', 'interests', 'push']
+    : ['name', 'home', 'areas', 'interests', 'push'];
 
   function back() {
     haptic('selection');
@@ -79,7 +95,11 @@ export default function OnboardingScreen() {
     haptic('selection');
     if (step === 'name') {
       setName(name.trim());
-      setStep('home');
+      setStep(gated ? 'invite' : 'home');
+      return;
+    }
+    if (step === 'invite') {
+      void redeem();
       return;
     }
     if (step === 'home') {
@@ -99,6 +119,34 @@ export default function OnboardingScreen() {
     // last step: mark onboarding done and land in the app
     setOnboardingDone();
     router.replace('/');
+  }
+
+  /**
+   * Membership, and the only step that cannot be skipped.
+   *
+   * Alpha is invite-only, and redeeming is what creates the profile the
+   * rest of the app hangs off — publishing and profile sync no longer
+   * create one. So there is no "not now" here: without an invitation
+   * there is nothing to onboard into.
+   */
+  async function redeem() {
+    if (inviteToken.trim() === '' || redeeming) return;
+
+    setRedeeming(true);
+    setInviteProblem(null);
+
+    try {
+      const outcome = await redeemInvite(inviteToken, name.trim());
+
+      if (outcome === 'redeemed') {
+        setStep('home');
+        return;
+      }
+
+      setInviteProblem(describeInviteOutcome(outcome));
+    } finally {
+      setRedeeming(false);
+    }
   }
 
   async function askPush() {
@@ -152,7 +200,7 @@ export default function OnboardingScreen() {
         </View>
 
         <View style={styles.progress}>
-          {(['name', 'home', 'areas', 'interests', 'push'] as const).map((s, i) => (
+          {order.map((s, i) => (
             <View
               key={s}
               style={[
@@ -182,6 +230,38 @@ export default function OnboardingScreen() {
                 returnKeyType="next"
                 onSubmitEditing={step1Ready ? next : undefined}
               />
+            </>
+          ) : null}
+
+          {step === 'invite' ? (
+            <>
+              <Text accessibilityRole="header" style={styles.title}>got an invitation?</Text>
+              <Text style={styles.hint}>
+                nearcast is invite-only while it is small. paste the code someone sent you. spaces and capitals do
+                not matter.
+              </Text>
+              <TextInput
+                accessibilityLabel="invitation code"
+                value={inviteToken}
+                onChangeText={(next) => {
+                  setInviteToken(next);
+                  setInviteProblem(null);
+                }}
+                placeholder="invitation code"
+                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
+                selectionColor={tokens.semantic.color.accent}
+                style={styles.input}
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!redeeming}
+                returnKeyType="go"
+                onSubmitEditing={() => void redeem()}
+              />
+              {inviteProblem === null ? null : (
+                <Text accessibilityRole="alert" style={styles.inviteProblem}>
+                  {inviteProblem}
+                </Text>
+              )}
             </>
           ) : null}
 
@@ -298,10 +378,26 @@ export default function OnboardingScreen() {
             </>
           ) : (
             <BarButton
-              label={step === 'interests' ? 'looks good' : 'next'}
+              label={
+                step === 'interests'
+                  ? 'looks good'
+                  : step === 'invite'
+                    ? redeeming
+                      ? 'checking'
+                      : 'join'
+                    : 'next'
+              }
               variant="onOrange"
               onPress={next}
-              disabled={step === 'name' ? !step1Ready : step === 'home' ? !step2Ready : false}
+              disabled={
+                step === 'name'
+                  ? !step1Ready
+                  : step === 'invite'
+                    ? inviteToken.trim() === '' || redeeming
+                    : step === 'home'
+                      ? !step2Ready
+                      : false
+              }
             />
           )}
         </View>
@@ -311,11 +407,20 @@ export default function OnboardingScreen() {
 }
 
 function stepLabel(step: Step): string {
-  return { name: 'HELLO', home: 'HOME', areas: 'AREAS', interests: 'INTERESTS', push: 'PUSH' }[step];
+  return {
+    name: 'HELLO',
+    invite: 'INVITATION',
+    home: 'HOME',
+    areas: 'AREAS',
+    interests: 'INTERESTS',
+    push: 'PUSH',
+  }[step];
 }
 
 function isBefore(a: Step, b: Step): boolean {
-  const order: Step[] = ['name', 'home', 'areas', 'interests', 'push'];
+  // The full order, including the step a fixture build does not show: this
+  // only compares positions, and an absent step is never `b`.
+  const order: Step[] = ['name', 'invite', 'home', 'areas', 'interests', 'push'];
   return order.indexOf(a) < order.indexOf(b);
 }
 
@@ -368,6 +473,11 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.text,
     fontSize: 18,
     color: tokens.semantic.color.ink,
+  },
+  inviteProblem: {
+    ...tokens.typography.meta,
+    color: tokens.semantic.color.accent,
+    marginTop: 12,
   },
   tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
   tag: {

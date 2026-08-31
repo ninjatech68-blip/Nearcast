@@ -44,13 +44,26 @@ export async function syncProfile(snapshot: ProfileSnapshot): Promise<boolean> {
   if (!user) return false;
 
   const displayName = snapshot.name.trim() || 'someone';
-  const { error: profileError } = await client
+
+  // An UPDATE, not an upsert. Membership is created by redeeming an
+  // invitation and by nothing else — the client insert policy on
+  // `profiles` is gone — so an upsert here would fail for a non-member
+  // rather than enrol them, and quietly enrol them if the policy ever
+  // came back. Mirroring a profile is upkeep; it is not a way to join.
+  const { data: updated, error: profileError } = await client
     .from('profiles')
-    .upsert(
-      { id: user.id, display_name: displayName, active_windows: [...(snapshot.activeWindows ?? [])] },
-      { onConflict: 'id' },
-    );
+    .update({
+      display_name: displayName,
+      active_windows: [...(snapshot.activeWindows ?? [])],
+    })
+    .eq('id', user.id)
+    .select('id');
   if (profileError) throw new Error(profileError.message);
+
+  // No row means this account never redeemed an invitation. There is
+  // nothing to mirror and nothing to report: onboarding is where that is
+  // resolved, and it has its own message for it.
+  if (!updated || updated.length === 0) return false;
 
   await syncAreas(client, user.id, snapshot.approvedAreas, snapshot.areaPoints ?? {});
   await syncInterests(client, user.id, snapshot.interests);

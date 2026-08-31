@@ -17,11 +17,20 @@ const { syncProfile } = await import('./profile-sync');
 
 type Recorder = {
   upserts: { table: string; rows: unknown }[];
+  updates: { table: string; values: Record<string, unknown>; id: string | null }[];
   deletes: { table: string; notIn: string | null }[];
 };
 
-function clientWithSession(userId: string | null): { client: unknown; log: Recorder } {
-  const log: Recorder = { upserts: [], deletes: [] };
+/**
+ * `isMember` decides whether the profile UPDATE matches a row. It is the
+ * difference between a member whose profile is being mirrored and an
+ * account that never redeemed an invitation, which sync must not create.
+ */
+function clientWithSession(
+  userId: string | null,
+  isMember = true,
+): { client: unknown; log: Recorder } {
+  const log: Recorder = { upserts: [], updates: [], deletes: [] };
 
   const client = {
     auth: {
@@ -33,6 +42,14 @@ function clientWithSession(userId: string | null): { client: unknown; log: Recor
           log.upserts.push({ table, rows });
           return { error: null };
         },
+        update: (values: Record<string, unknown>) => ({
+          eq: (_column: string, id: string) => ({
+            select: async () => {
+              log.updates.push({ table, values, id });
+              return { data: isMember ? [{ id }] : [], error: null };
+            },
+          }),
+        }),
         delete: () => {
           const chain = {
             eq: () => chain,
@@ -75,12 +92,34 @@ describe('syncProfile', () => {
     mockGetSupabase.mockReturnValue(client);
     await syncProfile({ ...snapshot, interests: [...snapshot.interests] });
 
-    const profile = log.upserts.find((u) => u.table === 'profiles');
-    expect(profile?.rows).toMatchObject({
-      id: 'uid-1',
+    const profile = log.updates.find((u) => u.table === 'profiles');
+    expect(profile?.id).toBe('uid-1');
+    expect(profile?.values).toMatchObject({
       display_name: 'Piyush Sharma',
       active_windows: ['weekday-evening'],
     });
+  });
+
+  /**
+   * Membership is created by redeeming an invitation and by nothing else.
+   * Sync used to upsert, which made mirroring a profile a way to join.
+   */
+  it('never creates a profile, so it cannot grant membership', async () => {
+    const { client, log } = clientWithSession('uid-1');
+    mockGetSupabase.mockReturnValue(client);
+    await syncProfile({ ...snapshot, interests: [] });
+
+    expect(log.upserts.some((u) => u.table === 'profiles')).toBe(false);
+    expect(log.updates.some((u) => u.table === 'profiles')).toBe(true);
+  });
+
+  it('stops, without throwing, when the account is not a member yet', async () => {
+    const { client, log } = clientWithSession('uid-1', false);
+    mockGetSupabase.mockReturnValue(client);
+
+    expect(await syncProfile({ ...snapshot, interests: [] })).toBe(false);
+    // and it does not go on to write areas or interests for a non-member
+    expect(log.upserts).toHaveLength(0);
   });
 
   it('prefers the point the picker resolved over the seeded fallback', async () => {
@@ -155,7 +194,13 @@ describe('syncProfile', () => {
   it('surfaces a failed write instead of reporting success', async () => {
     mockGetSupabase.mockReturnValue({
       auth: { getSession: async () => ({ data: { session: { user: { id: 'uid-1' } } } }) },
-      from: () => ({ upsert: async () => ({ error: { message: 'rls denied' } }) }),
+      from: () => ({
+        update: () => ({
+          eq: () => ({
+            select: async () => ({ data: null, error: { message: 'rls denied' } }),
+          }),
+        }),
+      }),
     });
     await expect(syncProfile({ ...snapshot, interests: [] })).rejects.toThrow(/rls denied/);
   });

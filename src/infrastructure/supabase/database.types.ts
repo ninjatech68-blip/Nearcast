@@ -608,6 +608,72 @@ export type Database = {
           },
         ]
       }
+      invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          issued_by: string | null
+          note: string | null
+          redeemed_at: string | null
+          redeemed_by: string | null
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issued_by?: string | null
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_issued_by_fkey"
+            columns: ["issued_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_redeemed_by_fkey"
+            columns: ["redeemed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invite_attempts: {
+        Row: {
+          attempted_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          attempted_at?: string
+          id?: never
+          user_id: string
+        }
+        Update: {
+          attempted_at?: string
+          id?: never
+          user_id?: string
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           broadcaster_id: string
@@ -1446,6 +1512,13 @@ export type Database = {
         Args: { not_relevant?: boolean; target_intent_id: string }
         Returns: undefined
       }
+      issue_invite: {
+        Args: { invite_note?: string; valid_for?: string }
+        Returns: {
+          expires_at: string
+          invite_token: string
+        }[]
+      }
       joins_i_sent: {
         Args: never
         Returns: {
@@ -1635,6 +1708,14 @@ export type Database = {
       record_notification_failure: {
         Args: { error_code: string; outbox_id: string }
         Returns: string
+      }
+      redeem_invite: {
+        Args: { chosen_display_name: string; invite_token: string }
+        Returns: {
+          member_display_name: string
+          member_id: string
+          outcome: string
+        }[]
       }
       register_push_token:
         | { Args: { platform: string; token: string }; Returns: undefined }

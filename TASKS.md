@@ -63,9 +63,38 @@ Connection string (URI). It carries the database password, so it is exported in
 the shell and never committed — not even to `.env`, which npm does not read for
 scripts. Put the export in `~/.zshrc` to keep it.
 
+## Invitations
+
+Nearcast is invite-only, and redeeming an invitation is the only thing that
+creates a member: the client cannot insert its own profile row and publishing
+no longer creates one. The cohort is approved by the team, so there is no invite
+button in the app. Issue one from the database:
+
+```bash
+psql "$SUPABASE_DB_URL" -c "select * from public.issue_invite('alpha tester 1');"
+```
+
+That prints the code and its expiry **once**. Only a hash is stored, so a lost
+code is reissued, never looked up. Send it to the person out of band; they paste
+it into the invitation step after signing in.
+
+Never build the hash by hand. `issue_invite` generates the code, hashes it and
+records the row in one step, and a hand-written hash that is subtly wrong
+produces a code that silently does not work.
+
+To let a signed-in person issue invitations from a client, set `nearcast_role`
+to `operator` in that user's **app** metadata, using the service role. It must
+not go in user metadata: a client can write its own user metadata, so a role
+kept there is one any member can award themselves.
+
+Members who joined before the gate existed keep their accounts. No invitation
+rows were backfilled for them, because recording an invitation nobody issued
+would be a lie in the audit trail.
+
 ## Change Log
 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Added a plain-language command guide |
 | 2026-08-31 | Removed the development-server commands; documented the hermetic database tasks and the hosted push |
+| 2026-08-31 | Added the invitation runbook |

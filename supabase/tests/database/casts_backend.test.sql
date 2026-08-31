@@ -232,15 +232,21 @@ insert into auth.users (id, instance_id, aud, role, email, encrypted_password, c
 values ('00000000-0000-0000-0000-0000000000d9','00000000-0000-0000-0000-000000000000','authenticated','authenticated','fresh@nearcast.local','',now(),now());
 set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"00000000-0000-0000-0000-0000000000d9","role":"authenticated"}';
-select lives_ok(
+-- This pair used to assert the opposite: that publish_cast created the
+-- missing profile so the cast's foreign key would hold. That convenience
+-- was the hole in the invitation gate — it made publishing a way to join a
+-- closed alpha, which is why 16 auth users produced 14 profiles nobody had
+-- invited. 20260831160000 replaced the insert with a membership check.
+select throws_ok(
   $$ select public.publish_cast('food','anyone for dosa?','indiranagar',
        5::smallint, now() + interval '1 day', 12.9784, 77.6408) $$,
-  'a caster with no profile row yet can still publish — publish_cast creates one'
+  '42501', 'not_a_member',
+  'a caster with no profile row is refused: publishing is not a way to join'
 );
 reset role;
-select isnt_empty(
+select is_empty(
   $$ select 1 from public.profiles where id = '00000000-0000-0000-0000-0000000000d9' $$,
-  'and the profile now exists for the cast to hang off'
+  'and no profile is created behind their back'
 );
 
 select * from finish();
