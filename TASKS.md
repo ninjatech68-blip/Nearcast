@@ -24,11 +24,19 @@ the app runs anywhere, and that is the only shape a tester can be given.
 | `npm run lint` | Checks code style and common mistakes |
 | `npm run typecheck` | Checks TypeScript types |
 | `npm run test` | Runs the app tests |
-| `npm run db:test` | Runs the database and permission tests |
+| `npm run verify:db` | Runs the database and permission tests (needs PostgreSQL 16, see below) |
 | `npm run bundle:ios` | Builds an iOS bundle, to prove the app bundles |
 | `npm run verify` | Everything above, in one command |
 
-`npm run verify` is the gate before claiming a change is done.
+`npm run verify` is the gate before claiming a change is done. It needs
+nothing but Node, so it runs on any machine.
+
+`verify:db` is separate on purpose. The database suite needs PostgreSQL 16
+and `pg_prove` installed, which is a prerequisite rather than a property of
+the code, and folding it into `verify` broke the one command every
+contributor runs. CI runs the database job on every push, so the suite is
+never skipped in the place that matters — it is only optional on a laptop
+that has not installed the tooling.
 
 ## Database
 

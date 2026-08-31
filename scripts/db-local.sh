@@ -43,7 +43,25 @@ find_bindir() {
   do
     [ -x "$candidate/pg_ctl" ] && { echo "$candidate"; return; }
   done
-  echo "could not find pg_ctl. install postgresql 16 — see the header of this script." >&2
+  cat >&2 <<'MISSING'
+db:test needs PostgreSQL 16 and pg_prove, and neither is on this machine.
+
+This is a prerequisite of the database suite only. `npm run verify` does not
+need it, and CI runs the suite in its own job, so nothing is blocked by
+skipping it here.
+
+To run it locally on macOS:
+
+  brew install postgresql@16 postgis pgtap
+  brew link --overwrite postgresql@16
+
+On Debian or Ubuntu:
+
+  sudo apt-get install -y postgresql-16 postgresql-16-postgis-3 postgresql-16-pgtap pgtap
+
+Nothing starts on boot and nothing persists: the script creates a database
+on a spare port, applies the migrations from git, and removes it again.
+MISSING
   exit 1
 }
 BIN="$(find_bindir)"

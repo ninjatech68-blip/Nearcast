@@ -70,7 +70,7 @@
     "test:watch": "vitest",
     "bundle:ios": "expo export --platform ios --output-dir dist",
     "bundle:android": "expo export --platform android --output-dir dist-android",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run db:test && npm run bundle:ios && npm run bundle:android",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run bundle:ios && npm run bundle:android",
     "db:test": "./scripts/db-local.sh test",
     "db:types": "./scripts/db-local.sh types",
     "db:push": "supabase db push",
@@ -78,7 +78,8 @@
     "db:stop": "./scripts/db-local.sh stop",
     "preflight:release": "node scripts/preflight-release.mjs",
     "build:preview": "npm run preflight:release && eas build --profile preview --platform ios",
-    "build:production": "npm run preflight:release && eas build --profile production --platform ios"
+    "build:production": "npm run preflight:release && eas build --profile production --platform ios",
+    "verify:db": "npm run db:test"
   },
   "jest": {
     "preset": "jest-expo",
