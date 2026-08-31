@@ -12,23 +12,54 @@ import {
 describe('membership derivation', () => {
   it('waits rather than guessing before the session is resolved', () => {
     expect(
-      deriveMembership({ isResolved: false, hasSession: false, hasProfile: false }),
+      deriveMembership({
+        isResolved: false,
+        hasSession: false,
+        hasProfile: false,
+        hasHomeArea: false,
+      }),
     ).toBe('loading');
   });
 
   it('treats a signed-in identity without a profile as awaiting an invitation', () => {
     expect(
-      deriveMembership({ isResolved: true, hasSession: true, hasProfile: false }),
+      deriveMembership({
+        isResolved: true,
+        hasSession: true,
+        hasProfile: false,
+        hasHomeArea: false,
+      }),
     ).toBe('awaiting_invite');
   });
 
-  it('recognises a member only once a profile exists', () => {
+  it('recognises a member only once a profile and an area both exist', () => {
     expect(
-      deriveMembership({ isResolved: true, hasSession: true, hasProfile: true }),
+      deriveMembership({
+        isResolved: true,
+        hasSession: true,
+        hasProfile: true,
+        hasHomeArea: true,
+      }),
     ).toBe('member');
     expect(
-      deriveMembership({ isResolved: true, hasSession: false, hasProfile: false }),
+      deriveMembership({
+        isResolved: true,
+        hasSession: false,
+        hasProfile: false,
+        hasHomeArea: false,
+      }),
     ).toBe('signed_out');
+  });
+
+  it('holds a profile with no area at awaiting_area, since it is eligible for nothing', () => {
+    expect(
+      deriveMembership({
+        isResolved: true,
+        hasSession: true,
+        hasProfile: true,
+        hasHomeArea: false,
+      }),
+    ).toBe('awaiting_area');
   });
 });
 
@@ -47,6 +78,7 @@ describe('route access', () => {
   it('keeps a signed-in stranger out of the app until an invitation is redeemed', () => {
     expect(resolveRedirect('awaiting_invite', ['(tabs)'])).toBe('/sign-in');
     expect(resolveRedirect('awaiting_invite', ['room', 'abc'])).toBe('/sign-in');
+    expect(resolveRedirect('awaiting_area', ['(tabs)'])).toBe('/sign-in');
   });
 
   it('leaves the public routes reachable while not yet a member', () => {

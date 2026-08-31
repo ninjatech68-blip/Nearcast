@@ -33,6 +33,15 @@ which invitations exist.
 Authentication is email one-time codes per the amended MUST-001; Google and
 Apple sign-in are deferred to MUST-001a.
 
+Joining has a third step. Discovery measures from a member's approximate area,
+so a member without one is eligible for nothing, and landing them on an empty
+feed would read as a broken product rather than an unanswered question.
+`awaiting_area` models that state explicitly and the flow holds there until an
+area is named. The area is chosen from the curated list rather than read from the
+device: an area is what someone is willing to be found near, which is not the
+same as where they happen to be standing, and the product never needs the
+latter.
+
 ## Task 2: Draft And Review
 
 **Files:** `src/features/intents/create/`, `src/app/create.tsx`, `src/app/preview.tsx`
@@ -166,6 +175,7 @@ Five testers publish and share real intents without assistance; public metadata 
 |---|---|
 | 2026-08-24 | Created intent creation and sharing implementation plan |
 | 2026-08-30 | Completed invitation-gated email one-time-code authentication |
+| 2026-08-31 | Added the area step to joining, so a new member is never left with a feed that cannot fill |
 | 2026-08-30 | Completed local intent drafting and review with a public/private draft split |
 | 2026-08-30 | Completed the publish transaction as a database function with idempotent retries |
 | 2026-08-30 | Completed the public link and confirmation, and closed a confirmer-identity leak in the foundation policies |

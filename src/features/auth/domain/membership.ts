@@ -9,6 +9,11 @@ import { z } from 'zod';
  * state between those two facts and has to be modelled, or a signed-in stranger
  * would look like a member.
  *
+ * `awaiting_area` is the same idea one step later. Discovery measures from a
+ * member's approximate area, so a member without one is eligible for nothing.
+ * Landing them on an empty feed would read as a broken product rather than an
+ * unanswered question, so joining is not complete until they name an area.
+ *
  * Pure: no React Native, no Supabase.
  */
 
@@ -16,6 +21,7 @@ export const MEMBERSHIP_STATES = [
   'loading',
   'signed_out',
   'awaiting_invite',
+  'awaiting_area',
   'member',
 ] as const;
 
@@ -25,11 +31,13 @@ export function deriveMembership(input: {
   isResolved: boolean;
   hasSession: boolean;
   hasProfile: boolean;
+  hasHomeArea: boolean;
 }): Membership {
   if (!input.isResolved) return 'loading';
   if (!input.hasSession) return 'signed_out';
+  if (!input.hasProfile) return 'awaiting_invite';
 
-  return input.hasProfile ? 'member' : 'awaiting_invite';
+  return input.hasHomeArea ? 'member' : 'awaiting_area';
 }
 
 /**

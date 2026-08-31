@@ -37,6 +37,7 @@ export async function verifySignInCode(
 export type MembershipFacts = {
   hasSession: boolean;
   hasProfile: boolean;
+  hasHomeArea: boolean;
 };
 
 export async function fetchMembershipFacts(): Promise<MembershipFacts> {
@@ -44,17 +45,23 @@ export async function fetchMembershipFacts(): Promise<MembershipFacts> {
     data: { session },
   } = await supabase.auth.getSession();
 
-  if (session === null) return { hasSession: false, hasProfile: false };
+  if (session === null) {
+    return { hasSession: false, hasProfile: false, hasHomeArea: false };
+  }
 
   const { data, error } = await supabase
     .from('profiles')
-    .select('id')
+    .select('id, approximate_home')
     .eq('id', session.user.id)
     .maybeSingle();
 
   if (error !== null) throw error;
 
-  return { hasSession: true, hasProfile: data !== null };
+  return {
+    hasSession: true,
+    hasProfile: data !== null,
+    hasHomeArea: data?.approximate_home != null,
+  };
 }
 
 export async function redeemInvite(

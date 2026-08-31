@@ -6,12 +6,21 @@ import type { RedeemOutcome } from '@/features/auth/domain/membership';
 const mockRequestCode = jest.fn<(email: string) => Promise<void>>();
 const mockVerifyCode = jest.fn<(email: string, code: string) => Promise<void>>();
 const mockRedeem = jest.fn<(token: string, name: string) => Promise<RedeemOutcome>>();
-let mockFacts = { hasSession: false, hasProfile: false };
+let mockFacts = { hasSession: false, hasProfile: false, hasHomeArea: false };
+const mockSetHomePlace = jest.fn<(placeId: string) => Promise<string>>();
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({ replace: () => undefined }),
   useSegments: () => ['sign-in'],
   useLocalSearchParams: () => ({}),
+}));
+
+jest.mock('@/features/location/data/places-repository', () => ({
+  fetchPlaces: async () => [
+    { id: 'place-1', name: 'Indiranagar', region: 'Bengaluru' },
+    { id: 'place-2', name: 'Koramangala', region: 'Bengaluru' },
+  ],
+  setHomePlace: (placeId: string) => mockSetHomePlace(placeId),
 }));
 
 jest.mock('@/features/auth/data/auth-repository', () => ({
@@ -39,7 +48,9 @@ describe('Sign-in', () => {
     mockRequestCode.mockReset();
     mockVerifyCode.mockReset();
     mockRedeem.mockReset();
-    mockFacts = { hasSession: false, hasProfile: false };
+    mockSetHomePlace.mockReset();
+    mockSetHomePlace.mockResolvedValue('Indiranagar');
+    mockFacts = { hasSession: false, hasProfile: false, hasHomeArea: false };
   });
 
   it('will not send a code to a malformed address', async () => {
@@ -97,7 +108,7 @@ describe('Sign-in', () => {
   });
 
   it('asks a verified but uninvited identity for an invitation', async () => {
-    mockFacts = { hasSession: true, hasProfile: false };
+    mockFacts = { hasSession: true, hasProfile: false, hasHomeArea: false };
     const view = await renderSignIn();
 
     expect(await view.findByText('Redeem your invitation')).toBeTruthy();
@@ -107,7 +118,7 @@ describe('Sign-in', () => {
 
   it('gives one indistinguishable message for a refused invitation', async () => {
     const user = userEvent.setup();
-    mockFacts = { hasSession: true, hasProfile: false };
+    mockFacts = { hasSession: true, hasProfile: false, hasHomeArea: false };
     mockRedeem.mockResolvedValue('invalid_invite');
     const view = await renderSignIn();
 
@@ -122,7 +133,7 @@ describe('Sign-in', () => {
 
   it('reports a throttle distinctly from a refusal', async () => {
     const user = userEvent.setup();
-    mockFacts = { hasSession: true, hasProfile: false };
+    mockFacts = { hasSession: true, hasProfile: false, hasHomeArea: false };
     mockRedeem.mockResolvedValue('rate_limited');
     const view = await renderSignIn();
 
@@ -133,9 +144,44 @@ describe('Sign-in', () => {
     expect(await view.findByText(/Too many attempts/)).toBeTruthy();
   });
 
+  it('asks a member with no area to choose one before letting them in', async () => {
+    mockFacts = { hasSession: true, hasProfile: true, hasHomeArea: false };
+    const view = await renderSignIn();
+
+    expect(await view.findByText('Choose your area')).toBeTruthy();
+    expect(await view.findByLabelText('Indiranagar')).toBeTruthy();
+    expect(view.queryByLabelText('Invitation code')).toBeNull();
+    expect(view.queryByLabelText('Email')).toBeNull();
+  });
+
+  it('will not save until an area is chosen, then saves the chosen one', async () => {
+    const user = userEvent.setup();
+    mockFacts = { hasSession: true, hasProfile: true, hasHomeArea: false };
+    const view = await renderSignIn();
+
+    await view.findByText('Choose your area');
+    expect(
+      view.getByRole('button', { name: 'Use this area' }).props.accessibilityState,
+    ).toMatchObject({ disabled: true });
+
+    await user.press(view.getByLabelText('Koramangala'));
+    await user.press(view.getByRole('button', { name: 'Use this area' }));
+
+    expect(mockSetHomePlace).toHaveBeenCalledWith('place-2');
+  });
+
+  it('states what the area reveals and what it does not', async () => {
+    mockFacts = { hasSession: true, hasProfile: true, hasHomeArea: false };
+    const view = await renderSignIn();
+
+    expect(
+      await view.findByText(/exact location is never shared/),
+    ).toBeTruthy();
+  });
+
   it('trims the redeemed name to match the database constraint', async () => {
     const user = userEvent.setup();
-    mockFacts = { hasSession: true, hasProfile: false };
+    mockFacts = { hasSession: true, hasProfile: false, hasHomeArea: false };
     mockRedeem.mockResolvedValue('redeemed');
     const view = await renderSignIn();
 

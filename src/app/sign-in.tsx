@@ -13,6 +13,7 @@ import {
   otpCodeSchema,
   GENERIC_SIGN_IN_ERROR,
 } from '@/features/auth/domain/membership';
+import { AreaForm } from '@/features/auth/ui/area-form';
 import { InviteForm } from '@/features/auth/ui/invite-form';
 import { useSession } from '@/features/auth/ui/session-provider';
 
@@ -63,19 +64,25 @@ export default function SignInScreen() {
     }
   }
 
-  // A verified identity is not yet a member. The invitation step is driven by
-  // membership rather than local flow state, so a returning signed-in stranger
-  // lands here too.
+  // Each step is driven by membership rather than local flow state, so someone
+  // who closed the app midway returns to exactly the step they left.
   const isAwaitingInvite = membership === 'awaiting_invite';
+  const isAwaitingArea = membership === 'awaiting_area';
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>
-          {isAwaitingInvite ? 'Redeem your invitation' : 'Sign in to Nearcast'}
+          {isAwaitingArea
+            ? 'Choose your area'
+            : isAwaitingInvite
+              ? 'Redeem your invitation'
+              : 'Sign in to Nearcast'}
         </Text>
 
-        {isAwaitingInvite ? (
+        {isAwaitingArea ? (
+          <AreaForm onChosen={refresh} />
+        ) : isAwaitingInvite ? (
           <>
             <Text style={styles.body}>
               You are signed in. Nearcast is invite-only during alpha, so one
