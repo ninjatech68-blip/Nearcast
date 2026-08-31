@@ -1454,6 +1454,16 @@ export type Database = {
           viewer_has_confirmed: boolean
         }[]
       }
+      conversation_message_meta: {
+        Args: { target_conversation_id: string }
+        Returns: {
+          message_id: string
+          reactions: Json
+          reply_body: string
+          reply_is_mine: boolean
+          reply_to_id: string
+        }[]
+      }
       conversation_messages: {
         Args: { target_conversation_id: string }
         Returns: {
@@ -1868,6 +1878,7 @@ export type Database = {
         Args: {
           client_message_id?: string
           message_body: string
+          reply_to_id?: string
           target_conversation_id: string
         }
         Returns: string

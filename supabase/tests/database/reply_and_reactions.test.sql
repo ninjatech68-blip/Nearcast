@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(20);
+select plan(27);
 
 select has_column('public', 'messages', 'reply_to_id', 'a message can quote another');
 select has_table('public', 'message_reactions', 'and can be reacted to');
@@ -203,6 +203,72 @@ select is(
     where message_id = 'd0000000-0000-0000-0000-0000000000a1'),
   0,
   'and its reactions go with it'
+);
+
+-- ---------------------------------------------------------------
+-- Sending a reply, and reading the room's reply/reaction map.
+-- ---------------------------------------------------------------
+select has_function('public', 'conversation_message_meta',
+  'reply and reaction facts read back for a room');
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a2","role":"authenticated"}';
+
+-- The three-argument call is what the build already on people's phones makes.
+-- Recreating send_message with a fourth defaulted parameter must not break it.
+select isnt(
+  public.send_message((select near_room from rooms), 'still works without a quote', null),
+  null,
+  'the three-argument send the installed app makes still resolves'
+);
+
+create temporary table quoted_reply as
+select public.send_message(
+  (select near_room from rooms),
+  'replying to yours',
+  null,
+  'd0000000-0000-0000-0000-0000000000a2'::uuid
+) as id;
+grant select on quoted_reply to authenticated;
+
+select is(
+  (select reply_to_id from public.messages where id = (select id from quoted_reply)),
+  'd0000000-0000-0000-0000-0000000000a2'::uuid,
+  'a reply records what it quotes'
+);
+
+select is(
+  (select reply_body from public.conversation_message_meta((select near_room from rooms))
+    where message_id = (select id from quoted_reply)),
+  'on my way',
+  'and the quoted text comes back, so a bubble draws its quote in one round trip'
+);
+
+select is(
+  (select reply_is_mine from public.conversation_message_meta((select near_room from rooms))
+    where message_id = (select id from quoted_reply)),
+  true,
+  'the quote knows whose message it was'
+);
+
+/**
+ * The composite key would refuse this as a constraint violation. Checking it
+ * in the function means the client gets an error it can act on rather than a
+ * raw 23503 it has to parse.
+ */
+select throws_ok(
+  format($$ select public.send_message(%L, 'quoting across rooms', null, %L) $$,
+         (select near_room from rooms),
+         'd0000000-0000-0000-0000-0000000000a9'),
+  '23503', 'reply_not_in_conversation',
+  'a reply cannot quote a message from another room'
+);
+
+select is_empty(
+  format($$ select 1 from public.conversation_message_meta(%L)
+            where message_id = (select id from quoted_reply)
+              and reactions <> '[]'::jsonb $$, (select far_room from rooms)),
+  'and the map is scoped to its own room'
 );
 
 select * from finish();

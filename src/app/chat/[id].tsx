@@ -1,23 +1,17 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AppState,
-  KeyboardAvoidingView,
   Platform,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
   ActivityIndicator,
   Animated,
   Keyboard,
-  Linking,
-  RefreshControl,
-  FlatList,
 } from 'react-native';
 import { SymbolView, type SFSymbol } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,11 +37,11 @@ import {
   type LocalMedia,
   type Message,
 } from '@/features/chat/chat';
-import { preferredMediaPath, useMediaUrl } from '@/features/chat/use-media-url';
 import { usePoll } from '@/infrastructure/net/use-poll';
 import { setPendingMedia } from '@/features/chat/pending-media';
+import { MessageList } from '@/features/chat/ui/message-list';
+import { fetchMessageMeta, toggleReaction, type MessageMeta } from '@/features/chat/remote-chat';
 import { countdownLabel, countdownTickMs } from '@/features/chat/countdown';
-import { useRefresher } from '@/infrastructure/net/use-refresher';
 import { connectivityNote } from '@/infrastructure/net/connectivity';
 import { useConnectivity } from '@/infrastructure/net/submit';
 
@@ -60,12 +54,29 @@ export default function ChatScreen() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const thread = useThread(id ?? '');
-  const [draft, setDraft] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
   const [attachOpen, setAttachOpen] = useState(false);
-  const listRef = useRef<FlatList<Message>>(null);
+  const [messageMeta, setMessageMeta] = useState<MessageMeta[]>([]);
+
+  /**
+   * The room's reply and reaction map.
+   *
+   * Kept beside the messages rather than folded into them: the three message
+   * readers carry receipt derivation and tie-breaking that three test files
+   * pin down, and widening them to add two fields is how paging quietly
+   * breaks. Only messages with something to say come back, so a room with
+   * neither costs one empty result.
+   */
+  const refreshMeta = useCallback(async () => {
+    if (!id) return;
+    try {
+      setMessageMeta(await fetchMessageMeta(id));
+    } catch {
+      // Reactions and quotes are decoration on a working thread. A failure
+      // here must not take the conversation down with it.
+    }
+  }, [id]);
   const loadingOlderRef = useRef(false);
-  const pinnedToBottomRef = useRef(true);
   const connectivity = useConnectivity();
   const netNote = connectivityNote(connectivity);
   const [loadingOlder, setLoadingOlder] = useState(false);
@@ -84,7 +95,10 @@ export default function ChatScreen() {
   // for, and it stops the moment the app backgrounds (see usePoll).
   usePoll(
     () => {
-      if (id) void refreshConversationMessages(id);
+      if (id) {
+        void refreshConversationMessages(id);
+        void refreshMeta();
+      }
     },
     chatPollInterval,
     chatEnabled() && !!id,
@@ -113,10 +127,6 @@ export default function ChatScreen() {
     });
     return () => sub.remove();
   }, [id]);
-
-  const { refreshing, onRefresh } = useRefresher(async () => {
-    if (id) await refreshConversationMessages(id);
-  });
 
   // re-render the countdown on a cadence that matches how close it is:
   // by the minute normally, twice a minute inside the final hour. cheap,
@@ -168,22 +178,52 @@ export default function ChatScreen() {
     );
   }
 
-  async function send() {
-    const text = draft.trim();
-    if (!text) return;
+  /**
+   * Send, optionally quoting a message.
+   *
+   * The composer belongs to the chat library now, so a failure can no longer
+   * be handled by putting the text back in a field this screen owns. The
+   * message is already in the thread as `failed` — the transport puts it there
+   * — so the recovery is the retry on that bubble, and this only has to say
+   * that something went wrong.
+   */
+  async function sendWithReply(text: string, replyToId: string | null) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
     haptic('light');
     setAttachOpen(false);
     setSendError(null);
-    setDraft('');
+
     try {
-      await sendMessage(thread!.id, text);
-      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
+      await sendMessage(thread!.id, trimmed, replyToId);
     } catch {
-      // keep what they typed so nothing is lost to a dropped send
       haptic('warning');
-      setDraft(text);
-      setSendError("that didn't send. tap send to try again.");
+      setSendError("that didn't send. long-press the message to try again.");
     }
+  }
+
+  /**
+   * A reaction, toggled.
+   *
+   * The server does the toggling in one round trip and hands back the message's
+   * new set, so this refreshes the room's map rather than guessing at the
+   * result — a reaction the other person added between the tap and the reply
+   * would otherwise disappear.
+   */
+  async function react(messageId: string, emoji: string) {
+    try {
+      await toggleReaction(messageId, emoji);
+      await refreshMeta();
+    } catch {
+      haptic('warning');
+    }
+  }
+
+  function openMedia(message: Message) {
+    router.push(
+      `/media-view?path=${encodeURIComponent(message.mediaPath ?? '')}&kind=${message.mediaKind ?? 'image'}`,
+    );
   }
 
   /**
@@ -316,7 +356,6 @@ export default function ChatScreen() {
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 8 }]}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
         <View style={styles.header}>
           <Pressable accessibilityRole="button" accessibilityLabel="back" hitSlop={12} onPress={() => router.back()} style={styles.backTap}>
             <Text style={styles.chevron}>‹</Text>
@@ -363,53 +402,25 @@ export default function ChatScreen() {
           </Pressable>
         </View>
 
-        <FlatList
-          ref={listRef}
-          data={thread.messages as Message[]}
-          keyExtractor={(message) => message.id}
-          renderItem={({ item }) => <Bubble message={item} onRetry={() => retryMessage(thread.id, item.id)} />}
-          style={styles.flex}
-          contentContainerStyle={styles.thread}
-          keyboardDismissMode="on-drag"
-          showsVerticalScrollIndicator={false}
-          onScroll={(event) => {
-            const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-            pinnedToBottomRef.current =
-              contentSize.height - (contentOffset.y + layoutMeasurement.height) < 80;
-          }}
-          scrollEventThrottle={16}
-          onContentSizeChange={() => {
-            if (loadingOlderRef.current) return;
-            if (pinnedToBottomRef.current) listRef.current?.scrollToEnd({ animated: false });
-          }}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={tokens.semantic.color.accent}
-            />
-          }
-          ListHeaderComponent={
-            <>
-              {thread.hasOlderMessages ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="load earlier messages"
-                  accessibilityState={{ disabled: loadingOlder }}
-                  disabled={loadingOlder}
-                  onPress={() => void loadEarlier()}
-                  style={[styles.olderBtn, loadingOlder && styles.olderBtnDim]}
-                >
-                  {loadingOlder ? (
-                    <ActivityIndicator color={tokens.semantic.color.accent} />
-                  ) : (
-                    <Text style={styles.olderText}>load earlier messages</Text>
-                  )}
-                </Pressable>
-              ) : null}
-              <Text style={styles.matchedNote}>you matched. earlier messages are here for context.</Text>
-            </>
-          }
+        {/* The list, composer, day separators, grouping, reply, reactions,
+            long-press menu, scroll-to-bottom and keyboard handling all belong
+            to the chat library now. What stays above it on this screen is what
+            the library knows nothing about: the header, the expiry countdown
+            and the extension request. */}
+        <MessageList
+          conversationId={thread.id}
+          messages={thread.messages as Message[]}
+          meta={messageMeta}
+          otherName={thread.withName}
+          isEnded={thread.mode === 'ended'}
+          hasOlderMessages={thread.hasOlderMessages}
+          isLoadingOlder={loadingOlder}
+          onSend={(text, replyToId) => void sendWithReply(text, replyToId)}
+          onRetry={(messageId) => retryMessage(thread.id, messageId)}
+          onLoadEarlier={() => void loadEarlier()}
+          onToggleReaction={(messageId, emoji) => void react(messageId, emoji)}
+          onOpenMedia={(message) => openMedia(message)}
+          onAttach={toggleAttachTray}
         />
 
         {thread.pending ? (
@@ -435,146 +446,15 @@ export default function ChatScreen() {
             <Text style={styles.endedText}>this chat has ended. no new messages.</Text>
           </View>
         ) : (
-          <View style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
+          <>
             {sendError ? <Text style={styles.sendError}>{sendError}</Text> : null}
             {attachOpen ? <AttachTray onChoose={chooseAttachment} /> : null}
-            <View style={styles.composer}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="send a photo, GIF or your location"
-                accessibilityState={{ expanded: attachOpen }}
-                onPress={toggleAttachTray}
-                hitSlop={8}
-                style={[styles.plusBtn, attachOpen && styles.plusBtnOn]}
-              >
-                <Text style={[styles.plusText, attachOpen && styles.plusTextOn]}>
-                  {attachOpen ? '×' : '+'}
-                </Text>
-              </Pressable>
-              <TextInput
-                accessibilityLabel="message"
-                value={draft}
-                onChangeText={setDraft}
-                placeholder="message"
-                placeholderTextColor={tokens.semantic.color.hairlineOnCream}
-                selectionColor={tokens.semantic.color.accent}
-                style={styles.input}
-                multiline
-              />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="send"
-                accessibilityState={{ disabled: draft.trim().length === 0 }}
-                disabled={draft.trim().length === 0}
-                onPress={send}
-                style={[styles.sendBtn, draft.trim().length === 0 && styles.sendDim]}
-              >
-                <Text style={styles.sendText}>↑</Text>
-              </Pressable>
-            </View>
-          </View>
+          </>
         )}
-      </KeyboardAvoidingView>
     </View>
   );
 }
 
-function Bubble({ message, onRetry }: { message: Message; onRetry?: () => void }) {
-  if (message.from === 'system') {
-    return (
-      <View style={styles.systemRow} accessibilityLabel="chat notice">
-        <Text style={styles.systemText}>{message.text}</Text>
-      </View>
-    );
-  }
-  const mine = message.from === 'me';
-  const failed = mine && message.status === 'failed';
-
-  const hasLocation = message.latitude !== undefined && message.longitude !== undefined;
-  const hasMedia = message.mediaPath !== undefined;
-  const body = (
-    <>
-      <View
-        style={[
-          styles.bubble,
-          mine ? styles.mine : styles.theirs,
-          failed && styles.bubbleFailed,
-          hasMedia && styles.bubbleMedia,
-        ]}
-      >
-        {hasMedia ? (
-          <>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={message.mediaKind === 'gif' ? 'open GIF' : 'open photo'}
-              onPress={() =>
-                router.push(
-                  `/media-view?path=${encodeURIComponent(message.mediaPath ?? '')}&kind=${message.mediaKind ?? 'image'}`,
-                )
-              }
-            >
-              <MediaBubble message={message} />
-            </Pressable>
-            {message.text ? (
-              <Text style={[styles.caption, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
-            ) : null}
-          </>
-        ) : hasLocation ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="open shared location in maps"
-            onPress={() =>
-              Linking.openURL(
-                Platform.OS === 'ios'
-                  ? `http://maps.apple.com/?ll=${message.latitude},${message.longitude}`
-                  : `geo:${message.latitude},${message.longitude}`,
-              )
-            }
-          >
-            <Text style={[styles.bubbleText, mine ? styles.mineText : styles.theirsText]}>
-              📍 {message.placeLabel ?? 'shared a location'}
-            </Text>
-            <Text style={[styles.locHint, mine ? styles.mineText : styles.theirsText]}>tap to open in maps · approximate</Text>
-          </Pressable>
-        ) : (
-          <Text style={[styles.bubbleText, mine ? styles.mineText : styles.theirsText]}>{message.text}</Text>
-        )}
-      </View>
-      <View style={styles.metaRow}>
-        <Text style={styles.time}>{failed ? 'not sent · tap to retry' : message.time}</Text>
-        {mine && message.status ? (
-          <Text style={[styles.tick, message.status === 'read' && styles.tickRead, failed && styles.tickFailed]}>
-            {tickFor(message.status)}
-          </Text>
-        ) : null}
-      </View>
-    </>
-  );
-
-  if (failed && onRetry) {
-    return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`retry sending: ${message.text}`}
-        onPress={onRetry}
-        style={[styles.bubbleRow, styles.rowMine]}
-      >
-        {body}
-      </Pressable>
-    );
-  }
-
-  return <View style={[styles.bubbleRow, mine ? styles.rowMine : styles.rowTheirs]}>{body}</View>;
-}
-
-/**
- * An open request to make the chat window longer.
- *
- * Both sides see it, because both sides carry the consequence. The
- * person who asked sees that they are waiting and can take it back; the
- * other sees what was asked and answers it. Nothing about the window
- * changes until they do.
- */
 function WindowRequest({
   mode,
   mine,
@@ -684,45 +564,9 @@ function AttachTile({
  * expo-image plays an animated GIF; React Native's own Image does not
  * on every platform, which is the whole reason a GIF is stored as one.
  */
-function MediaBubble({ message }: { message: Message }) {
-  const variant =
-    message.mediaKind === 'image'
-      ? ({ kind: 'image', width: 480, height: 480 } as const)
-      : ({ kind: 'original' } as const);
-  const url = useMediaUrl(
-    preferredMediaPath(message.mediaPath, message.mediaThumbPath, variant),
-    variant,
-  );
-  const ratio =
-    message.mediaWidth && message.mediaHeight ? message.mediaWidth / message.mediaHeight : 1;
-
-  return (
-    <View style={[styles.media, { aspectRatio: ratio }]}>
-      {url ? (
-        <Image
-          source={{ uri: url }}
-          style={styles.mediaImage}
-          contentFit="cover"
-          transition={120}
-          accessibilityLabel={message.mediaKind === 'gif' ? 'a GIF' : 'a photo'}
-        />
-      ) : (
-        <View style={styles.mediaPending}>
-          <ActivityIndicator color={tokens.semantic.color.accent} />
-        </View>
-      )}
-    </View>
-  );
-}
-
-/** a GIF must not be re-encoded, so it has to be recognised as one. */
 function isGif(uri: string, mimeType?: string | null): boolean {
   if (mimeType) return mimeType.toLowerCase() === 'image/gif';
   return /\.gif($|\?)/i.test(uri);
-}
-
-function tickFor(status: NonNullable<Message['status']>): string {
-  return { pending: '…', sent: '✓', delivered: '✓✓', read: '✓✓', failed: '!' }[status];
 }
 
 const styles = StyleSheet.create({

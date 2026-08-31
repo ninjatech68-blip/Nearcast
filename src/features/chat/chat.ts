@@ -565,10 +565,14 @@ export async function refreshConversationMessages(conversationId: string): Promi
   await markRead(conversationId);
 }
 
-export async function sendMessage(threadId: string, text: string): Promise<void> {
+export async function sendMessage(
+  threadId: string,
+  text: string,
+  replyToId: string | null = null,
+): Promise<void> {
   if (chatEnabled()) {
     if (!text.trim()) return;
-    await sendTextWithClientId(threadId, text.trim(), cryptoMessageId());
+    await sendTextWithClientId(threadId, text.trim(), cryptoMessageId(), replyToId);
     await syncConversationMessages(threadId);
     return;
   }

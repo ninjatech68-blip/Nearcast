@@ -181,6 +181,7 @@ export async function sendTextWithClientId(
   conversationId: string,
   body: string,
   clientMessageId: string | null,
+  replyToId: string | null = null,
 ): Promise<void> {
   const c = getSupabase();
   if (!c) throw new Error('no backend configured');
@@ -188,8 +189,81 @@ export async function sendTextWithClientId(
     target_conversation_id: conversationId,
     message_body: body,
     ...(clientMessageId ? { client_message_id: clientMessageId } : {}),
+    ...(replyToId ? { reply_to_id: replyToId } : {}),
   });
   if (error) throw new Error(error.message);
+}
+
+/** One emoji on one message, on or off. Returns the message's new set. */
+export async function toggleReaction(
+  messageId: string,
+  emoji: string,
+): Promise<MessageReactionRow[]> {
+  const c = getSupabase();
+  if (!c) return [];
+  const { data, error } = await c.rpc('toggle_message_reaction', {
+    target_message_id: messageId,
+    reaction_emoji: emoji,
+  });
+  if (error) throw new Error(error.message);
+  return parseReactions(data);
+}
+
+export type MessageReactionRow = { emoji: string; userIds: string[] };
+
+export type MessageMeta = {
+  messageId: string;
+  replyToId: string | null;
+  replyBody: string | null;
+  replyIsMine: boolean;
+  reactions: MessageReactionRow[];
+};
+
+/**
+ * Reply and reaction facts for a room, keyed by message id.
+ *
+ * A separate call rather than columns bolted onto the three message readers:
+ * those carry the receipt derivation and the created_at/id tie-breaking that
+ * three test files exist to pin, and widening them to add two fields is how
+ * paging quietly breaks. Only messages that have something to say come back.
+ */
+export async function fetchMessageMeta(conversationId: string): Promise<MessageMeta[]> {
+  const c = getSupabase();
+  if (!c) return [];
+  const { data, error } = await c.rpc('conversation_message_meta', {
+    target_conversation_id: conversationId,
+  });
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((row) => ({
+    messageId: row.message_id,
+    replyToId: row.reply_to_id,
+    replyBody: row.reply_body,
+    replyIsMine: row.reply_is_mine === true,
+    reactions: parseReactions(row.reactions),
+  }));
+}
+
+/**
+ * The server hands back `[{emoji, userIds}]` with ids already reduced to 'me'
+ * or 'them'. Anything that does not match that shape is dropped rather than
+ * guessed at: a malformed pill is better absent than wrong.
+ */
+function parseReactions(value: unknown): MessageReactionRow[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.flatMap((entry) => {
+    if (typeof entry !== 'object' || entry === null) return [];
+    const row = entry as { emoji?: unknown; userIds?: unknown };
+    if (typeof row.emoji !== 'string' || !Array.isArray(row.userIds)) return [];
+
+    return [
+      {
+        emoji: row.emoji,
+        userIds: row.userIds.filter((id): id is string => typeof id === 'string'),
+      },
+    ];
+  });
 }
 
 export async function sendLocationShare(
