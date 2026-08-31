@@ -81,3 +81,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-31 | Completed joining with an area step, so a new member reaches a feed that can actually fill |
 | 2026-08-31 | Added a bounded demo feed seed for scroll testing, with the fabrication-rule exception recorded in AGENTS.md |
 | 2026-08-31 | Replaced the fixture intent detail screen with the real one, so every feed card opens its own intent and the response CTA reaches it; removed the fabricated broadcaster profile |
+| 2026-08-31 | Added operator-issued invitations, closing the bootstrap gap that left no way for anyone to sign in |

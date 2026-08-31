@@ -180,3 +180,4 @@ Five testers publish and share real intents without assistance; public metadata 
 | 2026-08-30 | Completed the publish transaction as a database function with idempotent retries |
 | 2026-08-30 | Completed the public link and confirmation, and closed a confirmer-identity leak in the foundation policies |
 | 2026-08-30 | Completed the owner lifecycle with version-guarded edit, withdraw, resolve and expiry |
+| 2026-08-31 | Added invitation issuance, without which no invitation could be created and nobody could join |

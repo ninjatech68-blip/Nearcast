@@ -1097,6 +1097,13 @@ export type Database = {
         Args: { target_intent: string }
         Returns: number
       }
+      issue_invite: {
+        Args: { invite_note?: string; valid_for?: unknown }
+        Returns: {
+          expires_at: string
+          invite_token: string
+        }[]
+      }
       delivered_intent: {
         Args: { target_intent: string }
         Returns: {

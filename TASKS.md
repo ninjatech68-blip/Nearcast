@@ -50,9 +50,34 @@ Staging only. It refuses to run once the project holds real responses or
 matches, and never against a project a real tester uses. See "Demo Data" in
 `AGENTS.md` for why the boundary matters.
 
+## Invitations
+
+Nearcast is invite-only, and the alpha cohort is approved by the team rather
+than grown by members, so there is no invite button in the app. An invitation is
+issued from the database:
+
+```bash
+psql "$SUPABASE_DB_URL" -c "select * from public.issue_invite('alpha tester 1');"
+```
+
+That prints the token and its expiry **once**. It is stored only as a hash, so a
+lost token is reissued, never looked up. Send it to the person out of band; they
+paste it into the invite step after signing in with their email code.
+
+Never build the hash by hand. `issue_invite` generates the token, hashes it and
+records the row in one step; a hand-written hash that is subtly wrong produces a
+token that silently does not work.
+
+To let a signed-in person issue invitations from a client instead, set
+`nearcast_role` to `operator` in that user's **app** metadata, using the service
+role — the dashboard's user editor or the admin API. It must not go in user
+metadata: a client can write its own user metadata, so a role kept there is one
+any member can award themselves.
+
 ## Change Log
 
 | Date | Change |
 |---|---|
 | 2026-08-24 | Added a plain-language command guide |
 | 2026-08-31 | Added the demo feed seed and its staging-only boundary |
+| 2026-08-31 | Added the invitation-issuing runbook |
