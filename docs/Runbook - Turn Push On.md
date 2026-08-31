@@ -348,8 +348,11 @@ Two accounts, two devices. On device A, send a message to B. **Close the
 app on B completely** — presence suppression will correctly withhold the
 notification if B has that chat open.
 
-Within a minute B should get *"a new message / they wrote back. yours to
-read."*, tapping it should open that conversation, and the app icon
+Within a minute B should get a banner titled with A's first name and
+the body *"Sent you a message."* — that is the copy the deployed sender
+actually composes (`COPY.chat_message` in
+`supabase/functions/send-push/index.ts`), and it is deliberately free of
+any excerpt. Tapping it should open that conversation, and the app icon
 should carry a badge.
 
 Follow it in the hosted database — `supabase db query --linked -f ...`:
