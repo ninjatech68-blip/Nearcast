@@ -7,10 +7,17 @@ This file explains the project commands in plain language.
 | Command | What it does |
 |---|---|
 | `npm install` | Installs the app dependencies |
-| `npm run start` | Opens the Expo development server |
-| `npm run ios` | Starts the app in an iOS simulator |
-| `npm run android` | Starts the app in an Android emulator |
-| `npm run web` | Starts the app in a browser |
+| `npm run ios:device` | Builds release and installs on a connected iPhone |
+| `npm run android:device` | Builds release and installs on a connected Android device |
+| `npm run preflight:device` | Checks `.env` is usable from a phone before building |
+
+Real devices and release builds only. The simulator and the Metro dev server
+are not used: a release build carries its own JavaScript, so what runs is what
+was built.
+
+`npm run start`, `npm run ios`, `npm run android` and `npm run web` remain in
+`package.json` for tooling that expects them, and are not part of this
+workflow.
 
 ## Quality Tasks
 

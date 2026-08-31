@@ -12,7 +12,13 @@
       "icon": "./assets/expo.icon",
       "associatedDomains": [
         "applinks:nearcast.app"
-      ]
+      ],
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        },
+        "NSLocalNetworkUsageDescription": "Nearcast connects to a Supabase instance running on your local network during development."
+      }
     },
     "android": {
       "adaptiveIcon": {

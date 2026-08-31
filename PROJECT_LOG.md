@@ -76,3 +76,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-31 | Added controlled reach expansion, so an intent widens only through an informed action |
 | 2026-08-31 | Fixed publishing so it delivers: publish now generates deliveries and stores the approximate point they are measured against |
 | 2026-08-31 | Added curated places, so a member picks an area by name and the server resolves the point, keeping coordinates out of the app entirely |
+| 2026-08-31 | Adopted release builds on real devices as the only run path, with a preflight that catches an unreachable Supabase URL before building |

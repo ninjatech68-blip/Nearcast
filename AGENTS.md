@@ -42,13 +42,32 @@ When documents conflict, use the precedence order in `docs/00 - Start Here - Nea
 ```bash
 npm install
 cp .env.example .env
-npm run start
+npm run ios:device
+npm run android:device
 npm run verify
 npm run db:start
 npm run db:reset
 npm run db:test
 npm run db:types
 ```
+
+## Running The App
+
+Build release configuration onto a real device. Do not use the simulator, and
+do not run a Metro dev server.
+
+A release build embeds the JavaScript bundle in the binary, so what runs is
+exactly what was built. A dev-client build fetches its bundle from whatever
+Metro instance answers on port 8081, which has already caused a build of this
+app to load an unrelated project's JavaScript.
+
+`npm run ios:device` and `npm run android:device` run a preflight first.
+Release builds inline `EXPO_PUBLIC_*` values at bundle time, so a loopback
+Supabase URL becomes a binary that cannot reach anything and fails with no
+useful message on the phone. The preflight rejects that before the build.
+
+Point `EXPO_PUBLIC_SUPABASE_URL` at this machine's LAN address, not
+`127.0.0.1`. `ipconfig getifaddr en0` prints it.
 
 ## Definition Of Done
 

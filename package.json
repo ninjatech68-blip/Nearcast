@@ -64,7 +64,10 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts"
+    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts",
+    "preflight:device": "node scripts/preflight-device.mjs",
+    "ios:device": "npm run preflight:device && expo run:ios --device --configuration Release",
+    "android:device": "npm run preflight:device && expo run:android --device --variant release"
   },
   "jest": {
     "preset": "jest-expo",
