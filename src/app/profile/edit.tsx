@@ -154,7 +154,7 @@ export default function EditProfileScreen() {
               <View style={styles.confirmBlock}>
                 <Text style={styles.confirmTitle}>Sign out of Nearcast?</Text>
                 <Text style={styles.confirmBody}>
-                  Your drafts stay on this device. You will need your invitation to sign back in.
+                  Your drafts stay on this device. You can sign back in at any time.
                 </Text>
                 <View style={styles.confirmActions}>
                   <Pressable accessibilityRole="button" onPress={() => setConfirming('none')} style={styles.confirmCancel}>
