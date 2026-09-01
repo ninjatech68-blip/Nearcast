@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+
+# Expo / React Native — for when the client lands
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+ios/
+android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# secrets — never, under any circumstances
+.env
+.env.*
+!.env.example
+*.pem
+service-role*
+
+# local database
+supabase/.temp/
+supabase/.branches/
+*.dump
+
+# editors / os
+.DS_Store
+.idea/
+.vscode/
+*.log
