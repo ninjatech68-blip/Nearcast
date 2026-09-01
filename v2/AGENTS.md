@@ -7,11 +7,11 @@ without exposing the group, fabricating activity, or silently expanding reach.
 
 This repository is the only source of truth. Read in this order:
 
-1. `docs/01 - Decisions.md` — fifteen product decisions, plus three framing ones.
-2. `docs/02 - Permissions Matrix.md` — who may see and change what. Twelve laws.
-3. `docs/03 - Open Questions.md` — four decisions that are **not** made. The
+1. `docs/01 - Decisions.md` — sixteen product decisions, plus three framing ones.
+2. `docs/02 - Permissions Matrix.md` — who may see and change what. Thirteen laws.
+3. `docs/03 - Open Questions.md` — three decisions that are **not** made. The
    defaults recorded there are mine, not the product's. Do not treat one as
-   settled, and do not build past Q3 without an answer.
+   settled. None of them currently blocks work.
 4. `supabase/tests/database/laws.test.sql` — the laws as assertions.
 5. `supabase/migrations/` — the schema the laws specify.
 

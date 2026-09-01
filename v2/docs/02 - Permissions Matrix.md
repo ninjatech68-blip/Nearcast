@@ -58,10 +58,19 @@ Four helpers are granted, and all four are caller-scoped:
 | **L10** | A cast's words freeze when someone asks to join | D14 | yes |
 | **L11** | No image enters storage with metadata or unscanned | D12 | *pending* — arrives with the media slice |
 | **L12** | Moderation actions are append-only | D11 | yes |
+| **L13** | A chat window widens only by mutual agreement, and never past one month | D16 | *pending* — arrives with the coordination slice |
 
 L1 is table-driven on purpose: it enumerates every table in `public` and fails
 if any write privilege exists anywhere. A table added without thought therefore
 fails the suite rather than quietly shipping a write surface.
+
+L13 has four parts, and each is asserted separately because each has its own way
+of going wrong: widening needs both parties; a proposer cannot accept their own
+proposal; no window may exceed one month; and **a thread with no expiry cannot
+exist**. That last one is not defensive pedantry — the predecessor made
+`expires_at` nullable and treated null as open, so every chat displayed a
+24-hour countdown and never expired. The invariant belongs in the column, not in
+the code that reads it.
 
 ---
 

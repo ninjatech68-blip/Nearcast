@@ -1,9 +1,11 @@
 # Open Questions
 
-Four decisions are unmade. Each has a default recorded below, which is what the
+Three decisions are unmade. Each has a default recorded below, which is what the
 schema does today. **A default is not a decision** — it is what I chose so the
 build could continue, and it is marked so that a future session does not mistake
 it for something you settled.
+
+None of the three blocks work.
 
 If one of these is answered, move it into `01 - Decisions.md` with a number and
 delete it here.
@@ -52,25 +54,11 @@ passing visible.
 
 ## Q3 — What happens to a thread when its cast dies?
 
-**Status:** unanswered. Blocking the coordination slice.
-
-A cast expires at the activity's own time (D6). Its threads do not obviously
-expire with it — two people who arranged to meet may still be talking afterwards,
-and cutting them off mid-sentence would be worse than the alternative.
-
-Three shapes, none chosen:
-
-1. **Thread outlives the cast**, ages out on its own retention clock (D15).
-2. **Thread closes with the cast**, explicitly, the way blocking closes one (D13).
-3. **Thread survives only if a receipt settled** — you met, so you keep the
-   thread; you did not, so you do not.
-
-Option 3 is the one that fits the rest of the model, and it is what I would
-default to if forced. I have not, because it is a product decision with real
-consequences for how the app feels, and the coordination slice needs the answer
-rather than a guess.
-
-**This one genuinely blocks work.** The other three do not.
+**Answered 2026-09-01. Now D16.** The question was wrong: it assumed the cast
+had to govern the thread because the cast created it. Thread lifetime is
+independent of cast lifetime, and a chat window is short by default and widens
+only by mutual agreement. The number is kept rather than reused so that earlier
+references still resolve.
 
 ---
 

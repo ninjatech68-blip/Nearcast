@@ -106,6 +106,49 @@ Messages, media and delivery rows age out. Receipts are the durable layer,
 because they are what vouching and trust rest on. Nothing else needs to be kept
 to make the product work, so nothing else is.
 
+**D16 — A chat window is short by default, and widens only by mutual agreement.**
+
+A thread opens when someone is accepted into a slot, and expires **24 hours
+after the activity** — `happens_at + 24h`, floored at `now() + 24h` so a cast
+happening imminently still gets a full day. Not 24 hours from when the thread
+opens: a cast five days out would otherwise lose its thread four days before the
+thing it exists to arrange.
+
+Either party may propose extending to **7 days** or **1 month**. The other must
+affirmatively accept. Silence is refusal, and a refusal is never reported as
+one — the thread says only that the window is unchanged, so declining costs
+nothing socially. One open proposal at a time, and a declined proposal cannot be
+re-made within the current window; without that, a consent mechanism becomes a
+nagging mechanism.
+
+Narrowing or ending the window is unilateral. Only widening needs both.
+
+**There is no permanent option.** A month is renewable indefinitely, so nothing
+is ever lost — but no thread persists without someone deciding, again, that it
+should. Permanent chat would promote messages to a durable layer that D15 says
+they are not, and it is a one-way door: data kept forever is data that can be
+breached, compelled, and must be moderated. Two people who become real friends
+will move to a messenger, which is the right outcome. Nearcast is where a
+connection starts, not where it lives.
+
+The thread shows the time remaining.
+
+**A thread with no expiry cannot exist.** This is stated as an invariant because
+the predecessor got it wrong in a way that reading the code did not reveal:
+`conversations.mode` defaulted to `'day'`, so the app displayed a 24-hour
+countdown, while `expires_at` was nullable with no default and no insert ever
+set it — and the guard treated null as open, while the sweeper skipped nulls.
+Every chat in Build 15 showed a countdown and lived forever. The default failed
+*open*, which is the wrong direction, and is exactly the class of mistake the
+governing rule exists to make impossible.
+
+This replaces an earlier proposal of mine that gated thread survival on a
+settled receipt. That conflated two different questions — *did you meet* and *do
+you want to keep talking* — and made a missed confirmation silently destroy a
+conversation both people wanted. They are separate questions with separate
+mechanisms: the receipt's only job is vouching (D7, D10), and thread lifetime is
+independent of cast lifetime.
+
 ---
 
 ## What is deliberately absent
