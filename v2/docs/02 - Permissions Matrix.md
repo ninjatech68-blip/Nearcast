@@ -36,18 +36,23 @@ safety graph. Helpers that do take a person (`is_blocked`, `is_restricted`,
 `SECURITY DEFINER` functions, which run as the owner and need no caller
 privilege.
 
-Six helpers are granted, and all six are caller-scoped:
+Seven helpers are granted, and all seven are caller-scoped:
 `in_circle(circle)` · `related_to(other)` · `can_read_cast(cast)` ·
-`is_moderator()` · `in_thread(thread)` · `thread_open(thread)`.
+`is_moderator()` · `in_thread(thread)` · `thread_open(thread)` ·
+`may_see_place(cast)`.
+
+`coarse_point()` is deliberately **not** granted. A client that could ask the
+server to coarsen arbitrary points could binary-search the grid boundaries — a
+smaller leak than the venue, but a free one.
 
 ---
 
-## The thirteen laws
+## The fourteen laws
 
 | | Law | Traces to | Asserted |
 |---|---|---|---|
 | **L1** | No client write privilege exists, on any table | F3 | yes — structurally, over every table in `public` |
-| **L2** | No coordinate describing a person is stored or returned | D4 | yes |
+| **L2** | No coordinate exists outside the three permitted places, each gated | D4, D17 | yes — structurally, over every geography column |
 | **L3** | Circle membership is invisible from outside the circle | D3 | yes |
 | **L4** | A receipt exists only when both people have confirmed | D7 | yes |
 | **L5** | A vouch requires a settled receipt | D10 | yes |
@@ -59,6 +64,7 @@ Six helpers are granted, and all six are caller-scoped:
 | **L11** | No image enters storage with metadata or unscanned | D12 | *pending* — arrives with the media slice |
 | **L12** | Moderation actions are append-only | D11 | yes |
 | **L13** | A chat window widens only by mutual agreement, and never past one month | D16 | yes |
+| **L14** | A cast's exact place and place name are visible only to its caster and to accepted participants | D17 | yes |
 
 L1 is table-driven on purpose: it enumerates every table in `public` and fails
 if any write privilege exists anywhere. A table added without thought therefore
@@ -99,6 +105,7 @@ Everything below is `SELECT` only. There is no other kind of policy.
 | `reports` | the reporter, and moderators | |
 | `moderation_actions` | moderators | append-only (L12) |
 | `devices` | you | push tokens are never readable by another person |
+| `cast_places` | caster, and accepted participants only | `may_see_place(cast_id)` (L14) — **not** people it was merely delivered to, and **not** pending requesters |
 | `threads` | the two parties | `auth.uid() in (caster_id, joiner_id)` |
 | `thread_window_proposals` | the two parties | |
 | `messages` | the two parties | |
@@ -122,7 +129,7 @@ Fifteen functions. This is the entire mutation surface available to a client.
 
 | Function | What it does | Refuses when |
 |---|---|---|
-| `publish_cast(...)` | creates a cast, its reach, and its deliveries | unverified or restricted; area is not yours; circle is not yours; no circle selected; slots out of range; time in the past |
+| `publish_cast(...)` | creates a cast, its venue, its reach, and its deliveries | unverified or restricted; bad or missing venue; radius outside 2–20 km; circle is not yours; no circle selected; slots out of range; time in the past |
 | `edit_cast(cast, statement)` | changes the words | someone has asked to join (L10); not yours |
 | `request_to_join(cast, note)` | asks for a slot | not delivered to you; cast not live; already asked |
 | `vouch_for(person)` | records a vouch | no settled receipt exists (L5) |

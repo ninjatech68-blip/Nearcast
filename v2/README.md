@@ -9,9 +9,9 @@ the repo exists.
 
 The first slice of a rebuild, derived in this order and no other:
 
-1. **Sixteen product decisions** — [`docs/01 - Decisions.md`](docs/01%20-%20Decisions.md)
+1. **Eighteen product decisions** — [`docs/01 - Decisions.md`](docs/01%20-%20Decisions.md)
 2. **The permissions matrix** — who may see what and who may change it, with
-   thirteen numbered laws — [`docs/02 - Permissions Matrix.md`](docs/02%20-%20Permissions%20Matrix.md)
+   fourteen numbered laws — [`docs/02 - Permissions Matrix.md`](docs/02%20-%20Permissions%20Matrix.md)
 3. **The law suite** (`supabase/tests/database/laws.test.sql`) — written before
    the schema existed, and demonstrated failing against an empty database.
 4. **The schema** (`supabase/migrations/`) — derived from the matrix.
@@ -74,10 +74,10 @@ roles. It is never applied to a real project.
 
 | | |
 |---|---|
-| Tables | 27 |
-| Policies | 23 — all `SELECT` |
+| Tables | 28 |
+| Policies | 24 — all `SELECT` |
 | Write functions | 15 |
-| Assertions | 110, all passing |
+| Assertions | 131, all passing |
 
 For scale: the previous build reached 53 policies across 34 migrations, with
 write grants on 22 tables.
@@ -94,33 +94,42 @@ Delivery generation, the feed, and hiding a delivery.
 Threads, messages, the chat window with mutual extension, read cursors,
 receipt settlement, and the expiry sweeper.
 
+Cast venues, revealed on acceptance, with the feed showing an approximate
+distance computed from a coarsened point.
+
 ### Not built yet
 
 Media — photos and location in chat (D12) — with the EXIF and scanning rules
 that L11 covers. Retention jobs. The outbox workers. Nothing above the database:
 no client, no Edge Functions, no auth flow.
 
-A shared location is a coordinate, and L2 says no coordinate describing a person
-is stored. Those have to be squared explicitly when media lands, not in passing.
+A location shared in chat will be the third permitted coordinate under the
+amended L2 — same shape as a venue: exact, gated to two people, dead when the
+thread closes.
 
-### What building delivery changed in the foundation
+### Two corrections the slices forced
 
-`cast_reach` carried a radius with nothing to measure from — a cast had no
-origin. A cast is now broadcast from one of the caster's own approved areas, by
-composite foreign key on `(caster_id, area_name)`, so no new coordinate enters
-the schema, the centroid already existed, and a person cannot cast from
-somewhere they have not claimed. `publish_cast` therefore takes an area name;
-its previous signature is dropped.
+**A cast had no origin.** `cast_reach` carried a radius with nothing to measure
+from. The first fix bound a cast to one of the caster's own approved areas by
+composite foreign key — which was wrong about the product, and only became
+obviously wrong once the venue arrived: the radius belongs around *the event*,
+not around the caster's neighbourhood. `area_name` is gone; `casts.match_point`
+replaced it.
 
-The gap was invisible while reading the schema and obvious the moment something
-had to use it. That is the argument for building in slices.
+**A thread had no expiry that fired.** The predecessor made `expires_at`
+nullable, never set it, treated null as open, and skipped nulls in the sweeper.
+Every chat displayed a 24-hour countdown and lived forever.
+
+Both were invisible while reading and obvious the moment something used them.
+That is the argument for building in slices, and for asserting invariants in
+columns rather than in the code that reads them.
 
 ## Laws
 
 | | |
 |---|---|
 | L1 | No client write privilege exists |
-| L2 | No coordinate describing a person is stored or returned |
+| L2 | No coordinate exists outside the three permitted places, each gated |
 | L3 | Circle membership is invisible from outside the circle |
 | L4 | A receipt exists only when both people have confirmed |
 | L5 | A vouch requires a settled receipt |
@@ -132,5 +141,6 @@ had to use it. That is the argument for building in slices.
 | L11 | No image enters storage with metadata or unscanned |
 | L12 | Moderation actions are append-only |
 | L13 | A chat window widens only by mutual agreement, and never past one month |
+| L14 | A cast's exact place is visible only to its caster and to accepted participants |
 
 L11 arrives with the media slice. Every other law is asserted now.

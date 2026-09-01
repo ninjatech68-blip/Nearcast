@@ -43,12 +43,18 @@ blocking tractable and what keeps a cast from becoming a room.
 Not tags, not saved filters. A circle is a thing you make and put people in,
 and it is the unit reach is expressed in.
 
-**D4 — No live location. Approved areas only.**
+**D4 — No live location. Approved areas, and named venues.**
 A person claims named areas. The schema stores a centroid per area and nothing
-else — no device location, no last-seen point, no trail. A cast is broadcast
-*from* one of the caster's own areas, which is what a `nearby` radius is
-measured against. This is a structural commitment, not a setting: there is no
-column anywhere that could hold a person's position.
+else — no device location, no last-seen point, no trail.
+
+An area means only *where I want to hear about things*. It is **not** a
+broadcast origin: a cast carries its own venue and measures its radius from
+there (D17). This changed after the fact — the original wording had a cast
+broadcast from one of the caster's own areas, which was wrong about the product.
+
+A structural commitment, not a setting: there is no column anywhere that could
+hold a person's position, and the law suite enumerates every coordinate column
+in the schema and fails on a fourth.
 
 **D5 — Slots, with a pair thread each.**
 A cast says how many people it can take. Each accepted person gets their own
@@ -148,6 +154,48 @@ you want to keep talking* — and made a missed confirmation silently destroy a
 conversation both people wanted. They are separate questions with separate
 mechanisms: the receipt's only job is vouching (D7, D10), and thread lifetime is
 independent of cast lifetime.
+
+**D17 — A cast's venue is revealed on acceptance, never before.**
+
+Creating a cast takes a category, a description, a **venue**, a date and time,
+and a **radius measured from that venue**. Someone inside the radius sees the
+cast in their feed with an approximate distance — "approx 3 km away" — and
+nothing more. On acceptance they get the detail page with the exact point and
+the place name from the map, and the chat opens.
+
+**The venue is stored at two precisions, and this is not an implementation
+detail.** A distance from a known point to an unknown one puts the venue on a
+circle; three distances fix it exactly. Measurements are free, because approved
+areas are self-declared and unlimited — one account plants three areas across
+the city and reads three distances straight off its own feed. Without a
+defence, a stranger who was never accepted recovers the café and the time.
+
+So the cast row carries the venue snapped to a ~1 km grid, and that coarse
+point is what matching and the displayed distance both use. The exact point,
+and the place name, live in a separate gated table. Trilaterating the feed
+recovers a cell.
+
+The place name is gated exactly as the point is. "Third Wave Coffee, 100ft
+Road" *is* the venue; a text column is not a lesser disclosure than two floats.
+
+What this cannot fix, and does not pretend to: receiving a cast at all tells
+you that you are within its radius. That is inherent to location-based
+delivery. The question was only ever precision.
+
+Two consequences, both accepted deliberately:
+
+- **The radius floor rises from 500 m to 2 km.** A 500 m radius against a 1 km
+  cell is noise. Tighter casts stop being possible.
+- **A cast is no longer tied to an area the caster has claimed.** That coupling
+  quietly stopped one account blanketing a city; restriction and reporting
+  carry it now, as they do in every events product.
+
+**D18 — Chat is free-form.**
+Once the thread opens, the two people exchange whatever they like, as they
+would in any messenger. The product does not police the content of a
+conversation between two people who have agreed to meet. This makes the chat
+the most sensitive store in the system, which is why D16's window and the
+delete-on-close rule matter more, not less.
 
 ---
 
