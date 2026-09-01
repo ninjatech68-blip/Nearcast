@@ -118,6 +118,28 @@ export function Dock({
   const { width: screen } = useWindowDimensions();
   const glass = useGlass();
 
+  /**
+   * The marks are ink whenever there is glass, and the field's own
+   * declared foreground when there is not.
+   *
+   * Tracking the field was the bug. Four categories are dark and declare
+   * `fg: cream` -- music, travel, games, networking -- and the visible
+   * category is not cleared when you leave the feed, so a cream mark
+   * from a music poster landed on the cream inbox and disappeared.
+   *
+   * Ink on the RAW fields is not the answer either: it measures 1.00:1
+   * on music, 1.69:1 on travel and 3.00:1 on networking. What makes ink
+   * work everywhere is that the bar is forced to its LIGHT glass
+   * variant, so the surface under the mark is always a light scrim over
+   * the field rather than the field itself. Modelled that way the worst
+   * category is 5.57:1, against the 3:1 a UI component owes.
+   *
+   * Without glass there is no scrim, so the flat path keeps the field's
+   * own pairing -- which the category tokens already guarantee is
+   * legible, because they were chosen as pairs.
+   */
+  const mark = glass ? tokens.semantic.color.ink : fieldFg;
+
   const selectedIndex = DOCK_PAGES.indexOf(current);
   const range = { inputRange: [0, 1], extrapolate: 'clamp' as const };
 
@@ -143,12 +165,12 @@ export function Dock({
     >
       {glass ? (
         <GlassContainer spacing={dock.capsuleInset * 2} style={StyleSheet.absoluteFill}>
-          <Glass glassEffectStyle="regular" borderRadius={dock.radius} isInteractive style={StyleSheet.absoluteFill} />
+          <Glass glassEffectStyle="regular" colorScheme="light" borderRadius={dock.radius} isInteractive style={StyleSheet.absoluteFill} />
           <Animated.View
             pointerEvents="none"
             style={[styles.lensWrap, { opacity: lens, left: dock.padH + selectedIndex * dock.slot }]}
           >
-            <Glass glassEffectStyle="clear" borderRadius={dock.capsuleRadius} style={StyleSheet.absoluteFill} />
+            <Glass glassEffectStyle="clear" colorScheme="light" borderRadius={dock.capsuleRadius} style={StyleSheet.absoluteFill} />
           </Animated.View>
         </GlassContainer>
       ) : (
@@ -161,7 +183,7 @@ export function Dock({
             key={slot.page}
             slot={slot}
             selected={slot.page === current}
-            fieldFg={fieldFg}
+            fieldFg={mark}
             count={slot.page === 'inbox' ? inboxCount : 0}
             photo={photo}
             initials={initials}

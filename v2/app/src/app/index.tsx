@@ -70,7 +70,11 @@ export default function HomeScreen() {
 
   // an empty or failed feed renders on cream, so ink is the honest
   // default until a poster is actually on screen.
-  const fieldFg = fieldCategory ? categoryTokens[fieldCategory].fg : tokens.semantic.color.ink;
+  // Only while the feed is the page on screen. The category used to
+  // persist after you swiped away, so a dark poster's cream foreground
+  // followed you onto the cream inbox and vanished into it.
+  const onFeed = page === 'near';
+  const fieldFg = onFeed && fieldCategory ? categoryTokens[fieldCategory].fg : tokens.semantic.color.ink;
 
   // 0 expanded, 1 collapsed. Driven by whether a drag is in flight on
   // the feed, not by scroll offset: the feed is a full-screen pager, so

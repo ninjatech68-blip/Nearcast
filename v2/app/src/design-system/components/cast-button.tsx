@@ -25,6 +25,9 @@ const size = 44;
 export function CastButton({ fieldFg, onPress }: { fieldFg: string; onPress: () => void }) {
   const insets = useSafeAreaInsets();
   const glass = useGlass();
+  // same rule as the dock: ink over forced-light glass, the field's own
+  // foreground when there is no glass to lighten the ground.
+  const mark = glass ? tokens.semantic.color.ink : fieldFg;
 
   const body = (
     <Pressable
@@ -35,7 +38,7 @@ export function CastButton({ fieldFg, onPress }: { fieldFg: string; onPress: () 
       style={styles.touch}
       hitSlop={10}
     >
-      <Glyph name="cast" size={22} color={fieldFg} weight="semibold" />
+      <Glyph name="cast" size={22} color={mark} weight="semibold" />
     </Pressable>
   );
 
@@ -47,7 +50,7 @@ export function CastButton({ fieldFg, onPress }: { fieldFg: string; onPress: () 
         // RN style rounds the container and leaves the effect square.
         // No GlassContainer here -- it exists to MERGE sibling glass, and
         // this button has nothing to merge with.
-        <Glass glassEffectStyle="regular" borderRadius={size / 2} isInteractive style={styles.body}>
+        <Glass glassEffectStyle="regular" colorScheme="light" borderRadius={size / 2} isInteractive style={styles.body}>
           {body}
         </Glass>
       ) : (

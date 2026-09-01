@@ -14,6 +14,23 @@ function contrast(a: string, b: string): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+/**
+ * A light glass scrim over a field, as a hex.
+ *
+ * The dock forces its glass to the LIGHT variant, so the surface under a
+ * mark is never the raw field -- it is a pale wash of it. 55% is a
+ * deliberately conservative reading of `regular`: the real material is
+ * lighter than this, so anything that passes here passes on device.
+ */
+function scrim(field: string, over: string): string {
+  const mix = [1, 3, 5].map((at) => {
+    const f = Number.parseInt(field.slice(at, at + 2), 16);
+    const o = Number.parseInt(over.slice(at, at + 2), 16);
+    return Math.round(o * 0.55 + f * 0.45);
+  });
+  return `#${mix.map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+}
+
 describe('design tokens', () => {
   it('keeps every interactive target at least 44 points', () => {
     expect(tokens.component.bar.height).toBeGreaterThanOrEqual(44);
@@ -96,5 +113,20 @@ describe('design tokens', () => {
     // pill can then contract to a circle without animating its radius.
     expect(dock.height).toBe(dock.radius * 2);
     expect(dock.collapsedSize).toBe(dock.height);
+  });
+
+  it('keeps an ink mark legible on light glass over every category', () => {
+    // This is what lets ONE ink mark serve all ten categories, and the
+    // reason the dock forces colorScheme="light" rather than leaving it
+    // on auto.
+    //
+    // Ink on the RAW fields does not work: music is 1.00:1, travel
+    // 1.69:1, networking 3.00:1. Anyone tempted to drop the forced
+    // colour scheme should meet those numbers first.
+    for (const name of CATEGORIES) {
+      const surface = scrim(category[name].field, tokens.primitive.color.cream);
+      const ratio = contrast(tokens.primitive.color.ink, surface);
+      expect(ratio, `ink on light glass over ${name}`).toBeGreaterThanOrEqual(3);
+    }
   });
 });
