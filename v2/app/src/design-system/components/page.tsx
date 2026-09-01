@@ -24,13 +24,21 @@ import { fontFamily, tokens } from '@/design-system/tokens';
 export function Page({
   title,
   accessory,
+  subhead,
   refreshing = false,
   onRefresh,
   refreshLabel,
   children,
 }: {
   title: string;
+  /** sits on the title row, top-right (a photo, an action). */
   accessory?: ReactNode;
+  /**
+   * A row BELOW the title, left-aligned. The inbox's tab strip lives here
+   * rather than in `accessory`: the cast button occupies the top-right
+   * corner, so a control on the title row would sit under it.
+   */
+  subhead?: ReactNode;
   refreshing?: boolean;
   onRefresh?: () => void;
   refreshLabel?: string;
@@ -47,6 +55,7 @@ export function Page({
         </Text>
         {accessory}
       </View>
+      {subhead}
 
       <View style={styles.body}>
         <View style={styles.refreshSlot} pointerEvents="none">

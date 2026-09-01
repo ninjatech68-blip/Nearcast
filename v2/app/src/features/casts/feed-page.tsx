@@ -294,7 +294,7 @@ function SkippablePoster({ cast, lensOn, onSkip }: { cast: CastDetail; lensOn: b
     <Animated.View style={{ flex: 1, transform: [{ translateX }, { rotate }] }}>
       <Poster
         cast={cast}
-        topRight={<Lens color={fg} on={lensOn} onPress={() => router.push('/filter')} />}
+        topLeft={<Lens color={fg} on={lensOn} onPress={() => router.push('/filter')} />}
         onOpen={() => router.push(`/cast/${cast.id}`)}
         caster={{
           line: `${cast.by.toLowerCase()} · ${cast.receipts.line.split(' · ')[0]}`,
@@ -334,10 +334,10 @@ function FeedEmpty({
   return (
     <View style={[styles.empty, { paddingTop: insets.top + 24, paddingBottom: insets.bottom }]}>
       <View style={styles.emptyTop}>
-        <Text style={styles.wordmark}>NEARCAST</Text>
-        {/* the lens stays reachable when the feed is empty: a filter is
-            the most likely reason it IS empty, and the pill below says
-            so only when one is on. */}
+        {/* the lens leads the top-left, where the wordmark used to sit —
+            the cast button owns the top-right corner. it stays reachable
+            when the feed is empty: a filter is the most likely reason it
+            IS empty, and the pill below says so only when one is on. */}
         <Lens color={tokens.semantic.color.ink} on={filtered} onPress={() => router.push('/filter')} />
       </View>
       <View style={styles.emptyMiddle}>
@@ -369,7 +369,6 @@ const styles = StyleSheet.create({
   refreshSlot: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   empty: { flex: 1, backgroundColor: tokens.semantic.color.cream, paddingHorizontal: 24 },
   emptyTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 36 },
-  wordmark: { ...tokens.typography.tag, color: tokens.semantic.color.textMutedOnCream },
   emptyMiddle: { flex: 1, justifyContent: 'center' },
   emptyHead: {
     fontFamily: fontFamily.display,

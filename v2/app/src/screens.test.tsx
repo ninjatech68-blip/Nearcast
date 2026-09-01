@@ -177,22 +177,22 @@ describe('home pager', () => {
     const view = await render(<HomeScreen />);
 
     // chats and alerts share a destination now. Inside it, two tabs —
-    // activity (the alerts) and chats — with activity chosen by default.
-    const activity = view.getByRole('tab', { name: /^activity/ });
-    const chats = view.getByRole('tab', { name: /^chats/ });
-    expect(activity.props.accessibilityState).toMatchObject({ selected: true });
-    expect(chats.props.accessibilityState).toMatchObject({ selected: false });
+    // actions (the alerts) and chat — with actions chosen by default.
+    const actions = view.getByRole('tab', { name: /^actions/ });
+    const chat = view.getByRole('tab', { name: /^chat/ });
+    expect(actions.props.accessibilityState).toMatchObject({ selected: true });
+    expect(chat.props.accessibilityState).toMatchObject({ selected: false });
     // the label carries the count in full, the same rule the dock follows;
     // the fixture has decisions owed but no unread chats, so only one does.
-    expect(activity.props.accessibilityLabel).toMatch(/^activity, \d+ waiting$/);
-    expect(chats.props.accessibilityLabel).toBe('chats');
+    expect(actions.props.accessibilityLabel).toMatch(/^actions, \d+ waiting$/);
+    expect(chat.props.accessibilityLabel).toBe('chat');
   });
 
   it('shows only the alert groups that have rows, each carrying its count', async () => {
     const view = await render(<HomeScreen />);
 
-    // Two tablists share the tab role now: the inbox's own activity/chats
-    // strip, and the alert groups inside the activity tab. This test is
+    // Two tablists share the tab role now: the inbox's own actions/chat
+    // strip, and the alert groups inside the actions tab. This test is
     // about the groups, which label themselves "<name>, <count>" — the
     // inbox tabs end in "waiting" or carry no count, so this filter keeps
     // exactly the group tabs.
@@ -212,12 +212,16 @@ describe('home pager', () => {
     expect(groupTabs[0].props.accessibilityState).toMatchObject({ selected: true });
   });
 
-  it('replaces the wordmark chevron with a real lens control', async () => {
+  it('leads the feed with a search lens where the wordmark was', async () => {
     const view = await render(<HomeScreen />);
 
+    // the lens moved to the top-left, taking the wordmark's place: the
+    // cast button owns the top-right corner, and a search control there
+    // collided with it. The NEARCAST brand mark is gone from the feed —
+    // it was never a control, and the corner is the cast button's now.
     expect(view.getByRole('button', { name: /^search and filter/ })).toBeTruthy();
     expect(view.queryByText('NEARCAST ⌄')).toBeNull();
-    expect(view.getAllByText('NEARCAST').length).toBeGreaterThanOrEqual(1);
+    expect(view.queryByText('NEARCAST')).toBeNull();
   });
 
   it('opens the detail sheet from the headline and the join sheet from the bar', async () => {

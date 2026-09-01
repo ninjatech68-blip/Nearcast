@@ -5,7 +5,7 @@ import { AlertsPage } from '@/features/casts/alerts-page';
 import { ChatsPage } from '@/features/chat/chats-page';
 import { fontFamily, tokens } from '@/design-system/tokens';
 
-export type InboxTab = 'activity' | 'chats';
+export type InboxTab = 'actions' | 'chat';
 
 /**
  * One destination for everything waiting on you.
@@ -15,26 +15,33 @@ export type InboxTab = 'activity' | 'chats';
  * terms: both answer the same question -- what needs me? -- and someone
  * checking one is already checking the other.
  *
- * The tabs go in Page's `accessory` slot rather than above the page.
+ * The tabs go in Page's `subhead` slot -- a row below the title, left of
+ * the screen. They cannot go on the title row: the cast button owns the
+ * top-right corner, and a tab under it is a tab you cannot read or tap.
  * The first version stacked its own strip on top of a Page that already
  * owned the safe area, so the strip rendered at y=0 underneath the
  * status bar and the screen carried two titles: "inbox" from here and
  * "alerts" from the page inside it. One Page, one title, one inset.
+ *
+ * Two tabs: `actions` (everything you owe or are part of -- the alerts,
+ * with their own NEEDS YOU / YOUR PLANS grouping inside) and `chat` (the
+ * conversations). Both answer "what needs me?", which is why they share
+ * one destination; the split is only which KIND of thing needs you.
  */
 export function InboxPage({ chatCount = 0, activityCount = 0 }: { chatCount?: number; activityCount?: number }) {
-  const [tab, setTab] = useState<InboxTab>('activity');
+  const [tab, setTab] = useState<InboxTab>('actions');
 
   const tabs = (
     <View style={styles.strip} accessibilityRole="tablist">
-      <TabButton label="activity" count={activityCount} selected={tab === 'activity'} onPress={() => setTab('activity')} />
-      <TabButton label="chats" count={chatCount} selected={tab === 'chats'} onPress={() => setTab('chats')} />
+      <TabButton label="actions" count={activityCount} selected={tab === 'actions'} onPress={() => setTab('actions')} />
+      <TabButton label="chat" count={chatCount} selected={tab === 'chat'} onPress={() => setTab('chat')} />
     </View>
   );
 
-  return tab === 'activity' ? (
-    <AlertsPage title="inbox" accessory={tabs} />
+  return tab === 'actions' ? (
+    <AlertsPage title="inbox" subhead={tabs} />
   ) : (
-    <ChatsPage title="inbox" accessory={tabs} />
+    <ChatsPage title="inbox" subhead={tabs} />
   );
 }
 
@@ -70,7 +77,7 @@ function TabButton({
 }
 
 const styles = StyleSheet.create({
-  strip: { flexDirection: 'row', gap: 24, marginTop: 4 },
+  strip: { flexDirection: 'row', gap: 24, marginTop: 10 },
   tab: { paddingTop: 4 },
   tabLabel: { fontFamily: fontFamily.text, fontSize: 15, paddingBottom: 8 },
   tabLabelOn: { color: tokens.semantic.color.ink, fontWeight: '600' },

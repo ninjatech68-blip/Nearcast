@@ -102,19 +102,22 @@ export const tokens = {
        * pill contracts into a circle of the same height and the radius
        * never has to animate. One element, one width, one position.
        */
-      height: 56,
+      // a little taller than the marks need, so the glass reads as a
+      // capsule floating on the field rather than a thin strip. height
+      // stays twice the radius, which is the whole reason it can morph.
+      height: 64,
       slot: 80,
       icon: 24,
-      radius: 28,
+      radius: 32,
       padH: 8,
       lift: 12,
       /** the selection lens, inset inside the bar */
-      capsuleRadius: 22,
-      capsuleInset: 6,
+      capsuleRadius: 24,
+      capsuleInset: 7,
       labelSize: 11,
       labelTop: 2,
       /** collapsed: the same height, so it is a circle of that diameter */
-      collapsedSize: 56,
+      collapsedSize: 64,
       collapsedInset: 16,
     },
 
@@ -132,7 +135,7 @@ export const tokens = {
      * the control row, and at 96 it overlapped the poster's own
      * call-to-action. This leaves 19.5 pt between them.
      */
-    posterBottomReserve: 104,
+    posterBottomReserve: 116,
     minTarget: 44,
   },
 } as const;

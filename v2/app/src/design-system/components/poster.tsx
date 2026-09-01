@@ -30,6 +30,7 @@ export type PosterData = {
  */
 export function Poster({
   cast,
+  topLeft,
   topRight,
   children,
   onOpen,
@@ -41,6 +42,13 @@ export function Poster({
   onWhyPress,
 }: {
   cast: PosterData;
+  /**
+   * Replaces the wordmark in the top-left. The feed puts its search lens
+   * here: the cast button lives in the top-right corner now, so a control
+   * there would collide with it, and the wordmark it displaces was brand,
+   * not a control anyone reaches for.
+   */
+  topLeft?: ReactNode;
   topRight?: ReactNode;
   children?: ReactNode;
   onOpen?: () => void;
@@ -79,11 +87,11 @@ export function Poster({
       ]}
     >
       <View style={styles.top}>
-        {/* the wordmark is a brand mark, not a button. it used to carry
-            a chevron and open the filter, which is not a control anybody
-            looks for on a logo — that job belongs to the lens icon that
-            now sits in topRight. */}
-        <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>
+        {/* topLeft, when given, stands in for the wordmark — the feed puts
+            its lens there. Otherwise the wordmark shows: it is a brand
+            mark, not a button, and the control that used to hang off it as
+            "NEARCAST ⌄" is the lens now. */}
+        {topLeft ?? <Text style={[styles.wordmark, { color: fg }]}>NEARCAST</Text>}
         {topRight}
       </View>
       <View style={styles.middle}>

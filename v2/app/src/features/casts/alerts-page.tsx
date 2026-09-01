@@ -48,7 +48,11 @@ const LABEL: Record<AlertTabId, string> = {
  *                row tagged. They answer the same question — what am I
  *                part of? — and splitting them made you look twice.
  */
-export function AlertsPage({ title = 'alerts', accessory }: { title?: string; accessory?: ReactNode } = {}) {
+export function AlertsPage({
+  title = 'alerts',
+  accessory,
+  subhead,
+}: { title?: string; accessory?: ReactNode; subhead?: ReactNode } = {}) {
   const pendingJoins = usePendingJoinsOnMyCasts();
   const reflect = usePendingReports('me');
   const joinsISent = useJoinsISent();
@@ -119,7 +123,7 @@ export function AlertsPage({ title = 'alerts', accessory }: { title?: string; ac
   }
 
   return (
-    <Page title={title} accessory={accessory} refreshing={refreshing} onRefresh={onRefresh} refreshLabel="looking for news…">
+    <Page title={title} accessory={accessory} subhead={subhead} refreshing={refreshing} onRefresh={onRefresh} refreshLabel="looking for news…">
       {shown === null ? (
         <Quiet
           head="quiet."

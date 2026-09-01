@@ -253,11 +253,16 @@ export function Dock({
   // `near` slides so it lands centred in the circle rather than at the
   // left padding it occupies while the bar is wide.
   const shift = collapse.interpolate({ ...range, outputRange: [0, NEAR_SHIFT] });
-  // the other two, and every label, are gone well before the bar is
-  // narrow enough to crowd them.
-  const others = collapse.interpolate({ inputRange: [0, 0.35], outputRange: [1, 0], extrapolate: 'clamp' });
-  const labels = collapse.interpolate({ inputRange: [0, 0.25], outputRange: [1, 0], extrapolate: 'clamp' });
-  const lensFade = collapse.interpolate({ inputRange: [0, 0.2], outputRange: [1, 0], extrapolate: 'clamp' });
+  // The other two marks, every label, and the lens are gone in the first
+  // tenth of the collapse -- well before the bar is narrow enough for them
+  // to reach its edge. Fading them slowly was the bug behind the "overlap
+  // with an unknown button": a slot is 80pt wide but the collapsed circle
+  // is 64, so a mark still at half opacity when the bar has shrunk spills
+  // out past the glass and reads as a second, ghostly control beside near.
+  // Collapsed, there is exactly one mark, and it is near.
+  const others = collapse.interpolate({ inputRange: [0, 0.1], outputRange: [1, 0], extrapolate: 'clamp' });
+  const labels = collapse.interpolate({ inputRange: [0, 0.08], outputRange: [1, 0], extrapolate: 'clamp' });
+  const lensFade = collapse.interpolate({ inputRange: [0, 0.08], outputRange: [1, 0], extrapolate: 'clamp' });
 
   return (
     <Animated.View
