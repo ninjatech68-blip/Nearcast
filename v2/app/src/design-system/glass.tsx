@@ -1,7 +1,6 @@
-import { GlassView } from 'expo-glass-effect';
+import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Platform, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
-import { isLiquidGlassAvailable } from 'expo-glass-effect';
 
 /**
  * Whether to render real Liquid Glass.
