@@ -1,9 +1,8 @@
-import { GlassContainer, GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
-import { useMemo } from 'react';
-import { AccessibilityInfo, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Glyph } from '@/design-system/components/glyph';
+import { Glass, useGlass } from '@/design-system/glass';
 import { tokens } from '@/design-system/tokens';
 
 const size = 44;
@@ -43,11 +42,14 @@ export function CastButton({ fieldFg, onPress }: { fieldFg: string; onPress: () 
   return (
     <View pointerEvents="box-none" style={[styles.wrap, { top: insets.top + 6 }]}>
       {glass ? (
-        <GlassContainer spacing={8} style={styles.round}>
-          <GlassView glassEffectStyle="regular" isInteractive style={[styles.round, styles.body]}>
-            {body}
-          </GlassView>
-        </GlassContainer>
+        // borderRadius is a native prop: the Swift side reads it and
+        // shapes the UIVisualEffectView. A radius that lives only in the
+        // RN style rounds the container and leaves the effect square.
+        // No GlassContainer here -- it exists to MERGE sibling glass, and
+        // this button has nothing to merge with.
+        <Glass glassEffectStyle="regular" borderRadius={size / 2} isInteractive style={styles.body}>
+          {body}
+        </Glass>
       ) : (
         <View style={[styles.round, styles.body, styles.flat]}>{body}</View>
       )}
@@ -55,22 +57,10 @@ export function CastButton({ fieldFg, onPress }: { fieldFg: string; onPress: () 
   );
 }
 
-function useGlass(): boolean {
-  return useMemo(() => {
-    if (Platform.OS !== 'ios') return false;
-    if (!isLiquidGlassAvailable()) return false;
-    let reduced = false;
-    void AccessibilityInfo.isReduceTransparencyEnabled().then((on) => {
-      reduced = on;
-    });
-    return !reduced;
-  }, []);
-}
-
 const styles = StyleSheet.create({
   wrap: { position: 'absolute', right: 16 },
   round: { borderRadius: size / 2 },
-  body: { width: size, height: size, overflow: 'hidden' },
+  body: { width: size, height: size },
   // no glass: a hairline ring rather than a fill, so the field still
   // runs behind it and the button is not a second accent block.
   flat: { borderWidth: StyleSheet.hairlineWidth, borderColor: tokens.semantic.color.hairlineOnCream },
