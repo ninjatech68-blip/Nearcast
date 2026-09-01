@@ -137,23 +137,24 @@ describe('home pager', () => {
     // the why line is computed by the delivery framework, never fixture prose.
     // multiple casts can legitimately share a top-2 reason string, so match all.
     expect(view.getAllByText('why you: one trusted link away · near you in indiranagar ›').length).toBeGreaterThanOrEqual(1);
-    // five slots, compose in the middle: four destinations plus an
-    // action is the only arrangement that balances on an even grid.
+    // three destinations in the dock; casting moved to the top-right
+    // corner, which is what lets three columns balance with no odd action
+    // slot to arrange the rest around.
     expect(view.getByRole('button', { name: 'cast something' })).toBeTruthy();
     expect(view.getByRole('button', { name: 'near' })).toBeTruthy();
     expect(view.getByRole('button', { name: 'you' })).toBeTruthy();
-    // chats and alerts carry their counts in the label when they have one
-    expect(view.getByRole('button', { name: /^chats/ })).toBeTruthy();
-    expect(view.getByRole('button', { name: /^alerts/ })).toBeTruthy();
+    // chats and alerts are one inbox now; its slot carries the merged count
+    expect(view.getByRole('button', { name: /^inbox/ })).toBeTruthy();
   });
 
   it('counts what is waiting on the dock, and says so out loud', async () => {
     const view = await render(<HomeScreen />);
 
-    // the fixture viewer has join requests waiting on them. the count is
-    // decisions owed, never a total of things to look at — a number that
-    // includes what you have already read is one nobody can clear.
-    expect(view.getByRole('button', { name: /^alerts, \d+ waiting$/ })).toBeTruthy();
+    // the inbox badge is unread conversations plus decisions owed, never a
+    // total of things to look at — a number that includes what you have
+    // already read is one nobody can clear. the fixture viewer has join
+    // requests waiting on them, so the slot speaks its count out loud.
+    expect(view.getByRole('button', { name: /^inbox, \d+ waiting$/ })).toBeTruthy();
   });
 
   it('marks the selected slot as selected, so the state is not colour alone', async () => {
@@ -172,20 +173,43 @@ describe('home pager', () => {
     expect(view.queryByText('PS')).toBeNull();
   });
 
+  it('merges chats and alerts into one inbox, a tab for each', async () => {
+    const view = await render(<HomeScreen />);
+
+    // chats and alerts share a destination now. Inside it, two tabs —
+    // activity (the alerts) and chats — with activity chosen by default.
+    const activity = view.getByRole('tab', { name: /^activity/ });
+    const chats = view.getByRole('tab', { name: /^chats/ });
+    expect(activity.props.accessibilityState).toMatchObject({ selected: true });
+    expect(chats.props.accessibilityState).toMatchObject({ selected: false });
+    // the label carries the count in full, the same rule the dock follows;
+    // the fixture has decisions owed but no unread chats, so only one does.
+    expect(activity.props.accessibilityLabel).toMatch(/^activity, \d+ waiting$/);
+    expect(chats.props.accessibilityLabel).toBe('chats');
+  });
+
   it('shows only the alert groups that have rows, each carrying its count', async () => {
     const view = await render(<HomeScreen />);
 
-    // every tab label carries a real count — that is what buys back the
-    // scent a tab normally costs.
-    const tabs = view.getAllByRole('tab');
-    expect(tabs.length).toBeGreaterThanOrEqual(2);
-    for (const tab of tabs) {
-      expect(tab.props.accessibilityLabel).toMatch(/^(needs you|news|your plans), \d+$/);
+    // Two tablists share the tab role now: the inbox's own activity/chats
+    // strip, and the alert groups inside the activity tab. This test is
+    // about the groups, which label themselves "<name>, <count>" — the
+    // inbox tabs end in "waiting" or carry no count, so this filter keeps
+    // exactly the group tabs.
+    const groupTabs = view
+      .getAllByRole('tab')
+      .filter((t) => /, \d+$/.test(t.props.accessibilityLabel as string));
+
+    // every group label carries a real count — that is what buys back the
+    // scent a tab normally costs — and a group with no rows never renders.
+    expect(groupTabs.length).toBeGreaterThanOrEqual(2);
+    for (const tab of groupTabs) {
+      expect(tab.props.accessibilityLabel).toMatch(/^(needs you|waiting|your plans), \d+$/);
       expect(tab.props.accessibilityLabel).not.toMatch(/, 0$/);
     }
     // exactly one is selected, and it is the first populated one
-    expect(tabs.filter((t) => t.props.accessibilityState?.selected)).toHaveLength(1);
-    expect(tabs[0].props.accessibilityState).toMatchObject({ selected: true });
+    expect(groupTabs.filter((t) => t.props.accessibilityState?.selected)).toHaveLength(1);
+    expect(groupTabs[0].props.accessibilityState).toMatchObject({ selected: true });
   });
 
   it('replaces the wordmark chevron with a real lens control', async () => {
