@@ -3,7 +3,6 @@ import 'react-native-url-polyfill/auto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { isLocalNetworkUrl, parsePublicEnv } from '@/infrastructure/config/env';
-import type { Database } from '@/infrastructure/supabase/database.types';
 
 /**
  * The Supabase client, resolved LAZILY and OPTIONALLY.
@@ -27,7 +26,26 @@ import type { Database } from '@/infrastructure/supabase/database.types';
  * than assume one.
  */
 
-export type NearcastClient = SupabaseClient<Database>;
+/**
+ * Untyped, deliberately and temporarily.
+ *
+ * This was `SupabaseClient<Database>`, where Database came from a
+ * generated `database.types.ts`. That file described the PREVIOUS
+ * schema -- 1,888 lines of tables this product no longer has -- so it
+ * did not come across with the client, and there is nothing to
+ * regenerate from until the API slice wires v2/supabase up.
+ *
+ * Writing the file by hand instead would be worse: it would claim a
+ * schema shape that no generator produced and that nothing checks
+ * against the real one.
+ *
+ * The cost today is zero. Nothing in the app calls Supabase -- the whole
+ * client runs on fixtures -- so the generic was protecting no call
+ * sites. Restore it in the same change that adds the first real call:
+ * generate the types from v2/supabase, put the generic back, and this
+ * comment goes away.
+ */
+export type NearcastClient = SupabaseClient;
 
 type Resolution = { client: NearcastClient | null; reason: string };
 
@@ -60,7 +78,7 @@ function resolve(): Resolution {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('expo-sqlite/localStorage/install');
 
-    const client = createClient<Database>(env.supabaseUrl, env.supabasePublishableKey, {
+    const client = createClient(env.supabaseUrl, env.supabasePublishableKey, {
       auth: {
         storage: localStorage,
         autoRefreshToken: true,

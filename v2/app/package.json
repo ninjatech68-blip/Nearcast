@@ -74,16 +74,7 @@
     "test:watch": "vitest",
     "bundle:ios": "expo export --platform ios --output-dir dist",
     "bundle:android": "expo export --platform android --output-dir dist-android",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run bundle:ios && npm run bundle:android",
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:reset": "supabase db reset",
-    "db:test": "supabase test db",
-    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts",
-    "db:local": "./scripts/db-local.sh reset",
-    "db:local:test": "./scripts/db-local.sh test",
-    "db:local:types": "./scripts/db-local.sh types",
-    "db:local:stop": "./scripts/db-local.sh stop"
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run bundle:ios && npm run bundle:android"
   },
   "jest": {
     "preset": "jest-expo",
