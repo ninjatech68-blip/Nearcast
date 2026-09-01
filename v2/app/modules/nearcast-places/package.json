@@ -1,0 +1,7 @@
+{
+  "name": "nearcast-places",
+  "version": "0.0.1",
+  "description": "MKLocalSearchCompleter + MKLocalSearch bridge for the area picker",
+  "private": true,
+  "license": "UNLICENSED"
+}
