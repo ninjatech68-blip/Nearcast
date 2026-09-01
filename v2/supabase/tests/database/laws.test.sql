@@ -42,16 +42,26 @@ insert into public.person_verification (person_id, phone_e164, verified_at) valu
   ('bbbbbbbb-0000-0000-0000-00000000000b', '+910000000002', now()),
   ('cccccccc-0000-0000-0000-00000000000c', '+910000000003', now());
 
+-- Every cast is broadcast from one of the caster's approved areas.
+-- B has one too, so the L9 refusal below can only be the restriction --
+-- publish_cast would otherwise reject an area that is not the caster's,
+-- with the same error code, and the test would pass for the wrong reason.
+insert into public.person_areas (person_id, name, centroid) values
+  ('aaaaaaaa-0000-0000-0000-00000000000a', 'Indiranagar',
+   extensions.ST_Point(77.6408, 12.9784)::extensions.geography),
+  ('bbbbbbbb-0000-0000-0000-00000000000b', 'Domlur',
+   extensions.ST_Point(77.6390, 12.9610)::extensions.geography);
+
 insert into public.circles (id, owner_id, name) values
   ('c1c1c1c1-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-00000000000a', 'badminton');
 insert into public.circle_members (circle_id, person_id) values
   ('c1c1c1c1-0000-0000-0000-000000000001', 'bbbbbbbb-0000-0000-0000-00000000000b');
 
 insert into public.casts (
-  id, caster_id, category, statement, slots, happens_at, expires_at, state, published_at
+  id, caster_id, category, statement, slots, area_name, happens_at, expires_at, state, published_at
 ) values (
   'ca57ca57-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-00000000000a',
-  'sports', 'badminton after work.', 2,
+  'sports', 'badminton after work.', 2, 'Indiranagar',
   now() + interval '6 hours', now() + interval '8 hours', 'live', now()
 );
 insert into public.cast_reach (cast_id, kind) values
@@ -228,7 +238,7 @@ select throws_ok(
   '42501', null, 'L9 and cannot remove it'
 );
 select throws_ok(
-  $$ select public.publish_cast('social', 'still here', 1, now() + interval '1 day', 'nearby') $$,
+  $$ select public.publish_cast('social', 'still here', 1, now() + interval '1 day', 'nearby', 'Domlur') $$,
   '42501', null, 'L9 a restricted account cannot publish'
 );
 

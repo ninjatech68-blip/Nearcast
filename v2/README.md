@@ -73,8 +73,8 @@ roles. It is never applied to a real project.
 |---|---|
 | Tables | 23 |
 | Policies | 19 — all `SELECT` |
-| Write functions | 5 |
-| Assertions | 40, all passing |
+| Write functions | 6 |
+| Assertions | 71, all passing |
 
 For scale: the previous build reached 53 policies across 34 migrations, with
 write grants on 22 tables.
@@ -86,12 +86,26 @@ Vouches, blocks. Casts with slots, reach, deliveries, events. Join requests with
 the freeze rule. Reports, append-only moderation audit. Devices and the four
 operations tables.
 
+Delivery generation, the feed, and hiding a delivery.
+
 ### Not built yet
 
-Threads, messages, media, message receipts, plan receipt settlement, delivery
-generation, retention jobs, the outbox workers. `plan_receipts` exists as a
-table because `vouch_for()` must enforce L5 today rather than remember it later;
-nothing settles a receipt yet, so every vouch is correctly refused.
+Threads, messages, media, message receipts, plan receipt settlement, retention
+jobs, the outbox workers. `plan_receipts` exists as a table because
+`vouch_for()` must enforce L5 today rather than remember it later; nothing
+settles a receipt yet, so every vouch is correctly refused.
+
+### What building delivery changed in the foundation
+
+`cast_reach` carried a radius with nothing to measure from — a cast had no
+origin. A cast is now broadcast from one of the caster's own approved areas, by
+composite foreign key on `(caster_id, area_name)`, so no new coordinate enters
+the schema, the centroid already existed, and a person cannot cast from
+somewhere they have not claimed. `publish_cast` therefore takes an area name;
+its previous signature is dropped.
+
+The gap was invisible while reading the schema and obvious the moment something
+had to use it. That is the argument for building in slices.
 
 ## Laws
 
