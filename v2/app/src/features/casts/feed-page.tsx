@@ -73,11 +73,17 @@ export function FeedPage({
   /**
    * True while a drag is in flight, so the dock can get out of the way.
    *
-   * It is restored from onScrollEndDrag AND onMomentumScrollEnd. The
-   * rail two designs ago restored only from momentum, so a drag released
-   * without velocity never fired it and the bar stayed gone. Collapsing
-   * rather than fading already means the worst case is a smaller mark
-   * instead of an invisible one, but the bug is cheap to close twice.
+   * Restored from onMomentumScrollEnd only. The first version also
+   * restored from onScrollEndDrag, which fires the instant the finger
+   * lifts -- so a 160ms collapse was reversed before it had finished
+   * arriving and the whole thing read as a flicker. That was the "no
+   * transition is happening" report.
+   *
+   * The guard that motivated it still matters: the rail two designs ago
+   * restored only from momentum, so a drag released without velocity
+   * never restored it. The difference is that this collapses rather than
+   * fades -- the worst case is a smaller mark, always visible and always
+   * a control -- and index.tsx carries a timer that restores it anyway.
    */
   onReadingChange?: (reading: boolean) => void;
 }) {
@@ -231,7 +237,6 @@ export function FeedPage({
         onScrollBeginDrag={() => onReadingChange?.(true)}
         onMomentumScrollEnd={() => onReadingChange?.(false)}
         onScrollEndDrag={(e) => {
-          onReadingChange?.(false);
           // a short overscroll at EITHER end refreshes, without waiting for
           // the native RefreshControl's much longer pull. PULL_TO_REFRESH_PX
           // is the whole knob: lower it for a lighter pull.

@@ -43,16 +43,20 @@ const dock = tokens.component.dock;
  *    way to round glass.
  *  - No `backgroundColor`, anywhere in the stack. A ground painted over
  *    glass is just a coloured rectangle.
- *  - `GlassContainer` is not decoration. It applies
- *    `UIGlassContainerEffect`, which is what makes two glass elements
- *    MERGE as they approach -- the selected capsule flowing into the
- *    bar. A container with one child buys nothing; a container with the
- *    bar and the capsule inside is the whole effect.
- *
- * So the pill is one `GlassView` and the selection capsule is a second,
- * as siblings in one container. That is Apple's own arrangement, and it
- * is why the capsule reads as part of the bar rather than a shape on
- * top of it.
+ *  - `GlassContainer` is the merge, not a wrapper. It applies
+ *    `UIGlassContainerEffect`, whose `spacing` is the distance at which
+ *    sibling glass begins to flow together -- the selection lens fusing
+ *    with the bar rather than sliding on top of it.
+ *  - MATERIAL FIRST, CONTENT OVER IT. The marks are drawn above the
+ *    glass stack, outside any glass view. Putting them inside the bar's
+ *    glass, with the selection beside it, meant the selection painted
+ *    over the mark it was meant to sit behind and the mark vanished.
+ *  - NO TINT, on anything. The selection is a `clear` lens in a
+ *    `regular` bar and the difference between those materials is the
+ *    entire indicator. It was tinted with `fieldFg`, which on every
+ *    light category IS ink, so it rendered black; tinting it white
+ *    would have been the same mistake pointed the other way. Glass
+ *    shows what is behind it. That is the whole point of it.
  *
  * WHY IT HAS A SURFACE AT ALL. The dock this replaces refused any, on
  * the grounds that a bar with its own shade takes a tenth of the
@@ -117,56 +121,65 @@ export function Dock({
         pointerEvents="box-none"
         style={[styles.expandedWrap, { bottom }, { opacity: expandedOpacity, transform: [{ scale: expandedScale }] }]}
       >
-        {glass ? (
-          // spacing is the distance at which the capsule and the bar
-          // begin to merge. Roughly the capsule's own inset, so they are
-          // already fused at rest rather than snapping together.
-          <GlassContainer spacing={dock.pillPadV * 2} style={styles.container}>
-            <Glass
-              glassEffectStyle="regular"
-              borderRadius={dock.pillRadius}
-              isInteractive
-              style={styles.pill}
-            >
-              {marks}
-            </Glass>
-            <Glass
-              glassEffectStyle="clear"
-              borderRadius={dock.capsuleRadius}
-              tintColor={fieldFg}
-              pointerEvents="none"
-              style={[styles.capsule, { left: dock.pillPadH + selectedIndex * SLOT_WIDTH }]}
-            />
-          </GlassContainer>
-        ) : (
-          <View style={[styles.pill, styles.flatPill]}>
-            <View
-              pointerEvents="none"
-              style={[styles.capsule, styles.flatCapsule, { left: dock.pillPadH + selectedIndex * SLOT_WIDTH, backgroundColor: withAlpha(fieldFg, dock.capsuleOpacity) }]}
-            />
+        {/*
+          Material first, content on top of it.
+
+          The glass -- bar and selection both -- is laid down as siblings
+          in a GlassContainer so UIGlassContainerEffect can merge them.
+          The marks are then drawn OVER that stack, outside any glass
+          view. That is the arrangement the system uses: icons and labels
+          are content above the material, never inside it.
+
+          The first version put the marks inside the bar's glass and the
+          selection beside it, so the selection painted over the mark it
+          was meant to sit behind, and the mark vanished.
+        */}
+        <View style={styles.stack}>
+          {glass ? (
+            <GlassContainer spacing={dock.pillPadV * 2} style={StyleSheet.absoluteFill}>
+              <Glass glassEffectStyle="regular" borderRadius={dock.pillRadius} isInteractive style={StyleSheet.absoluteFill} />
+              {/*
+                No tintColor. None. The selection is a CLEAR lens in a
+                REGULAR bar -- the difference between the two materials is
+                the whole indicator. Tinting it with the field foreground
+                is what turned it black on every light category; tinting
+                it white would have been the same mistake in the other
+                direction. Glass shows what is behind it, and that is the
+                point of it.
+              */}
+              <Glass
+                glassEffectStyle="clear"
+                borderRadius={dock.capsuleRadius}
+                style={[styles.capsule, { left: dock.pillPadH + selectedIndex * SLOT_WIDTH }]}
+              />
+            </GlassContainer>
+          ) : (
+            <View style={[StyleSheet.absoluteFill, styles.flatPill]} />
+          )}
+          <View style={styles.row} pointerEvents="box-none">
             {marks}
           </View>
-        )}
+        </View>
       </Animated.View>
 
       <Animated.View
         pointerEvents="box-none"
         style={[styles.collapsedWrap, { bottom, left: dock.collapsedInset }, { opacity: collapsedOpacity }]}
       >
-        {glass ? (
-          <Glass
-            glassEffectStyle="regular"
-            borderRadius={dock.collapsedRadius}
-            isInteractive
-            style={styles.collapsed}
-          >
-            <CollapsedMark current={current} fieldFg={fieldFg} onGo={onGo} />
-          </Glass>
-        ) : (
-          <View style={[styles.collapsed, styles.flatPill, { borderRadius: dock.collapsedRadius }]}>
-            <CollapsedMark current={current} fieldFg={fieldFg} onGo={onGo} />
-          </View>
-        )}
+        {/* same arrangement: material, then the mark over it */}
+        <View style={styles.collapsed}>
+          {glass ? (
+            <Glass
+              glassEffectStyle="regular"
+              borderRadius={dock.collapsedRadius}
+              isInteractive
+              style={StyleSheet.absoluteFill}
+            />
+          ) : (
+            <View style={[StyleSheet.absoluteFill, styles.flatPill, { borderRadius: dock.collapsedRadius }]} />
+          )}
+          <CollapsedMark current={current} fieldFg={fieldFg} onGo={onGo} />
+        </View>
       </Animated.View>
     </>
   );
@@ -263,24 +276,18 @@ function countLabel(name: string, count: number): string {
   return count > 0 ? `${name}, ${count} waiting` : name;
 }
 
-/** a hex foreground at a given alpha, for the no-glass capsule. */
-function withAlpha(color: string, alpha: number): string {
-  if (color.startsWith('#') && color.length === 7) {
-    const r = parseInt(color.slice(1, 3), 16);
-    const g = parseInt(color.slice(3, 5), 16);
-    const b = parseInt(color.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-  return color;
-}
-
 const SLOT_WIDTH = dock.control + 24;
 
 const styles = StyleSheet.create({
   expandedWrap: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   collapsedWrap: { position: 'absolute' },
   container: { flexDirection: 'row' },
-  pill: { flexDirection: 'row', paddingHorizontal: dock.pillPadH, paddingVertical: dock.pillPadV },
+  // the box both layers fill. Its size comes from the row inside it,
+  // so the glass is exactly as big as the marks it sits under.
+  stack: { position: 'relative' },
+  row: { flexDirection: 'row', paddingHorizontal: dock.pillPadH, paddingVertical: dock.pillPadV },
+  // no glass: a hairline ring, so the field still runs behind the bar
+  // rather than a flat plane sitting on it.
   // no glass: a hairline ring, so the field still runs behind the bar
   // rather than a flat plane sitting on it.
   flatPill: { borderRadius: dock.pillRadius, borderWidth: StyleSheet.hairlineWidth, borderColor: tokens.semantic.color.hairlineOnCream },
@@ -291,7 +298,6 @@ const styles = StyleSheet.create({
     width: SLOT_WIDTH,
     borderRadius: dock.capsuleRadius,
   },
-  flatCapsule: { borderRadius: dock.capsuleRadius },
   collapsed: { width: dock.collapsedSize, height: dock.collapsedSize },
   collapsedTouch: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   slot: { width: SLOT_WIDTH, alignItems: 'center', justifyContent: 'center', paddingVertical: 4 },

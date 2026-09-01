@@ -76,13 +76,29 @@ export default function HomeScreen() {
   // the feed, not by scroll offset: the feed is a full-screen pager, so
   // there is no continuous depth to read -- it snaps between posters.
   const [collapse] = useState(() => new Animated.Value(0));
+  const restoreTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   function setReading(reading: boolean) {
+    if (restoreTimer.current) clearTimeout(restoreTimer.current);
     Animated.timing(collapse, {
       toValue: reading ? 1 : 0,
       duration: reading ? 160 : 220,
       useNativeDriver: true,
     }).start();
+    // The dock may not be left collapsed by a gesture that never ends.
+    // onMomentumScrollEnd is the normal restore; this is the backstop for
+    // the drag that is released with no velocity, which is exactly how
+    // the rail two designs ago got stuck invisible and went on eating
+    // taps. Collapsed is still visible and still routes, so this is a
+    // second lock on a door that is already shut.
+    if (reading) {
+      restoreTimer.current = setTimeout(() => setReading(false), 2500);
+    }
   }
+
+  useEffect(() => () => {
+    if (restoreTimer.current) clearTimeout(restoreTimer.current);
+  }, []);
 
   // The dock used to light up only on onMomentumScrollEnd, so it could
   // never do anything but lag the swipe: the pages move continuously and
@@ -132,7 +148,10 @@ export default function HomeScreen() {
         <InboxPage chatCount={unreadChats} activityCount={needsYou} />
         <YouPage />
       </Animated.ScrollView>
-      <CastButton fieldFg={fieldFg} onPress={() => router.push('/compose')} />
+      {/* not on `you`: the profile avatar owns that corner and the two
+          were overlapping. Reddit puts + on every page because none of
+          its pages has a top-right avatar. */}
+      {page === 'you' ? null : <CastButton fieldFg={fieldFg} onPress={() => router.push('/compose')} />}
       <Dock
         current={page}
         fieldFg={fieldFg}

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Face } from '@/design-system/components/face';
@@ -48,7 +48,7 @@ const LABEL: Record<AlertTabId, string> = {
  *                row tagged. They answer the same question — what am I
  *                part of? — and splitting them made you look twice.
  */
-export function AlertsPage() {
+export function AlertsPage({ title = 'alerts', accessory }: { title?: string; accessory?: ReactNode } = {}) {
   const pendingJoins = usePendingJoinsOnMyCasts();
   const reflect = usePendingReports('me');
   const joinsISent = useJoinsISent();
@@ -119,7 +119,7 @@ export function AlertsPage() {
   }
 
   return (
-    <Page title="alerts" refreshing={refreshing} onRefresh={onRefresh} refreshLabel="looking for news…">
+    <Page title={title} accessory={accessory} refreshing={refreshing} onRefresh={onRefresh} refreshLabel="looking for news…">
       {shown === null ? (
         <Quiet
           head="quiet."

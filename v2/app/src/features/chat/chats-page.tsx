@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import type { ReactNode } from 'react';
 
 import { Face } from '@/design-system/components/face';
 import { Page, Quiet } from '@/design-system/components/page';
@@ -21,7 +22,7 @@ import { useRefresher } from '@/infrastructure/net/use-refresher';
  * An ended chat stays in place with an `ended` tag instead of
  * disappearing. A plan that happened is not a plan that never was.
  */
-export function ChatsPage() {
+export function ChatsPage({ title = 'chats', accessory }: { title?: string; accessory?: ReactNode } = {}) {
   // no mount fetch: the app shell polls conversations while signed in,
   // and fires once immediately, so a second call here would only ever
   // duplicate the first request of the session.
@@ -29,7 +30,7 @@ export function ChatsPage() {
   const { refreshing, onRefresh } = useRefresher(() => refreshConversations());
 
   return (
-    <Page title="chats" refreshing={refreshing} onRefresh={onRefresh} refreshLabel="looking for messages…">
+    <Page title={title} accessory={accessory} refreshing={refreshing} onRefresh={onRefresh} refreshLabel="looking for messages…">
       {chats.length === 0 ? (
         <Quiet head="quiet." sub="no chats yet. one opens the moment a request is accepted." />
       ) : (

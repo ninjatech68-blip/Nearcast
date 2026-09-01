@@ -106,7 +106,13 @@ export const tokens = {
       pillLift: 12,
       /** the lighter capsule that marks the selected slot inside it */
       capsuleRadius: 22,
-      capsuleOpacity: 0.22,
+      /**
+       * The selection carries NO colour. It is a `clear` glass lens in a
+       * `regular` glass bar, and the difference between those two
+       * materials is the entire indicator. Tinting it with the field
+       * foreground rendered it black on every light category; tinting it
+       * white would be the same mistake pointed the other way.
+       */
       labelSize: 11,
       labelTop: 2,
       /** collapsed: one mark, bottom left, still a control */
