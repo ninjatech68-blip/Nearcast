@@ -42,3 +42,27 @@ describe('package scripts', () => {
     });
   }
 });
+
+describe('app identity', () => {
+  const app = JSON.parse(readFileSync(join(process.cwd(), 'app.json'), 'utf8')) as {
+    expo: { version: string; name: string; slug: string };
+  };
+
+  it('keeps package.json and app.json on the same version', () => {
+    // `expo prebuild` syncs these. When they disagree it rewrites
+    // package.json as a side effect of building, which shows up as an
+    // uncommitted local change and blocks the next `git pull` on
+    // whichever machine ran the build. That is not a hypothetical -- it
+    // cost a build attempt.
+    const pkgVersion = (JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8')) as { version: string }).version;
+    expect(pkgVersion).toBe(app.expo.version);
+  });
+
+  it('is Nearcast, not the app whose identity this tree inherited', () => {
+    // it shipped as name "TrvlAI Test" with bundle id
+    // com.piyushsharma.trvlai.test -- another product's name, carried
+    // forward by a copy nobody re-examined.
+    expect(app.expo.name).toBe('Nearcast');
+    expect(app.expo.slug).toBe('nearcast');
+  });
+});
