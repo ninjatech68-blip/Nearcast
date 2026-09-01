@@ -62,7 +62,6 @@ function explainDelivery(cast: CastDetail) {
  */
 export function FeedPage({
   onCategoryChange,
-  onReadingChange,
 }: {
   /**
    * The category of the poster actually on screen, so the dock can take
@@ -70,22 +69,6 @@ export function FeedPage({
    * the empty and error states render on cream, where ink is right.
    */
   onCategoryChange?: (category: Category | null) => void;
-  /**
-   * True while a drag is in flight, so the dock can get out of the way.
-   *
-   * Restored from onMomentumScrollEnd only. The first version also
-   * restored from onScrollEndDrag, which fires the instant the finger
-   * lifts -- so a 160ms collapse was reversed before it had finished
-   * arriving and the whole thing read as a flicker. That was the "no
-   * transition is happening" report.
-   *
-   * The guard that motivated it still matters: the rail two designs ago
-   * restored only from momentum, so a drag released without velocity
-   * never restored it. The difference is that this collapses rather than
-   * fades -- the worst case is a smaller mark, always visible and always
-   * a control -- and index.tsx carries a timer that restores it anyway.
-   */
-  onReadingChange?: (reading: boolean) => void;
 }) {
   const { height, width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -234,8 +217,6 @@ export function FeedPage({
           if (index !== shown && index >= 0) setShown(index);
         }}
         scrollEventThrottle={16}
-        onScrollBeginDrag={() => onReadingChange?.(true)}
-        onMomentumScrollEnd={() => onReadingChange?.(false)}
         onScrollEndDrag={(e) => {
           // a short overscroll at EITHER end refreshes, without waiting for
           // the native RefreshControl's much longer pull. PULL_TO_REFRESH_PX

@@ -82,39 +82,11 @@ export default function HomeScreen() {
   const onFeed = page === 'near';
   const fieldFg = onFeed && fieldCategory ? categoryTokens[fieldCategory].fg : tokens.semantic.color.ink;
 
-  // 0 expanded, 1 collapsed. Driven by whether a drag is in flight on
-  // the feed, not by scroll offset: the feed is a full-screen pager, so
-  // there is no continuous depth to read -- it snaps between posters.
+  // The dock stays put now: it no longer collapses while you read the
+  // feed. It is only ever the full pill, changing when you drag or tap it,
+  // never on scroll. `collapse` is kept as a constant 0 because the dock
+  // still interpolates it -- 0 is the full-width state, the only one left.
   const [collapse] = useState(() => new Animated.Value(0));
-  const [collapsed, setCollapsed] = useState(false);
-  const restoreTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  function setReading(reading: boolean) {
-    if (restoreTimer.current) clearTimeout(restoreTimer.current);
-    setCollapsed(reading);
-    Animated.timing(collapse, {
-      toValue: reading ? 1 : 0,
-      duration: reading ? 160 : 220,
-      // width and left are layout properties: the native driver cannot
-      // carry them, and the alternative -- scaleX -- squashes the glass
-      // and the marks rather than resizing them. One small view, two
-      // properties.
-      useNativeDriver: false,
-    }).start();
-    // The dock may not be left collapsed by a gesture that never ends.
-    // onMomentumScrollEnd is the normal restore; this is the backstop for
-    // the drag that is released with no velocity, which is exactly how
-    // the rail two designs ago got stuck invisible and went on eating
-    // taps. Collapsed is still visible and still routes, so this is a
-    // second lock on a door that is already shut.
-    if (reading) {
-      restoreTimer.current = setTimeout(() => setReading(false), 2500);
-    }
-  }
-
-  useEffect(() => () => {
-    if (restoreTimer.current) clearTimeout(restoreTimer.current);
-  }, []);
 
   // The dock used to light up only on onMomentumScrollEnd, so it could
   // never do anything but lag the swipe: the pages move continuously and
@@ -177,7 +149,7 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
         directionalLockEnabled
       >
-        <FeedPage onCategoryChange={setFieldCategory} onReadingChange={setReading} />
+        <FeedPage onCategoryChange={setFieldCategory} />
         <InboxPage chatCount={unreadChats} activityCount={needsYou} />
         <YouPage />
       </Animated.ScrollView>
@@ -189,7 +161,6 @@ export default function HomeScreen() {
         current={page}
         fieldFg={fieldFg}
         collapse={collapse}
-        collapsed={collapsed}
         scrollPos={scrollPos}
         inboxCount={inboxCount}
         photo={photoUri ? { uri: photoUri } : undefined}

@@ -164,6 +164,10 @@ export function Dock({
    * legible, because they were chosen as pairs.
    */
   const mark = glass ? tokens.semantic.color.ink : fieldFg;
+  // the mark's opposite, for the initials inside a filled avatar: over
+  // glass the mark is ink and this is cream; on a raw field it flips with
+  // whichever pole the field declared.
+  const markInverted = mark === tokens.semantic.color.cream ? tokens.semantic.color.ink : tokens.semantic.color.cream;
 
   const selectedIndex = DOCK_PAGES.indexOf(current);
   const range = { inputRange: [0, 1], extrapolate: 'clamp' as const };
@@ -181,6 +185,14 @@ export function Dock({
         extrapolate: 'clamp',
       })
     : lensRestLeft(selectedIndex, GEO);
+
+  // Touching the glass magnifies it, the platform's own liquid-glass
+  // feedback: a press springs the lens up a little and it settles back on
+  // release. Same driver as the lens's other props (left, opacity), which
+  // are layout/JS, so this stays off the native driver too.
+  const [pressScale] = useState(() => new Animated.Value(1));
+  const magnify = (up: boolean) =>
+    Animated.spring(pressScale, { toValue: up ? 1.16 : 1, useNativeDriver: false, speed: 24, bounciness: 10 }).start();
 
   // Plain mutable containers via useState lazy initializer — identical at
   // runtime to useRef but invisible to the react-hooks/refs rule, which
@@ -272,7 +284,7 @@ export function Dock({
           {collapsed ? null : (
             <Animated.View
               pointerEvents="none"
-              style={[styles.lensWrap, { opacity: lensFade, left: lensPositionLeft }]}
+              style={[styles.lensWrap, { opacity: lensFade, left: lensPositionLeft, transform: [{ scale: pressScale }] }]}
             >
               <Glass glassEffectStyle="clear" colorScheme="light" borderRadius={dock.capsuleRadius} style={StyleSheet.absoluteFill} />
             </Animated.View>
@@ -293,6 +305,7 @@ export function Dock({
             slot={slot}
             selected={slot.page === current}
             fieldFg={mark}
+            inverted={markInverted}
             count={slot.page === 'inbox' ? inboxCount : 0}
             photo={photo}
             initials={initials}
@@ -303,6 +316,8 @@ export function Dock({
             // targets the moment they start disappearing.
             reachable={slot.page === 'near' || !collapsed}
             onPress={() => onGo(slot.page)}
+            onPressIn={() => magnify(true)}
+            onPressOut={() => magnify(false)}
           />
         ))}
       </Animated.View>
@@ -314,6 +329,7 @@ function Mark({
   slot,
   selected,
   fieldFg,
+  inverted,
   count,
   photo,
   initials,
@@ -321,10 +337,14 @@ function Mark({
   markOpacity,
   reachable,
   onPress,
+  onPressIn,
+  onPressOut,
 }: {
   slot: Slot;
   selected: boolean;
   fieldFg: string;
+  /** the initials colour inside a filled (selected) avatar */
+  inverted: string;
   count: number;
   photo?: ImageSourcePropType;
   initials: string;
@@ -332,6 +352,8 @@ function Mark({
   markOpacity?: Animated.AnimatedInterpolation<number>;
   reachable: boolean;
   onPress: () => void;
+  onPressIn: () => void;
+  onPressOut: () => void;
 }) {
   const label = LABELS[slot.page];
   return (
@@ -344,13 +366,15 @@ function Mark({
         accessibilityLabel={countLabel(label, count)}
         accessibilityState={{ selected }}
         onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
         style={styles.slot}
         hitSlop={6}
       >
         {slot.kind === 'avatar' ? (
-          <Avatar photo={photo} initials={initials} fieldFg={fieldFg} />
+          <Avatar photo={photo} initials={initials} fieldFg={fieldFg} inverted={inverted} selected={selected} />
         ) : (
-          <Glyph name={slot.glyph} size={dock.icon} color={fieldFg} weight={selected ? 'semibold' : 'regular'} />
+          <Glyph name={slot.glyph} size={dock.icon} color={fieldFg} weight={selected ? 'semibold' : 'regular'} filled={selected} />
         )}
         <Animated.Text
           accessible={false}
@@ -371,11 +395,35 @@ function Mark({
   );
 }
 
-function Avatar({ photo, initials, fieldFg }: { photo?: ImageSourcePropType; initials: string; fieldFg: string }) {
-  if (photo) return <Image source={photo} style={styles.avatar} />;
+function Avatar({
+  photo,
+  initials,
+  fieldFg,
+  inverted,
+  selected,
+}: {
+  photo?: ImageSourcePropType;
+  initials: string;
+  fieldFg: string;
+  inverted: string;
+  selected: boolean;
+}) {
+  // a photo carries a ring when selected; the initials dot fills, and its
+  // text inverts to sit on the fill -- the avatar's version of a mark
+  // going solid, so `you` reads as selected the same way the icons do.
+  if (photo) {
+    return <Image source={photo} style={[styles.avatar, selected ? { borderWidth: 2, borderColor: fieldFg } : null]} />;
+  }
   return (
-    <View style={[styles.avatar, styles.avatarInitials, { borderColor: fieldFg }]}>
-      <Text accessible={false} importantForAccessibility="no" style={[styles.initials, { color: fieldFg }]}>
+    <View
+      style={[
+        styles.avatar,
+        styles.avatarInitials,
+        { borderColor: fieldFg },
+        selected ? { backgroundColor: fieldFg } : null,
+      ]}
+    >
+      <Text accessible={false} importantForAccessibility="no" style={[styles.initials, { color: selected ? inverted : fieldFg }]}>
         {initials}
       </Text>
     </View>
