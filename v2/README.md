@@ -9,15 +9,19 @@ the repo exists.
 
 The first slice of a rebuild, derived in this order and no other:
 
-1. **Fifteen product decisions**, recorded and dated.
-2. **The permissions matrix** — who may see what, in which state, and who may
-   change it. Twelve numbered laws.
+1. **Fifteen product decisions** — [`docs/01 - Decisions.md`](docs/01%20-%20Decisions.md)
+2. **The permissions matrix** — who may see what and who may change it, with
+   twelve numbered laws — [`docs/02 - Permissions Matrix.md`](docs/02%20-%20Permissions%20Matrix.md)
 3. **The law suite** (`supabase/tests/database/laws.test.sql`) — written before
    the schema existed, and demonstrated failing against an empty database.
 4. **The schema** (`supabase/migrations/`) — derived from the matrix.
 
 Every assertion traces to a law; every law traces to a decision. A change to the
 schema that no law justifies is a bug.
+
+Four decisions are **not** made — [`docs/03 - Open Questions.md`](docs/03%20-%20Open%20Questions.md).
+The defaults recorded there are mine, not the product's. Q3 blocks the
+coordination slice.
 
 ## The governing rule
 

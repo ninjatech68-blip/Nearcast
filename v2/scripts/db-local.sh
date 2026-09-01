@@ -18,12 +18,32 @@ PGHOST_DIR="${PGHOST_DIR:-/var/tmp}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PSQL="psql -h $PGHOST_DIR -p $PGPORT -U postgres -q -X -v ON_ERROR_STOP=1"
 
+launch() {
+  su nobody -s /bin/sh -c "$PGBIN/pg_ctl -D $PGDIR -o '-p $PGPORT -k $PGHOST_DIR -c listen_addresses=' -l $PGDIR/pg.log start" >/dev/null
+  for _ in $(seq 1 20); do
+    pg_isready -h "$PGHOST_DIR" -p "$PGPORT" -q && return 0
+    sleep 0.5
+  done
+  echo "postgres did not come up; last log lines:" >&2
+  tail -20 "$PGDIR/pg.log" >&2
+  return 1
+}
+
 start() {
-  [ -d "$PGDIR/base" ] && { echo "already initialised"; return; }
+  # A data directory is not a running server. The container can be reclaimed
+  # between invocations, leaving $PGDIR intact and the postmaster gone -- so
+  # ask the server, not the filesystem.
+  if pg_isready -h "$PGHOST_DIR" -p "$PGPORT" -q; then
+    echo "postgres already up on $PGPORT"; return
+  fi
+  if [ -d "$PGDIR/base" ]; then
+    echo "data directory present, server down -- restarting"
+    launch && return
+    echo "restart failed; reinitialising" >&2
+  fi
   rm -rf "$PGDIR"; mkdir -p "$PGDIR"; chown nobody "$PGDIR"; chmod 700 "$PGDIR"
   su nobody -s /bin/sh -c "$PGBIN/initdb -U postgres -A trust -D $PGDIR" >/dev/null
-  su nobody -s /bin/sh -c "$PGBIN/pg_ctl -D $PGDIR -o '-p $PGPORT -k $PGHOST_DIR -c listen_addresses=' -l $PGDIR/pg.log start" >/dev/null
-  sleep 2
+  launch
   $PSQL -c "alter database postgres set search_path = public, extensions;"
   echo "postgres up on $PGPORT"
 }
