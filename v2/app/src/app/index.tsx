@@ -54,6 +54,12 @@ export default function HomeScreen() {
   // build the dock's cross-fade, and a ref read in render is exactly the
   // stale-value hazard the lint rule is there to catch.
   const [scrollX] = useState(() => new Animated.Value(0));
+  // The pager position as a fractional page index (0..N-1), driven from the
+  // scroll listener. The dock's selection lens follows this, so it slides
+  // with a swipe instead of snapping to the next slot at the halfway point.
+  // Separate from scrollX because scrollX is native-driven and the lens's
+  // `left` is a layout prop, which the native driver cannot carry.
+  const [scrollPos] = useState(() => new Animated.Value(0));
   const [page, setPage] = useState<DockPage>('near');
   const [fieldCategory, setFieldCategory] = useState<Category | null>(null);
 
@@ -121,12 +127,16 @@ export default function HomeScreen() {
       Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
         useNativeDriver: true,
         listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-          const index = Math.round(event.nativeEvent.contentOffset.x / width);
+          const offset = event.nativeEvent.contentOffset.x / width;
+          // the continuous position the lens rides, updated every frame
+          // (scrollEventThrottle 16) so the lens tracks the swipe.
+          scrollPos.setValue(offset);
+          const index = Math.round(offset);
           const next = DOCK_PAGES[index];
           if (next && next !== page) setPage(next);
         },
       }),
-    [scrollX, width, page],
+    [scrollX, scrollPos, width, page],
   );
 
   /**
@@ -180,6 +190,7 @@ export default function HomeScreen() {
         fieldFg={fieldFg}
         collapse={collapse}
         collapsed={collapsed}
+        scrollPos={scrollPos}
         inboxCount={inboxCount}
         photo={photoUri ? { uri: photoUri } : undefined}
         initials={initialsFor(me.name)}

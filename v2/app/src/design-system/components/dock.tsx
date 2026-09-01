@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { lensLeft, lensRestLeft, scrubIndex, scrubPosition, type ScrubGeometry } from '@/design-system/components/dock-scrub';
+import { dragPosition, lensRestLeft, type ScrubGeometry } from '@/design-system/components/dock-scrub';
 import { Glyph, type GlyphName } from '@/design-system/components/glyph';
 import { Glass, useGlass } from '@/design-system/glass';
 import { fontFamily, tokens } from '@/design-system/tokens';
@@ -94,6 +94,7 @@ export function Dock({
   fieldFg,
   collapse,
   collapsed,
+  scrollPos,
   inboxCount = 0,
   photo,
   initials,
@@ -105,6 +106,15 @@ export function Dock({
   fieldFg: string;
   /** 0 expanded, 1 collapsed. */
   collapse: Animated.Value | Animated.AnimatedInterpolation<number>;
+  /**
+   * The pager's live scroll position as a FRACTIONAL page index (0..N-1).
+   *
+   * The selection lens follows this, so it slides with a swipe instead of
+   * jumping to the next slot at the halfway mark. Optional: without it the
+   * lens simply rests on the current page (tests, and any caller that has
+   * no pager behind the dock).
+   */
+  scrollPos?: Animated.Value | Animated.AnimatedInterpolation<number>;
   /**
    * The same state as a boolean, because opacity is not hit testing.
    *
@@ -159,23 +169,23 @@ export function Dock({
   const range = { inputRange: [0, 1], extrapolate: 'clamp' as const };
 
   /**
-   * The lens position, which is a value rather than a computed style
-   * because a thumb can move it anywhere between two slots.
-   *
-   * At rest it sits on the selected slot. While a thumb is down it
-   * tracks the thumb, so the lens stays under the finger instead of
-   * arriving at the next slot before the finger does.
+   * The lens left edge, which follows the pager's live scroll position so
+   * it SLIDES with a swipe rather than jumping to the next slot at the
+   * halfway point. With no pager behind the dock it just rests on the
+   * current slot.
    */
-  // useState lazy initializer: one stable Animated.Value created on mount.
-  // Using Animated.useAnimatedValue() also works at runtime but it wraps
-  // useRef internally, so the react-hooks/refs rule still flags captures
-  // of its return value in closures. A plain useState avoids the tracking.
-  const [lens] = useState(() => new Animated.Value(lensRestLeft(selectedIndex, GEO)));
+  const lensPositionLeft = scrollPos
+    ? scrollPos.interpolate({
+        inputRange: DOCK_PAGES.map((_, i) => i),
+        outputRange: DOCK_PAGES.map((_, i) => lensRestLeft(i, GEO)),
+        extrapolate: 'clamp',
+      })
+    : lensRestLeft(selectedIndex, GEO);
 
   // Plain mutable containers via useState lazy initializer — identical at
   // runtime to useRef but invisible to the react-hooks/refs rule, which
   // only tracks objects returned directly by useRef().
-  const [dragging] = useState<{ current: boolean }>(() => ({ current: false }));
+  const [startPos] = useState<{ current: number }>(() => ({ current: selectedIndex }));
   const [onScrubRef] = useState(() => ({ current: onScrub }));
   const [onGoRef] = useState(() => ({ current: onGo }));
   const [selectedIndexRef] = useState(() => ({ current: selectedIndex }));
@@ -185,21 +195,18 @@ export function Dock({
   useEffect(() => { onGoRef.current = onGo; }, [onGo, onGoRef]);
   useEffect(() => { selectedIndexRef.current = selectedIndex; }, [selectedIndex, selectedIndexRef]);
 
-  // Sync the lens to the selected slot when the selection changes from outside
-  // (e.g. the pager settled on a page after a swipe). Skipped while a thumb
-  // is down so dragging does not fight the sync.
-  useEffect(() => {
-    if (!dragging.current) {
-      lens.setValue(lensRestLeft(selectedIndex, GEO));
-    }
-  }, [selectedIndex, lens, dragging]);
-
   // PanResponder created once on mount — recreating it mid-gesture would
   // terminate the gesture. Handlers read the containers above, which always
   // hold the latest prop values. PanResponder.create only stores closures;
   // they execute during gesture events, not render. The react-hooks/refs
-  // rule fires because dragging/onScrubRef/etc. have .current mutations and
+  // rule fires because startPos/onScrubRef/etc. have .current mutations and
   // the heuristic tracks any closure that captures them — false positive.
+  //
+  // The drag is RELATIVE: it moves the pager from the page it started on,
+  // by the distance the thumb has travelled. The lens is not touched here
+  // at all — the drag scrolls the pager, and the lens follows the pager's
+  // scroll position like it does for a swipe, so the two can never
+  // disagree.
   // eslint-disable-next-line react-hooks/refs
   const [pan] = useState(() =>
     PanResponder.create({
@@ -208,38 +215,22 @@ export function Dock({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > DRAG_SLOP,
       onPanResponderGrant: () => {
-        dragging.current = true;
+        // measure the drag from the page it began on, so the touch stays
+        // put instead of jumping the pager to the finger's position.
+        startPos.current = selectedIndexRef.current;
       },
-      onPanResponderMove: (e) => {
-        const x = e.nativeEvent.locationX;
-        lens.setValue(lensLeft(x, GEO));
-        onScrubRef.current?.(scrubPosition(x, GEO), false);
+      onPanResponderMove: (_e, g) => {
+        onScrubRef.current?.(dragPosition(startPos.current, g.dx, GEO), false);
       },
-      onPanResponderRelease: (e) => {
-        dragging.current = false;
-        const index = scrubIndex(e.nativeEvent.locationX, GEO);
-        Animated.spring(lens, {
-          toValue: lensRestLeft(index, GEO),
-          useNativeDriver: false,
-          speed: 20,
-          bounciness: 4,
-        }).start();
+      onPanResponderRelease: (_e, g) => {
+        const index = Math.round(dragPosition(startPos.current, g.dx, GEO));
         onScrubRef.current?.(index, true);
         onGoRef.current(DOCK_PAGES[index]);
       },
       onPanResponderTerminate: () => {
-        // the gesture was taken away mid-drag; put the lens back where
-        // the current page says it belongs rather than leaving it
-        // stranded between two slots.
-        dragging.current = false;
-        const idx = selectedIndexRef.current;
-        Animated.spring(lens, {
-          toValue: lensRestLeft(idx, GEO),
-          useNativeDriver: false,
-          speed: 20,
-          bounciness: 4,
-        }).start();
-        onScrubRef.current?.(idx, true);
+        // the gesture was taken away mid-drag; settle the pager back on the
+        // page it is currently nearest.
+        onScrubRef.current?.(selectedIndexRef.current, true);
       },
     })
   );
@@ -272,12 +263,20 @@ export function Dock({
       {glass ? (
         <GlassContainer spacing={dock.capsuleInset * 2} style={StyleSheet.absoluteFill}>
           <Glass glassEffectStyle="regular" colorScheme="light" borderRadius={dock.radius} isInteractive style={StyleSheet.absoluteFill} />
-          <Animated.View
-            pointerEvents="none"
-            style={[styles.lensWrap, { opacity: lensFade, left: lens }]}
-          >
-            <Glass glassEffectStyle="clear" colorScheme="light" borderRadius={dock.capsuleRadius} style={StyleSheet.absoluteFill} />
-          </Animated.View>
+          {/* Not rendered while collapsed. The lens is a `clear` element that
+              MERGES with the bar through the GlassContainer; left in during
+              the collapse, that merged blob keeps its wide rounded-rect
+              shape and reads as a second glass overlapping the circle. With
+              it gone, the bar alone contracts to a clean circle around the
+              near mark. On expand it fades back in via lensFade. */}
+          {collapsed ? null : (
+            <Animated.View
+              pointerEvents="none"
+              style={[styles.lensWrap, { opacity: lensFade, left: lensPositionLeft }]}
+            >
+              <Glass glassEffectStyle="clear" colorScheme="light" borderRadius={dock.capsuleRadius} style={StyleSheet.absoluteFill} />
+            </Animated.View>
+          )}
         </GlassContainer>
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.flat]} />
