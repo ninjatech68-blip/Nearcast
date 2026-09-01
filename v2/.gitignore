@@ -6,8 +6,16 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
-ios/
-android/
+# Leading slash: ROOT ONLY. A bare `ios/` matches any directory of that
+# name at any depth, which silently swallowed
+# modules/nearcast-places/ios/NearcastPlacesModule.swift -- the entire
+# implementation of a hand-written native module. Its config committed,
+# its source did not, so autolinking would find the module and the app
+# would fall back to its JS path with no error anywhere.
+/app/ios/
+/app/android/
+/ios/
+/android/
 *.jks
 *.p8
 *.p12
