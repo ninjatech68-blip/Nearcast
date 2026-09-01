@@ -75,20 +75,22 @@ describe('design tokens', () => {
   });
 
   it('keeps a poster clear of the compose button, not just of the dock', () => {
-    // the reserve is measured from the screen bottom; the compose button
-    // is centred on the icon-and-label block, so its top sits ABOVE the
-    // control row's own top by (control - cast.top - cast.size). at the
-    // old 96 it cut into the poster's call-to-action.
+    // The compose button left the dock for the top right, so the reserve
+    // no longer has to clear it -- what it must clear now is the glass
+    // pill, which floats above the bottom inset rather than sitting on it.
     const { dock, posterBottomReserve } = tokens.component;
     const homeIndicator = 34;
-    const composeTopFromBottom = homeIndicator + dock.control - dock.cast.top;
-    expect(posterBottomReserve).toBeGreaterThan(composeTopFromBottom);
+    const pillTopFromBottom = homeIndicator + dock.pillLift + dock.control;
+    expect(posterBottomReserve).toBeGreaterThan(pillTopFromBottom);
   });
 
-  it('puts the dock label line below the icons it labels', () => {
+  it('keeps the collapsed mark a real target, not a decoration', () => {
     const { dock } = tokens.component;
-    expect(dock.labelTop).toBeGreaterThanOrEqual(dock.iconTop + dock.icon);
-    // and the whole block still fits the control row
-    expect(dock.labelTop + tokens.typography.tagSmall.lineHeight).toBeLessThanOrEqual(dock.control);
+    // 44pt is the platform minimum for a touch target. The collapsed
+    // dock is the only way back to the feed while reading, so it may
+    // never shrink below one.
+    expect(dock.collapsedSize).toBeGreaterThanOrEqual(44);
+    // and the label still fits under the icon inside the pill
+    expect(dock.labelSize + dock.labelTop + dock.icon).toBeLessThanOrEqual(dock.control);
   });
 });

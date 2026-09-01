@@ -5,6 +5,20 @@ const primitive = {
     orange: '#FF4D00',
     yellow: '#FFC633',
     green: '#17442E',
+    /**
+     * Muted ink, and SOLID rather than an alpha.
+     *
+     * This was ink at 40%, which composites to #9A978E on cream --
+     * 2.55:1, well under the 4.5:1 that body and helper text owe. Every
+     * "helper text is too faint to read" note in the design review
+     * traces to this one value. 62% composites to #69665F at 4.99:1,
+     * which is still visibly secondary and actually legible.
+     *
+     * Solid, because an alpha is only knowable against a known ground,
+     * and this token is used over cream, over subtle fills, and over
+     * whatever a sheet puts behind it.
+     */
+    inkMuted: '#69665F',
     ink40: 'rgba(20,18,14,0.4)',
     ink12: 'rgba(20,18,14,0.12)',
     ink04: 'rgba(20,18,14,0.04)',
@@ -26,7 +40,7 @@ const semantic = {
     verbGot: primitive.color.green,
     verbLets: primitive.color.orange,
     textOnCream: primitive.color.ink,
-    textMutedOnCream: primitive.color.ink40,
+    textMutedOnCream: primitive.color.inkMuted,
     hairlineOnCream: primitive.color.ink12,
     pressedOnCream: primitive.color.ink04,
     backgroundSubtle: primitive.color.ink08,
@@ -76,33 +90,31 @@ export const tokens = {
      * what keeps it clear of a poster's call-to-action.
      */
     dock: {
+      /**
+       * Three destinations in a glass pill, and no action: casting moved
+       * to the top right. The previous dock needed five columns because
+       * four destinations plus an action lands off-centre on an even
+       * grid unless the action is the middle one. Take the action out
+       * and three columns balance with nothing to arrange around.
+       */
       control: 56,
-      /** one size for every mark, including the avatar and the cast glyph. */
       icon: 24,
-      iconTop: 10,
-      labelTop: 42,
-      /**
-       * Selection is a colour change and nothing else: no pill, no fill.
-       * An inactive mark is its ground's foreground at 70%, which is the
-       * floor that keeps the tightest field (games, cream at 4.94:1 to
-       * begin with) above the 3:1 WCAG asks of a UI component. Labels
-       * never dim, because 11 pt is small text and owes 4.5:1; the
-       * selected one goes semibold, so the state survives without colour.
-       */
-      inactive: 0.7,
-      /**
-       * The selected mark also grows, slightly. Colour is never the only
-       * carrier, and 1.12 is deliberately small: it scales about the
-       * centre of a fixed-size box, so the icon line and the label line
-       * below it do not move as selection travels along the row.
-       */
-      selectedScale: 1.12,
-      /** the one filled shape, centred on the same line as the marks. */
-      cast: { size: 36, radius: 12, top: 4, ring: 2 },
-      /** ground-coloured, so it is invisible on a poster and stops list
-       *  rows colliding with the marks on the cream screens. */
-      scrim: 130,
+      /** the pill itself, floating clear of the bottom inset */
+      pillRadius: 28,
+      pillPadH: 8,
+      pillPadV: 6,
+      pillLift: 12,
+      /** the lighter capsule that marks the selected slot inside it */
+      capsuleRadius: 22,
+      capsuleOpacity: 0.22,
+      labelSize: 11,
+      labelTop: 2,
+      /** collapsed: one mark, bottom left, still a control */
+      collapsedSize: 52,
+      collapsedRadius: 18,
+      collapsedInset: 16,
     },
+
     row: { minHeight: 64 },
     field: { fontSize: 34, lineHeight: 37, maxLength: 140, warnAt: 120 },
     sheet: { radius: primitive.radius.sheet, padding: 24 },

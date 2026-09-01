@@ -9,11 +9,12 @@ import {
   type NativeSyntheticEvent,
 } from 'react-native';
 
+import { CastButton } from '@/design-system/components/cast-button';
 import { Dock, DOCK_PAGES, type DockPage } from '@/design-system/components/dock';
 import { category as categoryTokens, tokens, type Category } from '@/design-system/tokens';
-import { AlertsPage, useNeedsYouCount } from '@/features/casts/alerts-page';
+import { useNeedsYouCount } from '@/features/casts/alerts-page';
 import { FeedPage } from '@/features/casts/feed-page';
-import { ChatsPage } from '@/features/chat/chats-page';
+import { InboxPage } from '@/features/inbox/inbox-page';
 import { useConversations } from '@/features/chat/chat';
 import { initialsFor } from '@/features/me/initials';
 import { useMe, useMyPhoto } from '@/features/me/me-store';
@@ -21,27 +22,30 @@ import { YouPage } from '@/features/me/you-page';
 import { onAlertsRequested } from '@/features/notifications/routing';
 
 /**
- * The root: four horizontal pages under one dock.
+ * The root: three horizontal pages, a dock, and a cast button.
  *
- * Vertical is always content, horizontal is always pages — and both the
- * swipe and the dock move through the same four, so neither is the only
- * way to get anywhere.
+ * Vertical is always content, horizontal is always pages -- and both
+ * the swipe and the dock move through the same three, so neither is the
+ * only way to get anywhere.
  *
- * THE DOCK NEVER FADES. Its predecessor animated to `opacity: 0` on feed
- * scroll and only `onMomentumScrollEnd` brought it back, so any drag
- * released without velocity left it invisible for good — and an
- * opacity-0 view in React Native still receives touches, so the band
- * went on swallowing every tap aimed at the poster underneath. That was
- * the "the bar is not getting registered" bug, and there is now no
- * opacity to get stuck at.
+ * Chats and alerts became one Inbox. That is what makes three
+ * destinations enough, and it is the right merge on its own terms: both
+ * answer "what needs me?", and someone checking one is already checking
+ * the other. Casting left the dock for the top right, which is what
+ * lets three columns balance with nothing to arrange around.
  *
- * COLOUR follows the poster. The dock has no surface of its own, so its
- * marks take the visible cast's declared foreground; off the feed the
- * ground is cream and they are ink. Mid-swipe the screen is part poster
- * and part cream and no single colour is right for both halves, so the
- * horizontal offset cross-fades two copies — at every point in the
- * transition one of them is legible against whatever is actually behind
- * it.
+ * THE DOCK COLLAPSES, IT DOES NOT FADE. Its ancestor animated to
+ * `opacity: 0` on feed scroll and only `onMomentumScrollEnd` brought it
+ * back, so any drag released without velocity left it invisible for
+ * good -- and an opacity-0 view in React Native still receives touches,
+ * so the band went on swallowing every tap aimed at the poster
+ * underneath. Collapsed here means a smaller mark in the bottom left:
+ * always visible, always a control. There is no state in which
+ * something invisible is taking taps.
+ *
+ * COLOUR follows the poster. Glass refracts the category field rather
+ * than covering it, so the marks still take the visible cast's declared
+ * foreground; off the feed the ground is cream and they are ink.
  */
 export default function HomeScreen() {
   const { width } = useWindowDimensions();
@@ -58,18 +62,28 @@ export default function HomeScreen() {
   const chats = useConversations();
   const needsYou = useNeedsYouCount();
   // one badge, one meaning: conversations carrying unread messages, not
-  // a total of messages and not anything already read.
+  // a total of messages and not anything already read. Chats and alerts
+  // share a destination now, so they share a count -- two badges on one
+  // slot would be a number nobody could act on.
   const unreadChats = chats.filter((chat) => chat.unread > 0).length;
+  const inboxCount = unreadChats + needsYou;
 
   // an empty or failed feed renders on cream, so ink is the honest
   // default until a poster is actually on screen.
   const fieldFg = fieldCategory ? categoryTokens[fieldCategory].fg : tokens.semantic.color.ink;
 
-  // 0 while the feed fills the screen, 1 once any cream page does.
-  const blend = useMemo(
-    () => scrollX.interpolate({ inputRange: [0, width], outputRange: [0, 1], extrapolate: 'clamp' }),
-    [scrollX, width],
-  );
+  // 0 expanded, 1 collapsed. Driven by whether a drag is in flight on
+  // the feed, not by scroll offset: the feed is a full-screen pager, so
+  // there is no continuous depth to read -- it snaps between posters.
+  const [collapse] = useState(() => new Animated.Value(0));
+  function setReading(reading: boolean) {
+    Animated.timing(collapse, {
+      toValue: reading ? 1 : 0,
+      duration: reading ? 160 : 220,
+      useNativeDriver: true,
+    }).start();
+  }
+
   // The dock used to light up only on onMomentumScrollEnd, so it could
   // never do anything but lag the swipe: the pages move continuously and
   // the marks waited for the gesture to finish. Reading the offset means
@@ -101,7 +115,7 @@ export default function HomeScreen() {
   // person on the feed to find it themselves. re-subscribed when the
   // page width changes, because goTo scrolls by it.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => onAlertsRequested(() => goTo('alerts')), [width]);
+  useEffect(() => onAlertsRequested(() => goTo('inbox')), [width]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -114,21 +128,19 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
         directionalLockEnabled
       >
-        <FeedPage onCategoryChange={setFieldCategory} />
-        <ChatsPage />
-        <AlertsPage />
+        <FeedPage onCategoryChange={setFieldCategory} onReadingChange={setReading} />
+        <InboxPage chatCount={unreadChats} activityCount={needsYou} />
         <YouPage />
       </Animated.ScrollView>
+      <CastButton fieldFg={fieldFg} onPress={() => router.push('/compose')} />
       <Dock
         current={page}
         fieldFg={fieldFg}
-        blend={blend}
-        chatCount={unreadChats}
-        alertCount={needsYou}
+        collapse={collapse}
+        inboxCount={inboxCount}
         photo={photoUri ? { uri: photoUri } : undefined}
         initials={initialsFor(me.name)}
         onGo={goTo}
-        onCast={() => router.push('/compose')}
       />
     </View>
   );

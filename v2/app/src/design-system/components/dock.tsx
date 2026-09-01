@@ -1,322 +1,288 @@
+import { GlassContainer, GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useMemo } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
+import { AccessibilityInfo, Animated, Image, Platform, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Glyph, type GlyphName } from '@/design-system/components/glyph';
 import { fontFamily, tokens } from '@/design-system/tokens';
 
-export type DockPage = 'near' | 'chats' | 'alerts' | 'you';
+export type DockPage = 'near' | 'inbox' | 'you';
 
 /** the page order, which is also the swipe order. */
-export const DOCK_PAGES: readonly DockPage[] = ['near', 'chats', 'alerts', 'you'];
+export const DOCK_PAGES: readonly DockPage[] = ['near', 'inbox', 'you'];
 
 type Slot =
   | { readonly kind: 'page'; readonly page: DockPage; readonly label: string; readonly glyph: GlyphName }
-  | { readonly kind: 'avatar'; readonly page: DockPage; readonly label: string }
-  | { readonly kind: 'cast'; readonly label: string };
+  | { readonly kind: 'avatar'; readonly page: DockPage; readonly label: string };
 
-/**
- * Five columns. Compose sits in column three, which is the only
- * arrangement that balances: four destinations plus an action is five
- * objects, and on an even grid the action lands off-centre unless it is
- * the middle one. near/you and chats/alerts are matched pairs about it.
- */
 const SLOTS: readonly Slot[] = [
   { kind: 'page', page: 'near', label: 'near', glyph: 'near' },
-  { kind: 'page', page: 'chats', label: 'chats', glyph: 'chats' },
-  { kind: 'cast', label: 'cast' },
-  { kind: 'page', page: 'alerts', label: 'alerts', glyph: 'alerts' },
+  { kind: 'page', page: 'inbox', label: 'inbox', glyph: 'alerts' },
   { kind: 'avatar', page: 'you', label: 'you' },
 ];
 
 const dock = tokens.component.dock;
 
 /**
- * The dock: five marks across the bottom edge, on no surface at all.
+ * The dock: three destinations in a glass pill, floating clear of the
+ * bottom edge, and no action.
  *
- * The category field runs unbroken underneath, because the flat colour
- * owning the whole screen is the only thing about this app that is
- * unmistakably itself, and a bar with its own shade takes a tenth of it
- * away. What replaces the missing plane is the cast button — the one
- * filled shape on the edge — and the fact that a poster already reserves
- * this band, so nothing is ever underneath the marks.
+ * Two things changed from the dock this replaces, and they are one
+ * change rather than two.
  *
- * It never fades. The rail it replaces animated to `opacity: 0` on
- * scroll and only `onMomentumScrollEnd` brought it back, so a drag
- * released without velocity left it invisible indefinitely — and an
- * opacity-0 view in React Native still receives touches, so the band
- * went on swallowing every tap meant for the poster beneath it. That is
- * the bug this component exists to make unrepresentable.
+ * It has a surface now. The old one refused any, on the grounds that a
+ * bar with its own shade takes a tenth of the category field away, and
+ * that flat colour owning the whole screen is the only thing about this
+ * app that is unmistakably itself. That argument still stands, and
+ * glass is the exception it allows for: it refracts the field rather
+ * than replacing it, so the colour keeps running underneath and through.
+ * The test asserts no OPAQUE ground, which is the real rule the old one
+ * was reaching for.
  *
- * COLOUR. Marks take the ground's declared foreground: cream on the four
- * dark fields, ink on the six light ones. Cream alone would fail on six
- * of ten — 1.37:1 on sports, and exactly 1.00:1 on help, which is the
- * same colour — so `category[id].fg` is the rule, and it already exists
- * in tokens.
+ * And casting left for the top right. Those are coupled: the cast
+ * button was the one filled shape holding the bottom edge together, so
+ * it could only leave once the pill arrived to hold that edge instead.
+ * Taking it out is also what makes three columns balance -- four
+ * destinations plus an action is five objects, and on an even grid the
+ * action lands off-centre unless it is the middle one.
  *
- * SELECTION IS A COLOUR CHANGE AND NOTHING ELSE. No pill, no fill: an
- * inactive mark is the foreground at 70%, the selected one is the same
- * colour at full strength. 70% is not a taste call — it is the floor
- * that keeps the tightest field above the 3:1 WCAG asks of a UI
- * component, on games, where cream starts at only 4.94:1. The selected
- * mark also grows 12%, about the centre of a fixed box so nothing below
- * it shifts, and its label goes semibold. Labels never dim, because
- * 11 pt is small text and owes 4.5:1 — so between weight, size and
- * strength, the state still reads if colour does not.
+ * On scroll it collapses to a single mark at bottom left. That is not
+ * the failure the previous dock existed to prevent: the rail before it
+ * animated to `opacity: 0` and an opacity-0 view in React Native still
+ * receives touches, so the band went on swallowing every tap meant for
+ * the poster beneath it. Collapsed here means smaller and moved. It is
+ * always visible and it always routes.
  *
- * BLEND is the pager's horizontal offset, 0 on the feed and 1 on the
- * cream pages. Mid-swipe the screen is half poster and half cream, so no
- * single mark colour is right for both halves; cross-fading two copies
- * means at every point one of them is legible against whatever is
- * actually behind it. Only the cast button and the counts sit outside
- * that fade, because accent behind ink is legible on any ground.
+ * Glass is iOS 26 and later. `GlassView` on Android is a plain `View`,
+ * so the fallback is the flat treatment, which is what this app looked
+ * like anyway -- and `isLiquidGlassAvailable()` can still be true when
+ * the system is limiting the effect, hence the reduce-transparency
+ * check alongside it.
  */
 export function Dock({
   current,
   fieldFg,
-  blend,
-  chatCount = 0,
-  alertCount = 0,
+  collapse,
+  inboxCount = 0,
   photo,
   initials,
   onGo,
-  onCast,
 }: {
   current: DockPage;
-  /** the feed's foreground colour for the poster currently on screen. */
+  /** the legible foreground for whatever field is behind the dock */
   fieldFg: string;
-  /** 0 = fully on the feed, 1 = fully on a cream page. */
-  blend: Animated.AnimatedInterpolation<number> | Animated.Value;
-  chatCount?: number;
-  alertCount?: number;
+  /** 0 expanded, 1 collapsed. Driven by vertical scroll. */
+  collapse: Animated.Value | Animated.AnimatedInterpolation<number>;
+  inboxCount?: number;
   photo?: ImageSourcePropType;
   initials: string;
   onGo: (page: DockPage) => void;
-  onCast: () => void;
 }) {
   const insets = useSafeAreaInsets();
-  const ink = tokens.semantic.color.ink;
-  // memoised: a fresh animated node every render churns the graph for a
-  // value that only ever depends on `blend`.
-  const onField = useMemo(() => Animated.subtract(1, blend), [blend]);
+  const glass = useGlass();
+
+  const expandedOpacity = collapse.interpolate({ inputRange: [0, 0.6], outputRange: [1, 0], extrapolate: 'clamp' });
+  const collapsedOpacity = collapse.interpolate({ inputRange: [0.4, 1], outputRange: [0, 1], extrapolate: 'clamp' });
+  const expandedScale = collapse.interpolate({ inputRange: [0, 1], outputRange: [1, 0.9], extrapolate: 'clamp' });
+
+  const bottom = insets.bottom + dock.pillLift;
 
   return (
-    <View
-      pointerEvents="box-none"
-      style={[styles.dock, { height: dock.control + insets.bottom, paddingBottom: insets.bottom }]}
-    >
-      {/* Two cross-faded colour layers carrying every mark and label.
-          Hidden from assistive tech — the pressable row below labels the
-          same five slots, and leaving these visible announced every
-          destination three times. */}
+    <>
       <Animated.View
-        pointerEvents="none"
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-        style={[styles.layer, { paddingBottom: insets.bottom, opacity: onField }]}
+        pointerEvents="box-none"
+        style={[styles.expandedWrap, { bottom }, { opacity: expandedOpacity, transform: [{ scale: expandedScale }] }]}
       >
-        <MarkRow current={current} fg={fieldFg} initials={initials} photo={photo} />
-      </Animated.View>
-      <Animated.View
-        pointerEvents="none"
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-        style={[styles.layer, { paddingBottom: insets.bottom, opacity: blend }]}
-      >
-        <MarkRow current={current} fg={ink} initials={initials} photo={photo} />
+        <Surface glass={glass} radius={dock.pillRadius} style={styles.pill}>
+          {SLOTS.map((slot) => (
+            <Mark
+              key={slot.page}
+              slot={slot}
+              selected={slot.page === current}
+              fieldFg={fieldFg}
+              count={slot.page === 'inbox' ? inboxCount : 0}
+              photo={photo}
+              initials={initials}
+              onPress={() => onGo(slot.page)}
+            />
+          ))}
+        </Surface>
       </Animated.View>
 
-      {/* the row that is actually pressed, plus the two opaque things. */}
-      <View style={styles.row}>
-        {SLOTS.map((slot) =>
-          slot.kind === 'cast' ? (
-            <Pressable
-              key="cast"
-              accessibilityRole="button"
-              accessibilityLabel="cast something"
-              onPress={onCast}
-              style={styles.column}
-            >
-              <View style={styles.cast}>
-                <Glyph name="cast" size={dock.icon} color={ink} weight="semibold" />
-              </View>
-            </Pressable>
-          ) : (
-            <Pressable
-              key={slot.page}
-              accessibilityRole="button"
-              accessibilityState={{ selected: current === slot.page }}
-              accessibilityLabel={labelFor(slot, chatCount, alertCount)}
-              onPress={() => onGo(slot.page)}
-              style={styles.column}
-            >
-              {/* the visuals live in the faded layers above; this holds
-                  the column's size and the touch target. */}
-              <View style={styles.markBox} />
-              <Count value={slot.page === 'chats' ? chatCount : slot.page === 'alerts' ? alertCount : 0} />
-            </Pressable>
-          ),
-        )}
-      </View>
-    </View>
+      <Animated.View
+        pointerEvents="box-none"
+        style={[styles.collapsedWrap, { bottom, left: dock.collapsedInset }, { opacity: collapsedOpacity }]}
+      >
+        <Surface glass={glass} radius={dock.collapsedRadius} style={styles.collapsed}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={countLabel('near', 0)}
+            accessibilityState={{ selected: current === 'near' }}
+            onPress={() => onGo('near')}
+            style={styles.collapsedTouch}
+            hitSlop={8}
+          >
+            <Glyph name="near" size={dock.icon} color={fieldFg} weight="semibold" />
+          </Pressable>
+        </Surface>
+      </Animated.View>
+    </>
   );
 }
 
-/** one full row of marks and labels in a single ground's foreground. */
-function MarkRow({
-  current,
-  fg,
-  initials,
-  photo,
+/**
+ * One body for both states. GlassContainer is what lets two glass
+ * elements merge as they approach; there is only one child here today,
+ * but the cast button in the top right is the same material and the
+ * container is where a future merge would be expressed.
+ */
+function Surface({
+  glass,
+  radius,
+  style,
+  children,
 }: {
-  current: DockPage;
-  fg: string;
-  initials: string;
-  photo?: ImageSourcePropType;
+  glass: boolean;
+  radius: number;
+  style: object;
+  children: React.ReactNode;
 }) {
+  if (!glass) {
+    return <View style={[style, { borderRadius: radius }]}>{children}</View>;
+  }
   return (
-    <View style={styles.row}>
-      {SLOTS.map((slot) => {
-        const on = slot.kind !== 'cast' && current === slot.page;
-        return (
-          <View key={slot.kind === 'cast' ? 'cast' : slot.page} style={styles.column}>
-            {slot.kind === 'cast' ? (
-              // the button itself is opaque and lives in the row below;
-              // only its label belongs to the ground.
-              <View style={styles.markBox} />
-            ) : (
-              <View
-                style={[
-                  styles.markBox,
-                  on ? { transform: [{ scale: dock.selectedScale }] } : { opacity: dock.inactive },
-                ]}
-              >
-                <Mark slot={slot} fg={fg} initials={initials} photo={photo} selected={on} />
-              </View>
-            )}
-            <Text style={[styles.label, on ? styles.labelOn : null, { color: fg }]}>{slot.label}</Text>
-          </View>
-        );
-      })}
-    </View>
+    <GlassContainer spacing={dock.pillPadH} style={{ borderRadius: radius }}>
+      <GlassView glassEffectStyle="regular" isInteractive style={[style, { borderRadius: radius }]}>
+        {children}
+      </GlassView>
+    </GlassContainer>
   );
 }
 
 function Mark({
   slot,
-  fg,
-  initials,
-  photo,
   selected,
+  fieldFg,
+  count,
+  photo,
+  initials,
+  onPress,
 }: {
-  slot: Extract<Slot, { kind: 'page' | 'avatar' }>;
-  fg: string;
-  initials: string;
-  photo?: ImageSourcePropType;
+  slot: Slot;
   selected: boolean;
+  fieldFg: string;
+  count: number;
+  photo?: ImageSourcePropType;
+  initials: string;
+  onPress: () => void;
 }) {
-  if (slot.kind === 'avatar') {
-    return (
-      <View style={[styles.avatar, { borderColor: fg, borderWidth: selected ? 2 : 1.5 }]}>
-        {photo ? (
-          <Image source={photo} style={styles.avatarPhoto} accessibilityLabel="" />
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={countLabel(slot.label, count)}
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      style={styles.slot}
+      hitSlop={6}
+    >
+      {selected ? <View style={[styles.capsule, { backgroundColor: withAlpha(fieldFg, dock.capsuleOpacity) }]} /> : null}
+      <View style={styles.markBody}>
+        {slot.kind === 'avatar' ? (
+          <Avatar photo={photo} initials={initials} fieldFg={fieldFg} />
         ) : (
-          <Text style={[styles.avatarInitials, { color: fg }]}>{initials}</Text>
+          <Glyph name={slot.glyph} size={dock.icon} color={fieldFg} weight={selected ? 'semibold' : 'regular'} />
         )}
+        <Text
+          accessible={false}
+          importantForAccessibility="no"
+          style={[styles.label, { color: fieldFg, fontWeight: selected ? '600' : '400' }]}
+        >
+          {slot.label}
+        </Text>
+        {count > 0 ? (
+          <View style={styles.badge}>
+            <Text accessible={false} importantForAccessibility="no" style={styles.badgeText}>
+              {count > 9 ? '9+' : String(count)}
+            </Text>
+          </View>
+        ) : null}
       </View>
-    );
-  }
-  return <Glyph name={slot.glyph} size={dock.icon} color={fg} weight={selected ? 'semibold' : 'regular'} />;
+    </Pressable>
+  );
 }
 
-/**
- * A real count, or nothing.
- *
- * One badge, one meaning: chats counts conversations carrying unread
- * messages, alerts counts what needs a decision from you. Neither ever
- * includes something already read, because a number nobody can clear is
- * a number everybody learns to ignore.
- *
- * It rides in the always-opaque layer — accent behind ink is legible on
- * every ground, so it needs no cross-fade — and is hidden from assistive
- * tech, because the slot's own label already speaks the number.
- */
-function Count({ value }: { value: number }) {
-  if (value <= 0) return null;
+function Avatar({ photo, initials, fieldFg }: { photo?: ImageSourcePropType; initials: string; fieldFg: string }) {
+  if (photo) return <Image source={photo} style={styles.avatar} />;
   return (
-    <View
-      style={styles.count}
-      pointerEvents="none"
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-    >
-      <Text style={styles.countText} numberOfLines={1}>
-        {value > 9 ? '9+' : value}
+    <View style={[styles.avatar, styles.avatarInitials, { borderColor: fieldFg }]}>
+      <Text accessible={false} importantForAccessibility="no" style={[styles.initials, { color: fieldFg }]}>
+        {initials}
       </Text>
     </View>
   );
 }
 
-function labelFor(slot: Extract<Slot, { kind: 'page' | 'avatar' }>, chats: number, alerts: number): string {
-  const n = slot.page === 'chats' ? chats : slot.page === 'alerts' ? alerts : 0;
-  return n > 0 ? `${slot.label}, ${n} waiting` : slot.label;
+/** the spoken label never rounds, so a screen reader hears the real number. */
+function countLabel(name: string, count: number): string {
+  return count > 0 ? `${name}, ${count} waiting` : name;
+}
+
+function useGlass(): boolean {
+  return useMemo(() => {
+    if (Platform.OS !== 'ios') return false;
+    if (!isLiquidGlassAvailable()) return false;
+    // isLiquidGlassAvailable can be true while the system is limiting
+    // the effect for accessibility. Read it once; a person changing this
+    // setting mid-session gets it on the next mount, which is the same
+    // deal every other appearance setting in the app gets.
+    let reduced = false;
+    void AccessibilityInfo.isReduceTransparencyEnabled().then((on) => {
+      reduced = on;
+    });
+    return !reduced;
+  }, []);
+}
+
+/** a hex or rgb foreground at a given alpha, for the selection capsule. */
+function withAlpha(color: string, alpha: number): string {
+  if (color.startsWith('#') && color.length === 7) {
+    const r = parseInt(color.slice(1, 3), 16);
+    const g = parseInt(color.slice(3, 5), 16);
+    const b = parseInt(color.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  return color;
 }
 
 const styles = StyleSheet.create({
-  dock: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  layer: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
-  row: { flex: 1, flexDirection: 'row', alignItems: 'flex-start' },
-  column: { flex: 1, alignItems: 'center', paddingTop: dock.iconTop, minHeight: dock.control },
-  // every mark sits in the same box, so the five columns share one icon
-  // line and one label line whatever shape the mark itself is.
-  markBox: { width: dock.icon, height: dock.icon, alignItems: 'center', justifyContent: 'center' },
-  label: {
-    ...tokens.typography.tagSmall,
-    textTransform: 'uppercase',
-    // labelTop is measured from the control row's top and the column
-    // already pads by iconTop, so this is the gap between the two.
-    marginTop: dock.labelTop - dock.iconTop - dock.icon,
-  },
-  labelOn: { fontFamily: fontFamily.monoSemi },
-  avatar: {
-    width: dock.icon,
-    height: dock.icon,
-    borderRadius: dock.icon / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+  expandedWrap: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
+  collapsedWrap: { position: 'absolute' },
+  pill: {
+    flexDirection: 'row',
+    paddingHorizontal: dock.pillPadH,
+    paddingVertical: dock.pillPadV,
     overflow: 'hidden',
   },
-  avatarPhoto: { width: dock.icon, height: dock.icon, borderRadius: dock.icon / 2 },
-  avatarInitials: { fontFamily: fontFamily.monoSemi, fontSize: 9, letterSpacing: 0.3 },
-  cast: {
+  collapsed: { width: dock.collapsedSize, height: dock.collapsedSize, overflow: 'hidden' },
+  collapsedTouch: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  slot: { width: dock.control + 24, alignItems: 'center', justifyContent: 'center', paddingVertical: 4 },
+  capsule: { ...StyleSheet.absoluteFill, borderRadius: dock.capsuleRadius },
+  markBody: { alignItems: 'center', justifyContent: 'center' },
+  label: { fontFamily: fontFamily.text, fontSize: dock.labelSize, marginTop: dock.labelTop },
+  badge: {
     position: 'absolute',
-    // centred on the same line as every other mark: the marks run
-    // iconTop..iconTop+icon, and this is centred on that midpoint.
-    top: dock.cast.top,
-    width: dock.cast.size,
-    height: dock.cast.size,
-    borderRadius: dock.cast.radius,
-    backgroundColor: tokens.semantic.color.accent,
-    // the ring is what saves it on the social field, where the button and
-    // the poster are the same orange. ink on every ground: the fields
-    // that need a ring at all are the light ones.
-    borderWidth: dock.cast.ring,
-    borderColor: tokens.semantic.color.ink,
+    top: -2,
+    right: -10,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    paddingHorizontal: 4,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  count: {
-    position: 'absolute',
-    top: 2,
-    left: '50%',
-    marginLeft: 5,
-    minWidth: 18,
-    height: 18,
-    paddingHorizontal: 5,
-    borderRadius: 9,
     backgroundColor: tokens.semantic.color.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  countText: { fontFamily: fontFamily.monoSemi, fontSize: 10, lineHeight: 13, color: tokens.semantic.color.ink },
+  badgeText: { fontFamily: fontFamily.text, fontSize: 10, fontWeight: '700', color: tokens.primitive.color.cream },
+  avatar: { width: dock.icon, height: dock.icon, borderRadius: dock.icon / 2 },
+  avatarInitials: { alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  initials: { fontFamily: fontFamily.text, fontSize: 10, fontWeight: '600' },
 });
