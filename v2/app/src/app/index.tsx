@@ -76,14 +76,20 @@ export default function HomeScreen() {
   // the feed, not by scroll offset: the feed is a full-screen pager, so
   // there is no continuous depth to read -- it snaps between posters.
   const [collapse] = useState(() => new Animated.Value(0));
+  const [collapsed, setCollapsed] = useState(false);
   const restoreTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function setReading(reading: boolean) {
     if (restoreTimer.current) clearTimeout(restoreTimer.current);
+    setCollapsed(reading);
     Animated.timing(collapse, {
       toValue: reading ? 1 : 0,
       duration: reading ? 160 : 220,
-      useNativeDriver: true,
+      // width and left are layout properties: the native driver cannot
+      // carry them, and the alternative -- scaleX -- squashes the glass
+      // and the marks rather than resizing them. One small view, two
+      // properties.
+      useNativeDriver: false,
     }).start();
     // The dock may not be left collapsed by a gesture that never ends.
     // onMomentumScrollEnd is the normal restore; this is the backstop for
@@ -156,6 +162,7 @@ export default function HomeScreen() {
         current={page}
         fieldFg={fieldFg}
         collapse={collapse}
+        collapsed={collapsed}
         inboxCount={inboxCount}
         photo={photoUri ? { uri: photoUri } : undefined}
         initials={initialsFor(me.name)}

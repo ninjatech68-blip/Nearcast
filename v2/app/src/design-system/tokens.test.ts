@@ -18,7 +18,7 @@ describe('design tokens', () => {
   it('keeps every interactive target at least 44 points', () => {
     expect(tokens.component.bar.height).toBeGreaterThanOrEqual(44);
     expect(tokens.component.quiet.minHeight).toBeGreaterThanOrEqual(44);
-    expect(tokens.component.dock.control).toBeGreaterThanOrEqual(44);
+    expect(tokens.component.dock.height).toBeGreaterThanOrEqual(44);
     expect(tokens.component.minTarget).toBe(44);
   });
 
@@ -80,7 +80,7 @@ describe('design tokens', () => {
     // pill, which floats above the bottom inset rather than sitting on it.
     const { dock, posterBottomReserve } = tokens.component;
     const homeIndicator = 34;
-    const pillTopFromBottom = homeIndicator + dock.pillLift + dock.control;
+    const pillTopFromBottom = homeIndicator + dock.lift + dock.height;
     expect(posterBottomReserve).toBeGreaterThan(pillTopFromBottom);
   });
 
@@ -90,7 +90,11 @@ describe('design tokens', () => {
     // dock is the only way back to the feed while reading, so it may
     // never shrink below one.
     expect(dock.collapsedSize).toBeGreaterThanOrEqual(44);
-    // and the label still fits under the icon inside the pill
-    expect(dock.labelSize + dock.labelTop + dock.icon).toBeLessThanOrEqual(dock.control);
+    // the label fits under the icon inside the bar
+    expect(dock.labelSize + dock.labelTop + dock.icon).toBeLessThanOrEqual(dock.height);
+    // and the morph works only while height IS the corner diameter: the
+    // pill can then contract to a circle without animating its radius.
+    expect(dock.height).toBe(dock.radius * 2);
+    expect(dock.collapsedSize).toBe(dock.height);
   });
 });

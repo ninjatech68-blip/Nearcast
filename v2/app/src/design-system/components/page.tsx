@@ -72,7 +72,7 @@ export function Page({
 /** the ground fading up into the marks. same cream, never a second shade. */
 function FooterFade() {
   const insets = useSafeAreaInsets();
-  const solid = tokens.component.dock.control + insets.bottom;
+  const solid = tokens.component.dock.height + tokens.component.dock.lift + insets.bottom;
   return (
     <View pointerEvents="none" style={[styles.fade, { height: solid + FADE_STEPS.length * STEP }]}>
       {FADE_STEPS.map((opacity, index) => (

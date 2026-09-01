@@ -91,35 +91,33 @@ export const tokens = {
      */
     dock: {
       /**
-       * Three destinations in a glass pill, and no action: casting moved
-       * to the top right. The previous dock needed five columns because
-       * four destinations plus an action lands off-centre on an even
-       * grid unless the action is the middle one. Take the action out
-       * and three columns balance with nothing to arrange around.
+       * Three destinations, no action. The action moved to the top
+       * right, which is what lets three columns balance with nothing to
+       * arrange around -- four destinations plus an action is five
+       * objects, and on an even grid the action lands off-centre unless
+       * it is the middle one.
+       *
+       * The geometry is chosen so the dock can MORPH rather than
+       * cross-fade: height equals the corner diameter, so the expanded
+       * pill contracts into a circle of the same height and the radius
+       * never has to animate. One element, one width, one position.
        */
-      control: 56,
+      height: 56,
+      slot: 80,
       icon: 24,
-      /** the pill itself, floating clear of the bottom inset */
-      pillRadius: 28,
-      pillPadH: 8,
-      pillPadV: 6,
-      pillLift: 12,
-      /** the lighter capsule that marks the selected slot inside it */
+      radius: 28,
+      padH: 8,
+      lift: 12,
+      /** the selection lens, inset inside the bar */
       capsuleRadius: 22,
-      /**
-       * The selection carries NO colour. It is a `clear` glass lens in a
-       * `regular` glass bar, and the difference between those two
-       * materials is the entire indicator. Tinting it with the field
-       * foreground rendered it black on every light category; tinting it
-       * white would be the same mistake pointed the other way.
-       */
+      capsuleInset: 6,
       labelSize: 11,
       labelTop: 2,
-      /** collapsed: one mark, bottom left, still a control */
-      collapsedSize: 52,
-      collapsedRadius: 18,
+      /** collapsed: the same height, so it is a circle of that diameter */
+      collapsedSize: 56,
       collapsedInset: 16,
     },
+
 
     row: { minHeight: 64 },
     field: { fontSize: 34, lineHeight: 37, maxLength: 140, warnAt: 120 },

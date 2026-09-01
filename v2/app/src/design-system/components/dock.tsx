@@ -1,5 +1,5 @@
 import { GlassContainer } from 'expo-glass-effect';
-import { Animated, Image, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Glyph, type GlyphName } from '@/design-system/components/glyph';
@@ -27,56 +27,68 @@ const SLOTS: readonly Slot[] = [
 const LABELS: Record<DockPage, string> = { near: 'near', inbox: 'inbox', you: 'you' };
 
 const dock = tokens.component.dock;
+const PILL_WIDTH = SLOTS.length * dock.slot + dock.padH * 2;
+/** how far `near` must slide left to be centred in the collapsed circle */
+const NEAR_SHIFT = dock.collapsedSize / 2 - (dock.padH + dock.slot / 2);
 
 /**
- * The dock: three destinations in a glass pill, and no action.
+ * The dock: three destinations in a glass bar that MORPHS into a single
+ * mark, and no action.
  *
- * HOW THE GLASS IS BUILT, because getting this wrong looks like a blur
+ * IT IS ONE ELEMENT, NOT TWO. The first version cross-faded an expanded
+ * dock out and a collapsed one in, which is not what the bar it is
+ * modelled on does and did not read as the same object moving. Here a
+ * single container animates its width and its left edge; the bar
+ * contracts and travels to the corner. That works because the geometry
+ * is chosen for it: height equals the corner diameter, so a pill of that
+ * height contracts into a circle and the radius never animates at all.
+ *
+ * The animation drives `width` and `left`, which are layout properties
+ * and cannot use the native driver. That is deliberate rather than
+ * careless: this is one small view with two properties, and the
+ * alternative -- a scaleX transform -- squashes the glass and the marks
+ * instead of resizing them.
+ *
+ * HOW THE GLASS IS BUILT, because getting it wrong looks like a blur
  * rather than like the system:
  *
- *  - `borderRadius` is a NATIVE prop, not a style. The Swift side reads
- *    it and calls `setBorderRadius` on the UIVisualEffectView; a radius
- *    that only exists in the RN style rounds the container while the
- *    effect inside stays square.
+ *  - `borderRadius` is a NATIVE prop, not a style. The Swift reads it
+ *    and calls `setBorderRadius` on the UIVisualEffectView; a radius
+ *    that lives only in the RN style rounds the container and leaves the
+ *    effect square inside it.
  *  - No `overflow: 'hidden'`. Clipping on the RN side cuts the effect
- *    off instead of shaping it. The native radius is the only correct
- *    way to round glass.
- *  - No `backgroundColor`, anywhere in the stack. A ground painted over
- *    glass is just a coloured rectangle.
+ *    off instead of shaping it.
  *  - `GlassContainer` is the merge, not a wrapper. It applies
  *    `UIGlassContainerEffect`, whose `spacing` is the distance at which
- *    sibling glass begins to flow together -- the selection lens fusing
- *    with the bar rather than sliding on top of it.
+ *    sibling glass begins to flow together.
  *  - MATERIAL FIRST, CONTENT OVER IT. The marks are drawn above the
- *    glass stack, outside any glass view. Putting them inside the bar's
- *    glass, with the selection beside it, meant the selection painted
- *    over the mark it was meant to sit behind and the mark vanished.
+ *    glass, outside any glass view. Putting them inside the bar's glass
+ *    with the selection beside it meant the selection painted over the
+ *    mark it was meant to sit behind, and the mark vanished.
  *  - NO TINT, on anything. The selection is a `clear` lens in a
  *    `regular` bar and the difference between those materials is the
- *    entire indicator. It was tinted with `fieldFg`, which on every
- *    light category IS ink, so it rendered black; tinting it white
- *    would have been the same mistake pointed the other way. Glass
- *    shows what is behind it. That is the whole point of it.
+ *    entire indicator. It was tinted `fieldFg`, which on every light
+ *    category IS ink, so it rendered black; white would have been the
+ *    same mistake pointed the other way. Glass shows what is behind it.
  *
- * WHY IT HAS A SURFACE AT ALL. The dock this replaces refused any, on
+ * WHY IT HAS A SURFACE AT ALL. The dock this replaces refused one, on
  * the grounds that a bar with its own shade takes a tenth of the
- * category field away, and that flat colour owning the whole screen is
- * the only unmistakable thing about this app. That argument stands, and
- * glass is the exception it allows for: it refracts the field rather
- * than covering it. The test asserts no OPAQUE ground, which is the rule
- * the old one was reaching for.
+ * category field away. That argument stands and glass is the exception
+ * it allows for: it refracts the field rather than covering it. The test
+ * asserts no OPAQUE ground, which is the rule the old one was reaching
+ * for.
  *
  * WHY COLLAPSING IS NOT THE OLD BUG. The rail two designs ago animated
- * to `opacity: 0` and restored only from `onMomentumScrollEnd`, so a
- * drag released without velocity left it invisible -- and an opacity-0
- * view in React Native still receives touches, so it went on swallowing
- * taps meant for the poster. Collapsed here is smaller and moved. It is
- * always visible and it always routes.
+ * to `opacity: 0` and an opacity-0 view in React Native still receives
+ * touches, so it went on swallowing taps meant for the poster beneath
+ * it. Collapsed here is a smaller shape in the corner: visible, and it
+ * routes.
  */
 export function Dock({
   current,
   fieldFg,
   collapse,
+  collapsed,
   inboxCount = 0,
   photo,
   initials,
@@ -87,124 +99,83 @@ export function Dock({
   fieldFg: string;
   /** 0 expanded, 1 collapsed. */
   collapse: Animated.Value | Animated.AnimatedInterpolation<number>;
+  /**
+   * The same state as a boolean, because opacity is not hit testing.
+   *
+   * An opacity-0 view in React Native still receives touches. That is
+   * the exact bug the rail two designs ago shipped, and fading the two
+   * outer marks without this would have reintroduced it -- they sit
+   * outside the contracted circle, invisible, and would go on taking
+   * taps meant for the content behind them.
+   */
+  collapsed?: boolean;
   inboxCount?: number;
   photo?: ImageSourcePropType;
   initials: string;
   onGo: (page: DockPage) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { width: screen } = useWindowDimensions();
   const glass = useGlass();
 
-  const expandedOpacity = collapse.interpolate({ inputRange: [0, 0.6], outputRange: [1, 0], extrapolate: 'clamp' });
-  const collapsedOpacity = collapse.interpolate({ inputRange: [0.4, 1], outputRange: [0, 1], extrapolate: 'clamp' });
-  const expandedScale = collapse.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92], extrapolate: 'clamp' });
-
-  const bottom = insets.bottom + dock.pillLift;
   const selectedIndex = DOCK_PAGES.indexOf(current);
+  const range = { inputRange: [0, 1], extrapolate: 'clamp' as const };
 
-  const marks = SLOTS.map((slot) => (
-    <Mark
-      key={slot.page}
-      slot={slot}
-      selected={slot.page === current}
-      fieldFg={fieldFg}
-      count={slot.page === 'inbox' ? inboxCount : 0}
-      photo={photo}
-      initials={initials}
-      onPress={() => onGo(slot.page)}
-    />
-  ));
+  // the whole morph: a width and a left edge.
+  const width = collapse.interpolate({ ...range, outputRange: [PILL_WIDTH, dock.collapsedSize] });
+  const left = collapse.interpolate({
+    ...range,
+    outputRange: [(screen - PILL_WIDTH) / 2, dock.collapsedInset],
+  });
+  // `near` slides so it lands centred in the circle rather than at the
+  // left padding it occupies while the bar is wide.
+  const shift = collapse.interpolate({ ...range, outputRange: [0, NEAR_SHIFT] });
+  // the other two, and every label, are gone well before the bar is
+  // narrow enough to crowd them.
+  const others = collapse.interpolate({ inputRange: [0, 0.35], outputRange: [1, 0], extrapolate: 'clamp' });
+  const labels = collapse.interpolate({ inputRange: [0, 0.25], outputRange: [1, 0], extrapolate: 'clamp' });
+  const lens = collapse.interpolate({ inputRange: [0, 0.2], outputRange: [1, 0], extrapolate: 'clamp' });
 
   return (
-    <>
-      <Animated.View
-        pointerEvents="box-none"
-        style={[styles.expandedWrap, { bottom }, { opacity: expandedOpacity, transform: [{ scale: expandedScale }] }]}
-      >
-        {/*
-          Material first, content on top of it.
-
-          The glass -- bar and selection both -- is laid down as siblings
-          in a GlassContainer so UIGlassContainerEffect can merge them.
-          The marks are then drawn OVER that stack, outside any glass
-          view. That is the arrangement the system uses: icons and labels
-          are content above the material, never inside it.
-
-          The first version put the marks inside the bar's glass and the
-          selection beside it, so the selection painted over the mark it
-          was meant to sit behind, and the mark vanished.
-        */}
-        <View style={styles.stack}>
-          {glass ? (
-            <GlassContainer spacing={dock.pillPadV * 2} style={StyleSheet.absoluteFill}>
-              <Glass glassEffectStyle="regular" borderRadius={dock.pillRadius} isInteractive style={StyleSheet.absoluteFill} />
-              {/*
-                No tintColor. None. The selection is a CLEAR lens in a
-                REGULAR bar -- the difference between the two materials is
-                the whole indicator. Tinting it with the field foreground
-                is what turned it black on every light category; tinting
-                it white would have been the same mistake in the other
-                direction. Glass shows what is behind it, and that is the
-                point of it.
-              */}
-              <Glass
-                glassEffectStyle="clear"
-                borderRadius={dock.capsuleRadius}
-                style={[styles.capsule, { left: dock.pillPadH + selectedIndex * SLOT_WIDTH }]}
-              />
-            </GlassContainer>
-          ) : (
-            <View style={[StyleSheet.absoluteFill, styles.flatPill]} />
-          )}
-          <View style={styles.row} pointerEvents="box-none">
-            {marks}
-          </View>
-        </View>
-      </Animated.View>
-
-      <Animated.View
-        pointerEvents="box-none"
-        style={[styles.collapsedWrap, { bottom, left: dock.collapsedInset }, { opacity: collapsedOpacity }]}
-      >
-        {/* same arrangement: material, then the mark over it */}
-        <View style={styles.collapsed}>
-          {glass ? (
-            <Glass
-              glassEffectStyle="regular"
-              borderRadius={dock.collapsedRadius}
-              isInteractive
-              style={StyleSheet.absoluteFill}
-            />
-          ) : (
-            <View style={[StyleSheet.absoluteFill, styles.flatPill, { borderRadius: dock.collapsedRadius }]} />
-          )}
-          <CollapsedMark current={current} fieldFg={fieldFg} onGo={onGo} />
-        </View>
-      </Animated.View>
-    </>
-  );
-}
-
-function CollapsedMark({
-  current,
-  fieldFg,
-  onGo,
-}: {
-  current: DockPage;
-  fieldFg: string;
-  onGo: (page: DockPage) => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={countLabel('near', 0)}
-      accessibilityState={{ selected: current === 'near' }}
-      onPress={() => onGo('near')}
-      style={styles.collapsedTouch}
-      hitSlop={8}
+    <Animated.View
+      pointerEvents="box-none"
+      style={[styles.stack, { bottom: insets.bottom + dock.lift, width, left }]}
     >
-      <Glyph name="near" size={dock.icon} color={fieldFg} weight="semibold" />
-    </Pressable>
+      {glass ? (
+        <GlassContainer spacing={dock.capsuleInset * 2} style={StyleSheet.absoluteFill}>
+          <Glass glassEffectStyle="regular" borderRadius={dock.radius} isInteractive style={StyleSheet.absoluteFill} />
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.lensWrap, { opacity: lens, left: dock.padH + selectedIndex * dock.slot }]}
+          >
+            <Glass glassEffectStyle="clear" borderRadius={dock.capsuleRadius} style={StyleSheet.absoluteFill} />
+          </Animated.View>
+        </GlassContainer>
+      ) : (
+        <View style={[StyleSheet.absoluteFill, styles.flat]} />
+      )}
+
+      <Animated.View style={[styles.row, { transform: [{ translateX: shift }] }]} pointerEvents="box-none">
+        {SLOTS.map((slot) => (
+          <Mark
+            key={slot.page}
+            slot={slot}
+            selected={slot.page === current}
+            fieldFg={fieldFg}
+            count={slot.page === 'inbox' ? inboxCount : 0}
+            photo={photo}
+            initials={initials}
+            labelOpacity={labels}
+            // `near` is what the collapsed circle keeps, so it never fades
+            markOpacity={slot.page === 'near' ? undefined : others}
+            // near survives the contraction; the other two stop being
+            // targets the moment they start disappearing.
+            reachable={slot.page === 'near' || !collapsed}
+            onPress={() => onGo(slot.page)}
+          />
+        ))}
+      </Animated.View>
+    </Animated.View>
   );
 }
 
@@ -215,6 +186,9 @@ function Mark({
   count,
   photo,
   initials,
+  labelOpacity,
+  markOpacity,
+  reachable,
   onPress,
 }: {
   slot: Slot;
@@ -223,31 +197,37 @@ function Mark({
   count: number;
   photo?: ImageSourcePropType;
   initials: string;
+  labelOpacity: Animated.AnimatedInterpolation<number>;
+  markOpacity?: Animated.AnimatedInterpolation<number>;
+  reachable: boolean;
   onPress: () => void;
 }) {
   const label = LABELS[slot.page];
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={countLabel(label, count)}
-      accessibilityState={{ selected }}
-      onPress={onPress}
-      style={styles.slot}
-      hitSlop={6}
+    <Animated.View
+      style={markOpacity ? { opacity: markOpacity } : undefined}
+      pointerEvents={reachable ? 'auto' : 'none'}
     >
-      <View style={styles.markBody}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={countLabel(label, count)}
+        accessibilityState={{ selected }}
+        onPress={onPress}
+        style={styles.slot}
+        hitSlop={6}
+      >
         {slot.kind === 'avatar' ? (
           <Avatar photo={photo} initials={initials} fieldFg={fieldFg} />
         ) : (
           <Glyph name={slot.glyph} size={dock.icon} color={fieldFg} weight={selected ? 'semibold' : 'regular'} />
         )}
-        <Text
+        <Animated.Text
           accessible={false}
           importantForAccessibility="no"
-          style={[styles.label, { color: fieldFg, fontWeight: selected ? '600' : '400' }]}
+          style={[styles.label, { color: fieldFg, fontWeight: selected ? '600' : '400', opacity: labelOpacity }]}
         >
           {label}
-        </Text>
+        </Animated.Text>
         {count > 0 ? (
           <View style={styles.badge}>
             <Text accessible={false} importantForAccessibility="no" style={styles.badgeText}>
@@ -255,8 +235,8 @@ function Mark({
             </Text>
           </View>
         ) : null}
-      </View>
-    </Pressable>
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -276,37 +256,28 @@ function countLabel(name: string, count: number): string {
   return count > 0 ? `${name}, ${count} waiting` : name;
 }
 
-const SLOT_WIDTH = dock.control + 24;
-
 const styles = StyleSheet.create({
-  expandedWrap: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
-  collapsedWrap: { position: 'absolute' },
-  container: { flexDirection: 'row' },
-  // the box both layers fill. Its size comes from the row inside it,
-  // so the glass is exactly as big as the marks it sits under.
-  stack: { position: 'relative' },
-  row: { flexDirection: 'row', paddingHorizontal: dock.pillPadH, paddingVertical: dock.pillPadV },
+  stack: { position: 'absolute', height: dock.height },
   // no glass: a hairline ring, so the field still runs behind the bar
   // rather than a flat plane sitting on it.
-  // no glass: a hairline ring, so the field still runs behind the bar
-  // rather than a flat plane sitting on it.
-  flatPill: { borderRadius: dock.pillRadius, borderWidth: StyleSheet.hairlineWidth, borderColor: tokens.semantic.color.hairlineOnCream },
-  capsule: {
-    position: 'absolute',
-    top: dock.pillPadV,
-    bottom: dock.pillPadV,
-    width: SLOT_WIDTH,
-    borderRadius: dock.capsuleRadius,
+  flat: {
+    borderRadius: dock.radius,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: tokens.semantic.color.hairlineOnCream,
   },
-  collapsed: { width: dock.collapsedSize, height: dock.collapsedSize },
-  collapsedTouch: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  slot: { width: SLOT_WIDTH, alignItems: 'center', justifyContent: 'center', paddingVertical: 4 },
-  markBody: { alignItems: 'center', justifyContent: 'center' },
+  lensWrap: {
+    position: 'absolute',
+    top: dock.capsuleInset,
+    bottom: dock.capsuleInset,
+    width: dock.slot,
+  },
+  row: { ...StyleSheet.absoluteFill, flexDirection: 'row', paddingHorizontal: dock.padH },
+  slot: { width: dock.slot, height: '100%', alignItems: 'center', justifyContent: 'center' },
   label: { fontFamily: fontFamily.text, fontSize: dock.labelSize, marginTop: dock.labelTop },
   badge: {
     position: 'absolute',
-    top: -2,
-    right: -10,
+    top: 6,
+    right: 16,
     minWidth: 16,
     height: 16,
     borderRadius: 8,

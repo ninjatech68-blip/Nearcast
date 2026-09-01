@@ -35,6 +35,16 @@ function countWhere(root: Node, pick: (style: Record<string, unknown>) => boolea
   return here + kids.reduce((n, child) => n + countWhere(child, pick), 0);
 }
 
+/** the nearest ancestor that declares pointerEvents, walking up from a node. */
+function findPointerEvents(node: { parent?: unknown; props?: { pointerEvents?: string } } | null): string | undefined {
+  let at = node as { parent?: unknown; props?: { pointerEvents?: string } } | null;
+  while (at) {
+    if (at.props?.pointerEvents) return at.props.pointerEvents;
+    at = (at.parent ?? null) as typeof at;
+  }
+  return undefined;
+}
+
 describe('dock', () => {
   it('offers three destinations and no action', async () => {
     const { view } = await renderDock();
@@ -65,14 +75,16 @@ describe('dock', () => {
     }
   });
 
-  it('marks the selected destination with a capsule inside the glass', async () => {
+  it('marks the selected destination with an untinted lens', async () => {
     const { view } = await renderDock({ current: 'inbox' });
 
     expect(view.getByRole('button', { name: 'inbox' }).props.accessibilityState).toMatchObject({ selected: true });
     expect(view.getByRole('button', { name: 'near' }).props.accessibilityState).toMatchObject({ selected: false });
-    // exactly one capsule, and it belongs to the selected slot
-    const capsules = countWhere(view.toJSON() as unknown as Node, (s) => s.borderRadius === tokens.component.dock.capsuleRadius);
-    expect(capsules).toBe(1);
+    // one lens, and it belongs to the selected slot. It carries no
+    // colour at all -- it is a `clear` glass element in a `regular` bar,
+    // and the difference between the materials is the indicator.
+    const tinted = countWhere(view.toJSON() as unknown as Node, (s) => typeof s.backgroundColor === 'string' && s.backgroundColor !== 'transparent');
+    expect(tinted).toBe(0);
   });
 
   it('collapses to a single mark that is still a control', async () => {
@@ -87,6 +99,46 @@ describe('dock', () => {
     expect(home).toBeTruthy();
     await user.press(home);
     expect(onGo).toHaveBeenCalledWith('near');
+  });
+
+  it('is one element in both states, not two cross-faded', async () => {
+    // The first version rendered an expanded dock AND a collapsed one,
+    // fading between them, which is not the same object moving. There is
+    // one container; collapse changes its width and its left edge.
+    const expanded = await renderDock({ collapse: new Animated.Value(0) });
+    const collapsed = await renderDock({ collapse: new Animated.Value(1) });
+
+    // every destination is present in both states -- collapsed hides
+    // them with opacity, so they are still reachable by assistive tech
+    // and there is no second tree to fall out of sync.
+    for (const page of DOCK_PAGES) {
+      expect(expanded.view.getAllByRole('button', { name: new RegExp(`^${page}`) })).toHaveLength(1);
+      expect(collapsed.view.getAllByRole('button', { name: new RegExp(`^${page}`) })).toHaveLength(1);
+    }
+    expect(collapsed.view.getAllByRole('button')).toHaveLength(DOCK_PAGES.length);
+  });
+
+  it('stops the faded marks taking taps once collapsed', async () => {
+    // opacity is not hit testing. An opacity-0 view in React Native
+    // still receives touches -- the exact failure the rail two designs
+    // ago shipped. The two outer marks sit outside the contracted
+    // circle, so without this they would be invisible and still eating
+    // taps meant for the content behind them.
+    const { view } = await renderDock({ collapse: new Animated.Value(1), collapsed: true });
+    const inbox = view.getByRole('button', { name: 'inbox' });
+    expect(findPointerEvents(inbox)).toBe('none');
+    // and `near` is what the circle keeps, so it stays a target
+    const near = view.getByRole('button', { name: /^near/ });
+    expect(findPointerEvents(near)).not.toBe('none');
+  });
+
+  it('contracts to a circle without animating its radius', () => {
+    // the geometry the morph rests on: a pill whose height is its corner
+    // diameter becomes a circle at that height, so the radius is
+    // constant and only width and position move.
+    const { dock } = tokens.component;
+    expect(dock.height).toBe(dock.radius * 2);
+    expect(dock.collapsedSize).toBe(dock.height);
   });
 
   it('counts only what is waiting, and shows nothing at zero', async () => {
