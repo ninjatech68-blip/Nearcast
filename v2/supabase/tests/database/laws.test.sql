@@ -58,10 +58,11 @@ insert into public.circle_members (circle_id, person_id) values
   ('c1c1c1c1-0000-0000-0000-000000000001', 'bbbbbbbb-0000-0000-0000-00000000000b');
 
 insert into public.casts (
-  id, caster_id, category, statement, slots, area_name, happens_at, expires_at, state, published_at
+  id, caster_id, category, statement, slots, match_point, happens_at, expires_at, state, published_at
 ) values (
   'ca57ca57-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-00000000000a',
-  'sports', 'badminton after work.', 2, 'Indiranagar',
+  'sports', 'badminton after work.', 2,
+  extensions.ST_Point(77.64, 12.98)::extensions.geography,
   now() + interval '6 hours', now() + interval '8 hours', 'live', now()
 );
 insert into public.cast_reach (cast_id, kind) values
@@ -238,7 +239,8 @@ select throws_ok(
   '42501', null, 'L9 and cannot remove it'
 );
 select throws_ok(
-  $$ select public.publish_cast('social', 'still here', 1, now() + interval '1 day', 'nearby', 'Domlur') $$,
+  $$ select public.publish_cast('social', 'still here', 1, now() + interval '1 day', 'nearby',
+       12.9610, 77.6390, 'a place', 3000) $$,
   '42501', null, 'L9 a restricted account cannot publish'
 );
 

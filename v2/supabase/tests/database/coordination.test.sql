@@ -49,7 +49,7 @@ insert into public.person_interests (person_id, category) values
 set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"aaaaaaaa-0000-0000-0000-00000000000a","role":"authenticated"}';
 select public.publish_cast('sports', 'badminton after work.', 2,
-  now() + interval '6 hours', 'nearby', 'Indiranagar', 3000);
+  now() + interval '6 hours', 'nearby', 12.9784, 77.6408, 'the court', 3000);
 
 reset role;
 create temporary table t as select id, happens_at from public.casts limit 1;

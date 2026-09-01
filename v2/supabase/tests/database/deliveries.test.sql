@@ -109,7 +109,7 @@ set local "request.jwt.claims" = '{"sub":"aaaaaaaa-0000-0000-0000-00000000000a",
 
 select lives_ok(
   $$ select public.publish_cast('sports', 'badminton after work.', 2,
-       now() + interval '6 hours', 'nearby', 'Indiranagar', 3000) $$,
+       now() + interval '6 hours', 'nearby', 12.9784, 77.6408, 'the court', 3000) $$,
   'a nearby cast publishes');
 
 reset role;
@@ -167,7 +167,7 @@ set local role authenticated;
 set local "request.jwt.claims" = '{"sub":"aaaaaaaa-0000-0000-0000-00000000000a","role":"authenticated"}';
 select lives_ok(
   $$ select public.publish_cast('social', 'drinks at mine.', 4,
-       now() + interval '7 hours', 'circles', 'Indiranagar', null,
+       now() + interval '7 hours', 'circles', 12.9784, 77.6408, 'mine', null,
        array['c1c1c1c1-0000-0000-0000-000000000001'::uuid]) $$,
   'a circles cast publishes');
 
