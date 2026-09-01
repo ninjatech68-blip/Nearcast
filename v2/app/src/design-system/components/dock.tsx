@@ -1,5 +1,5 @@
 import { GlassContainer } from 'expo-glass-effect';
-import { useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -168,51 +168,71 @@ export function Dock({
    */
   const lens = useRef(new Animated.Value(lensRestLeft(selectedIndex, GEO))).current;
   const dragging = useRef(false);
-  if (!dragging.current) lens.setValue(lensRestLeft(selectedIndex, GEO));
 
-  const pan = useMemo(
-    () =>
-      PanResponder.create({
-        // A tap must still reach the marks underneath, so this claims
-        // the gesture only once the thumb has actually travelled.
-        onStartShouldSetPanResponder: () => false,
-        onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > DRAG_SLOP,
-        onPanResponderGrant: () => {
-          dragging.current = true;
-        },
-        onPanResponderMove: (e) => {
-          const x = e.nativeEvent.locationX;
-          lens.setValue(lensLeft(x, GEO));
-          onScrub?.(scrubPosition(x, GEO), false);
-        },
-        onPanResponderRelease: (e) => {
-          dragging.current = false;
-          const index = scrubIndex(e.nativeEvent.locationX, GEO);
-          Animated.spring(lens, {
-            toValue: lensRestLeft(index, GEO),
-            useNativeDriver: false,
-            speed: 20,
-            bounciness: 4,
-          }).start();
-          onScrub?.(index, true);
-          onGo(DOCK_PAGES[index]);
-        },
-        onPanResponderTerminate: () => {
-          // the gesture was taken away mid-drag; put the lens back where
-          // the current page says it belongs rather than leaving it
-          // stranded between two slots.
-          dragging.current = false;
-          Animated.spring(lens, {
-            toValue: lensRestLeft(selectedIndex, GEO),
-            useNativeDriver: false,
-            speed: 20,
-            bounciness: 4,
-          }).start();
-          onScrub?.(selectedIndex, true);
-        },
-      }),
-    [lens, onScrub, onGo, selectedIndex],
-  );
+  // Sync lens to the selected slot when the selection changes from outside.
+  // Must be an effect rather than render-phase code: reading dragging.current
+  // during render is flagged by the React Compiler.
+  useEffect(() => {
+    if (!dragging.current) {
+      lens.setValue(lensRestLeft(selectedIndex, GEO));
+    }
+  }, [selectedIndex, lens]);
+
+  // Stable latest-value refs so the PanResponder (created once on mount)
+  // always reads current props without being recreated.
+  const onScrubRef = useRef(onScrub);
+  const onGoRef = useRef(onGo);
+  const selectedIndexRef = useRef(selectedIndex);
+  useEffect(() => { onScrubRef.current = onScrub; }, [onScrub]);
+  useEffect(() => { onGoRef.current = onGo; }, [onGo]);
+  useEffect(() => { selectedIndexRef.current = selectedIndex; }, [selectedIndex]);
+
+  // useRef rather than useMemo: the PanResponder must be stable for the
+  // lifetime of the component (recreating it mid-gesture terminates the
+  // gesture), and the React Compiler cannot verify useMemo safety when
+  // ref objects appear in the closure.
+  const pan = useRef(
+    PanResponder.create({
+      // A tap must still reach the marks underneath, so this claims
+      // the gesture only once the thumb has actually travelled.
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > DRAG_SLOP,
+      onPanResponderGrant: () => {
+        dragging.current = true;
+      },
+      onPanResponderMove: (e) => {
+        const x = e.nativeEvent.locationX;
+        lens.setValue(lensLeft(x, GEO));
+        onScrubRef.current?.(scrubPosition(x, GEO), false);
+      },
+      onPanResponderRelease: (e) => {
+        dragging.current = false;
+        const index = scrubIndex(e.nativeEvent.locationX, GEO);
+        Animated.spring(lens, {
+          toValue: lensRestLeft(index, GEO),
+          useNativeDriver: false,
+          speed: 20,
+          bounciness: 4,
+        }).start();
+        onScrubRef.current?.(index, true);
+        onGoRef.current(DOCK_PAGES[index]);
+      },
+      onPanResponderTerminate: () => {
+        // the gesture was taken away mid-drag; put the lens back where
+        // the current page says it belongs rather than leaving it
+        // stranded between two slots.
+        dragging.current = false;
+        const idx = selectedIndexRef.current;
+        Animated.spring(lens, {
+          toValue: lensRestLeft(idx, GEO),
+          useNativeDriver: false,
+          speed: 20,
+          bounciness: 4,
+        }).start();
+        onScrubRef.current?.(idx, true);
+      },
+    })
+  ).current;
 
   // the whole morph: a width and a left edge.
   const width = collapse.interpolate({ ...range, outputRange: [PILL_WIDTH, dock.collapsedSize] });
