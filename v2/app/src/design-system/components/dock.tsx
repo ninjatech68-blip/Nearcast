@@ -1,7 +1,9 @@
 import { GlassContainer } from 'expo-glass-effect';
-import { Animated, Image, Pressable, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
+import { useMemo, useRef } from 'react';
+import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { lensLeft, lensRestLeft, scrubIndex, scrubPosition, type ScrubGeometry } from '@/design-system/components/dock-scrub';
 import { Glyph, type GlyphName } from '@/design-system/components/glyph';
 import { Glass, useGlass } from '@/design-system/glass';
 import { fontFamily, tokens } from '@/design-system/tokens';
@@ -30,6 +32,9 @@ const dock = tokens.component.dock;
 const PILL_WIDTH = SLOTS.length * dock.slot + dock.padH * 2;
 /** how far `near` must slide left to be centred in the collapsed circle */
 const NEAR_SHIFT = dock.collapsedSize / 2 - (dock.padH + dock.slot / 2);
+const GEO: ScrubGeometry = { padH: dock.padH, slot: dock.slot, count: SLOTS.length };
+/** how far a thumb must travel before it is a drag rather than a tap. */
+const DRAG_SLOP = 6;
 
 /**
  * The dock: three destinations in a glass bar that MORPHS into a single
@@ -93,6 +98,7 @@ export function Dock({
   photo,
   initials,
   onGo,
+  onScrub,
 }: {
   current: DockPage;
   /** the legible foreground for whatever field is behind the dock */
@@ -113,6 +119,15 @@ export function Dock({
   photo?: ImageSourcePropType;
   initials: string;
   onGo: (page: DockPage) => void;
+  /**
+   * A thumb dragging along the bar, as a FRACTIONAL page position.
+   *
+   * Fractional so the pages move with the finger rather than a page at a
+   * time. `settled` is false while the thumb is down and true when it
+   * lifts, which is when the pager should animate to the whole page it
+   * landed on.
+   */
+  onScrub?: (position: number, settled: boolean) => void;
 }) {
   const insets = useSafeAreaInsets();
   const { width: screen } = useWindowDimensions();
@@ -143,6 +158,62 @@ export function Dock({
   const selectedIndex = DOCK_PAGES.indexOf(current);
   const range = { inputRange: [0, 1], extrapolate: 'clamp' as const };
 
+  /**
+   * The lens position, which is a value rather than a computed style
+   * because a thumb can move it anywhere between two slots.
+   *
+   * At rest it sits on the selected slot. While a thumb is down it
+   * tracks the thumb, so the lens stays under the finger instead of
+   * arriving at the next slot before the finger does.
+   */
+  const lens = useRef(new Animated.Value(lensRestLeft(selectedIndex, GEO))).current;
+  const dragging = useRef(false);
+  if (!dragging.current) lens.setValue(lensRestLeft(selectedIndex, GEO));
+
+  const pan = useMemo(
+    () =>
+      PanResponder.create({
+        // A tap must still reach the marks underneath, so this claims
+        // the gesture only once the thumb has actually travelled.
+        onStartShouldSetPanResponder: () => false,
+        onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > DRAG_SLOP,
+        onPanResponderGrant: () => {
+          dragging.current = true;
+        },
+        onPanResponderMove: (e) => {
+          const x = e.nativeEvent.locationX;
+          lens.setValue(lensLeft(x, GEO));
+          onScrub?.(scrubPosition(x, GEO), false);
+        },
+        onPanResponderRelease: (e) => {
+          dragging.current = false;
+          const index = scrubIndex(e.nativeEvent.locationX, GEO);
+          Animated.spring(lens, {
+            toValue: lensRestLeft(index, GEO),
+            useNativeDriver: false,
+            speed: 20,
+            bounciness: 4,
+          }).start();
+          onScrub?.(index, true);
+          onGo(DOCK_PAGES[index]);
+        },
+        onPanResponderTerminate: () => {
+          // the gesture was taken away mid-drag; put the lens back where
+          // the current page says it belongs rather than leaving it
+          // stranded between two slots.
+          dragging.current = false;
+          Animated.spring(lens, {
+            toValue: lensRestLeft(selectedIndex, GEO),
+            useNativeDriver: false,
+            speed: 20,
+            bounciness: 4,
+          }).start();
+          onScrub?.(selectedIndex, true);
+        },
+      }),
+    [lens, onScrub, onGo, selectedIndex],
+  );
+
   // the whole morph: a width and a left edge.
   const width = collapse.interpolate({ ...range, outputRange: [PILL_WIDTH, dock.collapsedSize] });
   const left = collapse.interpolate({
@@ -156,7 +227,7 @@ export function Dock({
   // narrow enough to crowd them.
   const others = collapse.interpolate({ inputRange: [0, 0.35], outputRange: [1, 0], extrapolate: 'clamp' });
   const labels = collapse.interpolate({ inputRange: [0, 0.25], outputRange: [1, 0], extrapolate: 'clamp' });
-  const lens = collapse.interpolate({ inputRange: [0, 0.2], outputRange: [1, 0], extrapolate: 'clamp' });
+  const lensFade = collapse.interpolate({ inputRange: [0, 0.2], outputRange: [1, 0], extrapolate: 'clamp' });
 
   return (
     <Animated.View
@@ -168,7 +239,7 @@ export function Dock({
           <Glass glassEffectStyle="regular" colorScheme="light" borderRadius={dock.radius} isInteractive style={StyleSheet.absoluteFill} />
           <Animated.View
             pointerEvents="none"
-            style={[styles.lensWrap, { opacity: lens, left: dock.padH + selectedIndex * dock.slot }]}
+            style={[styles.lensWrap, { opacity: lensFade, left: lens }]}
           >
             <Glass glassEffectStyle="clear" colorScheme="light" borderRadius={dock.capsuleRadius} style={StyleSheet.absoluteFill} />
           </Animated.View>
@@ -177,7 +248,11 @@ export function Dock({
         <View style={[StyleSheet.absoluteFill, styles.flat]} />
       )}
 
-      <Animated.View style={[styles.row, { transform: [{ translateX: shift }] }]} pointerEvents="box-none">
+      <Animated.View
+        style={[styles.row, { transform: [{ translateX: shift }] }]}
+        pointerEvents="box-none"
+        {...pan.panHandlers}
+      >
         {SLOTS.map((slot) => (
           <Mark
             key={slot.page}

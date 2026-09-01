@@ -129,6 +129,19 @@ export default function HomeScreen() {
     [scrollX, width, page],
   );
 
+  /**
+   * A thumb dragging along the dock, as a fractional page position.
+   *
+   * While the thumb is down the pager is moved without animation, so the
+   * pages track the finger instead of chasing it. On release it animates
+   * to the whole page that was landed on -- `goTo` from the dock's own
+   * onGo does that, so this only has to stop driving.
+   */
+  function scrub(position: number, settled: boolean) {
+    if (settled) return;
+    pagerRef.current?.scrollTo({ x: position * width, animated: false });
+  }
+
   function goTo(target: DockPage) {
     const index = DOCK_PAGES.indexOf(target);
     if (index < 0) return;
@@ -171,6 +184,7 @@ export default function HomeScreen() {
         photo={photoUri ? { uri: photoUri } : undefined}
         initials={initialsFor(me.name)}
         onGo={goTo}
+        onScrub={scrub}
       />
     </View>
   );
