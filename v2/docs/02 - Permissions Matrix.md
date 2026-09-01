@@ -36,20 +36,20 @@ safety graph. Helpers that do take a person (`is_blocked`, `is_restricted`,
 `SECURITY DEFINER` functions, which run as the owner and need no caller
 privilege.
 
-Four helpers are granted, and all four are caller-scoped:
+Six helpers are granted, and all six are caller-scoped:
 `in_circle(circle)` · `related_to(other)` · `can_read_cast(cast)` ·
-`is_moderator()`.
+`is_moderator()` · `in_thread(thread)` · `thread_open(thread)`.
 
 ---
 
-## The twelve laws
+## The thirteen laws
 
 | | Law | Traces to | Asserted |
 |---|---|---|---|
 | **L1** | No client write privilege exists, on any table | F3 | yes — structurally, over every table in `public` |
 | **L2** | No coordinate describing a person is stored or returned | D4 | yes |
 | **L3** | Circle membership is invisible from outside the circle | D3 | yes |
-| **L4** | A receipt exists only when both people have confirmed | D7 | *pending* — arrives with the coordination slice |
+| **L4** | A receipt exists only when both people have confirmed | D7 | yes |
 | **L5** | A vouch requires a settled receipt | D10 | yes |
 | **L6** | Reach never widens except by an explicit call | D1, D9 | yes |
 | **L7** | Blocked pairs are mutually invisible, immediately | D13 | yes |
@@ -58,7 +58,7 @@ Four helpers are granted, and all four are caller-scoped:
 | **L10** | A cast's words freeze when someone asks to join | D14 | yes |
 | **L11** | No image enters storage with metadata or unscanned | D12 | *pending* — arrives with the media slice |
 | **L12** | Moderation actions are append-only | D11 | yes |
-| **L13** | A chat window widens only by mutual agreement, and never past one month | D16 | *pending* — arrives with the coordination slice |
+| **L13** | A chat window widens only by mutual agreement, and never past one month | D16 | yes |
 
 L1 is table-driven on purpose: it enumerates every table in `public` and fails
 if any write privilege exists anywhere. A table added without thought therefore
@@ -99,6 +99,10 @@ Everything below is `SELECT` only. There is no other kind of policy.
 | `reports` | the reporter, and moderators | |
 | `moderation_actions` | moderators | append-only (L12) |
 | `devices` | you | push tokens are never readable by another person |
+| `threads` | the two parties | `auth.uid() in (caster_id, joiner_id)` |
+| `thread_window_proposals` | the two parties | |
+| `messages` | the two parties | |
+| `thread_reads` | the two parties | |
 
 Two absences are deliberate and load-bearing:
 
@@ -114,7 +118,7 @@ Two absences are deliberate and load-bearing:
 
 ## Write access, complete
 
-Seven functions. This is the entire mutation surface available to a client.
+Fifteen functions. This is the entire mutation surface available to a client.
 
 | Function | What it does | Refuses when |
 |---|---|---|
@@ -124,6 +128,15 @@ Seven functions. This is the entire mutation surface available to a client.
 | `vouch_for(person)` | records a vouch | no settled receipt exists (L5) |
 | `block_person(person)` | blocks, symmetrically | — |
 | `hide_cast(cast, not_relevant)` | removes a delivery from your feed | not delivered to you |
+| `accept_join_request(request)` | accepts, and opens the pair thread | not the caster; already decided; cast full; blocked |
+| `decline_join_request(request)` | declines | not the caster; already decided |
+| `propose_window(thread, tier)` | asks to widen | not a party; thread closed; not a widening; a proposal is open; this tier was already refused in this window |
+| `respond_to_window(thread, accept)` | agrees or does not | not a party; no open proposal; **you are the proposer** |
+| `narrow_window(thread, tier)` | shortens it, unilaterally | not a party; not a narrowing |
+| `end_thread(thread)` | closes it, unilaterally | not a party |
+| `send_message(thread, body)` | sends | not a party; window closed; blocked |
+| `mark_read(thread)` | moves your read cursor | not a party |
+| `confirm_met(thread)` | your half of a receipt | not a party; the activity has not happened |
 | `my_feed(before, page_size)` | reads your deliveries | *(read-only; listed because it is `SECURITY DEFINER`)* |
 
 `my_feed` bypasses RLS by construction, because it needs `is_blocked`, which is

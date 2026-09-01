@@ -74,10 +74,10 @@ roles. It is never applied to a real project.
 
 | | |
 |---|---|
-| Tables | 23 |
-| Policies | 19 — all `SELECT` |
-| Write functions | 6 |
-| Assertions | 71, all passing |
+| Tables | 27 |
+| Policies | 23 — all `SELECT` |
+| Write functions | 15 |
+| Assertions | 110, all passing |
 
 For scale: the previous build reached 53 policies across 34 migrations, with
 write grants on 22 tables.
@@ -91,12 +91,17 @@ operations tables.
 
 Delivery generation, the feed, and hiding a delivery.
 
+Threads, messages, the chat window with mutual extension, read cursors,
+receipt settlement, and the expiry sweeper.
+
 ### Not built yet
 
-Threads, messages, media, message receipts, plan receipt settlement, retention
-jobs, the outbox workers. `plan_receipts` exists as a table because
-`vouch_for()` must enforce L5 today rather than remember it later; nothing
-settles a receipt yet, so every vouch is correctly refused.
+Media — photos and location in chat (D12) — with the EXIF and scanning rules
+that L11 covers. Retention jobs. The outbox workers. Nothing above the database:
+no client, no Edge Functions, no auth flow.
+
+A shared location is a coordinate, and L2 says no coordinate describing a person
+is stored. Those have to be squared explicitly when media lands, not in passing.
 
 ### What building delivery changed in the foundation
 
@@ -128,4 +133,4 @@ had to use it. That is the argument for building in slices.
 | L12 | Moderation actions are append-only |
 | L13 | A chat window widens only by mutual agreement, and never past one month |
 
-L4, L11 and L13 arrive with the slices that need them. The rest are asserted now.
+L11 arrives with the media slice. Every other law is asserted now.
