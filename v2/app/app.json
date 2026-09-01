@@ -1,0 +1,98 @@
+{
+  "expo": {
+    "name": "Nearcast",
+    "slug": "nearcast",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "nearcast",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.piyushsharma.nearcast",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "icon": {
+        "light": "./assets/images/icon.png",
+        "dark": "./assets/images/icon-dark.png",
+        "tinted": "./assets/images/icon-tinted.png"
+      },
+      "_universalLinksNote": "To enable Universal Links: host apple-app-site-association at https://<domain>/.well-known/, then set \"associatedDomains\": [\"applinks:<domain>\"] here and add https://<domain>/auth/callback to Supabase Redirect URLs. Until then the nearcast:// scheme handles the callback.",
+      "buildNumber": "15"
+    },
+    "android": {
+      "package": "com.piyushsharma.nearcast",
+      "adaptiveIcon": {
+        "backgroundColor": "#FF4D00",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "nearcast",
+              "host": "auth",
+              "pathPrefix": "/callback"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+      "versionCode": 14
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F4EFE4",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76
+        }
+      ],
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Nearcast uses your location to drop a pin and suggest your approximate area. Casts never show your exact location."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Nearcast uses photos you pick for your profile picture and for pictures you send in a chat with someone you have matched with.",
+          "cameraPermission": "Nearcast uses the camera when you take a photo to send in a chat with someone you have matched with."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#FF4D00"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a6eb46e6-6211-4965-9de5-129f13d573ae"
+      }
+    },
+    "owner": "ps2109"
+  }
+}

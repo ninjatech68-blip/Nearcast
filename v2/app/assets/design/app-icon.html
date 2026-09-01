@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Nearcast app icon source</title>
+<style>
+  @font-face{
+    font-family:'Bricolage';
+    src:url('./BricolageGrotesque_800ExtraBold.ttf') format('truetype');
+    font-weight:800;
+  }
+  html,body{margin:0;padding:0}
+  #stage{width:1024px;height:1024px;position:relative;overflow:hidden}
+  #stage .n{
+    position:absolute;left:52px;top:-336px;
+    font:800 1560px/1 'Bricolage',sans-serif;letter-spacing:-0.04em;
+  }
+  #stage .dot{position:absolute;width:150px;height:150px;border-radius:50%;right:118px;top:128px}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/*
+ * the icon is the type. a giant Bricolage 800 lowercase n — the same
+ * face as every headline in the app — cropped at the poster scale, with
+ * the cream avatar dot from the app's own top bar. signal symbols were
+ * rejected on purpose: corner arcs read RSS, fans read wi-fi, rings
+ * read Target, text bars read notes-app. the letterform is ours.
+ * variants (?v=): light (orange field, app store + home screen)
+ *                 dark (ink field, iOS dark mode)
+ *                 tinted (white glyph on transparency, iOS tinted mode)
+ *                 fg (glyph only, android adaptive foreground, safe-zone scaled)
+ *                 mono (white glyph, safe-zone scaled, android monochrome)
+ *                 splash (ink + orange glyph on transparency)
+ * regenerate: chromium --headless --window-size=1024,1024
+ *   --allow-file-access-from-files --default-background-color=00000000
+ *   --screenshot=out.png 'file://...?v=light'
+ */
+const ORANGE = '#FF4D00', INK = '#14120E', CREAM = '#F4EFE4', WHITE = '#FFFFFF';
+const v = new URLSearchParams(location.search).get('v') || 'light';
+
+const palettes = {
+  light:  { bg: ORANGE, n: INK,    dot: CREAM },
+  dark:   { bg: INK,    n: ORANGE, dot: CREAM },
+  tinted: { bg: null,   n: WHITE,  dot: WHITE },
+  fg:     { bg: null,   n: INK,    dot: CREAM },
+  mono:   { bg: null,   n: WHITE,  dot: WHITE },
+  splash: { bg: null,   n: INK,    dot: ORANGE },
+};
+const p = palettes[v];
+const safeZone = v === 'fg' || v === 'mono'; // android keeps glyph inside inner 66%
+
+const stage = document.getElementById('stage');
+if (p.bg) stage.style.background = p.bg;
+stage.innerHTML = `
+  <div style="position:absolute;inset:0;transform:scale(${safeZone ? 0.6 : 1});transform-origin:512px 512px">
+    <div class="n" style="color:${p.n}">n</div>
+    <div class="dot" style="background:${p.dot}"></div>
+  </div>`;
+</script>
+</body>
+</html>
