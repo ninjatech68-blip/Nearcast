@@ -42,6 +42,8 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Home feed UX | Resolved | Replaced the explainer-style home page with an honest `For You` empty-feed shell and bottom navigation for `For You`, `Broadcast`, `Activity`, and `You` |
 | 2026-08-25 | Native homepage UX pass | Resolved | Reworked the homepage as a native-style `For You` tab with grouped feed sections and moved primary navigation to Expo Router tabs |
 | 2026-08-25 | Native minimal design direction | Approved for exploration | Captured product truth in `PRODUCT.md` and generated a cohesive native minimal screen board for homepage, detail, profile, request, composer, review/reach, activity, and messages |
+| 2026-09-23 | T2 domain rules | Passed | 60 unit tests; caught a locale bug ("Sept") |
+| 2026-09-23 | T3 design system | Passed | Tokens with light/dark and AA contrast checks, 13 components with 38 tests in both themes, non-blocking fonts, dev gallery captured on web in both themes. Device-only features (Liquid Glass, SF Symbols) not yet seen on a phone |
 | 2026-09-23 | T1 database foundation | Passed with caveat | New TrueGoing migration: 22 tables, RLS, triggers. 79/79 pgTAP on native PostgreSQL 16 via `npm run db:test:native`; three deliberate mutations each caught; `supabase db lint` clean; types regenerated. Supabase Docker images unavailable (registry 403), so `npm run db:test` on the real stack is pending in CI |
 | 2026-09-23 | T0 rename | Passed | `npm run verify` passed: lint, typecheck, 17 Vitest and 12 Jest tests, iOS export. `app.config.ts` resolves `com.truegoing.app` (production/preview) and `com.truegoing.app.dev` (development). Native device build not run: no macOS in the cloud container |
 | 2026-09-23 | Web build capture | Done | Exported the web build and captured 9 routes in Chromium for the competitive review; no iOS simulator available in the cloud container |
@@ -70,3 +72,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-09-23 | Recorded the TrueGoing redesign and the change of source of truth |
 | 2026-09-23 | Recorded T0: TrueGoing identity and bundle ID `com.truegoing.app` |
 | 2026-09-23 | Recorded T1 and the native database test harness |
+| 2026-09-23 | Recorded T2 and T3 |

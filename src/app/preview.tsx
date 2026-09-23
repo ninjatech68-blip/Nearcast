@@ -1,8 +1,8 @@
 import { useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { tokens } from '@/design-system/tokens';
-import { Button } from '@/design-system/components/button';
+import { tokens } from '@/design-system/legacy-tokens';
+import { Button } from '@/design-system/components/legacy-button';
 import { Group, PrimitiveChip, Section, SymbolIcon } from '@/features/native-demo/native-ui';
 
 const reachLevels = [

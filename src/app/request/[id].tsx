@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/design-system/components/button';
-import { tokens } from '@/design-system/tokens';
+import { Button } from '@/design-system/components/legacy-button';
+import { tokens } from '@/design-system/legacy-tokens';
 import { NoteInput, Section, SymbolIcon, TopBar } from '@/features/native-demo/native-ui';
 
 export default function RequestSheetScreen() {

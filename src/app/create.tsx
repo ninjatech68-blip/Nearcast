@@ -2,8 +2,8 @@ import { type Href, router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 
-import { Button } from '@/design-system/components/button';
-import { tokens } from '@/design-system/tokens';
+import { Button } from '@/design-system/components/legacy-button';
+import { tokens } from '@/design-system/legacy-tokens';
 import { IntentPrimitive } from '@/features/intents/domain/intent';
 
 const primitives: { value: IntentPrimitive; label: string }[] = [

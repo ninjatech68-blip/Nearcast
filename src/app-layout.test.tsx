@@ -39,23 +39,33 @@ describe('RootLayout', () => {
     mockPreventAutoHideAsync.mockReset();
   });
 
-  it('loads fonts from an effect before showing the app shell', async () => {
-    let finishLoadingFonts: () => void = () => undefined;
-    mockLoadAsync.mockReturnValue(new Promise<void>((resolve) => {
-      finishLoadingFonts = resolve;
-    }));
+  it('shows the app shell immediately without waiting for fonts', async () => {
+    mockLoadAsync.mockReturnValue(new Promise<void>(() => undefined));
+    mockHideAsync.mockResolvedValue(undefined);
 
     const view = await render(<RootLayout />);
 
-    expect(view.queryByTestId('root-stack')).toBeNull();
+    expect(view.getByTestId('root-stack')).toBeTruthy();
     expect(mockLoadAsync).toHaveBeenCalledTimes(1);
-    expect(mockHideAsync).not.toHaveBeenCalled();
+    expect(mockHideAsync).toHaveBeenCalledTimes(1);
+  });
 
-    await act(async () => {
-      finishLoadingFonts();
-    });
+  it('loads Manrope for display text in the background', async () => {
+    mockLoadAsync.mockResolvedValue(undefined);
+    mockHideAsync.mockResolvedValue(undefined);
+
+    await render(<RootLayout />);
+
+    expect(Object.keys(mockLoadAsync.mock.calls[0]?.[0] as object)).toContain('Manrope_700Bold');
+  });
+
+  it('keeps working if fonts fail to load', async () => {
+    mockLoadAsync.mockRejectedValue(new Error('font missing'));
+    mockHideAsync.mockResolvedValue(undefined);
+
+    const view = await render(<RootLayout />);
+    await act(async () => undefined);
 
     expect(view.getByTestId('root-stack')).toBeTruthy();
-    expect(mockHideAsync).toHaveBeenCalledTimes(1);
   });
 });

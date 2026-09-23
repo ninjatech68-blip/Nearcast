@@ -6,57 +6,41 @@ import {
 import { loadAsync } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
-import { tokens } from '@/design-system/tokens';
+import { tokens } from '@/design-system/legacy-tokens';
+import { ThemeProvider } from '@/design-system/theme';
 
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsReady, setFontsReady] = useState(false);
-
   useEffect(() => {
-    let isMounted = true;
-
-    async function prepareAppShell() {
-      try {
-        await loadAsync({
-          Manrope_400Regular,
-          Manrope_600SemiBold,
-          Manrope_700Bold,
-        });
-      } finally {
-        if (isMounted) {
-          setFontsReady(true);
-          await SplashScreen.hideAsync();
-        }
-      }
-    }
-
-    void prepareAppShell();
-
-    return () => {
-      isMounted = false;
-    };
+    // UI text uses the platform font, so nothing waits for Manrope (06 §4).
+    // Display text falls back to the system font until it arrives.
+    loadAsync({ Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold }).catch(() => undefined);
+    void SplashScreen.hideAsync();
   }, []);
 
-  if (!fontsReady) return null;
-
   return (
-    <Stack
-      screenOptions={{
-        contentStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
-        headerShadowVisible: false,
-        headerStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
-        headerTitleStyle: { fontFamily: 'Manrope_700Bold' },
-        headerTintColor: tokens.semantic.color.textPrimary,
-      }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="create" options={{ title: 'New intent', presentation: 'modal' }} />
-      <Stack.Screen name="preview" options={{ title: 'Review intent' }} />
-      <Stack.Screen name="intent/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="profile/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="request/[id]" options={{ headerShown: false, presentation: 'modal' }} />
-    </Stack>
+    <ThemeProvider>
+      {/* The pre-TrueGoing screens are light-only; dark status bar until T14 replaces them. */}
+      <StatusBar style="dark" />
+      <Stack
+        screenOptions={{
+          contentStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: tokens.semantic.color.backgroundCanvas },
+          headerTintColor: tokens.semantic.color.textPrimary,
+        }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="create" options={{ title: 'New intent', presentation: 'modal' }} />
+        <Stack.Screen name="preview" options={{ title: 'Review intent' }} />
+        <Stack.Screen name="intent/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="profile/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="request/[id]" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="design-system" options={{ headerShown: false }} />
+      </Stack>
+    </ThemeProvider>
   );
 }

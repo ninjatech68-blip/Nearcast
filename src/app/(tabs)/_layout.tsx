@@ -2,7 +2,7 @@ import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
 
-import { tokens } from '@/design-system/tokens';
+import { tokens } from '@/design-system/legacy-tokens';
 
 type TabIconName = Parameters<typeof SymbolView>[0]['name'];
 

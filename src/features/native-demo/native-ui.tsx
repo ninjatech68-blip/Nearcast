@@ -2,8 +2,8 @@ import { SymbolView } from 'expo-symbols';
 import { type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { Button } from '@/design-system/components/button';
-import { tokens } from '@/design-system/tokens';
+import { Button } from '@/design-system/components/legacy-button';
+import { tokens } from '@/design-system/legacy-tokens';
 
 type SymbolName = Parameters<typeof SymbolView>[0]['name'];
 

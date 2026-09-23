@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { render, userEvent } from '@testing-library/react-native';
 
-import { Button } from './button';
+import { Button } from './legacy-button';
 
 describe('Button', () => {
   it('exposes its label as the accessible button name and handles presses', async () => {

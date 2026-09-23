@@ -112,15 +112,23 @@ Defaults are chosen so work can start. Change any of them before its task starts
   - "a few" applies to counts of people the viewer can't see individually. The "N going" on a plan card is exact, because the same people appear in the avatar stack.
   - "tonight" is used from 5 pm; earlier times today read "today 11 am".
 
-### T3 · Design system for P0
-**Files:** `src/design-system/tokens.json`, `tokens.ts`, `src/design-system/components/*`
-**Blocked by:** T0 (appearance setting)
+### T3 · Design system for P0 ✅ 2026-09-23
+**Files:** `src/design-system/{tokens.ts,tokens.json,theme.tsx}`, `src/design-system/components/*`, `src/app/_layout.tsx`, `src/app/design-system.tsx`
+**Blocked by:** nothing
 
-- [ ] Tokens: add the dark palette from `06` §3 (already specified), category tints, map colours, motion, haptics. Token test asserts AA contrast for every text/background pair in both themes.
-- [ ] Fonts: UI on system fonts; Manrope only for `display` style. Remove the font gate from the root layout's hot path (`src/app/_layout.tsx:43`).
-- [ ] Components with tests for every state they support: `CategoryTile`, `GoingStack` (no placeholder avatars; real count), `ReasonLine` (throws without a reason), `PrivacyStrip` (locked / unlocks-at / unlocked), `PlanRow`, `PrimaryPlanCTA` (drives from `planCta.ts`), `ReachDial` (locked stops, estimates, screen-reader output), `StatePanel` (loading skeleton, empty, error+retry, offline banner, restricted), `Sheet` (detents peek/half/full), `GlassIconButton` (map overlay only).
-- [ ] Icon map from `06` §7.1 as a single `Icon` component (SF Symbols on iOS, Material Symbols on Android) with required `accessibilityLabel`.
-- **Done when:** component tests pass in both themes; `native-demo` UI is no longer imported anywhere.
+- [x] Tokens: the light and dark palettes from `06` §3, the new roles (reason, trust, meetup, map), category tints for all 10 interest groups, spacing, radius, sizes, type, motion and haptic intents. `tokens.json` is a generated mirror kept in sync by a test.
+- [x] Contrast: every text/background pair meets WCAG AA in both themes. The lowest ratio is 5.7:1. A test also checks that no action colour is purple.
+- [x] Fonts: UI text uses the platform font. Manrope is loaded in the background for display text only. The app shell no longer waits for fonts, and a font failure can't block it.
+- [x] `ThemeProvider`/`useTheme` follow the system appearance, with an override for Settings (S25).
+- [x] Components, each tested in both themes: `Icon` (the full `06` §7.1 map; SF Symbols on iOS, Material Symbols on Android and web), `Button` (a disabled button always shows its reason), `Avatar` (initials, never a silhouette), `CategoryTile`, `GoingStack` (no placeholder faces, never more avatars than the real count), `ReasonLine` (throws without a reason), `PrivacyStrip`, `PlanRow`, `PrimaryPlanCTA` (driven by `planCta`), `ReachDial` (locked narrower levels, honest estimates), `StatePanel` + `OfflineBanner`, `SheetHeader`, `GlassIconButton`.
+- [x] Mutation check on the primitives written before their tests: removing GoingStack's three-avatar cap, ReasonLine's reason check, or Button's disabled reason each fails the suite.
+- [x] Design-system gallery at `/design-system`. It exists in development builds, or when `EXPO_PUBLIC_DESIGN_GALLERY=1` is set at build time, and redirects away otherwise. Captures: `t3-gallery-2026-09-23/`.
+- **Done:** `npm run verify` passes (86 unit, 50 component tests, iOS bundle).
+- **Changed from the plan:**
+  - **Sheet detents use the native form sheet** (`presentation: 'formSheet'` with `sheetAllowedDetents`) instead of a custom `Sheet`. T3 ships `SheetHeader` for the grabber, close, title and confirm. The Nearby list sheet that stays over the map is built in T7.
+  - **Haptics:** the event intents are tokens now; the `expo-haptics` adapter comes with the first screens that use it (T6/T8).
+  - **The old tokens, button and `native-demo` UI stay** as `legacy-tokens.ts` / `legacy-button.tsx` for the pre-TrueGoing screens until T14. The status bar is forced dark until then, because those screens are light-only and the app now follows the system appearance.
+- **Not verifiable here:** Liquid Glass (iOS 26 only) and SF Symbol rendering need a device build. On web the gallery logs one hydration warning, because its sample times depend on the clock; it doesn't affect real screens.
 
 ### T4 · Sign-in (S01, S02)
 **Files:** `src/app/(auth)/welcome.tsx`, `verify.tsx`, `src/features/auth/*`, `supabase/config.toml`
@@ -298,3 +306,4 @@ All must pass on two physical phones against staging, recorded in `PROJECT_LOG.m
 | 2026-09-23 | T0 complete |
 | 2026-09-23 | T1 complete (native Postgres verification; real Supabase run pending in CI) |
 | 2026-09-23 | T2 complete |
+| 2026-09-23 | T3 complete |

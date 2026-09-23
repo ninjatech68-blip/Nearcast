@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { tokens } from '@/design-system/tokens';
+import { tokens } from '@/design-system/legacy-tokens';
 import { broadcaster, featuredIntent } from '@/features/native-demo/nearcast-fixtures';
 import { ActionTray, Group, IconLine, PrimitiveChip, PrivacyStrip, ProfileBlock, Section, SymbolIcon, TopBar } from '@/features/native-demo/native-ui';
 
