@@ -1,5 +1,7 @@
 # Nearcast Design System
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 <!-- impeccable:design-schema 1 -->
 
 ## Status
@@ -307,3 +309,9 @@ disabled > loading > error > offline > pressed > focused > selected > success > 
 - Polished DS board: [`docs/design/nearcast-design-system-board.png`](docs/design/nearcast-design-system-board.png)
 - Static DS preview: [`docs/design-system-preview/index.html`](docs/design-system-preview/index.html)
 - Approved screen board set: `/Users/piyushsharma/.codex/generated_images/01a034a8-69dc-7092-83f5-957e6fab1b03/`
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

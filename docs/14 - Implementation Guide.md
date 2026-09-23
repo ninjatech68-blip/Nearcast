@@ -1,5 +1,7 @@
 # Nearcast AI Implementation Guide
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. Engineering workflow and verification commands still apply. Product behaviour follows `docs/truegoing/`.**
+
 ## Document Control
 
 - **Status:** Implementation source of truth
@@ -76,3 +78,4 @@ A task is done only when positive and negative permission paths pass, retries ca
 |---|---|
 | 2026-08-24 | Added executable repository conventions and AI-assisted delivery workflow |
 | 2026-08-24 | Added explicit greenfield implementation rule |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

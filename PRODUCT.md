@@ -1,5 +1,7 @@
 # Product
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 <!-- impeccable:product-schema 1 -->
 
 ## Platform
@@ -45,3 +47,9 @@ Approved product and design source documents live in `docs/`. The current app us
 ## Accessibility & Inclusion
 
 The mobile app must support dynamic type, screen readers, reduced motion, minimum contrast, 44-48 point touch targets, honest loading/empty/error/offline states, and privacy/safety copy that can wrap without truncation.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

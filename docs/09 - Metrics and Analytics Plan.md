@@ -1,5 +1,7 @@
 # Nearcast Analytics And Measurement Plan
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. Event hygiene rules still apply. Event names follow the screen contracts in `docs/truegoing/04`; candidate metrics are in `docs/truegoing/00` §7.**
+
 ## Document Control
 
 - **Status:** Approved measurement baseline
@@ -180,3 +182,4 @@ Event delivery lag, duplicate event rate, missing required properties, and schem
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined north star, funnels, event taxonomy, privacy restrictions, and dashboards |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

@@ -1,5 +1,7 @@
 # Nearcast Legal And Community Policy Outline
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. Still applies, plus the TrueGoing safety rules and women-only policy in `docs/truegoing/`.**
+
 ## Document Control
 
 - **Status:** Product-policy baseline requiring legal review before public beta
@@ -151,3 +153,4 @@ Actions should be proportionate to severity, recurrence, credibility, and immedi
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined community rules and legal-policy requirements for counsel review |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

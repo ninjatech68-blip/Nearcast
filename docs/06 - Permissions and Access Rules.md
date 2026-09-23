@@ -1,5 +1,7 @@
 # Nearcast Permissions Matrix
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 ## Document Control
 
 - **Status:** Mandatory authorization baseline
@@ -111,3 +113,4 @@ When either user blocks the other:
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined role, field, action, lifecycle, and block permissions |
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

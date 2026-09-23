@@ -2,7 +2,7 @@
 
 ## Document control
 
-- **Status:** Proposal, saved to the repo 2026-09-23. Not yet authoritative; see `README.md` in this folder.
+- **Status:** Source of truth since 2026-09-23 (see `README.md` in this folder).
 - **Written against:** *04 - Screen Contracts.md*, *05 - Schema and API Specification.md*, *03 - TrueGoing Reimagined.md*, and the MigoMap comparison.
 - **Relationship to existing docs:** this document says, section by section, what is **retained** from `DESIGN.md`, `docs/07`, `docs/08`, `docs/17` and `PRODUCT.md`, what is **changed**, and what is **new**. If adopted, it replaces `DESIGN.md` and `docs/08` and amends `docs/07` and `docs/17`.
 

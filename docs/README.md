@@ -6,6 +6,10 @@ Nearcast helps a person broadcast an intent beyond a trusted closed group withou
 
 ## Start Here
 
+**TrueGoing is the product. Start with [truegoing/README.md](./truegoing/README.md).** It is the source of truth as of 2026-09-23. The documents listed below are the earlier Nearcast set. Each one carries a banner saying whether it is superseded or still partly applies.
+
+### Earlier Nearcast documents
+
 Read these documents first, in this order:
 
 1. [Start Here - Nearcast Project Reference](./00%20-%20Start%20Here%20-%20Nearcast%20Project%20Reference.md)
@@ -33,3 +37,4 @@ Document names should be readable by a non-technical stakeholder. Prefer names l
 | Date | Change |
 |---|---|
 | 2026-08-24 | Added a human-readable documentation map for the packaged Nearcast project |
+| 2026-09-23 | Pointed the map at `docs/truegoing/` as the source of truth |

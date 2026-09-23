@@ -1,5 +1,7 @@
 # Nearcast Server API Contracts
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 ## Document Control
 
 - **Status:** Mandatory server boundary
@@ -46,3 +48,4 @@ Logs contain request ID, actor hash, operation, object ID, result code, duration
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined server mutation inventory, public projection, errors, idempotency, and logging boundaries |
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

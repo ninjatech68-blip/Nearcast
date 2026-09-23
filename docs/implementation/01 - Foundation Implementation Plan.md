@@ -1,5 +1,7 @@
 # Foundation Implementation Plan
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. Tooling setup still applies. The schema it describes is replaced by `docs/truegoing/05`.**
+
 > **For agentic workers:** Execute checkbox tasks in order with test-first changes and one coherent commit per task.
 
 **Goal:** Produce a reproducible Expo and Supabase foundation with authentication, tokens, CI, and enforced privacy boundaries.
@@ -53,3 +55,4 @@ A clean clone runs app and database checks without undocumented steps, authentic
 | 2026-08-24 | Selected Expo Jest with React Native Testing Library for component interaction tests |
 | 2026-08-24 | Verified local Supabase reset, pgTAP, owned-schema lint, and generated database types |
 | 2026-08-25 | Verified the local composer preview route on iOS and Android development builds and fixed Android runtime warning sources found during verification |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

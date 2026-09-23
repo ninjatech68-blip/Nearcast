@@ -1,5 +1,7 @@
 # Response And Coordination Implementation Plan
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 > **For agentic workers:** Execute checkbox tasks in order with test-first changes and one coherent commit per task.
 
 **Goal:** Let a recipient respond, let the broadcaster decide, and give accepted parties a temporary private coordination room.
@@ -56,3 +58,4 @@ The complete two-user flow passes E2E on iOS and Android, acceptance is concurre
 | Date | Change |
 |---|---|
 | 2026-08-24 | Created response, acceptance, coordination, and notification implementation plan |
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

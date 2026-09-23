@@ -1,5 +1,7 @@
 # Nearcast Documentation Reference
 
+> **2026-09-23: TrueGoing is now the product, and `docs/truegoing/` is the source of truth.** Read [docs/truegoing/README.md](./truegoing/README.md) first. The precedence below has been updated. Every older document in this folder carries a banner that says whether it is superseded or partly superseded. Sections of this file below "Source-of-Truth Precedence" are kept as history.
+
 ## Purpose
 
 This is the governing index for Nearcast product, design, engineering, safety, measurement, and delivery documentation. Every future Nearcast specification, design artifact, implementation plan, and codebase-level agent instruction must begin by consulting this file.
@@ -40,6 +42,8 @@ Nearcast is a greenfield product build. There is no old app, legacy product code
 ## Source-of-Truth Precedence
 
 When documents conflict, use this order:
+
+0. **`docs/truegoing/` overrides every document below.** Within it: locked decisions in its README, then Reimagined (03), then Schema and API (05) for data visibility, then Screen Contracts (04), then Design Content and Brand Guidelines (06). The older documents apply only where their banner says they still do.
 
 1. Trust, privacy, safety, and legal constraints override convenience and growth goals.
 2. The PRD overrides feature-level requirements and roadmap sequencing.
@@ -98,6 +102,9 @@ Designs must use the documented intent lifecycle, progressive disclosure rules, 
 | 2026-08-24 | Keep production credentials and production MCP access outside AI tooling | Limits blast radius while retaining fast local and staging development |
 | 2026-08-24 | Treat Nearcast as a greenfield build with no legacy codebase dependency | Keeps future implementation from inheriting assumptions or patterns from unrelated projects |
 | 2026-08-25 | Approve Trustworthy Native Clarity as the mobile design-system direction | Establishes a calm, native, trust-first visual system before implementation |
+| 2026-09-23 | Rename the product to TrueGoing; bundle ID `com.truegoing.app` | Final brand name |
+| 2026-09-23 | Replace intents with plans, asks and offers; make `docs/truegoing/` the source of truth | Outcome of the MigoMap competitive review: group plans, one-tap join, map-first discovery, people not browsable |
+| 2026-09-23 | Women-only plans for verified women | Safety feature for the audience the competitor serves worst |
 
 ## Document Change Rule
 
@@ -111,3 +118,4 @@ Every document must include a `Change Log` section. Material decisions require u
 | 2026-08-24 | Added implementation guide, mobile/API contracts, phase plans, and AI engineering governance |
 | 2026-08-24 | Added explicit greenfield project starting point |
 | 2026-08-25 | Recorded approved mobile design-system direction in design governance |
+| 2026-09-23 | Made `docs/truegoing/` the source of truth and added it to the precedence order |

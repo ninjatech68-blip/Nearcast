@@ -1,5 +1,7 @@
 # Nearcast System Architecture And Data Model
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. The stack and boundaries (Expo, Supabase, server-owned mutations, RLS) still apply. The data model is replaced by `docs/truegoing/05 - Schema and API Specification.md`.**
+
 ## Document Control
 
 - **Status:** Approved MVP architecture
@@ -271,3 +273,4 @@ Evaluate a dedicated TypeScript API, specialized notification workers, feed mate
 | Date | Change |
 |---|---|
 | 2026-08-24 | Established modular-monolith architecture, data model, matching, and deployment baseline |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

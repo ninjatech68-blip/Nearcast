@@ -1,5 +1,7 @@
 # Nearcast App Design Foundation
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 > **Governance:** This document is a design source of truth governed by [Nearcast Documentation Reference](./00 - Start Here - Nearcast Project Reference.md). All screen, flow, prototype, and component documents must reference this foundation and [Nearcast Design System Specification](./07 - Design System Specification.md).
 
 ## Purpose
@@ -587,3 +589,4 @@ The defining user feeling is:
 | 2026-08-25 | Recorded approved Trustworthy Native Clarity direction for the mobile app design system |
 | 2026-08-24 | Created the mobile app experience and design foundation |
 | 2026-08-24 | Added documentation governance and formal design-system references |
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

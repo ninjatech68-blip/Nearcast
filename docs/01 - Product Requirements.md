@@ -1,5 +1,7 @@
 # Nearcast Product Requirements Document
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 ## Document Control
 
 - **Status:** Approved product baseline
@@ -193,3 +195,4 @@ The MVP is ready for closed alpha only when a user can complete the full broadca
 | Date | Change |
 |---|---|
 | 2026-08-24 | Established the category-agnostic, trust-aware intent product baseline |
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

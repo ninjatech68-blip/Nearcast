@@ -395,3 +395,9 @@ Because of that, TG gets two scores wherever it matters:
 **Shared weakness.** Neither is honest about the cold start. MigoMap shows round-number crowd claims. TG's reach ladder has no graph to spread through. [Likely]
 
 **The uncomfortable part.** Every advantage TG has is a *restriction*. Restrictions only count once people are using the product. Today TG's advantages protect users it doesn't have. [Certain] about the current state; [Likely] about how it plays out.
+
+## Change log
+
+| Date | Change |
+|---|---|
+| 2026-09-23 | Created and saved to the repo |

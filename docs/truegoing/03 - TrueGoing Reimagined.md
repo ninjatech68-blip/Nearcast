@@ -1,6 +1,8 @@
 # TrueGoing, Reimagined
 
-A product plan, not an implementation plan. It is based on the two comparison documents and on the code as it stands. Nothing in the repo has been changed.
+- **Status:** Source of truth since 2026-09-23 (see `README.md` in this folder).
+
+A product plan, not an implementation plan. It is based on the two comparison documents and on the code as it stood on 2026-09-23.
 
 Tags: **[Certain]** verified in code or screenshots; **[Likely]** strong inference; **[Guessing]** filling a gap.
 
@@ -325,3 +327,9 @@ Billing default: monthly, never weekly. Trial before charge.
 - **[Likely] Friction from principles.** Timed spot unlock and no cold DMs are safer and slightly slower. Watch drop-off at the join step and be ready to loosen for open plans.
 - **[Guessing] Women-only plans** need policy: who can set them, what verification is required, how misuse is handled.
 - **[Certain] Everything above changes what the docs and schema say today.** That's intended, and it's a decision for you.
+
+## Change log
+
+| Date | Change |
+|---|---|
+| 2026-09-23 | Created and saved to the repo |

@@ -1,5 +1,7 @@
 # Nearcast Design System Specification
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 ## Document Control
 
 - **Status:** Design-system source of truth
@@ -344,3 +346,4 @@ Every screen page must link in its description to this specification, the App De
 |---|---|
 | 2026-08-25 | Added approved Trustworthy Native Clarity direction, native semantic token target, adaptive platform mappings, trust display standard, and privacy-safe copy rules |
 | 2026-08-24 | Defined tokens, components, motion, accessibility, and Figma governance |
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

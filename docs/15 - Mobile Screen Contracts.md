@@ -1,5 +1,7 @@
 # Nearcast Mobile Screen Contracts
 
+> **Superseded on 2026-09-23 by `docs/truegoing/`. Kept for history. Do not build from this document.**
+
 ## Document Control
 
 - **Status:** Mandatory implementation contract
@@ -53,3 +55,4 @@ Core flows support dynamic type, screen-reader order, 48x48 minimum targets, tex
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined mobile navigation, complete state coverage, screen responsibilities, and component boundaries |
+| 2026-09-23 | Superseded by the TrueGoing document set in `docs/truegoing/` |

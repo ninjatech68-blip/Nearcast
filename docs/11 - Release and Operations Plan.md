@@ -1,5 +1,7 @@
 # Nearcast Release And Operations Guide
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. Environments and release process still apply. The app is TrueGoing, bundle ID `com.truegoing.app`.**
+
 ## Document Control
 
 - **Status:** Approved pre-beta operations baseline
@@ -168,3 +170,4 @@ Do not delete evidence during an active safety or security incident.
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined environments, migrations, releases, observability, incidents, recovery, and moderation operations |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

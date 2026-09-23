@@ -2,9 +2,9 @@
 
 ## Document control
 
-- **Status:** Proposal, saved to the repo 2026-09-23. No migration or function has been changed. Not yet authoritative; see `README.md` in this folder.
+- **Status:** Source of truth since 2026-09-23 (see `README.md` in this folder). No migration or function has been changed.
 - **Written against:** *04 - Screen Contracts.md* (every RPC below is named by a screen), *03 - TrueGoing Reimagined.md* (product).
-- **Replaces if adopted:** `supabase/migrations/20260824161306_nearcast_foundation.sql` and the matching sections of `docs/16 - API Contracts.md` and `docs/06 - Permissions and Access Rules.md`.
+- **Replaces:** `supabase/migrations/20260824161306_nearcast_foundation.sql` and the matching sections of `docs/16 - API Contracts.md` and `docs/06 - Permissions and Access Rules.md`.
 - **Platform:** Supabase (Postgres 15 + PostGIS, Auth, Realtime, Storage, Edge Functions, pg_cron). Same stack as today.
 
 Tags: **[Certain]** verified in the current repo · **[Likely]** inference · **[Guessing]** gap-filling.

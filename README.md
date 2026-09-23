@@ -1,12 +1,14 @@
-# Nearcast
+# TrueGoing
 
-Nearcast is a mobile trust-aware intent network. A person can create an intent in the context of a trusted circle, collect genuine support, and deliberately extend it to relevant people without exposing the source group.
+TrueGoing is a mobile app for plans near you, from people you can trust. Post a plan, ask or offer in seconds and choose how far it travels. Nobody sees where you are, and the exact spot unlocks only for people going. "Nearcast" was the codename; the repo name and some internal identifiers still use it.
 
 ## Build Status
 
-This is a greenfield project. Nearcast must be built from this repository and the documents in `docs/`; there is no old app or legacy codebase to migrate, reuse, or treat as a source of truth.
+This is a greenfield project. The source of truth is [`docs/truegoing/`](./docs/truegoing/README.md) (since 2026-09-23). The earlier documents in `docs/` are kept for history and are marked superseded or partly superseded. The current code is an early prototype of the earlier Nearcast concept and has not yet been rebuilt to the TrueGoing specification.
 
 ## Start Here
+
+- [TrueGoing documents](./docs/truegoing/README.md): source of truth, locked decisions, screen contracts, schema and API, design and brand
 
 - [Documentation Map](./docs/README.md): plain-language guide to every Nearcast document
 - [Project Log](./PROJECT_LOG.md): version history, verification notes, and governance record

@@ -349,3 +349,9 @@ The goal: one person posts, a nearby person joins, both chat, and nothing is fak
 - **D4: Visual direction.** TG's light, green, card-based UI vs MigoMap's dark, map-first UI. [Likely] the map-first home is part of why MigoMap feels alive. I'd keep TG's visual language but make the map a first-class tab in Phase 2, not the home screen. That is a judgment call.
 - **D5: Governing docs.** The plan changes documented behavior: group plans, auth methods, onboarding fields (DOB, interests). Per AGENTS.md, the docs are updated before behavior changes. Do you want that done as Phase 0.5, or should I treat the docs as secondary?
 - **D6: Backend and data access.** Confirm that no separate backend repo or analytics store exists. If one does, parts of §3 are incomplete.
+
+## Change log
+
+| Date | Change |
+|---|---|
+| 2026-09-23 | Created and saved to the repo |

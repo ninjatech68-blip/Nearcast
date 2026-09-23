@@ -2,9 +2,9 @@
 
 ## Document control
 
-- **Status:** Proposal, saved to the repo 2026-09-23. Nothing here is implemented. Not yet authoritative; see `README.md` in this folder.
+- **Status:** Source of truth since 2026-09-23 (see `README.md` in this folder). Nothing here is implemented.
 - **Based on:** *03 - TrueGoing Reimagined.md* (product), *02 - Comparison - Experience UI Copy Table.md* (evidence).
-- **Supersedes if adopted:** `docs/15 - Mobile Screen Contracts.md`. Screens keep the same contract shape so the team's habits carry over, but the screens themselves are new.
+- **Supersedes:** `docs/15 - Mobile Screen Contracts.md`. Screens keep the same contract shape so the team's habits carry over, but the screens themselves are new.
 - **Not in scope:** schema DDL, API signatures, visual design tokens. Where a screen needs a server call, it is named in domain terms (e.g. `join_plan`) so the API spec can be written against it.
 
 ## How to read a contract

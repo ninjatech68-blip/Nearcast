@@ -210,3 +210,9 @@ This section assumes "word adoption" means which terms TG should use.
 | Safety as experienced | **TG** (design) | No people list, no exact distance to people, chat only after acceptance. But none of it is working yet. |
 
 **One-line verdict.** MigoMap is the better app today on almost every experience dimension. TG has the better ideas on audience control, transparency, and privacy, but it expresses them in jargon and none of them work yet.
+
+## Change log
+
+| Date | Change |
+|---|---|
+| 2026-09-23 | Created and saved to the repo |

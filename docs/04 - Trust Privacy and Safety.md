@@ -1,5 +1,7 @@
 # Nearcast Trust, Privacy, And Safety Specification
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. Its principles still apply. Where it names intents, broadcasts, matches or origin groups, follow `docs/truegoing/` instead.**
+
 ## Document Control
 
 - **Status:** Mandatory safety baseline
@@ -193,3 +195,4 @@ Retention periods must be configurable and reviewed with legal counsel before pu
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined contextual trust, progressive disclosure, moderation, prohibited content, and retention baseline |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

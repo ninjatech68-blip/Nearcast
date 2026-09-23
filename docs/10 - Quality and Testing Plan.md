@@ -1,5 +1,7 @@
 # Nearcast QA And Test Strategy
 
+> **Partly superseded on 2026-09-23 by `docs/truegoing/`, which wins on any conflict. The test approach still applies. The privacy invariants to test are listed in `docs/truegoing/05` §11.**
+
 ## Document Control
 
 - **Status:** Approved quality baseline
@@ -181,3 +183,4 @@ Release branches additionally run mobile E2E smoke tests and production build va
 | Date | Change |
 |---|---|
 | 2026-08-24 | Defined test pyramid, security scenarios, device coverage, CI gates, and release criteria |
+| 2026-09-23 | Marked partly superseded by `docs/truegoing/` |

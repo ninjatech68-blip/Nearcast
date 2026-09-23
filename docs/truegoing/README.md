@@ -4,7 +4,13 @@ The TrueGoing redesign, based on a review of the MigoMap competitor app. TrueGoi
 
 ## Status
 
-**Proposal. Not yet authoritative.** `AGENTS.md`, `docs/00`–`17`, `DESIGN.md` and `PRODUCT.md` still describe the earlier intent/broadcast product and remain the governing documents until the owner decides otherwise. Do not build against this folder until that decision is recorded here.
+**Source of truth since 2026-09-23.** This folder overrides every other document in the repo. `AGENTS.md` and `docs/00` point here.
+
+The earlier Nearcast documents are kept for history, and each carries a banner:
+- **Superseded, do not build from:** `docs/01`, `02`, `03`, `06`, `07`, `08`, `13`, `15`, `16`, `17`, implementation plans `02`–`05`, `DESIGN.md`, `PRODUCT.md`.
+- **Partly superseded, still apply where they don't conflict:** `docs/04` (safety principles), `05` (stack and boundaries), `09` (event hygiene), `10` (test approach), `11` (release process), `12` (community policy), `14` (engineering workflow), implementation plan `01` (tooling).
+
+**There is no active implementation plan yet.** Write the P0 plan from `03` §8 and `05` before building.
 
 ## Documents
 
@@ -28,15 +34,13 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 |---|---|
 | 2026-09-23 | Brand name: **TrueGoing** |
 | 2026-09-23 | Bundle ID: **`com.truegoing.app`** (iOS and Android); dev builds `com.truegoing.app.dev` |
+| 2026-09-23 | This folder is the source of truth; older docs marked superseded, not rewritten |
 | 2026-09-23 | Vocabulary: plan · ask · offer · host · people going · connection; tabs Nearby · Chats · Post · You |
 | 2026-09-23 | Women-only plans: set by, delivered to, and joinable by verified women only |
-
-## Open decision
-
-Should this folder become the source of truth, with the older docs marked superseded? Or should each older doc be rewritten in place?
 
 ## Change log
 
 | Date | Change |
 |---|---|
 | 2026-09-23 | Saved the redesign document set to the repo |
+| 2026-09-23 | Became the source of truth |
