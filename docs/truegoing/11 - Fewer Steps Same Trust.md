@@ -195,3 +195,32 @@ The owner ruled: **add a group chat per plan.** This reverses D2 (pair threads o
 6. Copy: room opener `Everyone here is going. The exact place is below. Share your number after you've met, not before.`; leave confirmation; ended state.
 
 Order: after D53 (§11). It is the largest schema change in this set and should not ship before the SMS provider and the first real users, because every rule above needs real blocking and real receipts to be tested against.
+
+---
+
+## 13. Instagram handle, visible only after acceptance, ruled by the owner (added 2026-09-23)
+
+The owner ruled: **add an optional Instagram handle to the profile, visible only after acceptance.** My position is in the exchange that led here and is not repeated: it validates audience, not showing up, and it deanonymises a first-name profile. Below is the version that honours the ruling and keeps the rules.
+
+### D55 (draft) — An optional social handle, private until a plan connects two people
+
+**What is stored.** One optional field, `people_private.instagram_handle text` (1–30 chars, `^[A-Za-z0-9._]+$`, stored without `@`), in a table whose RLS exposes it to its owner only. It is never in `people`, never in `my_feed`, never in `casts_on_map`, never on the caster profile, never in a push or analytics payload.
+
+**Who sees it and when.** Only a person on the other side of an **acceptance** on a live plan: the host sees an accepted joiner's handle, an accepted joiner sees the host's, and members of a plan room (D54) see each other's. Askers see nothing. Read goes through a SECURITY DEFINER function `handle_for(person_id, cast_id)` that returns the handle only when `may_see_place(caller, cast)` is true for the same plan, so the handle and the exact place unlock on the same fact, and SEC-12 (revocation on block, decline, withdrawal) covers both when it is fixed.
+
+**How it shows.** In the thread header under the name: `@aarav_plays ›` in mono, tap opens Instagram. No follower count, no preview, no photo pulled from Instagram, no "verified on Instagram" mark. It is a fact about the person, shown once they are already going to meet.
+
+**What it must never do.** Appear before acceptance, anywhere. Be searchable. Be required. Be shown to a person who blocked or is blocked by the owner. Survive account deletion (`delete_account` clears it with the rest).
+
+**Copy.** Settings row `Instagram` · `Shown to people you're meeting, after they're accepted. Never before.` Empty state on the field: `Optional`. Thread header shows nothing when empty; there is no "add yours" nudge in a thread.
+
+### What it needs in `mobileapp`
+
+1. Decision entry D55, with Principle 27 (caster profile is trust and safety, nothing social) kept intact, since the profile does not change.
+2. Law assertions: no social handle column in any table a client can select from; `handle_for` returns null for anyone without `may_see_place` on that plan; a blocked pair never returns a handle.
+3. Schema: `people_private` (or the existing owner-only table if one exists) gains `instagram_handle`; `set_instagram_handle(text)` SECURITY DEFINER write, `search_path=''`, validated by the regex, idempotent; `handle_for(uuid, uuid)` read.
+4. pgTAP: owner sets and reads; asker denied; accepted joiner allowed on that plan and denied on another; revoked after decline and after block; deleted on account deletion.
+5. Client: Settings row with the field; thread header line; nothing on caster profile, poster, map sheet or Activity.
+6. Payload hygiene test extended: the handle is added to the list of fields that must never appear in push or analytics.
+
+Order: after R5 (working verified mark) and SEC-12, because D55 rides on the same revocation logic. Small change; one afternoon once SEC-12 is in.
