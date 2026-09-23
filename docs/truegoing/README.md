@@ -10,7 +10,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 - **Superseded, do not build from:** `docs/01`, `02`, `03`, `06`, `07`, `08`, `13`, `15`, `16`, `17`, implementation plans `02`–`05`, `DESIGN.md`, `PRODUCT.md`.
 - **Partly superseded, still apply where they don't conflict:** `docs/04` (safety principles), `05` (stack and boundaries), `09` (event hygiene), `10` (test approach), `11` (release process), `12` (community policy), `14` (engineering workflow), implementation plan `01` (tooling).
 
-**There is no active implementation plan yet.** Write the P0 plan from `03` §8 and `05` before building.
+**Active implementation plan:** [07 - P0 Implementation Plan](./07%20-%20P0%20Implementation%20Plan.md).
 
 ## Documents
 
@@ -23,6 +23,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 04 | [Screen Contracts](./04%20-%20Screen%20Contracts.md) | 29 screen contracts plus global, component, routing and acceptance contracts |
 | 05 | [Schema and API Specification](./05%20-%20Schema%20and%20API%20Specification.md) | Tables, RLS matrix, algorithms, RPCs, error codes, privacy invariants |
 | 06 | [Design Content and Brand Guidelines](./06%20-%20Design%20Content%20and%20Brand%20Guidelines.md) | Brand, colour, type, icons, components and content, marked retain / change / new |
+| 07 | [P0 Implementation Plan](./07%20-%20P0%20Implementation%20Plan.md) | Active plan: 16 tasks, dependencies, blockers, exit gate |
 
 `tg-captures-2026-09-23/` holds the TrueGoing screens as they were on 2026-09-23, captured from the web build. SF Symbols render as letters there.
 
@@ -44,3 +45,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 |---|---|
 | 2026-09-23 | Saved the redesign document set to the repo |
 | 2026-09-23 | Became the source of truth |
+| 2026-09-23 | Added the P0 implementation plan |

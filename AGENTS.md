@@ -13,9 +13,10 @@ This is a greenfield build. Use this repository and the documents in `docs/trueg
 3. For the subsystem you are changing:
    - screens and UI: `docs/truegoing/04 - Screen Contracts.md` and `docs/truegoing/06 - Design Content and Brand Guidelines.md`
    - database, RLS, RPCs: `docs/truegoing/05 - Schema and API Specification.md`
-4. `docs/00 - Start Here - Nearcast Project Reference.md` for precedence and which older docs still apply.
-5. Exact Expo SDK 57 docs at `https://docs.expo.dev/versions/v57.0.0/` for framework behavior.
-6. Current Supabase docs and changelog before Supabase changes.
+4. `docs/truegoing/07 - P0 Implementation Plan.md` for task order and the current task.
+5. `docs/00 - Start Here - Nearcast Project Reference.md` for precedence and which older docs still apply.
+6. Exact Expo SDK 57 docs at `https://docs.expo.dev/versions/v57.0.0/` for framework behavior.
+7. Current Supabase docs and changelog before Supabase changes.
 
 When documents conflict, `docs/truegoing/` wins. Update the governing document before changing product behavior.
 
@@ -64,3 +65,4 @@ A change is complete only when its acceptance criteria pass, negative permission
 | Date | Change |
 |---|---|
 | 2026-09-23 | Made `docs/truegoing/` the source of truth; renamed to TrueGoing; rewrote product rules for plans, reach, spot unlock and women-only plans |
+| 2026-09-23 | Added the P0 implementation plan to the reading order |

@@ -1,3 +1,5 @@
+> **The active plan is [docs/truegoing/07 - P0 Implementation Plan](../truegoing/07%20-%20P0%20Implementation%20Plan.md). The plans below are the earlier Nearcast plans, kept for history.**
+
 # Nearcast Implementation Plan Index
 
 Execute one plan at a time. A later plan may begin only when the earlier plan's exit gate is met or a documented product decision changes the order.
