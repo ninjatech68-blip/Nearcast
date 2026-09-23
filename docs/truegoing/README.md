@@ -26,8 +26,9 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 07 | [P0 Implementation Plan](./07%20-%20P0%20Implementation%20Plan.md) | Active plan: 16 tasks, dependencies, blockers, exit gate |
 | 08 | [Handoff to mobileapp](./08%20-%20Handoff%20to%20mobileapp.md) | What carries over to the real codebase: add / decide / drop, the relevance plan, execution order |
 | 09 | [MigoMap Takeaways for Truegoing](./09%20-%20MigoMap%20Takeaways%20for%20Truegoing.md) | 45 takeaways, each marked Built / Add / Decide / Refuse against `mobileapp` |
+| 10 | [Screen Review - Truegoing vs MigoMap](./10%20-%20Screen%20Review%20-%20Truegoing%20vs%20MigoMap.md) | 32 screen-by-screen rows with verdicts, a consolidated copy table and an order of work |
 
-`tg-captures-2026-09-23/` holds the TrueGoing screens as they were on 2026-09-23, captured from the web build. SF Symbols render as letters there.
+`tg-captures-2026-09-23/` holds the *nearcast repo* prototype screens (research only). `tg-real-captures-2026-09-23/` holds the real Truegoing app (`mobileapp` at `d2959d7`, fixture mode) captured from a web dev build; SF Symbols render as letters and the map is stubbed there.
 
 MigoMap screenshots are referenced as SS1–SS38, in the order they were uploaded. They are not stored in the repo.
 
@@ -50,3 +51,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Added the P0 implementation plan |
 | 2026-09-23 | Scope correction: real codebase is `mobileapp`; added the handoff document |
 | 2026-09-23 | Added the MigoMap takeaways for Truegoing |
+| 2026-09-23 | Added the screen-by-screen review of the real Truegoing app vs MigoMap, with captures |
