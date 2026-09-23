@@ -101,3 +101,25 @@ Covered in `10` rows 8, 10, 15. Restated as the step it removes: today a reader 
 6. **Decide** host-opened plans (§4), then decision → law → assertion → schema → UI.
 
 Steps 1–5 do not touch a decision or the database. They can ship before the SMS provider is chosen and be waiting when sign-in works.
+
+---
+
+## 10. Map, list, filters, and "post anywhere" (added after the owner's question)
+
+The question: MigoMap has a map view and a list view with filters, which are engagement points. What if Truegoing lets go of the 20 km geofence and lets people post anywhere on the map?
+
+**The premise is half wrong, and the half that is wrong is already built.**
+
+- [Certain] **Posting anywhere already works.** The 20 km radius is on the *plan*, not on the poster. Compose picks any area by search (`compose.tsx`, `area.tsx`); a person in Panchkula can post a plan in Goa today, and it reaches people whose area is within 20 km of Goa. Nothing stores where the poster is (D3, D4).
+- [Certain] **Hearing from more than one place already works.** `person_areas` is plural; Settings has `Add an area` (`areas.tsx:65`). Add Goa as an area and Goa's plans reach you. The mechanism the owner wants is live and hidden under Settings → Home area.
+- [Certain] **The map view exists and is ruled.** D45 (ruled 2026-09-22): the feed carries a neighbourhood label, never a coordinate; the map places casts by area label. It is blank against real accounts only because `my_feed` did not yet return the label; that is the D45 follow-through, not a new feature.
+- [Likely] **Dropping the geofence would recreate the complaint that started this work.** "I only want relevant plans, not everything around me" and "let me see everything on the map" are the same request with the sign flipped. MigoMap's map is engaging because it is full; it is full because it shows everything; showing everything is the clutter. The radius is what makes the why line true.
+
+**What to build instead, in this order:**
+
+1. **Surface the area switcher in the feed header.** Replace the search glyph with `Near Sector 5 ▾`. Tap: the person's areas, plus `Add a place`. Adding a place is the existing `person_areas` write with the existing disclosure line. This is MigoMap's city search (SS20) without the trips product, and it needs no decision.
+2. **Finish D45 so the map works in life.** `my_feed` returns `area_label`; the map shows labelled areas with a real plan count per label (`4 plans`), never a person, never a pin at a coordinate. Tap a label: the feed filters to it. That is the engagement point, and it is honest.
+3. **Make the lens persistent and visible** (`10` row 15, `08` R2): chips `This week · Sports + outdoors` on the header, so list and map share one filter state like MigoMap's chips (SS30).
+4. **Do not widen the radius.** If a plan should reach further, that is the host's informed action per plan (a future reach choice, D28 to be reopened), never a global change.
+
+Refuse: a world map to pan (SS33), trips and trending destinations (SS20, SS32, SS36, SS38), pins at coordinates, any surface that shows where a person is.
