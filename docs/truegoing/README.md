@@ -25,6 +25,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 06 | [Design Content and Brand Guidelines](./06%20-%20Design%20Content%20and%20Brand%20Guidelines.md) | Brand, colour, type, icons, components and content, marked retain / change / new |
 | 07 | [P0 Implementation Plan](./07%20-%20P0%20Implementation%20Plan.md) | Active plan: 16 tasks, dependencies, blockers, exit gate |
 | 08 | [Handoff to mobileapp](./08%20-%20Handoff%20to%20mobileapp.md) | What carries over to the real codebase: add / decide / drop, the relevance plan, execution order |
+| 09 | [MigoMap Takeaways for Truegoing](./09%20-%20MigoMap%20Takeaways%20for%20Truegoing.md) | 45 takeaways, each marked Built / Add / Decide / Refuse against `mobileapp` |
 
 `tg-captures-2026-09-23/` holds the TrueGoing screens as they were on 2026-09-23, captured from the web build. SF Symbols render as letters there.
 
@@ -48,3 +49,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Became the source of truth |
 | 2026-09-23 | Added the P0 implementation plan |
 | 2026-09-23 | Scope correction: real codebase is `mobileapp`; added the handoff document |
+| 2026-09-23 | Added the MigoMap takeaways for Truegoing |
