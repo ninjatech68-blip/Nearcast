@@ -57,16 +57,22 @@ Defaults are chosen so work can start. Change any of them before its task starts
 
 ## 2. Tasks
 
-### T0 · Rename to TrueGoing and reset identifiers
-**Files:** `app.json`, `package.json`, `assets/images/*`, `src/infrastructure/config/env.ts`
-**Blocked by:** E1 for the bundle ID registration (the code change itself is not blocked)
+### T0 · Rename to TrueGoing and reset identifiers ✅ 2026-09-23
+**Files:** `app.config.ts` (replaces `app.json`), `package.json`, `package-lock.json`, `assets/brand/mark.svg`, `assets/images/*`, `src/app-config.test.ts`
+**Blocked by:** E1 for registering the bundle ID with Apple (the code change was not blocked)
 
-- [ ] `app.json`: `name` TrueGoing, `slug` truegoing, `scheme` truegoing, iOS `bundleIdentifier` `com.truegoing.app`, Android `package` `com.truegoing.app`, `userInterfaceStyle` `automatic`.
-- [ ] Development builds use `com.truegoing.app.dev` via an app config variant (`app.config.ts` reading `APP_VARIANT`), so dev and store builds can sit on one phone.
-- [ ] `package.json` name `truegoing`.
-- [ ] Replace Expo placeholder icon, splash and favicon with a placeholder of the mark from `06` §2.2 (final artwork can land later without code change).
-- [ ] Test: a config test asserts scheme, bundle ID and package for both variants.
-- **Done when:** `npm run verify` passes; the dev build installs next to nothing else called Nearcast.
+- [x] `app.config.ts`: `name` TrueGoing, `slug` truegoing, `scheme` truegoing, iOS `bundleIdentifier` and Android `package` `com.truegoing.app`, `userInterfaceStyle` `automatic`.
+- [x] Variants via `APP_VARIANT`: `development` → `TrueGoing Dev`, `com.truegoing.app.dev`, scheme `truegoing-dev`; `preview` and `production` → store identity. **Unset means development**, so a build that forgets the variant fails loudly at submission instead of shipping as the store app. Unknown variants throw.
+- [x] `package.json` and `package-lock.json` name `truegoing`.
+- [x] Placeholder mark from `06` §2.2 in `assets/brand/mark.svg`; icon, Android adaptive foreground and monochrome, splash and favicon rendered from it.
+- [x] Test: `src/app-config.test.ts` (7 tests) asserts identity per variant, system appearance, no Nearcast identity, and unknown-variant rejection.
+- **Done:** `npm run verify` passed (lint, typecheck, 17 unit + 12 component tests, iOS bundle). `npx expo config` resolves both variants.
+- **Decisions made in T0:**
+  - The iOS Icon Composer bundle (`assets/expo.icon`, the Expo logo) was removed; iOS uses `icon.png`. A Liquid Glass icon can be added with the final artwork.
+  - The Android adaptive background image was replaced by a solid `#0F5E46` background colour.
+  - The dev deep-link scheme is `truegoing-dev`, so dev and store builds on one phone don't both claim `truegoing://`.
+  - Splash has a dark background (`#0E1714`) as well as light (`#F7F3EA`).
+- **Not verifiable here:** a native build on a device. The cloud container has no macOS/Xcode. The first EAS development build (T15 profile, can be run earlier) confirms the icon and bundle ID on a phone.
 
 ### T1 · New foundation migration
 **Files:** delete `supabase/migrations/20260824161306_nearcast_foundation.sql`; add `supabase/migrations/<timestamp>_truegoing_foundation.sql`; replace `supabase/seed.sql`; replace `supabase/tests/database/*.sql`; regenerate `src/infrastructure/supabase/database.types.ts`
@@ -283,3 +289,4 @@ All must pass on two physical phones against staging, recorded in `PROJECT_LOG.m
 | Date | Change |
 |---|---|
 | 2026-09-23 | Created the P0 implementation plan |
+| 2026-09-23 | T0 complete |

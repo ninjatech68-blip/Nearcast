@@ -4,7 +4,7 @@ This log records important packaging, setup, and version-control decisions for t
 
 ## Current Project
 
-- Project name: Nearcast App Project
+- Project name: TrueGoing (codename Nearcast)
 - Project folder: `/Users/piyushsharma/Downloads/Nearcast-App-Project-2026-08-24`
 - Product: Trust-aware intent broadcasting mobile app
 - Build type: Greenfield project with no old app or legacy codebase dependency
@@ -42,6 +42,7 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Home feed UX | Resolved | Replaced the explainer-style home page with an honest `For You` empty-feed shell and bottom navigation for `For You`, `Broadcast`, `Activity`, and `You` |
 | 2026-08-25 | Native homepage UX pass | Resolved | Reworked the homepage as a native-style `For You` tab with grouped feed sections and moved primary navigation to Expo Router tabs |
 | 2026-08-25 | Native minimal design direction | Approved for exploration | Captured product truth in `PRODUCT.md` and generated a cohesive native minimal screen board for homepage, detail, profile, request, composer, review/reach, activity, and messages |
+| 2026-09-23 | T0 rename | Passed | `npm run verify` passed: lint, typecheck, 17 Vitest and 12 Jest tests, iOS export. `app.config.ts` resolves `com.truegoing.app` (production/preview) and `com.truegoing.app.dev` (development). Native device build not run: no macOS in the cloud container |
 | 2026-09-23 | Web build capture | Done | Exported the web build and captured 9 routes in Chromium for the competitive review; no iOS simulator available in the cloud container |
 | 2026-08-25 | Native minimal page build | Resolved | Built the first native minimal page set with five-tab navigation, intent detail, broadcaster profile, request sheet, composer, review/reach, activity, and messages using shared UI primitives |
 
@@ -66,3 +67,4 @@ This log records important packaging, setup, and version-control decisions for t
 | 2026-08-25 | Recorded native minimal design-system exploration checkpoint |
 | 2026-08-25 | Recorded native minimal page implementation checkpoint |
 | 2026-09-23 | Recorded the TrueGoing redesign and the change of source of truth |
+| 2026-09-23 | Recorded T0: TrueGoing identity and bundle ID `com.truegoing.app` |
