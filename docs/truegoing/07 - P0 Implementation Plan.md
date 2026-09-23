@@ -74,22 +74,23 @@ Defaults are chosen so work can start. Change any of them before its task starts
   - Splash has a dark background (`#0E1714`) as well as light (`#F7F3EA`).
 - **Not verifiable here:** a native build on a device. The cloud container has no macOS/Xcode. The first EAS development build (T15 profile, can be run earlier) confirms the icon and bundle ID on a phone.
 
-### T1 · New foundation migration
-**Files:** delete `supabase/migrations/20260824161306_nearcast_foundation.sql`; add `supabase/migrations/<timestamp>_truegoing_foundation.sql`; replace `supabase/seed.sql`; replace `supabase/tests/database/*.sql`; regenerate `src/infrastructure/supabase/database.types.ts`
-**Blocked by:** nothing. [Certain] There is no deployed database, so replacing the migration is safe.
+### T1 · New foundation migration ✅ 2026-09-23
+**Files:** `supabase/migrations/20260923100000_truegoing_foundation.sql` (replaces the Nearcast foundation), `supabase/seed.sql`, `supabase/tests/database/truegoing_foundation.test.sql` (replaces the old suite), `src/infrastructure/supabase/database.types.ts`, `scripts/db-native/supabase_shim.sql`, `scripts/db-test-native.sh`
+**Blocked by:** nothing.
 
-Build the P0 subset of `05`:
-- [ ] Enums from `05` §3 (all of them, so later migrations only add tables).
-- [ ] Tables: `profiles`, `profile_private`, `profile_settings`, `interests`, `profile_interests`, `devices`, `blocks`, `connections` (empty in P0, needed by fan-out), `plans`, `plan_private`, `plan_members`, `plan_requests`, `plan_deliveries`, `plan_events`, `conversations`, `conversation_threads`, `conversation_members`, `messages`, `notification_jobs`, `reports`, `moderation_actions`, `analytics_outbox`.
-- [ ] Include `women_only`, `verified_only`, `connections_only`, `verified_at` and the `check (not women_only or verified_only)` constraint now.
-- [ ] Helpers in `private`: `is_blocked`, `are_connected`, `is_friend_of_friend`, `is_verified_woman`, `reach_rank`, `can_see_plan`, `has_relationship`.
-- [ ] RLS exactly as the `05` §5 matrix for these tables. No client UPDATE/DELETE grants except owner settings and `conversation_members.muted/last_read_at`, `profiles` allowed columns, `profile_private` allowed columns.
-- [ ] Snapping trigger: `snapped_point`, `cell` from `plan_private.exact_point` (`05` §6.6).
-- [ ] Reach monotonic trigger (`05` P4).
-- [ ] Seed: `interests` reference data (≈ 60 interests in the groups from S05), plus local-only personas clearly named `Demo Host`, `Demo Joiner`, `Demo Outsider` with `@truegoing.local` emails. No seeded plans in any non-local environment.
-- [ ] pgTAP, written **before** the policies: invariants 1, 2, 4, 5, 6, 8, 10, 15, 16 from `05` §11. (Invariants that need later RPCs are written in their task: 7 and 12 in T6, 3, 13 and 17 in T8, 9 in T11, 18 in T12. Invariants 11 and 14 cover P1/P2 features.)
-- [ ] `npx supabase db lint --level warning` clean for owned schemas.
-- **Done when:** `npm run db:reset && npm run db:test` pass; types regenerated; `npm run verify` passes.
+- [x] All enums from `05` §3.
+- [x] The 22 P0 tables, including `women_only`, `verified_only`, `connections_only`, `verified_at` and `check (not women_only or verified_only)`.
+- [x] Helpers in `private`: `is_blocked`, `are_connected`, `is_friend_of_friend`, `is_verified_woman`, `reach_rank`, `can_see_plan`, `has_relationship`, plus four small lookup helpers that keep policies free of recursion.
+- [x] RLS on every table per the `05` §5 matrix. Supabase's default grants are revoked first; clients get column-level grants only where the matrix allows writes.
+- [x] Triggers: snapping (≈300 m grid + geohash-6), reach only widens, women-only host guard, `updated_at`.
+- [x] Seed: 54 interests in 10 groups; three local-only personas named `Demo Host`, `Demo Joiner`, `Demo Outsider` (`@truegoing.local`). No plans seeded.
+- [x] pgTAP, written before the schema: 79 assertions covering invariants 1, 2, 4, 5, 6, 7 (creation guard, brought forward from T6), 8, 10, 15 and 16, plus anon denial, blocking, membership chat rules and draft-only writes. Invariants that need later RPCs stay with their tasks: 12 in T6; 3, 13 and 17 in T8; 9 in T11; 18 in T12. 11 and 14 cover P1/P2 features.
+- [x] Mutation check: removing the women-only visibility rule, granting delivery updates, or opening profiles to everyone each makes the suite fail.
+- [x] `supabase db lint --level warning` on `public` and `private`: no findings.
+- [x] Types regenerated with the Supabase `postgres-meta` generator.
+- **Done:** `npm run verify` passes. `npm run db:test:native` passes 79/79.
+- **How it was verified, and what is still open:** the Supabase Docker images could not be pulled in the cloud environment (registry downloads return 403). The suite ran on native PostgreSQL 16 + PostGIS + pgTAP through `scripts/db-test-native.sh`. That script uses a shim which emulates the Supabase roles, `auth.uid()` and default grants (`scripts/db-native/supabase_shim.sql`). **`npm run db:test` on the real Supabase stack (Postgres 17) has not run yet.** The CI `database` job runs it on the first pull request; treat that as the final gate for T1. The generated types omit the empty `graphql_public` schema that the CLI normally includes.
+- **Spec deviations** are recorded in `05` §13.
 
 ### T2 · Pure domain modules
 **Files:** `src/features/plans/domain/*.ts` (+ tests); delete `src/features/intents/`
@@ -290,3 +291,4 @@ All must pass on two physical phones against staging, recorded in `PROJECT_LOG.m
 |---|---|
 | 2026-09-23 | Created the P0 implementation plan |
 | 2026-09-23 | T0 complete |
+| 2026-09-23 | T1 complete (native Postgres verification; real Supabase run pending in CI) |

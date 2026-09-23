@@ -62,7 +62,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts"
+    "db:types": "supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts",
+    "db:test:native": "./scripts/db-test-native.sh"
   },
   "jest": {
     "preset": "jest-expo",

@@ -30,6 +30,7 @@ This file explains the project commands in plain language.
 | `npm run db:stop` | Stops the local Supabase database |
 | `npm run db:reset` | Rebuilds the local database from migrations and seed data |
 | `npm run db:test` | Runs database and permission tests |
+| `npm run db:test:native` | Runs the same tests on a throwaway local PostgreSQL (needs PostGIS, pgTAP, pg_cron) when Docker is unavailable |
 | `npm run db:types` | Generates TypeScript types from the local database |
 
 ## Change Log
@@ -37,3 +38,4 @@ This file explains the project commands in plain language.
 | Date | Change |
 |---|---|
 | 2026-08-24 | Added a plain-language command guide |
+| 2026-09-23 | Added the native database test command |

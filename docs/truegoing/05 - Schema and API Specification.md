@@ -498,8 +498,22 @@ Each is one or more assertions in `supabase/tests/database/`, run by `npm run db
 4. **Rate limits** beyond messages: posts per day, requests per day, reports per day. Suggested: 10 / 20 / 10.
 5. **Moderation tooling** is service-role SQL in this spec; a reviewer UI is out of scope.
 
+## 13. Implementation notes (T1, 2026-09-23)
+
+The foundation migration `supabase/migrations/20260923100000_truegoing_foundation.sql` implements the P0 subset of this spec. Where it differs from the text above, the migration is authoritative:
+
+1. **`plan_private.unlock_at` is not stored.** The unlock time is always `plans.starts_at − 1 hour` and is computed in `get_exact_spot` (T8), so it can never drift from the plan's start time.
+2. **`plans.snapped_point` and `plans.cell` are null while a plan is a draft.** They are written by a trigger when `plan_private.exact_point` is set. A CHECK requires both for any status other than `draft`.
+3. **Clients cannot insert `profile_private`.** The row is created by `complete_onboarding` (T5), because `birth_date` is required and is not client-writable. Clients can update only gender, phone, trusted contact and contact-matching opt-in.
+4. **`messages.conversation_id` points at either a plan conversation or a request thread**, so it has no foreign key. Access is checked through `conversation_members`.
+5. **Extra helpers** `is_conversation_member`, `is_plan_host`, `is_plan_draft_of` and `is_plan_member` exist so policies never query an RLS-protected table from its own policy (no recursion).
+6. **The women-only host rule is a table trigger**, not only a check inside `create_plan_draft`, so it holds for every write path.
+7. **Visibility details beyond §6.1:** non-members stop seeing a plan once `ends_at` passes, and plans of restricted hosts are hidden from non-members.
+8. **Small additions:** `profiles.first_name` is a generated column; `interests.sort_order` orders the onboarding chips.
+
 ## Change log
 
 | Date | Change |
 |---|---|
 | 2026-09-23 | First proposal. Replaces the foundation model with plans, members, requests, deliveries, connections, conversations, trust records and moderation; 60+ RPCs; RLS matrix; fan-out, unlock and estimate algorithms; 18 privacy invariants with tests. |
+| 2026-09-23 | Added implementation notes from T1 (§13) |
