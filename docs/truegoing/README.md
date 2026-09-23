@@ -52,3 +52,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Scope correction: real codebase is `mobileapp`; added the handoff document |
 | 2026-09-23 | Added the MigoMap takeaways for Truegoing |
 | 2026-09-23 | Added the screen-by-screen review of the real Truegoing app vs MigoMap, with captures |
+| 2026-09-23 | Handoff doc gained the screen work order and the consolidated copy table |

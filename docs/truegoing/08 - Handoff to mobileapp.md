@@ -133,6 +133,50 @@ Each step follows `mobileapp/AGENTS.md`: decision → law → failing assertion 
 9. **Doc drift:** update `FEATURES.md`, `BACKEND.md`, `README.md` test counts, and re-verify stale `FINDINGS_REGISTER` rows. Don't rewrite dated docs.
 10. **Hold** R4 (sub-interests) and women-only casts until there are users to learn from.
 
+### 5.1 Screen work from the review in `10`, in order
+
+Runs alongside the list above; it is client-only except where noted. Steps that already appear above are cross-referenced, not repeated. Evidence and per-screen reasoning are in [`10 - Screen Review - Truegoing vs MigoMap`](./10%20-%20Screen%20Review%20-%20Truegoing%20vs%20MigoMap.md).
+
+1. **Sign-in provider** = step 1 above. Everything in this list is invisible until it ships.
+2. **Start time on poster and detail.** Today only expiry renders (`remote.ts:238` maps `expires_at` through `expiryLabel`; nothing renders `happens_at`). One pure formatter with fixed English day names (§3), failing test first; poster shows `Thu 7pm` / `Today 7pm`, host's own poster keeps `Ends`.
+3. **Verified mark wired to `is_verified`** = R5, step 4 above.
+4. **Default lens `This week`, persisted, shown as a chip on the feed header** = R2, step 3 above. Lens exit word becomes `Done`.
+5. **Activity:** replace the duplicated tab-plus-chips with three sentence-case tabs `Needs you · Waiting · Your plans`; add a visible `Withdraw` / `Cancel plan` quiet action beside the long-press (`alerts-page.tsx:332-354`); stamps `REVIEW` and `CONFIRM ATTENDANCE` become sentence-case `See request` and `Did it happen?`.
+6. **Profile:** a `What hosts see` card first (name, area, reliability bars, plans completed and no-shows, interests), utility rows below, `Blocked` under Settings.
+7. **Copy table §5.2** in one commit, with `copy.test.ts` extended to the new strings and the casing exception written into `DESIGN_SYSTEM.md`.
+8. **Decide** before touching: sub-interests (R4), whether the Map toggle stays on the feed header (D45), and how reach is disclosed when seeded rows carry `radius_m = 2000` while new casts are fixed at 20 000 (`geo.ts:21`).
+
+### 5.2 Copy changes, consolidated
+
+All lines follow `DESIGN_SYSTEM.md` voice rules: sentence case, no exclamation marks, no emoji, no em dashes, exit words from its table (`Done` nothing lost · `Never mind` something discarded · `Back` previous step kept). Cited rows are in `10 §1`.
+
+| Where | Today | Proposed | Why | Row |
+|---|---|---|---|---|
+| Sign in | field only | `We text a code. Your number is never shown to anyone.` | State the fact | 1 |
+| Area picker title, from compose | `HOME AREA` | `Where is the plan?` | Wrong context | 4, 31 |
+| Area picker | `Via geocode (limited)` | remove | Developer note leaking | 31 |
+| Poster fact line | `Panchkula Sector 5 · 3 vouches · Ends 10pm` | `Panchkula Sector 5 · ≈3 km · Thu 7pm` | Start beats expiry; vouches dormant (D31); approximate distance is allowed | 8, 10 |
+| Poster host line | `✓ aarav` | `✓ Aarav` | One casing across poster and detail | 9 |
+| Poster why line | `Why: one trusted link away · you're into sports ›` | `Why: near you · into sports ›` | Only reasons the delivery actually used | 11 |
+| Own poster | `See who's asked` | `2 asked ›` / `Nobody asked yet` | Real count, host only | 13 |
+| Not interested | silent | toast `Hidden. Fewer plans like this.` | Make the feedback loop visible | 12 |
+| Lens exit | `Close` | `Done` | Exit-word table | 15 |
+| Lens default | none, resets on leave | `This week` chip on the header | R2 | 15 |
+| Detail host row | `31 plans completed · 0 no-sho…` | two lines: `31 plans completed` / `0 no-shows` | Trust facts never clip | 17 |
+| Join sheet | three paragraphs | `Aarav sees your first name and this note, nothing else, until they accept.` / `Aarav decides. Yes opens the chat here. No answer means no.` / `First time meeting? Choose a public place.` | Fewer words above a disabled button | 18 |
+| Request sent | `We'll notify you here.` | from `sentNoteFor()` | Never promise a notification that cannot arrive | 19 |
+| Caster profile | `in your circle`, `vouched by 2 people you trust` | remove while circles are dormant | A dormant system should not speak (D31) | 20 |
+| Activity chips | `NEEDS YOU 3 · YOUR PLANS 1` (+ `WAITING`) | tabs `Needs you · Waiting · Your plans` | Truncation at 390 pt; duplicate of the tab | 21 |
+| Activity stamps | `REVIEW`, `CONFIRM ATTENDANCE` | `See request`, `Did it happen?` | Sentence-case CTAs; width | 22 |
+| Activity caption | `· Long-press to withdraw` / `· Long-press to cancel` | visible `Withdraw` / `Cancel plan` quiet action; caption removed | Hidden affordance | 23 |
+| Profile | utility rows only | `What hosts see` card first | A profile, not a settings list | 26 |
+| Profile nudge | none | `Add a photo so hosts can recognise you.` only when missing | Small, no ring, no percentage | 27 |
+| Settings row | `Paid suggestions` | `Venue suggestions` · `Venues can pay to suggest a place. Never people.` | Reads as a paywall | 28 |
+| Compose 1 chips | `sports + outdoors` mono lowercase | `Sports + outdoors` sentence case | Wraps to three rows at 390 pt | 29 |
+| Compose 2 heading | `choose who this can reach` | `Where and when` | Reach is not a choice (D28) | 30 |
+
+**Casing rule to settle once.** `DESIGN_SYSTEM.md:233` says sentence case for titles, headings, labels and CTAs, yet uppercase mono is used for eyebrows (`SPORTS + OUTDOORS`), chips (`NEEDS YOU`), stamps (`LIVE`, `REVIEW`) and section labels (`WHAT KIND OF PLAN?`). Write the exception down: uppercase mono for one-word stamps and category eyebrows only; everything tappable is sentence case.
+
 ---
 
 ## 6. Disposition of the `nearcast` repository work
@@ -144,3 +188,4 @@ Each step follows `mobileapp/AGENTS.md`: decision → law → failing assertion 
 | Date | Change |
 |---|---|
 | 2026-09-23 | Created after reading `mobileapp` at `d2959d7`; reconciled every TrueGoing item against its decision record |
+| 2026-09-23 | Added §5.1 screen work order and §5.2 consolidated copy table from the screen review (`10`) |
