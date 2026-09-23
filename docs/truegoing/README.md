@@ -4,7 +4,7 @@ The TrueGoing redesign, based on a review of the MigoMap competitor app. TrueGoi
 
 ## Status
 
-**Source of truth since 2026-09-23.** This folder overrides every other document in the repo. `AGENTS.md` and `docs/00` point here.
+**Scope correction, 2026-09-23 (later the same day).** The product's real codebase is `ninjatech68-blip/mobileapp`, whose `AGENTS.md` designates this repository as read-only design reference and never a source of product rules. Documents `00`–`07` here were written before that repository was available and several of their proposals reverse decisions recorded there. **Use [08 - Handoff to mobileapp](./08%20-%20Handoff%20to%20mobileapp.md)**: it reconciles every item against `mobileapp`'s decision record and says what to add, what needs a decision, and what to drop. Within *this* repository only, this folder still overrides the older Nearcast docs.
 
 The earlier Nearcast documents are kept for history, and each carries a banner:
 - **Superseded, do not build from:** `docs/01`, `02`, `03`, `06`, `07`, `08`, `13`, `15`, `16`, `17`, implementation plans `02`–`05`, `DESIGN.md`, `PRODUCT.md`.
@@ -24,6 +24,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 05 | [Schema and API Specification](./05%20-%20Schema%20and%20API%20Specification.md) | Tables, RLS matrix, algorithms, RPCs, error codes, privacy invariants |
 | 06 | [Design Content and Brand Guidelines](./06%20-%20Design%20Content%20and%20Brand%20Guidelines.md) | Brand, colour, type, icons, components and content, marked retain / change / new |
 | 07 | [P0 Implementation Plan](./07%20-%20P0%20Implementation%20Plan.md) | Active plan: 16 tasks, dependencies, blockers, exit gate |
+| 08 | [Handoff to mobileapp](./08%20-%20Handoff%20to%20mobileapp.md) | What carries over to the real codebase: add / decide / drop, the relevance plan, execution order |
 
 `tg-captures-2026-09-23/` holds the TrueGoing screens as they were on 2026-09-23, captured from the web build. SF Symbols render as letters there.
 
@@ -46,3 +47,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Saved the redesign document set to the repo |
 | 2026-09-23 | Became the source of truth |
 | 2026-09-23 | Added the P0 implementation plan |
+| 2026-09-23 | Scope correction: real codebase is `mobileapp`; added the handoff document |
