@@ -224,3 +224,43 @@ The owner ruled: **add an optional Instagram handle to the profile, visible only
 6. Payload hygiene test extended: the handle is added to the list of fields that must never appear in push or analytics.
 
 Order: after R5 (working verified mark) and SEC-12, because D55 rides on the same revocation logic. Small change; one afternoon once SEC-12 is in.
+
+---
+
+## 14. Sign in with Apple or Google, name prefilled, ruled by the owner (added 2026-09-23)
+
+The owner ruled: **when a person signs in with Google or Apple, the app fetches their name from that account.** Two facts first. [Certain] Today identity is a phone number and typing the code *is* verification (D8, D19); there is no Apple or Google sign-in in the app. [Certain] Apple returns the person's name only on the **first** authorisation for an app and never again, and lets them hide their email; Google returns name and photo on every sign-in. So "auto-fetch the name" is reliable for Google and a one-shot for Apple; the name has to be stored on that first pass or it is gone.
+
+### D56 (draft) — Apple and Google create the account; the phone still makes it verified
+
+- **Sign-in screen:** `Continue with Apple` · `Continue with Google` · `Continue with phone`. Apple first on iOS (App Store requires it when any third-party sign-in is offered).
+- **What is taken from the provider:** given name (prefilled into the name field, editable, one tap to confirm), and for Google the profile photo, offered as the optional avatar and never used without a tap. Email is stored as an auth identity only, never shown, never used to find people.
+- **Verification stays the phone.** The tick, delivery of plans and the right to ask or post still require a phone code (`private.assert_actor()` → `is_verified`). An Apple or Google account without a phone can look at the feed and nothing else, with one line explaining why: `Add your number to ask, post and be shown as verified.` This keeps D19's substance: verification is the phone, even if sign-in no longer is.
+- **Never:** import contacts, friends, followers or any social graph from the provider (D8's reason for refusing invites applies word for word). Never use the provider photo as proof of anything.
+- **Needs in `mobileapp`:** decision entry amending D19's title, Supabase Auth providers configured, `people.display_name` written from the provider claim on first sign-in, an `auth_provider` fact for the Devices row, law assertion that `is_verified` still depends only on `person_verification.verified_at`, pgTAP for an OAuth account without a phone being denied every write. Client: three-button sign-in, phone step surfaced on first attempt to ask or post. Onboarding step count for Apple and Google users drops to two screens (date of birth confirms alongside the prefilled name).
+
+Order: with the SMS provider work, since the phone step is still the gate. It removes the "nobody can sign in" blocker for browsing only; asking and posting still wait on the SMS provider.
+
+---
+
+## 15. Map glyphs: plan icon, not the host's face, ruled with a correction (added 2026-09-23)
+
+The owner asked for **either the poster's profile picture or an icon of the kind of plan** on each map dot. Choose the icon. I disagree with the face because a face at a one-kilometre spot is a person on a map, which is the one thing every rule here refuses (D3, D4, brand: no live avatars); a host who posts weekly from the same courts becomes locatable by anyone browsing `All`. Here's what I'd do instead: the plan's icon in the category colour on the dot; the host's face appears on the poster sheet after the tap, where it appears today. The risk in faces on the map is a browsable map of who is where, which is MigoMap's people layer by another route.
+
+Amends D53: a map marker is a **category-coloured disc carrying the plan's icon** (§16). Clusters carry a count. Own plans carry the `LIVE` stamp. No photo, initials or name on any marker.
+
+---
+
+## 16. A plan gets an icon from its words, ruled by the owner (added 2026-09-23)
+
+The owner ruled: **when a person writes a plan, the app picks a relevant icon automatically for visual identity.** This fits the compose target in §2 (the kind is suggested from the text, the person confirms) and extends it one level down.
+
+### D57 (draft) — Plan icons
+
+- **Icon set.** Drawn glyphs in the existing `Glyph` system (`design-system/components/glyph.tsx`), one per category as the fallback and a keyword-keyed set beneath each: badminton, cricket, football, running, cycling, trek, swim (sports and outdoors); coffee, dinner, drinks, street food (food and drinks); gig, club, jam (music and nightlife); chess, board game, cards, quiz (games); workshop, book, language, code (learning and making); walk, meet, volunteer (social). Around 30 to start. No emoji (DESIGN_SYSTEM: icons are drawn).
+- **How it is chosen.** A pure, tested function `iconFor(text, category)` in `features/casts/domain/`: keyword match on the statement, falling back to the category glyph. It runs as the person types; the chosen icon shows beside the kind chip and is one tap to change. The person's confirmation is the fact; the guess is a suggestion. Stored as `casts.icon text` from a fixed allow-list, validated in PostgreSQL with a check constraint.
+- **Where it shows.** Poster (small, under the category eyebrow), cast detail header, map marker (§15), Activity rows, the plan pinned in a chat. It never replaces the sentence; the sentence stays the identity, the icon is the glance.
+- **Never:** an icon that claims something the words do not (no "verified venue", no headcount glyph), no icon for people.
+- **Needs in `mobileapp`:** decision entry, the glyph set, the domain function with tests (including the "no keyword → category glyph" path and words that hit two categories), `casts.icon` with its allow-list constraint, `cast_it` accepting it, pgTAP for an out-of-list value being refused, copy test that the poster still passes with the icon present.
+
+Order: with §2 compose work, since both run off the same text-as-you-type suggestion.

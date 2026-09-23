@@ -45,6 +45,9 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Plans are browsable on a map at their coarse (~1 km) point; exact place still hidden until acceptance; people never on the map; host toggle `Show on the map` default on (`11 §11`, D53 draft for `mobileapp`) |
 | 2026-09-23 | One group thread per plan for the host and accepted people only; pair threads retained; a block makes the blocker leave the plan (`11 §12`, D54 draft for `mobileapp`) |
 | 2026-09-23 | Optional Instagram handle, owner-only in storage, shown only after acceptance on a live plan, never on the caster profile (`11 §13`, D55 draft for `mobileapp`) |
+| 2026-09-23 | Sign in with Apple or Google, name prefilled; phone code still required to be verified, ask or post (`11 §14`, D56 draft) |
+| 2026-09-23 | Map markers show the plan's icon in its category colour, never a person's photo (`11 §15`, amends D53) |
+| 2026-09-23 | Each plan gets a drawn icon suggested from its words and confirmed by the person (`11 §16`, D57 draft) |
 
 ## Change log
 
