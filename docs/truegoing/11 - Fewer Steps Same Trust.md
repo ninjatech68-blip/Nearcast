@@ -123,3 +123,42 @@ The question: MigoMap has a map view and a list view with filters, which are eng
 4. **Do not widen the radius.** If a plan should reach further, that is the host's informed action per plan (a future reach choice, D28 to be reopened), never a global change.
 
 Refuse: a world map to pan (SS33), trips and trending destinations (SS20, SS32, SS36, SS38), pins at coordinates, any surface that shows where a person is.
+
+---
+
+## 11. Map browse, ruled by the owner (added 2026-09-23)
+
+The owner reaffirmed after §10: **plans must be visible on the map, and a person can browse the map for plans and open their details.** This is the owner's call and it is recorded here as a draft decision for `mobileapp/docs/01 - Decisions.md`. My disagreement stands in §10 and is not repeated; what follows is the version that keeps the four trust rules while doing what was asked.
+
+### D53 (draft) — Plans are browsable on a map, at their coarse point
+
+**What changes.** D45 ruled that no coordinate for an unaccepted cast crosses the wire, only a gazetteer label. D53 amends that: `my_feed` and a new `casts_on_map` read return the cast's **coarse point**, `casts.match_point`, which is already snapped to a ~1 km grid (`20260901030000_places.sql:20`, `20260918000000_area_labels.sql:14`). The exact venue stays where D17 and L14 put it: host and accepted people only. Nothing about people moves: no person has a coordinate anywhere (D3, D4), and the map shows plans, never people.
+
+**Brand guardrail amended.** `BRAND.md` says never use map pins. Read it as *never pins for people*. A plan on the map is a **category-coloured dot** at its coarse point, no avatar, no face, no radar ring. Clusters show a real count (`4 plans`), never an estimate dressed as a fact.
+
+**Privacy bound, stated exactly.** [Certain] A dot at a 1 km grid point tells a browser which 1 km cell a plan is in. That is the same information the delivery radius already leaks to anyone within 20 km, so the map adds no new fact about the plan for people in reach. What it adds is **reach**: a browser outside the plan's 20 km can now see that the plan exists and roughly where. That is a widening, and the rule is that reach widens only by the host's informed action. So:
+
+**Host control, at compose.** One toggle, `Show on the map`, with the line: `Anyone browsing the map sees this plan and its rough area, not the exact place. Off: only people within 20 km who share the interest.` [Likely] Default **on**, because the owner wants the map full and an empty map is the failure D45 was written about. The default is a product decision to record with D53; the toggle itself is what keeps "reach only widens by informed action" true. Turning it off later narrows, which the rule forbids; so the toggle is set at publish and locked after the first ask, like the words (L10).
+
+### The map screen
+
+- **Entry.** `List | Map` on the feed header as today (D26 unchanged; three destinations plus Create). Map opens centred on the person's home area, never on device location.
+- **Dots.** One per plan at the coarse point, coloured by category. Tap: the poster rises as a bottom sheet with the full card (statement, host with reliability, start time, `≈` distance, why line, `Ask to go` / `I'm going`). Everything a reader can do from the list they can do from the sheet. Details open the same cast detail as the list.
+- **Clusters.** Below a zoom threshold, dots merge into a count. Tap a cluster: zoom, or a list of the plans in it.
+- **Filters.** The same lens as the list (`This week · Sports + outdoors`), one filter state for both views (§10 step 3). Plus one map-only chip: `Mine` (delivered to me) vs `All` (every plan with `Show on the map`). Default `Mine`, so the first view is still the relevant one; `All` is the browse the owner asked for.
+- **Why line on browsed plans.** A plan seen through `All` did not reach the person by delivery, so the why line says so: `Why: you're browsing the map`. Every plan still carries a true reason.
+- **Own plans.** The host's own plan shows at its coarse point with a `LIVE` stamp, same as the list.
+- **Joining a browsed plan.** `Ask to go` works from any dot, in or out of the 20 km. The host still decides (D5) or opened the plan (§4). The exact place still unlocks on acceptance (D17).
+- **Never on the map.** People, avatars, "N going", exact venues before acceptance, device location, heatmaps of where people are.
+
+### What it needs in `mobileapp`
+
+1. Decision entry D53 in `01 - Decisions.md`, with D45's "what was given up" paragraph updated rather than deleted.
+2. Law assertion: a coarse point is on the 1 km grid for every row that crosses the wire; no exact point for a non-accepted reader; no person coordinate anywhere (extends the existing coordinate-column enumeration).
+3. `casts.show_on_map boolean not null default true`, set at publish, immutable after the first join request.
+4. `casts_on_map(bbox, lens)` SECURITY DEFINER read: verified callers only (`private.assert_actor()`), returns coarse point, category, start time, host trust facts, `show_on_map = true`, live only, bounded to the viewport and capped per call.
+5. pgTAP: allowed (verified browser gets dots in bbox), denied (unverified, restricted, under-age; exact point never present; `show_on_map = false` never returned).
+6. Client: reuse the existing map screen and `map-placement.ts`; replace label lookup with coarse points; sheet reuses the poster component; one lens store for list and map.
+7. Copy: the toggle line, the browse why line, cluster count format, empty map state `No plans on the map here yet.`
+
+Order: after §9 steps 1–5. It touches a decision and the schema, so it goes through decision → law → assertion → schema → UI, and `db-local.sh test` and `contract` before any device build.

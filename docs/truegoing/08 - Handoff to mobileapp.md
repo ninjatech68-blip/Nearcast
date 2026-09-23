@@ -179,7 +179,7 @@ All lines follow `DESIGN_SYSTEM.md` voice rules: sentence case, no exclamation m
 
 ### 5.3 Step-count targets from user testing (`11`)
 
-Testers who used both apps said MigoMap gets the job done in fewer steps. [`11 - Fewer Steps Same Trust`](./11%20-%20Fewer%20Steps%20Same%20Trust.md) sets targets that keep every trust rule: post in 4 taps on one screen, join in 2 taps with tap-to-send starters, accept in 1 tap from the row or the push, onboard in 3 screens, read the time off the card. Steps 1–5 there are client-only and touch no decision; they can ship before the SMS provider. Step 6, **host-opened plans** (`Anyone verified can join`, one-tap `I'm going`, acceptance immediate and server-side, D2/D5/D17/D29 intact), needs a decision entry first. Where `11` and §5.1 overlap (poster start time, join sheet copy), `11` is the fuller spec.
+Testers who used both apps said MigoMap gets the job done in fewer steps. [`11 - Fewer Steps Same Trust`](./11%20-%20Fewer%20Steps%20Same%20Trust.md) sets targets that keep every trust rule: post in 4 taps on one screen, join in 2 taps with tap-to-send starters, accept in 1 tap from the row or the push, onboard in 3 screens, read the time off the card. Steps 1–5 there are client-only and touch no decision; they can ship before the SMS provider. Step 6, **host-opened plans** (`Anyone verified can join`, one-tap `I'm going`, acceptance immediate and server-side, D2/D5/D17/D29 intact), needs a decision entry first. Where `11` and §5.1 overlap (poster start time, join sheet copy), `11` is the fuller spec. **Owner ruling 2026-09-23:** plans are browsable on a map at their coarse point; `11 §11` carries the draft decision D53 (amends D45 and the brand's map-pin guardrail), the host `Show on the map` toggle, the `Mine | All` chip and the schema and test list.
 
 ---
 
@@ -194,3 +194,4 @@ Testers who used both apps said MigoMap gets the job done in fewer steps. [`11 -
 | 2026-09-23 | Created after reading `mobileapp` at `d2959d7`; reconciled every TrueGoing item against its decision record |
 | 2026-09-23 | Added §5.1 screen work order and §5.2 consolidated copy table from the screen review (`10`) |
 | 2026-09-23 | Added §5.3 step-count targets from user testing, pointing at `11` |
+| 2026-09-23 | Recorded the owner ruling on map browse (D53 draft in `11 §11`) |
