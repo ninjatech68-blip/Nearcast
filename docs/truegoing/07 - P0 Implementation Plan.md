@@ -92,20 +92,25 @@ Defaults are chosen so work can start. Change any of them before its task starts
 - **How it was verified, and what is still open:** the Supabase Docker images could not be pulled in the cloud environment (registry downloads return 403). The suite ran on native PostgreSQL 16 + PostGIS + pgTAP through `scripts/db-test-native.sh`. That script uses a shim which emulates the Supabase roles, `auth.uid()` and default grants (`scripts/db-native/supabase_shim.sql`). **`npm run db:test` on the real Supabase stack (Postgres 17) has not run yet.** The CI `database` job runs it on the first pull request; treat that as the final gate for T1. The generated types omit the empty `graphql_public` schema that the CLI normally includes.
 - **Spec deviations** are recorded in `05` §13.
 
-### T2 · Pure domain modules
-**Files:** `src/features/plans/domain/*.ts` (+ tests); delete `src/features/intents/`
-**Blocked by:** T1 types (for shared enums)
+### T2 · Pure domain modules ✅ 2026-09-23
+**Files:** `src/features/plans/domain/{enums,plan,reach,relativeTime,distance,counts,reason,planCta,errors}.ts` and a test for each
+**Blocked by:** nothing (T1 types used only in the enum type test)
 
-Tests first for each:
-- [ ] `plan.ts`: Zod schemas for a plan draft (type, text 1–500 trimmed, emoji, category, starts/ends with `ends > starts` and `starts > now − 1h`, capacity 1–200 or null, asks/offers force capacity 1).
-- [ ] `reach.ts`: ordering, `canWiden(from, to)`, labels "Friends · Friends of friends · Nearby · Anyone in {city}".
-- [ ] `relativeTime.ts`: exact rules in `06` §9.6 ("now", "in 20 min", "tonight 8 pm", "tomorrow 7:30 am", "Sat 6 pm", "12 Oct"), en-IN.
-- [ ] `distance.ts`: "under 1 km", "≈ n km", unit from settings, never decimals.
-- [ ] `counts.ts`: real integer ≥ 5, "a few" for 1–4, "≈" for estimates, nothing for 0 where copy says so.
-- [ ] `reason.ts`: maps `reason_code` + params to the closed set in `06` §9.5; unknown code throws.
-- [ ] `planCta.ts`: the S11 primary-button state machine (role × type × status × eligibility → label, enabled, reason).
-- [ ] `errors.ts`: server error code → user copy (`05` §8 → `06` §9.8).
-- **Done when:** unit tests cover every branch; no React Native or Supabase import in `domain/`.
+- [x] `enums.ts`: plan types, statuses, reach levels, reasons, member statuses. `enums.test.ts` fails type-checking if they drift from the database enums.
+- [x] `plan.ts`: Zod draft schema matching the database rules. Text is 1–500 characters after trimming; emoji is 1–8 code points, counted the way Postgres counts them; the plan must end after it starts; the start may be at most 1 hour in the past; capacity is 1–200 or no limit. Asks and offers are forced to capacity 1, and women-only forces verified-only.
+- [x] `reach.ts`: ordering, `canWiden` (widening only; connections-only plans are capped at friends of friends), and the locked labels.
+- [x] `relativeTime.ts`: "now · in 20 min · tonight 8 pm · today 1:30 pm · tomorrow 7:30 am · Sat 6 pm · 12 Oct · ended". Days are compared in the viewer's time zone.
+- [x] `distance.ts`: "under 1 km", then "≈ n km"/"≈ n mi"; never decimals.
+- [x] `counts.ts`: aggregate counts of people show "a few" below 5; going counts are exact; estimates carry "≈"; spots left.
+- [x] `reason.ts`: the closed set of reason lines. Unknown codes or missing names throw, and every line fits the 120-character database limit.
+- [x] `planCta.ts`: the S11 primary-button state machine. Any disabled state always gives a reason.
+- [x] `errors.ts`: copy for all 23 server error codes. `blocked` reads exactly like `not_available`.
+- **Done:** 60 new unit tests, and every branch of the state machine is exercised. `npm run verify` passes (77 unit, 12 component tests, iOS bundle). No React Native or Supabase imports in `domain/`.
+- **Bug caught by the tests:** the `en-GB` locale renders September as "Sept". Month and weekday names are now fixed abbreviations, so the output never depends on device locale data.
+- **Changed from the plan:** `src/features/intents/` stays until T14, because the old composer screen still imports it. It's deleted together with that screen.
+- **Spec clarifications, recorded in `04` G2 and `06` §9.6:**
+  - "a few" applies to counts of people the viewer can't see individually. The "N going" on a plan card is exact, because the same people appear in the avatar stack.
+  - "tonight" is used from 5 pm; earlier times today read "today 11 am".
 
 ### T3 · Design system for P0
 **Files:** `src/design-system/tokens.json`, `tokens.ts`, `src/design-system/components/*`
@@ -292,3 +297,4 @@ All must pass on two physical phones against staging, recorded in `PROJECT_LOG.m
 | 2026-09-23 | Created the P0 implementation plan |
 | 2026-09-23 | T0 complete |
 | 2026-09-23 | T1 complete (native Postgres verification; real Supabase run pending in CI) |
+| 2026-09-23 | T2 complete |

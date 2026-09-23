@@ -356,9 +356,9 @@ Retained from StatePanel. Empty panels may use Manrope display headings and **no
 "{Name} is going" · "Vouched by {Name}" · "{Name} is hosting" · "Friends of friends" · "Near you · {interest}" · "Near you" · "You're heading to {city}" · "Hosted by a venue near you" · "Anyone in {city}". New reasons require a product decision, not a copy edit.
 
 ### 9.6 Time, distance, numbers
-- Time: "now" (started, still open) · "in 20 min" (< 60) · "tonight 8 pm" (today) · "tomorrow 7:30 am" · "Sat 6 pm" (< 7 days) · "12 Oct" (beyond). 12-hour with lowercase am/pm in en-IN; locale-driven elsewhere.
+- Time: "now" (started, still open) · "in 20 min" (< 60) · "tonight 8 pm" (today, from 5 pm) · "today 1:30 pm" (today, before 5 pm) · "tomorrow 7:30 am" · "Sat 6 pm" (< 7 days) · "12 Oct" (beyond) · "ended". 12-hour with lowercase am/pm; fixed English month and weekday abbreviations until localisation.
 - Distance: for plans only; "under 1 km", "≈ 3 km", "≈ 12 km"; unit from settings; never decimals.
-- Counts: real integers ≥ 5; "a few" for 1–4 when the count is of people; estimates prefixed "≈".
+- Counts: "a few" for 1–4 when the count is of people the viewer can't see individually (density, arrivals, estimates); real integers from 5. "N going" on a plan card is exact because those people are shown. Estimates are prefixed "≈".
 - Capacity: "2 spots left" · "1 spot left" · "Full" · "No limit".
 
 ### 9.7 Status labels (replaces `docs/08` table)
@@ -494,3 +494,4 @@ Retained in full from `DESIGN.md` and `docs/17`: AA contrast, dynamic type witho
 | 2026-09-23 | Bundle ID locked: `com.truegoing.app` (iOS and Android). |
 | 2026-09-23 | TrueGoing locked as the brand name; rename checklist added (§13.1). |
 | 2026-09-23 | First proposal: brand, colour, type, motion, navigation, iconography, components, content, imagery, accessibility, with retain/change/new against the existing docs and learnings from MigoMap. |
+| 2026-09-23 | Refined time and count rules while implementing T2 (§9.6) |

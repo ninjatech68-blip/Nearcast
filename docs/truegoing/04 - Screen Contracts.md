@@ -41,7 +41,7 @@ Every screen has the same eleven fields:
 - **Approximate place only** for plans. Public copy is the area name and a grid-snapped point. The exact spot is shown only in Meetup mode to people going, and only after the host set it.
 - **First name only** for anyone you haven't connected with. Full display name after connection.
 - **Every card that reaches you shows why.** No card renders without a reason line.
-- **Counts are real or absent.** Counts under 5 render as words ("a few"). Estimates are labelled "≈".
+- **Counts are real or absent.** Counts of people the viewer cannot see individually (density, arrivals, reach estimates) render as "a few" under 5. The "N going" on a plan card is exact, because the same people are shown in its avatar stack. Estimates are labelled "≈".
 - **Push payloads** carry only object IDs, a type, and a reason code. No plan text, message text, coordinates, contact details, or names of private circles.
 
 ### G3. Copy rules
@@ -572,3 +572,4 @@ Push payload schema: `{ type, plan_id?, chat_id?, user_id?, reason_code? }`. Not
 | Date | Change |
 |---|---|
 | 2026-09-23 | First proposal for the reimagined product. 29 screen contracts, global contracts, component contracts, routing, and acceptance criteria. |
+| 2026-09-23 | Clarified when small counts become "a few" (G2) |
