@@ -42,7 +42,8 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | This folder is the source of truth; older docs marked superseded, not rewritten |
 | 2026-09-23 | Vocabulary: plan · ask · offer · host · people going · connection; tabs Nearby · Chats · Post · You |
 | 2026-09-23 | Women-only plans: set by, delivered to, and joinable by verified women only |
-| 2026-09-23 | Plans are browsable on a map at their coarse (~1 km) point; exact place still hidden until acceptance; people never on the map (`11 §11`, D53 draft for `mobileapp`) |
+| 2026-09-23 | Plans are browsable on a map at their coarse (~1 km) point; exact place still hidden until acceptance; people never on the map; host toggle `Show on the map` default on (`11 §11`, D53 draft for `mobileapp`) |
+| 2026-09-23 | One group thread per plan for the host and accepted people only; pair threads retained; a block makes the blocker leave the plan (`11 §12`, D54 draft for `mobileapp`) |
 
 ## Change log
 

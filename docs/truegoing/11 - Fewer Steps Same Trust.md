@@ -138,7 +138,7 @@ The owner reaffirmed after §10: **plans must be visible on the map, and a perso
 
 **Privacy bound, stated exactly.** [Certain] A dot at a 1 km grid point tells a browser which 1 km cell a plan is in. That is the same information the delivery radius already leaks to anyone within 20 km, so the map adds no new fact about the plan for people in reach. What it adds is **reach**: a browser outside the plan's 20 km can now see that the plan exists and roughly where. That is a widening, and the rule is that reach widens only by the host's informed action. So:
 
-**Host control, at compose.** One toggle, `Show on the map`, with the line: `Anyone browsing the map sees this plan and its rough area, not the exact place. Off: only people within 20 km who share the interest.` [Likely] Default **on**, because the owner wants the map full and an empty map is the failure D45 was written about. The default is a product decision to record with D53; the toggle itself is what keeps "reach only widens by informed action" true. Turning it off later narrows, which the rule forbids; so the toggle is set at publish and locked after the first ask, like the words (L10).
+**Host control, at compose.** One toggle, `Show on the map`, with the line: `Anyone browsing the map sees this plan and its rough area, not the exact place. Off: only people within 20 km who share the interest.` **Ruled by the owner 2026-09-23: default on.** The map is meant to be full; an empty map is the failure D45 was written about. Recorded with D53; the toggle itself is what keeps "reach only widens by informed action" true. Turning it off later narrows, which the rule forbids; so the toggle is set at publish and locked after the first ask, like the words (L10).
 
 ### The map screen
 
@@ -162,3 +162,36 @@ The owner reaffirmed after §10: **plans must be visible on the map, and a perso
 7. Copy: the toggle line, the browse why line, cluster count format, empty map state `No plans on the map here yet.`
 
 Order: after §9 steps 1–5. It touches a decision and the schema, so it goes through decision → law → assertion → schema → UI, and `db-local.sh test` and `contract` before any device build.
+
+---
+
+## 12. Group thread per plan, ruled by the owner (added 2026-09-23)
+
+The owner ruled: **add a group chat per plan.** This reverses D2 (pair threads only, "what makes blocking tractable and what keeps a cast from becoming a room") and touches the brand guardrail against group-chat-first positioning. My position, once: I disagree because a room is where MigoMap's clutter and dating drift live, and because symmetric blocking (D13) has no clean answer inside a shared room. Here's what I'd do instead: the design below, which puts the group only where consent already happened. The risk in a plain per-plan group is a stranger's room with the exact place in it. What follows is the owner's decision, built to keep the four rules.
+
+### D54 (draft) — A plan has one thread for the people who are going
+
+**Who is in it.** The host and every **accepted** person, and nobody else. Askers who have not been accepted are not in it and cannot see it. Acceptance is the door (D5's consent step and §4's host-opened plans both lead here). Slots (D5) cap the room at the plan's size.
+
+**When it exists.** Created on the first acceptance. Ends at the plan's expiry plus the same grace the pair threads use today (`chat.ts` modes `ended · week · month`), then read-only.
+
+**What is in it.** The plan pinned at the top: statement, start time, **exact place** (revealed here, on acceptance, D17 unchanged), `Did it happen?` when the time passes. Text, photos and location as today (D12). Reply and reactions as today (D23). The four safety lines open the thread as they open a pair thread now. **No polls, no voice, no video, no invites, no sharing the thread outside the plan.**
+
+**Pair threads stay.** Every accepted person still has a private thread with the host (`threads` keyed by `cast_id, joiner_id` as today), one tap from the group. Two joiners do not get a private thread with each other unless a settled receipt later connects them (D7). This is what keeps D2's intent alive inside D54: the room is for the plan, the pair is for the person.
+
+**Blocking inside a room (D13, made tractable).** Block is symmetric and immediate. If either person blocks the other while both are accepted on one plan, the **blocker leaves the plan**: their acceptance is withdrawn silently, they leave the room, the host is told only that a place opened. Neither sees the other's messages afterwards. A block by the host removes the blocked person from the plan and the room, as declining does today. The alternative (hide messages inside a shared room) leaves two people at the same exact place at the same time, which is the one outcome blocking exists to prevent.
+
+**Receipts.** `Did it happen?` still needs both sides to confirm (D7). In a group plan the host confirms each person; each person confirms the host. Attendance stays pairwise even when the chat is not, because reliability is a fact about a pair meeting, not a room.
+
+**What never enters the room.** People who only asked. Anyone unverified. Phone numbers by design (the safety lines still say so). The plan's why line. Popularity: the member list shows names and reliability, never a count to strangers (D29 holds; the count is visible only to people already inside).
+
+### What it needs in `mobileapp`
+
+1. Decision entry D54 amending D2; brand guardrail reworded to *group chat is never the positioning* (the product is still plans, and the room is a consequence of going).
+2. Laws: only accepted people read or write a plan room; a room never contains a person who blocked or is blocked by another member; the exact place is visible only to room members and the host; nobody outside the plan can enumerate the members.
+3. Schema: `plan_threads (cast_id pk, created_at, ended_at)`, `plan_thread_members (cast_id, person_id, joined_at, left_at)`, messages either in the existing `messages` table via a nullable `plan_cast_id` or a sibling table; RLS by membership; SECURITY DEFINER transitions `open_plan_thread` (on first accept), `leave_plan_thread` (on block, withdraw, decline), all idempotent.
+4. pgTAP: allowed (accepted member reads and writes), denied (asker, unverified, blocked pair, post-expiry write, member enumeration by an outsider).
+5. Client: the existing chat UI (`@kesha-antonov/react-native-chat`) with the pinned plan header; Activity → Messages lists plan rooms above pair threads; `Message Aarav privately` from the room header.
+6. Copy: room opener `Everyone here is going. The exact place is below. Share your number after you've met, not before.`; leave confirmation; ended state.
+
+Order: after D53 (§11). It is the largest schema change in this set and should not ship before the SMS provider and the first real users, because every rule above needs real blocking and real receipts to be tested against.
