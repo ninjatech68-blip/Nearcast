@@ -23,6 +23,7 @@ Eight milestones. The database comes first, because every rule lives there and t
 | Text messages | The SMS provider chosen in milestone 0 | Nothing works without it |
 | Tests | XCTest for domain logic and snapshot tests for the six states; pgTAP for the database | The six states are tested as screenshots, not by eye |
 | Repository | New repository `truegoing-ios`; database in `truegoing-db` ported from `mobileapp/supabase` | Clean slate for the app, carried rules for the data |
+| Build loop | The assistant writes and commits; the owner runs one-command scripts on a Mac for build, sign, install and TestFlight, and reports back | The only steps that need Apple hardware and the developer account |
 | Design tokens | One Swift file generated from `14 §4`; a test asserts no literal colour or size elsewhere | The design system has one source |
 
 Architecture in one line: **domain rules as pure Swift with tests, one repository layer over Supabase, SwiftUI views that render state and call intents.** No view talks to the network.
@@ -153,6 +154,8 @@ Android. Points before data. Partner rewards. Plan photos. Recurring plans. Wait
 2. Icons: a first full set is produced for review on the visual page; the owner decides afterwards whether a designer redraws it. The app icon goes to a designer.
 3. ~~Name the first city~~ Panchkula.
 4. The four defaults in `16 §11` stand unless changed.
-5. Decide who builds: an iOS engineer against the contracts, or the assistant building the database, domain layer, parser and tests with a person on Xcode, signing, TestFlight and devices.
+5. ~~Decide who builds~~ **Ruled 2026-09-24: the assistant builds everything.** What that means in practice: the assistant writes the database port and its tests, the Swift domain layer, the parser, the SwiftUI screens, the snapshot tests and the icon set, and commits them to the two repositories. Compiling for iOS, signing, installing on a phone, TestFlight and the App Store account require a Mac with Xcode and an Apple developer account, which the assistant does not have; the owner runs those steps on their Mac from written, one-command scripts (as the previous app's `ios-build.sh` did), reports the result, and the assistant fixes what comes back. Swift domain code and its tests also compile and run on Linux, so the logic layer is verified before it reaches the Mac.
+6. Static development code: `000000` unless the owner names another.
+7. Icons: a first full set of 85 is on the visual page and in `visual/icons/`; the owner marks any to redraw.
 
 Everything else in this plan can start now.
