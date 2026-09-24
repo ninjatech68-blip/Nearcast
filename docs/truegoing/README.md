@@ -77,3 +77,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Accent ruled Ink; doc 14 colour section rewritten; screen contracts added (`15`) |
 | 2026-09-24 | Data rules added (`16`) |
 | 2026-09-24 | iOS build plan added (`17`); it is now the active plan |
+| 2026-09-24 | Minimum raised to iOS 26; Liquid Glass and the native feature list added to `17` and `14` |

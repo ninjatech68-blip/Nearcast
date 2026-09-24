@@ -14,8 +14,9 @@ Eight milestones. The database comes first, because every rule lives there and t
 
 | Layer | Choice | Why |
 |---|---|---|
-| App | Swift 6, SwiftUI, iOS 17 minimum | Native elements, sheets, Dynamic Type, dark mode for free; iOS 17 covers the phones that matter |
-| Map | MapKit | Native, free, offline reverse geocoding to a neighbourhood name (`CLGeocoder`) |
+| App | Swift 6, SwiftUI, **iOS 26 minimum** | Liquid Glass, sheets with detents, MapKit clustering, on-device Foundation Models and Dynamic Type all come from the system; supporting older iOS would mean designing two looks |
+| Map | MapKit for SwiftUI | Native markers and clustering; `CLGeocoder` turns a location into a neighbourhood name on the device |
+| Sentence to chips | Foundation Models framework, on device | Extracts what, where, when and suggests the icon without the sentence leaving the phone; a pure fallback parser for phones without Apple Intelligence |
 | Backend | Supabase: PostgreSQL, Auth (phone OTP, Apple, Google), Realtime, Storage, Edge Functions | Carried; the rules already exist as SQL |
 | Client to backend | `supabase-swift`, calling only the functions in `16 §4–5` | No table writes from the client, by construction |
 | Push | APNs through the existing outbox worker | Identifiers only (L22) |
@@ -25,6 +26,26 @@ Eight milestones. The database comes first, because every rule lives there and t
 | Design tokens | One Swift file generated from `14 §4`; a test asserts no literal colour or size elsewhere | The design system has one source |
 
 Architecture in one line: **domain rules as pure Swift with tests, one repository layer over Supabase, SwiftUI views that render state and call intents.** No view talks to the network.
+
+## 1a. Native iOS features, and where they land
+
+| Feature | Used for | Milestone |
+|---|---|---|
+| Liquid Glass tab bar, minimising on scroll | The three destinations; map and list get the full screen | M1 |
+| Sheets with detents | Plan details, ask, post as half-screen sheets | M1, M2 |
+| MapKit for SwiftUI with clustering | Markers as plan icons on category colour; real counts | M1, M6 |
+| `CLGeocoder` on device | Location to neighbourhood name, coordinates discarded | M1 |
+| Sign in with Apple | Required once Google is offered; name prefilled | M1 |
+| Foundation Models (on device) | Sentence to what, where, when chips; icon suggestion | M2 |
+| TipKit | One or two first-time hints (`Tap a chip to change it`) | M2 |
+| App Clip on the plan link | A friend opens a shared plan without installing | M2 |
+| Communication notifications | Chat pushes with the sender's photo and inline reply | M3 |
+| Notification actions | Accept · Decline · Yes · No from the banner | M3 |
+| Sensory feedback | The four haptic moments only | M3 |
+| Dynamic Type, VoiceOver, Reduced Motion | Every screen | M1 onward |
+| Live Activities, widgets | Plan starting soon; your next plan | Later (`13` 6.7) |
+
+Not used, by decision: background location, Contacts, SharePlay, StoreKit, any tracking SDK.
 
 ## 2. Milestones
 
@@ -38,7 +59,7 @@ Architecture in one line: **domain rules as pure Swift with tests, one repositor
 
 **Contracts:** A1–A7, B1 (map, read-only), B2, B3 (read-only), G1 (empty), G6 (partial), H2, H3.
 **Laws:** L1, L2, L8, L15, L16.
-**Do:** phone and code; Apple and Google with name prefilled; name and date of birth; interests with sub-interests; neighbourhood with the one-shot location; optional photo; the Plans tab with map or list by density, persistent filters, cards with the why line; plan details sheet without the ask button; the unverified banner; the "Show more interests" line; offline banner and cached reads.
+**Do:** Liquid Glass tab bar and system sheets as the shell; phone and code; Apple and Google with name prefilled; name and date of birth; interests with sub-interests; neighbourhood with the one-shot location; optional photo; the Plans tab with map or list by density, persistent filters, cards with the why line; plan details sheet without the ask button; the unverified banner; the "Show more interests" line; offline banner and cached reads.
 **Exit test:** a new person installs, signs in with Google, finishes onboarding in three screens, sees seeded plans on the map and list in their interests only, opens a plan and reads why they see it, switches to dark and largest text and everything still fits. An unverified Apple account sees all of this and cannot tap anything that writes.
 
 ### M2 · Ask and post
@@ -115,7 +136,8 @@ The app is available everywhere from day one and works everywhere (iOS resolves 
 | Risk | What it would do | Mitigation |
 |---|---|---|
 | SMS provider slips | Nothing ships | M0 gate; Apple and Google sign-in let people look while it is resolved |
-| Extraction of what, where, when from a sentence is unreliable | Posting feels broken | Chips are always editable; quick picks cover when; the home neighbourhood covers where; a pure function with a test corpus of 200 real sentences before M2 |
+| Extraction of what, where, when from a sentence is unreliable | Posting feels broken | On-device Foundation Models with a pure fallback parser; chips are always editable; quick picks cover when; the home neighbourhood covers where; a test corpus of 200 real sentences before M2 |
+| iOS 26 minimum excludes some phones | Smaller launch audience | Accepted: those phones would not run the map well; Apple's adoption figures checked before M7 |
 | Rooms make blocking messy | Two people at one place | L18 test in M3 before the UI exists |
 | Empty map on day one | App looks dead | Density rule falls back to list; seeding in one city; the digest brings people back |
 | Icons look amateur | Ink palette feels cold | Icons are drawn by a designer, reviewed on the visual page before M1 |
