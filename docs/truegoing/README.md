@@ -31,6 +31,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 10 | [Screen Review - Truegoing vs MigoMap](./10%20-%20Screen%20Review%20-%20Truegoing%20vs%20MigoMap.md) | 32 screen-by-screen rows with verdicts, a consolidated copy table and an order of work |
 | 11 | [Fewer Steps Same Trust](./11%20-%20Fewer%20Steps%20Same%20Trust.md) | Step-count targets for post, join, accept, onboard after user testing; owner rulings D52–D57 |
 | 12 | [Truegoing Concept](./12%20-%20Truegoing%20Concept.md) | **Clean-slate foundation, 2026-09-24.** The promise, the four rules, the loop, discovery, posting, joining, chat, women-only, profile, incentives, platform, brand, absent list, open items |
+| 13 | [Feature Inventory](./13%20-%20Feature%20Inventory.md) | Every feature beyond the core loop, each marked V1 / Later / Never with a reason, for the owner to decide |
 
 `tg-captures-2026-09-23/` holds the *nearcast repo* prototype screens (research only). `tg-real-captures-2026-09-23/` holds the real Truegoing app (`mobileapp` at `d2959d7`, fixture mode) captured from a web dev build; SF Symbols render as letters and the map is stubbed there.
 
@@ -65,3 +66,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Handoff doc gained the screen work order and the consolidated copy table |
 | 2026-09-23 | Added the step-count plan after user testing (`11`) and §5.3 in the handoff |
 | 2026-09-24 | Clean-slate concept written after the owner Q&A (`12`); it supersedes the execution notes in `08`–`11` |
+| 2026-09-24 | Women-only ruled as recommended; launch approach recorded (available everywhere, seeded in one city); feature inventory added (`13`) |

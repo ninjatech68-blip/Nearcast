@@ -77,7 +77,7 @@ Posting is the other half of the loop: write one sentence, confirm what, where a
 - Four safety lines open every new thread, including `Share your number after you've met, not before.`
 - Text, photos, location. Reply and reactions. No polls, voice, video, invites or forwarding. Threads go read-only some time after the plan ends.
 
-## 9. Women-only plans (Recommended, pending owner)
+## 9. Women-only plans (ruled by the owner 2026-09-24)
 
 - Entry is **self-declaration**: one switch, no proof, no friction. [Certain] No sign-in provider returns gender, so there is no free verification.
 - The promise is worded truthfully: `For women. Everyone here declared they are a woman. Hosts can remove anyone.` Never "verified women".
@@ -143,14 +143,14 @@ People list or search. One-tap join without the host. Exact place before accepta
 
 | # | Item | Owner's call needed |
 |---|---|---|
-| 1 | Women-only as recommended in §9 | Yes or no |
-| 2 | Launch city, which sets the fixed reach distance and the first digest | Name it |
+| 1 | Women-only as recommended in §9 | Ruled yes, 2026-09-24 |
+| 2 | Launch city. The app is available everywhere and works everywhere (iOS resolves any location to a neighbourhood name offline). Seeding, the first digest and the first partners are concentrated in one city until its map is full. | Name it before the build's third milestone |
 | 3 | Layer 2 numbers after Layer 1 has data | Later |
 | 4 | Text-message provider for phone codes | Choose one; nothing ships without it |
 
 ## 17. What comes next, in order
 
-1. Owner confirms §9 and names the launch city.
+1. Owner decides the feature inventory in `13`.
 2. Screen contracts for the loop in §4 to §8, written against this document.
 3. Brand and design system: colour, type, icons, components.
 4. Data rules: which tables, who may read and write what, tests for denied paths, carried from the previous database where it already says the same thing.
