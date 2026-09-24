@@ -41,7 +41,7 @@ A law is a sentence a test can fail. Carried laws keep their number; new laws st
 | L13 | A chat stays open only for the plan's window, plus 24 hours | Amended: fixed window, no proposals (`15` F1) |
 | L14 | A plan's exact place is visible only to its host and accepted people | Carried; the coarse point may now cross the wire (L15) |
 | **L15** | A plan's public point is on the ~1 km grid; no finer point exists in any client-readable column or function result | New (map browse) |
-| **L16** | An unverified account can read plans and nothing else: every write function refuses it | New (look but do not touch) |
+| **L16** | An unverified account can read plans and nothing else that reaches another person: asking, posting, messaging and connecting accounts refuse it. Writes about itself stay open: name, area, interests, hiding a plan from its own feed, blocking, reporting | New (look but do not touch); landed 2026-09-24 |
 | **L17** | A plan room contains only its host and accepted people; no asker, no outsider can read or enumerate it | New (group chat) |
 | **L18** | Two people who block each other are never members of the same live plan | New |
 | **L19** | A connected social handle is readable only by someone who may also see that plan's exact place | New |
@@ -51,7 +51,7 @@ A law is a sentence a test can fail. Carried laws keep their number; new laws st
 
 ## 3. Tables
 
-Machine names use `plan`, not `cast`; the previous SQL bodies are ported with the rename. Grouped by who they belong to. **Reads** says who may select rows; **Writes** is always "functions only".
+**Machine names (decided at M0, 2026-09-24):** the database keeps `cast` as its internal name for a plan, exactly as the previous product did; renaming 59 migrations, every function body and 36 test files would risk 859 passing assertions for no user-visible value. Only **new** tables, functions and API fields use the `plan` vocabulary where it reads naturally. The tables below are listed under their intended names; where an existing table is meant, the current name is given in brackets on first use. Grouped by who they belong to. **Reads** says who may select rows; **Writes** is always "functions only".
 
 ### People
 
@@ -209,7 +209,7 @@ Push: `{kind, plan_id?, thread_id?, request_id?}` and a title from a fixed templ
 
 ## 10. What is ported and how
 
-- **Port as is, with `cast → plan` rename:** verification, age gate, areas and coarse grid, interests, deliveries with reasons, join requests, accept/decline/withdraw, `may_see_place`, receipts and `confirm_met`, blocks, reports, moderation, devices, outboxes, idempotency, rate limits, retention, the L1/L2/L14 structural tests.
+- **Port as is (machine names kept, see §3):** verification, age gate, areas and coarse grid, interests, deliveries with reasons, join requests, accept/decline/withdraw, `may_see_place`, receipts and `confirm_met`, blocks, reports, moderation, devices, outboxes, idempotency, rate limits, retention, the L1/L2/L14 structural tests.
 - **Amend:** threads (add rooms and members; drop window proposals), `casts_for_person` (add `show_on_map`, `for_women`, sub-interest match), `my_feed` (fixed order, coarse point), block (leave shared plans).
 - **New:** `person_private` with handle and declaration, `person_standing`, `person_points`, `plan_public_point`, `plans_on_map`, `handle_for`, `remove_from_plan`, `leave_plan`, `confirm_women_plan_report`, `link_provider`, per-kind notification switches.
 - **Drop for V1:** circles, vouches (table kept, dormant), venues and offers, chat window proposals, cast notes as a separate table.
