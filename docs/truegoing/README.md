@@ -34,6 +34,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 13 | [Feature Inventory](./13%20-%20Feature%20Inventory.md) | Every feature beyond the core loop, each marked V1 / Later / Never with a reason, for the owner to decide (all recommendations accepted 2026-09-24) |
 | 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement. Copy deck rewritten 2026-09-24 for a first-time user; screens drawn in `visual/truegoing-screens.html`. Accent ruled Ink 2026-09-24, orange kept for the verified tick |
 | 15 | [Screen Contracts](./15%20-%20Screen%20Contracts.md) | One contract per V1 screen: shows, does, rules, six states, final copy; acceptance criteria |
+| 16 | [Data Rules](./16%20-%20Data%20Rules.md) | Laws L1–L22 (carried and new), tables, transitions, reads, the permission matrix, 18 denied-path tests, retention, payload hygiene, port plan from the previous database |
 
 `tg-captures-2026-09-23/` holds the *nearcast repo* prototype screens (research only). `tg-real-captures-2026-09-23/` holds the real Truegoing app (`mobileapp` at `d2959d7`, fixture mode) captured from a web dev build; SF Symbols render as letters and the map is stubbed there.
 
@@ -73,3 +74,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Feature inventory accepted as recommended; brand, design and content direction added (`14`) |
 | 2026-09-24 | Visual review page of the twelve first-version screens; copy deck in `14` rewritten to match |
 | 2026-09-24 | Accent ruled Ink; doc 14 colour section rewritten; screen contracts added (`15`) |
+| 2026-09-24 | Data rules added (`16`) |
