@@ -12,7 +12,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 - **Superseded, do not build from:** `docs/01`, `02`, `03`, `06`, `07`, `08`, `13`, `15`, `16`, `17`, implementation plans `02`–`05`, `DESIGN.md`, `PRODUCT.md`.
 - **Partly superseded, still apply where they don't conflict:** `docs/04` (safety principles), `05` (stack and boundaries), `09` (event hygiene), `10` (test approach), `11` (release process), `12` (community policy), `14` (engineering workflow), implementation plan `01` (tooling).
 
-**Active implementation plan:** [07 - P0 Implementation Plan](./07%20-%20P0%20Implementation%20Plan.md).
+**Active plan:** [17 - iOS Build Plan](./17%20-%20iOS%20Build%20Plan.md), built on `12`–`16`. Document `07` is the superseded plan for the old repository.
 
 ## Documents
 
@@ -35,6 +35,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement. Copy deck rewritten 2026-09-24 for a first-time user; screens drawn in `visual/truegoing-screens.html`. Accent ruled Ink 2026-09-24, orange kept for the verified tick |
 | 15 | [Screen Contracts](./15%20-%20Screen%20Contracts.md) | One contract per V1 screen: shows, does, rules, six states, final copy; acceptance criteria |
 | 16 | [Data Rules](./16%20-%20Data%20Rules.md) | Laws L1–L22 (carried and new), tables, transitions, reads, the permission matrix, 18 denied-path tests, retention, payload hygiene, port plan from the previous database |
+| 17 | [iOS Build Plan](./17%20-%20iOS%20Build%20Plan.md) | Stack, eight milestones with contracts, laws and exit tests, dependency order, definition of done, risks, what the owner does next |
 
 `tg-captures-2026-09-23/` holds the *nearcast repo* prototype screens (research only). `tg-real-captures-2026-09-23/` holds the real Truegoing app (`mobileapp` at `d2959d7`, fixture mode) captured from a web dev build; SF Symbols render as letters and the map is stubbed there.
 
@@ -75,3 +76,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Visual review page of the twelve first-version screens; copy deck in `14` rewritten to match |
 | 2026-09-24 | Accent ruled Ink; doc 14 colour section rewritten; screen contracts added (`15`) |
 | 2026-09-24 | Data rules added (`16`) |
+| 2026-09-24 | iOS build plan added (`17`); it is now the active plan |
