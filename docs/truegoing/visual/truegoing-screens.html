@@ -3,7 +3,7 @@
 <style>
 :root{
   --bg:#F6F5F2; --ink:#15130F; --mute:#6B665E; --line:#E4E1DA; --card:#FFFFFF;
-  --accent:#FF4D1D; --accent-ink:#FFFFFF; --settled:#17442E; --warn:#C8322B;
+  --accent:#FF4D1D; --accent-ink:#FFFFFF; --tick:#FF4D1D; --settled:#17442E; --warn:#C8322B;
   --ph-bg:#FFFFFF; --ph-card:#F2F1EE; --ph-line:#E5E3DE; --ph-ink:#15130F; --ph-mute:#7A756C;
   --c-social:#FF4D1D; --c-sport:#1B9C5A; --c-food:#E0A100; --c-music:#6A4CFF; --c-games:#0E8FD6; --c-learn:#C4457A;
   --map:#EDEBE5; --road:#FFFFFF; --park:#DCE9D6;
@@ -22,6 +22,13 @@
 /* phone theme override: a phone can be forced light or dark regardless of page */
 .phone.light{--ph-bg:#FFFFFF; --ph-card:#F2F1EE; --ph-line:#E5E3DE; --ph-ink:#15130F; --ph-mute:#7A756C; --map:#EDEBE5; --road:#FFFFFF; --park:#DCE9D6; --accent:#FF4D1D;}
 .phone.dark{--ph-bg:#000000; --ph-card:#1C1C1E; --ph-line:#2C2C2E; --ph-ink:#F2F2F7; --ph-mute:#98989F; --map:#1E1E20; --road:#2A2A2D; --park:#1F2B22; --accent:#FF6A3D;}
+/* palettes */
+.phone.p-orange.light{--accent:#FF4D1D;--accent-ink:#fff;--tick:#FF4D1D}
+.phone.p-orange.dark{--accent:#FF6A3D;--accent-ink:#fff;--tick:#FF6A3D}
+.phone.p-green.light{--accent:#17442E;--accent-ink:#fff;--tick:#17442E;--settled:#17442E}
+.phone.p-green.dark{--accent:#3FA36B;--accent-ink:#0B1A12;--tick:#3FA36B;--settled:#3FA36B}
+.phone.p-ink.light{--accent:#15130F;--accent-ink:#fff;--tick:#FF4D1D}
+.phone.p-ink.dark{--accent:#F2F2F7;--accent-ink:#0B0B0C;--tick:#FF6A3D}
 
 body{background:var(--bg);color:var(--ink);font-family:"Inter Tight",-apple-system,system-ui,sans-serif;margin:0;padding-block:32px 80px;padding-inline:clamp(16px,4vw,48px);line-height:1.45}
 h1,h2,h3{text-wrap:balance;margin:0}
@@ -55,12 +62,12 @@ p{max-width:64ch;margin:8px 0}
 .field{margin-top:14px;background:var(--ph-card);border-radius:12px;padding:12px 14px;font-size:16px;color:var(--ph-mute);display:flex;justify-content:space-between;align-items:center}
 .field b{color:var(--ph-ink);font-weight:500}
 .help{color:var(--ph-mute);font-size:12px;margin-top:8px}
-.bar{margin:auto 18px 14px;background:var(--accent);color:#fff;border-radius:14px;padding:14px;text-align:center;font-weight:600;font-size:15px}
+.bar{margin:auto 18px 14px;background:var(--accent);color:var(--accent-ink);border-radius:14px;padding:14px;text-align:center;font-weight:600;font-size:15px}
 .bar.off{opacity:.45}
 .quiet{text-align:center;color:var(--ph-mute);font-weight:500;padding:4px 0 6px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .chip{border:1px solid var(--ph-line);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:500;color:var(--ph-ink)}
-.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .chip.dim{color:var(--ph-mute)}
 .home{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:110px;height:4px;border-radius:4px;background:var(--ph-ink);opacity:.35}
 .tabs{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:flex-end;border-top:1px solid var(--ph-line);padding:8px 8px 22px;font-size:10px;color:var(--ph-mute);background:var(--ph-bg);z-index:3}
@@ -69,7 +76,7 @@ p{max-width:64ch;margin:8px 0}
 .tab{display:flex;flex-direction:column;align-items:center;gap:3px;width:60px}
 .tab i{width:22px;height:22px;border-radius:6px;border:1.5px solid currentColor;display:block}
 .tab.on{color:var(--accent);font-weight:600}
-.fab{position:absolute;right:16px;bottom:78px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;font-size:30px;font-weight:300;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:4}
+.fab{position:absolute;right:16px;bottom:78px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:30px;font-weight:300;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:4}
 .seg{display:inline-flex;background:var(--ph-card);border-radius:9px;padding:2px;font-size:12px;font-weight:600}
 .seg span{padding:5px 12px;border-radius:7px;color:var(--ph-mute)}
 .seg span.on{background:var(--ph-bg);color:var(--ph-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
@@ -98,7 +105,7 @@ p{max-width:64ch;margin:8px 0}
 .card .t{font-weight:600;font-size:14px;line-height:1.25}
 .card .m{color:var(--ph-mute);font-size:11px;margin-top:3px}
 .card .h{font-size:11px;margin-top:6px;display:flex;align-items:center;gap:5px}
-.tick{display:inline-flex;width:13px;height:13px;border-radius:50%;background:var(--accent);color:#fff;font-size:9px;align-items:center;justify-content:center;font-weight:700}
+.tick{display:inline-flex;width:13px;height:13px;border-radius:50%;background:var(--tick);color:#fff;font-size:9px;align-items:center;justify-content:center;font-weight:700}
 .whyl{color:var(--ph-mute);font-size:11px;margin-top:4px}
 
 /* sheet */
@@ -118,11 +125,11 @@ p{max-width:64ch;margin:8px 0}
 .record{font-size:11px;color:var(--ph-mute)}
 .btns{display:flex;gap:8px;margin-top:10px}
 .btns .b{flex:1;text-align:center;padding:10px;border-radius:11px;font-weight:600;font-size:13px;background:var(--ph-card)}
-.btns .b.p{background:var(--accent);color:#fff}
-.sbtn{padding:8px 12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:600;font-size:12px;white-space:nowrap}
+.btns .b.p{background:var(--accent);color:var(--accent-ink)}
+.sbtn{padding:8px 12px;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:12px;white-space:nowrap}
 .sbtn.g{background:var(--ph-card);color:var(--ph-ink)}
 .msg{max-width:78%;padding:9px 12px;border-radius:16px;font-size:13px;margin:4px 18px}
-.msg.me{background:var(--accent);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.msg.me{background:var(--accent);color:var(--accent-ink);margin-left:auto;border-bottom-right-radius:4px}
 .msg.them{background:var(--ph-card);border-bottom-left-radius:4px}
 .sys{margin:8px 18px;background:var(--ph-card);border-radius:12px;padding:10px 12px;font-size:11.5px;color:var(--ph-mute);line-height:1.4}
 .pin{margin:0 18px 8px;border:1px solid var(--ph-line);border-radius:12px;padding:10px 12px;font-size:12px;display:flex;gap:10px;align-items:center}
@@ -151,12 +158,17 @@ td.new{font-weight:500}
 </style>
 
 <h1>Truegoing screens</h1>
-<p class="lede">Twelve screens of the first version, drawn to the direction in document 14 with the copy rewritten so that a first-time user needs no explanation. Every word on these screens is a proposal you can strike. Toggle dark to check both looks.</p>
+<p class="lede">Twelve screens of the first version, drawn to the direction in document 14 with the copy rewritten so that a first-time user needs no explanation. Every word on these screens is a proposal you can strike. Toggle dark to check both looks, and switch the palette to compare the three accent options on the same screens.</p>
 
 <div class="toolbar">
   <div class="tog" role="group" aria-label="Phone theme">
     <button id="tl" aria-pressed="true" onclick="setPh('light')">Light phones</button>
     <button id="td" aria-pressed="false" onclick="setPh('dark')">Dark phones</button>
+  </div>
+  <div class="tog" role="group" aria-label="Palette">
+    <button id="po" aria-pressed="true" onclick="setPal('orange')">Orange</button>
+    <button id="pg" aria-pressed="false" onclick="setPal('green')">Green</button>
+    <button id="pi" aria-pressed="false" onclick="setPal('ink')">Ink</button>
   </div>
   <span class="note">Names, plans and numbers are examples. Icons stand in for the final drawn set.</span>
 </div>
@@ -166,7 +178,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Sign in <span>1 of 3 before the feed</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body pad" style="padding-top:60px">
       <div class="title">Your phone number</div>
@@ -183,7 +195,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>What you're into <span>2 of 3</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body pad" style="padding-top:60px">
       <div class="title">What are you into?</div>
@@ -202,7 +214,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Your neighbourhood <span>3 of 3</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body pad" style="padding-top:60px">
       <div class="title">Where do you live, roughly?</div>
@@ -221,7 +233,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Plans · map <span>6 or more in view</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="hdr"><div class="seg"><span class="on">Map</span><span>List</span></div><span style="font-size:12px;color:var(--ph-mute)">Near Sector 5 ▾</span></div>
@@ -246,7 +258,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Plans · list <span>fewer than 6 in view</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="hdr"><div class="seg"><span>Map</span><span class="on">List</span></div><span style="font-size:12px;color:var(--ph-mute)">Near Sector 5 ▾</span></div>
@@ -266,7 +278,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Plan details <span>sheet over the map</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"><div class="park" style="left:20px;top:40px;width:90px;height:70px"></div><div class="mk big" style="left:165px;top:150px;background:var(--c-sport)"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="5"/><path d="M11.5 11.5L20 20"/></svg></div></div>
@@ -288,7 +300,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Ask to go <span>two taps in the common case</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"></div><div class="scrim"></div>
@@ -312,7 +324,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Post · typing <span>half-screen sheet</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"></div><div class="scrim"></div>
@@ -321,7 +333,7 @@ td.new{font-weight:500}
         <div class="field" style="margin-top:0;min-height:64px;align-items:flex-start;font-size:16px;line-height:1.3"><b>badminton at sector 5 courts tomorrow 7pm, need two</b></div>
         <div class="help">We picked these out. Tap one to change it.</div>
         <div class="chips" style="margin-top:8px">
-          <span class="chip on"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.5;vertical-align:-1px;margin-right:4px"><circle cx="8" cy="8" r="5"/><path d="M11.5 11.5L20 20"/></svg>Badminton</span>
+          <span class="chip on"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;vertical-align:-1px;margin-right:4px"><circle cx="8" cy="8" r="5"/><path d="M11.5 11.5L20 20"/></svg>Badminton</span>
           <span class="chip on">Sector 5 courts</span>
           <span class="chip on">Tomorrow 7pm</span>
           <span class="chip on">2 people</span>
@@ -337,7 +349,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Post · a chip is missing <span>error state</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"></div><div class="scrim"></div>
@@ -361,7 +373,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Activity <span>asks, messages, your plans</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="pad" style="padding-top:8px"><div class="title">Activity</div></div>
@@ -386,7 +398,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Chat <span>group plan, everyone going</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="hdr"><span style="color:var(--accent);font-weight:500">‹ Activity</span><span style="font-weight:600">Badminton after work</span><span style="color:var(--ph-mute);font-size:12px">3 going</span></div>
@@ -404,7 +416,7 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>You <span>what hosts see, then your things</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="pad" style="padding-top:8px;display:flex;justify-content:space-between;align-items:center"><div class="title">You</div><span style="font-size:12px;color:var(--accent);font-weight:500">Edit</span></div>
@@ -428,11 +440,11 @@ td.new{font-weight:500}
 
 <div class="shot">
   <h3>Looking, not verified <span>restricted state</span></h3>
-  <div class="phone light"><div class="screen"><div class="island"></div>
+  <div class="phone light p-orange"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="hdr"><div class="seg"><span>Map</span><span class="on">List</span></div><span style="font-size:12px;color:var(--ph-mute)">Near Sector 5 ▾</span></div>
-      <div class="banner" style="background:var(--accent);color:#fff"><span>You can look. To ask or post, add your number.</span><b style="color:#fff">Add</b></div>
+      <div class="banner" style="background:var(--accent);color:var(--accent-ink)"><span>You can look. To ask or post, add your number.</span><b style="color:var(--accent-ink)">Add</b></div>
       <div class="card"><div class="ic" style="background:var(--c-sport)"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="5"/><path d="M11.5 11.5L20 20"/></svg></div>
         <div><div class="t">Badminton after work, need two</div><div class="m mono">Thu 7pm · about 2 km</div><div class="h"><span class="tick">✓</span>Aarav · 31 plans · showed up 97%</div></div></div>
       <div class="card"><div class="ic" style="background:var(--c-food)"><svg viewBox="0 0 24 24"><path d="M4 8h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 9h2a2 2 0 0 1 0 4h-2"/></svg></div>
@@ -447,9 +459,16 @@ td.new{font-weight:500}
 </div>
 
 <h2>5 · Colour</h2>
-<p class="lede">One accent, six category colours, and a settled green for things that actually happened. Backgrounds are the system's, so dark mode is free and correct.</p>
+<p class="lede">Three candidates for the accent, on the same screens above. Six category colours carry the plans in all three. Backgrounds are the system's, so dark mode is free and correct.</p>
+<div class="tblwrap"><table>
+<tr><th style="width:14%">Option</th><th style="width:28%">What it says</th><th style="width:29%">Strength</th><th>Risk</th></tr>
+<tr><td><b>Orange</b> #FF4D1D</td><td>Energy, go, warmth</td><td>Recognisable from the old app; vibrant</td><td>Reads as food delivery in India (Swiggy, Zomato); collides with the Social category colour; loud on every button</td></tr>
+<tr><td><b>Green</b> #17442E</td><td>Trust, settled, showed up</td><td>The promise as a colour; few rivals in this category; calm</td><td>WhatsApp adjacency at a glance; can feel dull in marketing</td></tr>
+<tr><td><b>Ink</b> #15130F</td><td>Quiet app, loud plans</td><td>Category colours are the only colour, so the plan is the headline; timeless; Uber and Hinge prove it</td><td>Feels cold if icons and photos are weak; less "vibrant" at first sight</td></tr>
+</table></div>
+<p class="note" style="margin-top:12px">Recommendation: Ink, with orange kept for one job, the verified tick.</p>
 <div class="sw-grid">
-  <div class="swatch" style="background:var(--accent)">Accent<small>#FF4D1D · dark #FF6A3D</small></div>
+  <div class="swatch" style="background:#FF4D1D">Orange<small>#FF4D1D · dark #FF6A3D</small></div><div class="swatch" style="background:#17442E">Green<small>#17442E · dark #3FA36B</small></div><div class="swatch" style="background:#15130F">Ink<small>#15130F · dark #F2F2F7</small></div>
   <div class="swatch" style="background:var(--settled)">Settled<small>showed up, confirmed</small></div>
   <div class="swatch" style="background:var(--c-social)">Social</div>
   <div class="swatch" style="background:var(--c-sport)">Sports & outdoors</div>
@@ -494,5 +513,12 @@ function setPh(mode){
   document.getElementById('td').setAttribute('aria-pressed',mode==='dark');
   try{localStorage.setItem('tg-ph',mode)}catch(e){}
 }
+function setPal(p){
+  document.querySelectorAll('.phone').forEach(el=>{el.classList.remove('p-orange','p-green','p-ink');el.classList.add('p-'+p)});
+  ['o','g','i'].forEach(k=>document.getElementById('p'+k).setAttribute('aria-pressed',false));
+  document.getElementById({orange:'po',green:'pg',ink:'pi'}[p]).setAttribute('aria-pressed',true);
+  try{localStorage.setItem('tg-pal',p)}catch(e){}
+}
 try{const m=localStorage.getItem('tg-ph');if(m==='dark')setPh('dark')}catch(e){}
+try{const q=localStorage.getItem('tg-pal');if(q&&q!=='orange')setPal(q)}catch(e){}
 </script>
