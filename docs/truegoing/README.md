@@ -32,7 +32,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 11 | [Fewer Steps Same Trust](./11%20-%20Fewer%20Steps%20Same%20Trust.md) | Step-count targets for post, join, accept, onboard after user testing; owner rulings D52–D57 |
 | 12 | [Truegoing Concept](./12%20-%20Truegoing%20Concept.md) | **Clean-slate foundation, 2026-09-24.** The promise, the four rules, the loop, discovery, posting, joining, chat, women-only, profile, incentives, platform, brand, absent list, open items |
 | 13 | [Feature Inventory](./13%20-%20Feature%20Inventory.md) | Every feature beyond the core loop, each marked V1 / Later / Never with a reason, for the owner to decide (all recommendations accepted 2026-09-24) |
-| 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement |
+| 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement. Copy deck rewritten 2026-09-24 for a first-time user; screens drawn in `visual/truegoing-screens.html` |
 
 `tg-captures-2026-09-23/` holds the *nearcast repo* prototype screens (research only). `tg-real-captures-2026-09-23/` holds the real Truegoing app (`mobileapp` at `d2959d7`, fixture mode) captured from a web dev build; SF Symbols render as letters and the map is stubbed there.
 
@@ -69,3 +69,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Clean-slate concept written after the owner Q&A (`12`); it supersedes the execution notes in `08`–`11` |
 | 2026-09-24 | Women-only ruled as recommended; launch approach recorded (available everywhere, seeded in one city); feature inventory added (`13`) |
 | 2026-09-24 | Feature inventory accepted as recommended; brand, design and content direction added (`14`) |
+| 2026-09-24 | Visual review page of the twelve first-version screens; copy deck in `14` rewritten to match |

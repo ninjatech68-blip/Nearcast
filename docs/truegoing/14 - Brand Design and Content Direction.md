@@ -26,7 +26,7 @@ Kept from the previous app, because it was its best asset. These are rules, and 
 - **No inflated numbers.** Real counts or none. Never "100+ people", never "join thousands". If a count is approximate, say `about 12` or show `≈`.
 - **No pressure.** Never "don't miss out", never "last chance", never a countdown.
 - **Short.** A button is one to three words. A helper line is one sentence. A sheet has at most two lines of explanation above its button.
-- **Exit words, fixed:** `Done` when nothing is lost · `Never mind` when something typed or picked is discarded · `Back` when the previous step is kept. Never a bare `×` as the only way out.
+- **Exit words, fixed:** `Done` when nothing is lost · `Never mind` when something typed or picked is discarded · `Back` when the previous step is kept. Never a bare `×` as the only way out. `Not for me` dismisses a plan.
 - **Refusals are stated as facts, not apologies.** `Verify your number to ask.` not `Sorry, you need to verify first!`
 - **Silence is a message.** A declined ask says nothing to the asker. The copy says so up front: `No answer means no.`
 
@@ -49,29 +49,36 @@ Kept from the previous app, because it was its best asset. These are rules, and 
 
 ## 3. Copy deck for the moments that matter
 
+Rewritten 2026-09-24 after the owner's review: the goal is a first-time user who never needs an explanation. The rule behind each line is unchanged. The lines are shown in place on the visual review page (`visual/truegoing-screens.html`).
+
 | Moment | Copy |
 |---|---|
-| Sign in | `Your number` · `We text a code. Your number is never shown to anyone.` · `Continue` |
-| First open, unverified | banner on every card: `Verify your number to ask.` |
-| Interests | `What are you into?` · `Pick as many as you like. You only see plans that match.` |
-| Home neighbourhood | `Where do you live, roughly?` · `Stored as a neighbourhood, never your exact position. It decides which plans reach you.` |
-| Empty feed | `Quiet here this week.` · `Show plans in other interests too` · `Post a plan` |
-| Why line | `Near you · into sports` · `You're browsing the map` |
-| Ask sheet | `Ask to go` · starters `I can make it` · `First time, is a beginner fine?` · `Can I bring one more?` · `Aarav sees your first name, photo and this note. No answer means no.` · `Send` · `Never mind` |
-| Ask sent | `Sent. Aarav decides.` |
-| Accepted | `You're going. The exact place and the chat are open.` |
-| Host, new ask | row: `Riya asked to go` · note · `Accept` · `Decline` |
-| Post sheet | placeholder `What's the plan?` · chips `what · where · when` · `How many?` · `Show on the map` · `For women` · `Send` |
-| Reach line | `Reaches people nearby who share the interest. Only people you accept see the exact place.` |
-| For women, on the plan | `For women. Everyone here declared they are a woman. The host can remove anyone.` |
-| Chat opener | `Everyone here is going.` · `Share your number after you've met, not before.` · `Meet in a public place the first time.` · `Block ends the chat for both of you.` · `Report anything that feels off; they won't know it was you.` |
-| Did it happen | `Did you meet Aarav?` · `Yes` · `No` · `Didn't go` |
+| Sign in | `Your phone number` · `We text you a code. Nobody on Truegoing ever sees your number.` · `Send code` · `Continue with Apple` · `Continue with Google` · `Apple or Google gets you in. You still add your number before you can ask to go or post.` |
+| Interests | `What are you into?` · `You'll only see plans that match. Change this any time.` · `Under Sports & outdoors` (sub-interests) · `Next` |
+| Neighbourhood | `Where do you live, roughly?` · `We save your neighbourhood, not your address. It's how we find plans near you.` · `Suggested from your location. We don't keep the location itself.` · `Show my plans` |
+| Unverified banner | `You can look. To ask or post, add your number.` · `Add` |
+| Sparse feed | `Not many plans this week.` · `Show more interests` |
+| Card | sentence · `Thu 7pm · about 2 km` · `✓ Aarav · 31 plans · showed up 97%` · `Shown because you're into badminton` |
+| Why line, browsing | `Shown because you're browsing the map` |
+| Plan details | `2 of 4 going` · `You see a rough distance for now. If Aarav accepts you, you get the exact place and the chat.` · `Ask to go` · `Not for me` |
+| Ask sheet | `Ask to go` · `Pick a line or write your own.` · starters `I can make it` · `First time, is a beginner fine?` · `Can I bring one more?` · `Aarav sees your first name, photo, record and this note. If Aarav doesn't reply, that's a no.` · `Send` · `Never mind` |
+| Ask sent | `Sent. Aarav will accept or decline. We'll tell you here.` |
+| Accepted | `You're in. Here's the exact place and the chat.` |
+| Host, new ask | `Riya asked to go` · note · `Accept` · `Decline` |
+| Post sheet | placeholder `What's the plan?` · `We picked these out. Tap one to change it.` · chips what · where · when · how many · `Show on the map` · `For women only` · `People nearby who like badminton will see this. Only the people you accept see the exact place.` · `Post plan` |
+| Post sheet, missing | red chips `Where?` `When?` · `Add a place and a time so people know where to be.` · quick picks `Tonight 7pm` · `Tomorrow evening` · `This weekend` · `Pick a time` |
+| For women, on the card | `For women. Everyone here said they're a woman. The host can remove anyone.` |
+| Chat opener | `Everyone here is going.` · `Share your number after you've met, not before.` · `Meet in a public place the first time.` · `Report anything off. They won't know it was you.` |
+| Chat quick lines | `Running late` · `I'm here` |
+| Pinned plan | `Thu 7pm · Sector 5 Sports Complex, Court 3` · `Exact place · Add to calendar · Directions` |
+| Did it happen | `Did you meet Aarav?` · `Yes` · `No` (a No asks one follow-up: `Did you go?`) |
 | Record | `31 plans · showed up 97%` |
-| Regular host | `Regular host` with a line: `Five plans that happened.` |
+| Regular host | `Regular host` · `Five plans that happened.` |
+| You | `WHAT HOSTS SEE` card · `Connected accounts · Instagram · shown after a yes` · `Your plans` · `Blocked · Nobody` · `Settings` |
 | Cancel plan | `Cancel this plan?` · `Everyone going will be told.` · `Cancel plan` · `Keep it` |
-| Withdraw ask | `Withdraw?` · `Aarav won't be told.` · `Withdraw` · `Keep it` |
-| Block | `Block Aarav?` · `Neither of you can see or message the other. You'll leave any plan you share.` · `Block` · `Keep it` |
-| Report | `What happened?` reasons · `They won't know who reported them.` · `Also block` |
+| Withdraw ask | `Take back your ask?` · `Aarav won't be told.` · `Take it back` · `Keep it` |
+| Block | `Block Aarav?` · `You won't see each other or message again. You'll leave any plan you share.` · `Block` · `Keep it` |
+| Report | `What happened?` · reasons · `They won't know who reported them.` · `Also block` |
 | Delete account | `Delete your account?` · `Everything goes. Your number can't come back for 30 days.` |
 | Weekly digest push | `3 plans in your interests this weekend` |
 | Monthly recap | `You met 4 people in September.` |
