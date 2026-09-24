@@ -87,24 +87,26 @@ Placeholder names are examples; real copy substitutes the real first name.
 
 ## 4. Visual direction
 
-**Principle: native iOS first, Truegoing on top.** System navigation, sheets, lists, haptics and type. The brand lives in one accent, six category colours, the plan icons and the voice. A person should feel they are on an iPhone, and know within a second which app it is.
+**Principle: native iOS first, Truegoing on top.** System navigation, sheets, lists, haptics and type. The brand lives in an ink accent, six category colours on the plans, the orange tick, the plan icons and the voice. A person should feel they are on an iPhone, and know within a second which app it is.
 
-### Colour
+### Colour (ruled by the owner 2026-09-24: Ink)
 
-Light and dark are both first-class. Backgrounds are the system's; brand colours sit on them.
+Light and dark are both first-class. Backgrounds are the system's; brand colours sit on them. The interface is quiet; the plans carry the colour.
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| Accent | `#FF4D1D` | `#FF6A3D` | Primary button, selected state, the tick |
+| Accent | `#15130F` (ink) | `#F2F2F7` (paper) | Primary button, selected chip, the post button, active tab |
+| Accent text | `#FFFFFF` | `#0B0B0C` | Text on the accent |
+| Tick | `#FF4D1D` | `#FF6A3D` | The verified mark only. The one job the old orange keeps |
 | Ink | system label | system label | All text |
 | Surface | system background | system background | Screens |
 | Card | system secondary background | system secondary background | Cards, sheets |
-| Settled | `#17442E` | `#3FA36B` | Confirmed meetups, showed-up |
+| Settled | `#17442E` | `#3FA36B` | Confirmed meetups, showed-up rate, the Yes button on "Did it happen?" |
 | Warning | system red | system red | No-show, cancel, block |
 
-The accent is kept from the previous brand on purpose: it is the one visual asset people remembered. Cream backgrounds are dropped; system backgrounds respect dark mode.
+Why Ink over the old orange: in India that red-orange reads as food delivery (Swiggy, Zomato); it collided with the Social category colour; and the concept says the plan is the headline, so the plans should be the only colourful thing on screen. Uber and Hinge prove a black-button interface can feel warm when the content carries the colour. Three options were compared on the same screens in `visual/truegoing-screens.html`.
 
-**Category colours**, used only for plan icons, map markers and the thin stripe on a card:
+**Category colours**, used for plan icons, map markers and the thin stripe on a card. With an Ink accent these are the only colour in the interface, so they must be distinct from one another at marker size in both modes:
 
 | Category | Colour |
 |---|---|
@@ -142,9 +144,9 @@ Plan photos are optional and later (`13` 1.4). Until then the icon on the catego
 | **Plan sheet** | Half-screen sheet from a marker or card: full card, host row, host's note, reach line, `Ask to go` | Swipe down to dismiss; nothing lost |
 | **Post sheet** | Half-screen sheet: one text field, three chips, how many, two switches, `Send` | Rises from the `+` button; expands to full only if the keyboard needs it |
 | **Ask sheet** | Half-screen: starters, field, one disclosure line, `Send`, `Never mind` | `Send` enabled once a starter is tapped or text exists |
-| **Bar button** | Full-width, accent, one action | One per screen at most |
+| **Bar button** | Full-width, ink (paper in dark), one action | One per screen at most |
 | **Quiet action** | Text button, no fill | For the exit and the secondary action |
-| **Chips** | Sentence case, one row that scrolls | Selected chip uses the accent |
+| **Chips** | Sentence case, one row that scrolls | Selected chip is ink with paper text |
 | **Why line** | Footnote, secondary colour, on every plan | Product law; never omitted |
 | **Record row** | Tick, first name, `31 plans · showed up 97%` | Facts in mono; never a star rating |
 | **Activity row** | What happened, who, when, one inline action | Accept and decline live on the row |
@@ -183,7 +185,7 @@ Dynamic Type at every size including accessibility sizes, with layouts that refl
 
 ## 10. App icon and store
 
-- **Icon:** accent background, a single white mark derived from the plan-icon stroke, no letters. Tested at 60 points on a busy home screen.
+- **Icon:** ink background, a single mark in the tick orange derived from the plan-icon stroke, no letters. The one place the orange is large. Tested at 60 points on a busy home screen, light and dark.
 - **Store name:** `Truegoing: plans near you`.
 - **Subtitle:** `With people who show up`.
 - **Screenshots:** five, real screens, one sentence each in the voice: `See plans near you that fit you.` · `Ask in two taps. The host decides.` · `The exact place unlocks when you're in.` · `Chat with the people going.` · `Your record is what you actually did.`

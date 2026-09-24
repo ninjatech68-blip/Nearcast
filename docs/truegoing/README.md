@@ -32,7 +32,8 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 11 | [Fewer Steps Same Trust](./11%20-%20Fewer%20Steps%20Same%20Trust.md) | Step-count targets for post, join, accept, onboard after user testing; owner rulings D52–D57 |
 | 12 | [Truegoing Concept](./12%20-%20Truegoing%20Concept.md) | **Clean-slate foundation, 2026-09-24.** The promise, the four rules, the loop, discovery, posting, joining, chat, women-only, profile, incentives, platform, brand, absent list, open items |
 | 13 | [Feature Inventory](./13%20-%20Feature%20Inventory.md) | Every feature beyond the core loop, each marked V1 / Later / Never with a reason, for the owner to decide (all recommendations accepted 2026-09-24) |
-| 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement. Copy deck rewritten 2026-09-24 for a first-time user; screens drawn in `visual/truegoing-screens.html` |
+| 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement. Copy deck rewritten 2026-09-24 for a first-time user; screens drawn in `visual/truegoing-screens.html`. Accent ruled Ink 2026-09-24, orange kept for the verified tick |
+| 15 | [Screen Contracts](./15%20-%20Screen%20Contracts.md) | One contract per V1 screen: shows, does, rules, six states, final copy; acceptance criteria |
 
 `tg-captures-2026-09-23/` holds the *nearcast repo* prototype screens (research only). `tg-real-captures-2026-09-23/` holds the real Truegoing app (`mobileapp` at `d2959d7`, fixture mode) captured from a web dev build; SF Symbols render as letters and the map is stubbed there.
 
@@ -46,7 +47,8 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Bundle ID: **`com.truegoing.app`** (iOS and Android); dev builds `com.truegoing.app.dev` |
 | 2026-09-23 | This folder is the source of truth; older docs marked superseded, not rewritten |
 | 2026-09-23 | Vocabulary: plan · ask · offer · host · people going · connection; tabs Nearby · Chats · Post · You |
-| 2026-09-23 | Women-only plans: set by, delivered to, and joinable by verified women only |
+| 2026-09-23 | Women-only plans: set by, delivered to, and joinable by verified women only (superseded 2026-09-24 by `12 §9`: self-declared, host-controlled, one strike) |
+| 2026-09-24 | Accent colour: Ink (`#15130F` light, `#F2F2F7` dark); orange `#FF4D1D` kept only for the verified tick and the app icon mark |
 | 2026-09-23 | Plans are browsable on a map at their coarse (~1 km) point; exact place still hidden until acceptance; people never on the map; host toggle `Show on the map` default on (`11 §11`, D53 draft for `mobileapp`) |
 | 2026-09-23 | One group thread per plan for the host and accepted people only; pair threads retained; a block makes the blocker leave the plan (`11 §12`, D54 draft for `mobileapp`) |
 | 2026-09-23 | Optional Instagram handle, owner-only in storage, shown only after acceptance on a live plan, never on the caster profile (`11 §13`, D55 draft for `mobileapp`) |
@@ -70,3 +72,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Women-only ruled as recommended; launch approach recorded (available everywhere, seeded in one city); feature inventory added (`13`) |
 | 2026-09-24 | Feature inventory accepted as recommended; brand, design and content direction added (`14`) |
 | 2026-09-24 | Visual review page of the twelve first-version screens; copy deck in `14` rewritten to match |
+| 2026-09-24 | Accent ruled Ink; doc 14 colour section rewritten; screen contracts added (`15`) |
