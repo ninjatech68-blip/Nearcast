@@ -22,7 +22,7 @@ Eight milestones. The database comes first, because every rule lives there and t
 | Push | APNs through the existing outbox worker | Identifiers only (L22) |
 | Text messages | The SMS provider chosen in milestone 0 | Nothing works without it |
 | Tests | XCTest for domain logic and snapshot tests for the six states; pgTAP for the database | The six states are tested as screenshots, not by eye |
-| Repository | New repository `truegoing-ios`; database in `truegoing-db` ported from `mobileapp/supabase` | Clean slate for the app, carried rules for the data |
+| Repository | **One repository, `truegoing`** (ruled 2026-09-24), with `ios/`, `db/` (ported from `mobileapp/supabase`) and `docs/` | One builder, one owner: one CI, one place to look. Two repositories were the wrong shape for that |
 | Build loop | The assistant writes and commits; the owner runs one-command scripts on a Mac for build, sign, install and TestFlight, and reports back | The only steps that need Apple hardware and the developer account |
 | Design tokens | One Swift file generated from `14 §4`; a test asserts no literal colour or size elsewhere | The design system has one source |
 
@@ -156,6 +156,7 @@ Android. Points before data. Partner rewards. Plan photos. Recurring plans. Wait
 4. The four defaults in `16 §11` stand unless changed.
 5. ~~Decide who builds~~ **Ruled 2026-09-24: the assistant builds everything.** What that means in practice: the assistant writes the database port and its tests, the Swift domain layer, the parser, the SwiftUI screens, the snapshot tests and the icon set, and commits them to the two repositories. Compiling for iOS, signing, installing on a phone, TestFlight and the App Store account require a Mac with Xcode and an Apple developer account, which the assistant does not have; the owner runs those steps on their Mac from written, one-command scripts (as the previous app's `ios-build.sh` did), reports the result, and the assistant fixes what comes back. Swift domain code and its tests also compile and run on Linux, so the logic layer is verified before it reaches the Mac.
 6. Static development code: `000000` unless the owner names another.
-7. Icons: a first full set of 85 is on the visual page and in `visual/icons/`; the owner marks any to redraw.
+7. Icons: redrawn 2026-09-24 in an Airbnb-like single-weight outline style (85, 32-point grid, 1.6 stroke, no fills) after the owner rejected the first set; on the visual page and in `visual/icons/`. Weakest of the set, to redraw before M1: gig, skating, cricket, club.
+8. Owner confirmed 2026-09-24: Mac, Xcode and Apple developer account available. The build loop in §1 stands.
 
 Everything else in this plan can start now.

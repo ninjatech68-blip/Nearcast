@@ -1,7 +1,7 @@
 {
- "viewBox": "0 0 24 24",
- "stroke": 1.8,
- "twoTone": "first shape at 18% fill",
+ "viewBox": "0 0 32 32",
+ "stroke": 1.6,
+ "style": "single-weight outline, round caps and joins, no fills",
  "groups": [
   {
    "name": "Categories",
@@ -200,11 +200,14 @@
   "map": "Map",
   "list": "List",
   "filter": "Filter",
+  "search": "Search",
   "share": "Share",
   "calendar": "Add to calendar",
   "directions": "Directions",
   "place": "Exact place",
   "nearby": "Near me now",
+  "clock": "Start time",
+  "people": "How many",
   "camera": "Photo",
   "location": "Send location",
   "reply": "Reply",
@@ -214,9 +217,6 @@
   "chevron": "More",
   "close": "Close",
   "back": "Back",
-  "search": "Search",
-  "clock": "Start time",
-  "people": "How many",
   "offline": "Offline",
   "met": "Did it happen",
   "noshow": "No-show"

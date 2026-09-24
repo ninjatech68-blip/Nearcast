@@ -83,3 +83,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Owner ruled: iOS 17 minimum with Liquid Glass on iOS 26+ and the system fallback below; Apple Maps for all maps. `17` and `14` updated |
 | 2026-09-24 | Owner answers recorded: static development code, Panchkula, icon approach, defaults accepted |
 | 2026-09-24 | Owner ruled the assistant builds everything, with the owner running Mac-only steps; 85-icon set generated in `visual/icons/` and shown on the visual page |
+| 2026-09-24 | Icons redrawn in an Airbnb-like outline style; one repository `truegoing` ruled instead of two; owner confirmed Mac and developer account |
