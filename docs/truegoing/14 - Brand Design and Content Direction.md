@@ -87,7 +87,7 @@ Placeholder names are examples; real copy substitutes the real first name.
 
 ## 4. Visual direction
 
-**Principle: native iOS first, Truegoing on top.** iOS 26 minimum, so Liquid Glass is the material of the tab bar, toolbars and sheets by default; system navigation, sheets with detents, lists, haptics and type. The brand lives in an ink accent, six category colours on the plans, the orange tick, the plan icons and the voice. A person should feel they are on an iPhone, and know within a second which app it is.
+**Principle: native iOS first, Truegoing on top.** iOS 17 minimum (owner's ruling); Liquid Glass is the material of the tab bar, toolbars and sheets on iOS 26 and later, and the system's own older material below, with no custom glass anywhere so both looks are Apple's; system navigation, sheets with detents, lists, haptics and type. The brand lives in an ink accent, six category colours on the plans, the orange tick, the plan icons and the voice. A person should feel they are on an iPhone, and know within a second which app it is.
 
 ### Colour (ruled by the owner 2026-09-24: Ink)
 
@@ -154,7 +154,7 @@ Plan photos are optional and later (`13` 1.4). Until then the icon on the catego
 
 ## 6. Layout and navigation
 
-- **Three destinations in a Liquid Glass tab bar** that minimises on scroll: Plans (map or list), Activity (asks, messages, your plans), You. A floating `+` posts a plan from anywhere on Plans.
+- **Three destinations in the system tab bar** (Liquid Glass, minimising on scroll, on iOS 26+): Plans (map or list), Activity (asks, messages, your plans), You. A floating `+` posts a plan from anywhere on Plans.
 - **Plans** opens on map or list by density (`12 §5`). The switch is a segmented control at the top; filters are chips under it.
 - **Sheets over screens.** Posting, asking and plan detail are sheets; they never navigate away from the map.
 - **Back is the system back.** No custom gesture is the only way out.

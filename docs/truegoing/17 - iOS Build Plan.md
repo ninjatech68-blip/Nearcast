@@ -14,9 +14,9 @@ Eight milestones. The database comes first, because every rule lives there and t
 
 | Layer | Choice | Why |
 |---|---|---|
-| App | Swift 6, SwiftUI, **iOS 26 minimum** | Liquid Glass, sheets with detents, MapKit clustering, on-device Foundation Models and Dynamic Type all come from the system; supporting older iOS would mean designing two looks |
-| Map | MapKit for SwiftUI | Native markers and clustering; `CLGeocoder` turns a location into a neighbourhood name on the device |
-| Sentence to chips | Foundation Models framework, on device | Extracts what, where, when and suggests the icon without the sentence leaving the phone; a pure fallback parser for phones without Apple Intelligence |
+| App | Swift 6, SwiftUI, **iOS 17 minimum** (ruled by the owner 2026-09-24) | Liquid Glass on iOS 26 and later through the standard components; the system's own older material on iOS 17–25. No custom glass, so the fallback is automatic. Cost accepted: every screen is snapshot-tested on both looks |
+| Map | **Apple Maps** via MapKit for SwiftUI (ruled by the owner) | Native markers and clustering; `CLGeocoder` turns a location into a neighbourhood name on the device. No Google Maps SDK, no Mapbox |
+| Sentence to chips | A pure Swift parser (rules plus a keyword lexicon) on every phone; Foundation Models on device where available (iOS 26+, Apple Intelligence) to improve it | With an iOS 17 minimum the parser is the requirement and the model is the upgrade; the sentence never leaves the phone either way |
 | Backend | Supabase: PostgreSQL, Auth (phone OTP, Apple, Google), Realtime, Storage, Edge Functions | Carried; the rules already exist as SQL |
 | Client to backend | `supabase-swift`, calling only the functions in `16 §4–5` | No table writes from the client, by construction |
 | Push | APNs through the existing outbox worker | Identifiers only (L22) |
@@ -31,12 +31,12 @@ Architecture in one line: **domain rules as pure Swift with tests, one repositor
 
 | Feature | Used for | Milestone |
 |---|---|---|
-| Liquid Glass tab bar, minimising on scroll | The three destinations; map and list get the full screen | M1 |
+| Liquid Glass tab bar, minimising on scroll (iOS 26+); standard tab bar below | The three destinations; map and list get the full screen | M1 |
 | Sheets with detents | Plan details, ask, post as half-screen sheets | M1, M2 |
 | MapKit for SwiftUI with clustering | Markers as plan icons on category colour; real counts | M1, M6 |
 | `CLGeocoder` on device | Location to neighbourhood name, coordinates discarded | M1 |
 | Sign in with Apple | Required once Google is offered; name prefilled | M1 |
-| Foundation Models (on device) | Sentence to what, where, when chips; icon suggestion | M2 |
+| Foundation Models (on device, iOS 26+ only) | Improves the sentence-to-chips parser and icon suggestion where available | M2 |
 | TipKit | One or two first-time hints (`Tap a chip to change it`) | M2 |
 | App Clip on the plan link | A friend opens a shared plan without installing | M2 |
 | Communication notifications | Chat pushes with the sender's photo and inline reply | M3 |
@@ -121,7 +121,7 @@ M5 and M6 can run in parallel after M3. M4 needs M3's receipts. M7 needs everyth
 
 ## 4. Definition of done, per milestone
 
-1. Every contract listed has all six states implemented and snapshot-tested in light and dark at default and largest Dynamic Type.
+1. Every contract listed has all six states implemented and snapshot-tested in light and dark, at default and largest Dynamic Type, on iOS 17 and iOS 26.
 2. Every law listed has its denied-path tests passing in pgTAP, written before the code.
 3. The copy test and the contrast test pass.
 4. The exit test is run on a physical iPhone by someone other than the person who built it, and recorded (a screen recording or a short written log with the date).
@@ -137,7 +137,7 @@ The app is available everywhere from day one and works everywhere (iOS resolves 
 |---|---|---|
 | SMS provider slips | Nothing ships | M0 gate; Apple and Google sign-in let people look while it is resolved |
 | Extraction of what, where, when from a sentence is unreliable | Posting feels broken | On-device Foundation Models with a pure fallback parser; chips are always editable; quick picks cover when; the home neighbourhood covers where; a test corpus of 200 real sentences before M2 |
-| iOS 26 minimum excludes some phones | Smaller launch audience | Accepted: those phones would not run the map well; Apple's adoption figures checked before M7 |
+| Two looks (iOS 17–25 and 26+) | Design drift between them; double the snapshot suite | No custom materials anywhere, standard components only, so the system owns both looks; snapshot tests run on an iOS 17 and an iOS 26 simulator in CI; design review on two physical phones before M7 |
 | Rooms make blocking messy | Two people at one place | L18 test in M3 before the UI exists |
 | Empty map on day one | App looks dead | Density rule falls back to list; seeding in one city; the digest brings people back |
 | Icons look amateur | Ink palette feels cold | Icons are drawn by a designer, reviewed on the visual page before M1 |
