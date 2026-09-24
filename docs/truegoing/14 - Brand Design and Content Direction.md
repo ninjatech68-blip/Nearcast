@@ -16,9 +16,27 @@
 
 **What the brand is not:** a dating product, a social network, a nightlife brand, a "community". None of those words appear in the app or the store listing.
 
-## 2. Voice and tone
+## 2. Voice and tone (ruled 2026-09-24: Airbnb's register, our disclosures)
 
-Kept from the previous app, because it was its best asset. These are rules, and the build has a test that fails when copy breaks them.
+Airbnb's product voice is the model: warm, direct, sentence case, second person, short headings that read like a friend talking, no exclamation marks in the product, numbers stated plainly. Truegoing writes in that register with one addition Airbnb does not need: every action that touches another person carries a line saying who sees what. That line is a business rule, not a tone choice, and it stays.
+
+Register, by example:
+
+| Airbnb says | Truegoing says |
+|---|---|
+| Where to? | What's the plan? |
+| Start your search | Find a plan |
+| Show 128 places | Show 12 plans |
+| Clear all | Clear all |
+| Guest favourite | Regular host |
+| Reserve | Ask to go |
+| You won't be charged yet | If Aarav doesn't reply, that's a no |
+| Message host | Message Aarav |
+| Your trips | Your plans |
+| Wishlists | Saved (later) |
+| Log in or sign up | Log in or sign up |
+
+The rules below hold in that register, and the build has a test that fails when copy breaks them.
 
 - **Say what is shared and what happens next.** Every action that touches another person states, in one line, who sees what. `Aarav sees your first name, photo and this note.`
 - **Sentence case** for everything: titles, buttons, labels, chips. The only capitals are names and the start of a sentence.
@@ -98,31 +116,33 @@ Placeholder names are examples; real copy substitutes the real first name.
 
 **The icon set, and how it gets made.** [Certain] Airbnb's icons are 3D renders made by illustrators. The placeholder set on the visual page (`visual/icons-3d/`) is built from the outline glyphs on shaded tiles so screens can be judged today; it is not the final art. The final set comes from one of two routes, the owner's choice:
 
-- **Commission a 3D illustrator.** Brief: about fifty-six objects on a shared 3D stage, three-quarter view, soft studio light from the top left, matte plastic with a subtle gloss, one dominant colour per category family with two or three accent colours per object, no text, no people, no faces, transparent background, delivered at 3x for 56 and 40 point display plus a 1024 app icon. Consistency matters more than detail: same camera, same light, same material across all fifty-six. Reference: Airbnb's 2025 category icons. Estimate: two to four weeks for a freelance illustrator.
+- **Commission a 3D illustrator** (ruled as the route: the set must match Airbnb's render style, which no pack does). Brief: about fifty-six objects on a shared 3D stage, three-quarter view, soft studio light from the top left, matte plastic with a subtle gloss, one dominant colour per category family with two or three accent colours per object, no text, no people, no faces, transparent background, delivered at 3x for 56 and 40 point display plus a 1024 app icon. Consistency matters more than detail: same camera, same light, same material across all fifty-six. Reference: Airbnb's 2025 category icons. Estimate: two to four weeks for a freelance illustrator.
 - **License a 3D icon pack** that covers sport, food, music, games and learning objects in one consistent style, and commission only the missing pieces. Faster and cheaper; the risk is a look shared with other apps.
 
 Either way the tiles are replaced one for one; the code refers to icons by name from `manifest.json`, so no screen changes when the art arrives.
 
 **Type.** SF Pro throughout at heavier weights for headings (Airbnb's Cereal is proprietary and SF Pro is what its iOS app reads as), Dynamic Type at every size. Facts (record, time, distance) in SF Mono at small sizes.
 
-### Colour (ruled by the owner 2026-09-24: Ink)
+### Colour (ruled by the owner 2026-09-24: Airbnb's roles, Truegoing's hue)
 
-Light and dark are both first-class. Backgrounds are the system's; brand colours sit on them. The interface is quiet; the plans carry the colour.
+Airbnb's colour system is adopted role for role. The one deliberate difference is the hue in the brand slot: Truegoing coral `#FF5C39`, not Airbnb's Rausch `#FF385C`. Same layout, same icon style and the same colour together would be Airbnb's trade dress; changing the hue keeps the look and stays on the right side of that line.
 
-| Token | Light | Dark | Use |
+| Role | Light | Dark | Use |
 |---|---|---|---|
-| Accent | `#15130F` (ink) | `#F2F2F7` (paper) | Primary button, selected chip, the post button, active tab |
-| Accent text | `#FFFFFF` | `#0B0B0C` | Text on the accent |
-| Tick | `#FF4D1D` | `#FF6A3D` | The verified mark only. The one job the old orange keeps |
-| Ink | system label | system label | All text |
-| Surface | system background | system background | Screens |
-| Card | system secondary background | system secondary background | Cards, sheets |
-| Settled | `#17442E` | `#3FA36B` | Confirmed meetups, showed-up rate, the Yes button on "Did it happen?" |
+| Text | `#222222` | `#F7F7F7` | All primary text |
+| Muted | `#717171` | `#B0B0B0` | Secondary text, the why line, timestamps |
+| Line | `#DDDDDD` | `#333333` | Dividers, input outlines, dark-mode card borders |
+| Surface | `#FFFFFF` | `#000000` | Screens |
+| Card | `#FFFFFF` with shadow `0 6px 18px rgba(0,0,0,.08)` | `#1A1A1A` with a `Line` border | Cards, sheets, the search pill |
+| Fill | `#F7F7F7` | `#1A1A1A` | Secondary buttons, inputs |
+| Brand | `#FF5C39` | `#FF7A5C` | The primary button as a gradient `#FF5C39 → #E8453C → #D93A4A`, the verified tick, the active tab |
+| Secondary action | `#222222` | `#F7F7F7` | Selected chips and segments, Accept, the post button, sent bubbles |
+| Settled | `#17442E` | `#3FA36B` | Showed-up, confirmed |
 | Warning | system red | system red | No-show, cancel, block |
 
-Why Ink over the old orange: in India that red-orange reads as food delivery (Swiggy, Zomato); it collided with the Social category colour; and the concept says the plan is the headline, so the plans should be the only colourful thing on screen. Uber and Hinge prove a black-button interface can feel warm when the content carries the colour. Three options were compared on the same screens in `visual/truegoing-screens.html`.
+Rules carried from Airbnb: one gradient button per screen at most; black for everything else that is pressed or selected; the brand colour never fills a surface. Contrast checked at 4.5:1 for text and 3:1 for icons in both modes; `#717171` on white passes for body sizes and is never used under 13 points.
 
-**Category colours**, used for plan icons, map markers and the thin stripe on a card. With an Ink accent these are the only colour in the interface, so they must be distinct from one another at marker size in both modes:
+**Category colours** are the base hue of each category's 3D icons and its map disc. They are never used for text or buttons:
 
 | Category | Colour |
 |---|---|
@@ -162,6 +182,8 @@ Plan photos are optional and later (`13` 1.4). Until then the icon on the catego
 | **Bar button** | Full-width, ink (paper in dark), one action | One per screen at most |
 | **Quiet action** | Text button, no fill | For the exit and the secondary action |
 | **Category row** | Scrolling row of 3D icons with labels, black underline on the selected one | The Airbnb pattern; sits under the search pill on Plans |
+| **Filter sheet** | Full-screen sheet: When chips, Your interests checkboxes with `Show plans in other interests too`, Plan type chips; footer `Clear all` underlined and a gradient button with a live count `Show 12 plans` | Airbnb's filter sheet; no distance control because reach is fixed |
+| **Empty state** | Three 3D icons fanned as the illustration, one-line title, one line of fact, one gradient button, one quiet action | Airbnb's empty-state pattern with our objects |
 | **Search pill** | `Near Sector 5 · This week · Badminton, Games, Cycling` in a shadowed pill | One tap to change any part |
 | **Chips** | Sentence case pills, one row that scrolls, white with a light shadow | Selected chip is ink with paper text |
 | **Why line** | Footnote, secondary colour, on every plan | Product law; never omitted |
@@ -202,7 +224,7 @@ Dynamic Type at every size including accessibility sizes, with layouts that refl
 
 ## 10. App icon and store
 
-- **Icon:** ink background, a single mark in the tick orange derived from the plan-icon stroke, no letters. The one place the orange is large. Tested at 60 points on a busy home screen, light and dark.
+- **Icon:** a single 3D object from the plan set (the place mark or the showed-up mark) on a white or coral ground, in the same render style as the icons, no letters. Tested at 60 points on a busy home screen, light and dark.
 - **Store name:** `Truegoing: plans near you`.
 - **Subtitle:** `With people who show up`.
 - **Screenshots:** five, real screens, one sentence each in the voice: `See plans near you that fit you.` · `Ask in two taps. The host decides.` · `The exact place unlocks when you're in.` · `Chat with the people going.` · `Your record is what you actually did.`

@@ -202,11 +202,53 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 .tabs{border-top:1px solid var(--ph-line)}
 .tab.on{color:var(--ph-ink)}
 .fab{width:56px;height:56px;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+
+/* Airbnb colour roles, Truegoing hue */
+.phone.p-coral.light{--accent:#FF5C39;--accent-ink:#fff;--tick:#FF5C39;--ph-ink:#222222;--ph-mute:#717171;--ph-line:#DDDDDD;--ph-card:#FFFFFF;--ph-bg:#FFFFFF}
+.phone.p-coral.dark{--accent:#FF7A5C;--accent-ink:#1a0d08;--tick:#FF7A5C;--ph-ink:#F7F7F7;--ph-mute:#B0B0B0;--ph-line:#333333;--ph-card:#1A1A1A;--ph-bg:#000}
+.phone.p-coral .bar{background:linear-gradient(90deg,#FF5C39 0%,#E8453C 50%,#D93A4A 100%);color:#fff}
+.phone.p-coral.dark .bar{background:linear-gradient(90deg,#FF7A5C,#F2564A)}
+.phone.p-coral .bar.off{background:#DDDDDD;color:#fff;opacity:1}
+.phone.p-coral .seg span.on,.phone.p-coral .filters .chip.on,.phone.p-coral .chip.on{background:#222222;color:#fff;border-color:#222}
+.phone.p-coral.dark .seg span.on,.phone.p-coral.dark .filters .chip.on,.phone.p-coral.dark .chip.on{background:#F7F7F7;color:#222}
+.phone.p-coral .sbtn{background:#222;color:#fff}.phone.p-coral.dark .sbtn{background:#F7F7F7;color:#222}
+.phone.p-coral .sbtn.g{background:#F7F7F7;color:#222;box-shadow:inset 0 0 0 1px #DDD}.phone.p-coral.dark .sbtn.g{background:#1A1A1A;color:#F7F7F7}
+.phone.p-coral .msg.me{background:#222;color:#fff}.phone.p-coral.dark .msg.me{background:#F7F7F7;color:#222}
+.phone.p-coral .fab{background:#222;color:#fff}.phone.p-coral.dark .fab{background:#F7F7F7;color:#222}
+.phone.p-coral .banner[style*="--accent"]{background:#222!important;color:#fff!important}
+.phone.p-coral .cat.on{border-bottom-color:#222}
+.phone.p-coral .tab.on{color:#FF5C39}
+.phone.p-coral.dark .tab.on{color:#FF7A5C}
+/* filter sheet */
+.fsheet{position:absolute;inset:0;background:var(--ph-bg);display:flex;flex-direction:column}
+.fsheet .hd{display:flex;align-items:center;justify-content:center;position:relative;padding:14px 18px 10px;border-bottom:1px solid var(--ph-line);font-weight:600;font-size:15px}
+.fsheet .hd .x{position:absolute;left:18px;font-size:18px;font-weight:400}
+.fsec{padding:11px 18px;border-bottom:1px solid var(--ph-line)}
+.fsec h4{margin:0 0 10px;font-size:15px;font-weight:600}
+.opt{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px}
+.opt .box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--ph-ink)}
+.opt .box.on{background:var(--ph-ink);position:relative}
+.opt .box.on::after{content:"";position:absolute;left:7px;top:3px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.phone.dark .opt .box.on::after{border-color:#000}
+.ffoot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding:12px 18px 30px;border-top:1px solid var(--ph-line)}
+.ffoot u{font-weight:600;font-size:14px;text-decoration:underline}
+.ffoot .bar{margin:0;padding:12px 18px;width:auto;font-size:14px}
+.fchips{display:flex;flex-wrap:wrap;gap:8px}
+.fchips .chip{background:var(--ph-card);box-shadow:inset 0 0 0 1px var(--ph-line)}
+.fchips .chip.on{box-shadow:none}
+/* empty state illustration */
+.illus{display:flex;justify-content:center;gap:-10px;margin:34px 0 10px;position:relative;height:96px}
+.illus svg{width:76px;height:76px;position:absolute;filter:drop-shadow(0 6px 10px rgba(0,0,0,.12))}
+.illus svg:nth-child(1){left:calc(50% - 78px);top:14px;transform:rotate(-10deg)}
+.illus svg:nth-child(2){left:calc(50% - 38px);top:0;width:88px;height:88px;z-index:2}
+.illus svg:nth-child(3){left:calc(50% + 8px);top:16px;transform:rotate(10deg)}
+.etitle{text-align:center;font-weight:700;font-size:19px;letter-spacing:-.02em;padding:0 30px}
+.esub{text-align:center;color:var(--ph-mute);font-size:13px;padding:6px 34px 0}
 @media (prefers-reduced-motion:no-preference){.tog button{transition:background .15s}}
 </style>
 
 <h1>Truegoing screens</h1>
-<p class="lede">Twelve screens of the first version in the Airbnb-like direction ruled on 2026-09-24: white surfaces, soft shadows, generous rounding, a category row of three-dimensional plan icons, pill filters, ink buttons. Every word on these screens is a proposal you can strike. Toggle dark to check both looks, and switch the palette to compare the three accent options on the same screens.</p>
+<p class="lede">Fourteen screens of the first version in the Airbnb direction ruled on 2026-09-24: Airbnb's colour roles with Truegoing coral in the brand slot, white surfaces, soft shadows, a category row of three-dimensional plan icons, a full-screen filter sheet with a live count, illustrated empty states. Every word on these screens is a proposal you can strike. Toggle dark to check both looks, and switch the palette to compare the three accent options on the same screens.</p>
 
 <div class="toolbar">
   <div class="tog" role="group" aria-label="Phone theme">
@@ -214,9 +256,10 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
     <button id="td" aria-pressed="false" onclick="setPh('dark')">Dark phones</button>
   </div>
   <div class="tog" role="group" aria-label="Palette">
+    <button id="pc" aria-pressed="true" onclick="setPal('coral')">Coral (Airbnb roles)</button>
     <button id="po" aria-pressed="false" onclick="setPal('orange')">Orange</button>
     <button id="pg" aria-pressed="false" onclick="setPal('green')">Green</button>
-    <button id="pi" aria-pressed="true" onclick="setPal('ink')">Ink</button>
+    <button id="pi" aria-pressed="false" onclick="setPal('ink')">Ink</button>
   </div>
   <span class="note">Names, plans and numbers are examples. Icons stand in for the final drawn set.</span>
 </div>
@@ -226,7 +269,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Sign in <span>1 of 3 before the feed</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body pad" style="padding-top:60px">
       <div class="title">Your phone number</div>
@@ -243,7 +286,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>What you're into <span>2 of 3</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body pad" style="padding-top:60px">
       <div class="title">What are you into?</div>
@@ -262,7 +305,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Your neighbourhood <span>3 of 3</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body pad" style="padding-top:60px">
       <div class="title">Where do you live, roughly?</div>
@@ -281,7 +324,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Plans · map <span>6 or more in view</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sports & outdoors">
@@ -362,7 +405,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 <rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
 </g>
 <g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 8h9a3 3 0 0 1 3 3v15H7a3 3 0 0 1-3-3z"/><path d="M28 8h-9a3 3 0 0 0-3 3v15h9a3 3 0 0 0 3-3z"/><path d="M7 13h6M7 17h6M19 13h6M19 17h6"/></g>
-</svg><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span class="on">Map</span><span>List</span></div><span style="font-size:12px;color:var(--ph-mute)">Filters</span></div>
+</svg><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span class="on">Map</span><span>List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
       <div class="map">
         <div class="park" style="left:20px;top:40px;width:90px;height:70px"></div>
         <div class="park" style="right:10px;bottom:120px;width:70px;height:110px"></div>
@@ -383,7 +426,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Plans · list <span>fewer than 6 in view</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sports & outdoors">
@@ -464,7 +507,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 <rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
 </g>
 <g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 8h9a3 3 0 0 1 3 3v15H7a3 3 0 0 1-3-3z"/><path d="M28 8h-9a3 3 0 0 0-3 3v15h9a3 3 0 0 0 3-3z"/><path d="M7 13h6M7 17h6M19 13h6M19 17h6"/></g>
-</svg><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span>Map</span><span class="on">List</span></div><span style="font-size:12px;color:var(--ph-mute)">Filters</span></div>
+</svg><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span>Map</span><span class="on">List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
       <div class="banner"><span>Not many plans this week.</span><b>Show more interests</b></div>
       <div class="card"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Badminton">
 <defs>
@@ -519,7 +562,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Plan details <span>sheet over the map</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"><div class="park" style="left:20px;top:40px;width:90px;height:70px"></div><div class="mk big" style="left:165px;top:150px;background:var(--c-sport)"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="5"/><path d="M11.5 11.5L20 20"/></svg></div></div>
@@ -554,7 +597,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Ask to go <span>two taps in the common case</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"></div><div class="scrim"></div>
@@ -571,6 +614,80 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
     </div><div class="home"></div></div></div>
   <p class="why">Tapping a starter fills the note; Send is live. Two lines explain exactly who sees what and what silence means.</p>
 </div>
+
+<div class="shot">
+  <h3>Filters <span>full-screen sheet, live count</span></h3>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
+    <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
+    <div class="body"><div class="fsheet">
+      <div class="hd"><span class="x">×</span>Filters</div>
+      <div class="fsec"><h4>When</h4><div class="fchips"><span class="chip on">This week</span><span class="chip">Today</span><span class="chip">This weekend</span><span class="chip">Any time</span></div></div>
+      <div class="fsec"><h4>Your interests</h4>
+        <div class="opt"><span>Badminton</span><span class="box on"></span></div>
+        <div class="opt"><span>Chess</span><span class="box on"></span></div>
+        <div class="opt"><span>Cycling</span><span class="box"></span></div>
+        <div class="opt" style="color:var(--ph-mute)"><span>Show plans in other interests too</span><span class="box"></span></div></div>
+      <div class="fsec"><h4>Plan type</h4><div class="fchips"><span class="chip on">Any</span><span class="chip">One to one</span><span class="chip">Group</span><span class="chip">For women</span></div></div>
+            <div class="ffoot"><u>Clear all</u><div class="bar">Show 12 plans</div></div>
+    </div></div><div class="home"></div></div></div>
+  <p class="why">Airbnb's filter sheet: sections, a live count on the button, Clear all underlined. Distance is not a filter here: reach is fixed, and a filter that only narrows would be one more thing to explain.</p>
+</div>
+
+<div class="shot">
+  <h3>Empty feed <span>illustrated empty state</span></h3>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
+    <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
+    <div class="body">
+      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div>
+      <div class="illus"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Badminton">
+<defs>
+<linearGradient id="bbadminton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
+<radialGradient id="hbadminton" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<filter id="sbadminton" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g filter="url(#sbadminton)">
+<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbadminton)"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbadminton)"/>
+<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
+</g>
+<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><ellipse cx="12" cy="11" rx="6" ry="7.5" transform="rotate(-40 12 11)"/><path d="M16.5 16.5 27 27"/><path d="M9 8l6 5M8 13l7-6M11 6.5 15 15"/><circle cx="25" cy="7" r="2.5"/><path d="M25 9.5v3"/></g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Chess">
+<defs>
+<linearGradient id="bchess" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
+<radialGradient id="hchess" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<filter id="schess" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g filter="url(#schess)">
+<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bchess)"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hchess)"/>
+<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
+</g>
+<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 6h8v4l-2 2v5l4 8H10l4-8v-5l-2-2z"/><path d="M8 28h16M12 6c0-1.5 1.5-2 4-2s4 .5 4 2"/></g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cycling">
+<defs>
+<linearGradient id="bcycling" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
+<radialGradient id="hcycling" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<filter id="scycling" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g filter="url(#scycling)">
+<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcycling)"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcycling)"/>
+<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
+</g>
+<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="8" cy="22" r="5"/><circle cx="24" cy="22" r="5"/><path d="M8 22l5-10h6l5 10M13 12l3.5 10M16 6.5h4l1.5 3"/><path d="M16.5 22h-5"/></g>
+</svg></div>
+      <div class="etitle">Quiet here this week</div>
+      <div class="esub">Nobody's posted a badminton, chess or cycling plan near Sector 5 yet. You could be first.</div>
+      <div class="bar" style="margin-top:22px">Post a plan</div>
+      <div class="quiet">Show plans in other interests too</div>
+      <div class="fab" style="display:none"></div>
+      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Activity</div><div class="tab"><i></i>You</div></div>
+    </div><div class="home"></div></div></div>
+  <p class="why">The 3D icons are the illustration, the way Airbnb's empty states use their objects. One line of fact, one action.</p>
+</div>
 </div>
 
 <h2>3 · Posting a plan</h2>
@@ -578,7 +695,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Post · typing <span>half-screen sheet</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"></div><div class="scrim"></div>
@@ -603,7 +720,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Post · a chip is missing <span>error state</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="map" style="flex:1"></div><div class="scrim"></div>
@@ -627,7 +744,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Activity <span>asks, messages, your plans</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="pad" style="padding-top:8px"><div class="title">Activity</div></div>
@@ -665,7 +782,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Chat <span>group plan, everyone going</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="hdr"><span style="color:var(--accent);font-weight:500">‹ Activity</span><span style="font-weight:600">Badminton after work</span><span style="color:var(--ph-mute);font-size:12px">3 going</span></div>
@@ -696,7 +813,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>You <span>what hosts see, then your things</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="pad" style="padding-top:8px;display:flex;justify-content:space-between;align-items:center"><div class="title">You</div><span style="font-size:12px;color:var(--accent);font-weight:500">Edit</span></div>
@@ -720,7 +837,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 
 <div class="shot">
   <h3>Looking, not verified <span>restricted state</span></h3>
-  <div class="phone light p-ink"><div class="screen"><div class="island"></div>
+  <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="banner" style="background:var(--accent);color:var(--accent-ink)"><span>You can look. To ask or post, add your number.</span><b style="color:var(--accent-ink)">Add</b></div>
@@ -777,16 +894,16 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 </div>
 
 <h2>5 · Colour</h2>
-<p class="lede">Three candidates for the accent, on the same screens above. Six category colours carry the plans in all three. Backgrounds are the system's, so dark mode is free and correct.</p>
+<p class="lede">Ruled 2026-09-24: Airbnb's colour roles, Truegoing's hue. Text near-black <code>#222222</code>, muted <code>#717171</code>, lines <code>#DDDDDD</code>, surfaces white, brand coral <code>#FF5C39</code> on the gradient primary button and the tick, black for secondary actions and selected states. The coral is deliberately not Airbnb's <code>#FF385C</code>: same role, our hue, so the set of layout, icon style and colour is not theirs. The older options stay in the switch for comparison.</p>
 <div class="tblwrap"><table>
 <tr><th style="width:14%">Option</th><th style="width:28%">What it says</th><th style="width:29%">Strength</th><th>Risk</th></tr>
 <tr><td><b>Orange</b> #FF4D1D</td><td>Energy, go, warmth</td><td>Recognisable from the old app; vibrant</td><td>Reads as food delivery in India (Swiggy, Zomato); collides with the Social category colour; loud on every button</td></tr>
 <tr><td><b>Green</b> #17442E</td><td>Trust, settled, showed up</td><td>The promise as a colour; few rivals in this category; calm</td><td>WhatsApp adjacency at a glance; can feel dull in marketing</td></tr>
 <tr><td><b>Ink</b> #15130F</td><td>Quiet app, loud plans</td><td>Category colours are the only colour, so the plan is the headline; timeless; Uber and Hinge prove it</td><td>Feels cold if icons and photos are weak; less "vibrant" at first sight</td></tr>
 </table></div>
-<p class="note" style="margin-top:12px">Ruled 2026-09-24: Ink, with orange kept for one job, the verified tick.</p>
+<p class="note" style="margin-top:12px">Ink and Green were the earlier candidates; superseded the same day by the Airbnb-roles ruling.</p>
 <div class="sw-grid">
-  <div class="swatch" style="background:#FF4D1D">Orange<small>#FF4D1D · dark #FF6A3D</small></div><div class="swatch" style="background:#17442E">Green<small>#17442E · dark #3FA36B</small></div><div class="swatch" style="background:#15130F">Ink<small>#15130F · dark #F2F2F7</small></div>
+  <div class="swatch" style="background:linear-gradient(90deg,#FF5C39,#E8453C,#D93A4A)">Truegoing coral<small>#FF5C39 · button gradient</small></div><div class="swatch" style="background:#222222">Text and secondary<small>#222222</small></div><div class="swatch" style="background:#717171">Muted<small>#717171</small></div><div class="swatch" style="background:#FF4D1D">Old orange<small>#FF4D1D</small></div><div class="swatch" style="background:#17442E">Green<small>#17442E · dark #3FA36B</small></div><div class="swatch" style="background:#15130F">Ink<small>#15130F · dark #F2F2F7</small></div>
   <div class="swatch" style="background:var(--settled)">Settled<small>showed up, confirmed</small></div>
   <div class="swatch" style="background:var(--c-social)">Social</div>
   <div class="swatch" style="background:var(--c-sport)">Sports & outdoors</div>
@@ -1624,11 +1741,11 @@ function setPh(mode){
   try{localStorage.setItem('tg-ph',mode)}catch(e){}
 }
 function setPal(p){
-  document.querySelectorAll('.phone').forEach(el=>{el.classList.remove('p-orange','p-green','p-ink');el.classList.add('p-'+p)});
-  ['o','g','i'].forEach(k=>document.getElementById('p'+k).setAttribute('aria-pressed',false));
-  document.getElementById({orange:'po',green:'pg',ink:'pi'}[p]).setAttribute('aria-pressed',true);
+  document.querySelectorAll('.phone').forEach(el=>{el.classList.remove('p-orange','p-green','p-ink','p-coral');el.classList.add('p-'+p)});
+  ['o','g','i','c'].forEach(k=>document.getElementById('p'+k).setAttribute('aria-pressed',false));
+  document.getElementById({orange:'po',green:'pg',ink:'pi',coral:'pc'}[p]).setAttribute('aria-pressed',true);
   try{localStorage.setItem('tg-pal',p)}catch(e){}
 }
 try{const m=localStorage.getItem('tg-ph');if(m==='dark')setPh('dark')}catch(e){}
-try{const q=localStorage.getItem('tg-pal');if(q&&q!=='ink')setPal(q)}catch(e){}
+try{const q=localStorage.getItem('tg-pal');if(q&&q!=='coral')setPal(q)}catch(e){}
 </script>

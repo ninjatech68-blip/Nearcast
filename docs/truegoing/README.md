@@ -54,7 +54,9 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Development sign-in uses a static code, guarded so a release build refuses it; SMS provider deferred to before TestFlight |
 | 2026-09-24 | First city: Panchkula |
 | 2026-09-24 | Look and feel: Airbnb-like. White surfaces, soft shadows, 20/28-point rounding, category row of 3D plan icons, search pill; 3D icons to be commissioned or licensed, placeholders until then |
-| 2026-09-24 | Accent colour: Ink (`#15130F` light, `#F2F2F7` dark); orange `#FF4D1D` kept only for the verified tick and the app icon mark |
+| 2026-09-24 | Colour: Airbnb's roles (text `#222222`, muted `#717171`, line `#DDDDDD`, white surfaces, black secondary) with Truegoing coral `#FF5C39` in the brand slot on a gradient primary button and the tick. Supersedes the Ink ruling of the same day |
+| 2026-09-24 | Voice: Airbnb's register (warm, direct, second person, sentence case, no exclamation marks) plus Truegoing's disclosure line on every action that touches a person |
+| 2026-09-24 | Filter sheet with live count and illustrated empty states adopted from Airbnb (`15` B6, B2) |
 | 2026-09-23 | Plans are browsable on a map at their coarse (~1 km) point; exact place still hidden until acceptance; people never on the map; host toggle `Show on the map` default on (`11 §11`, D53 draft for `mobileapp`) |
 | 2026-09-23 | One group thread per plan for the host and accepted people only; pair threads retained; a block makes the blocker leave the plan (`11 §12`, D54 draft for `mobileapp`) |
 | 2026-09-23 | Optional Instagram handle, owner-only in storage, shown only after acceptance on a live plan, never on the caster profile (`11 §13`, D55 draft for `mobileapp`) |
@@ -86,3 +88,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Owner ruled the assistant builds everything, with the owner running Mac-only steps; 85-icon set generated in `visual/icons/` and shown on the visual page |
 | 2026-09-24 | Icons redrawn in an Airbnb-like outline style; one repository `truegoing` ruled instead of two; owner confirmed Mac and developer account |
 | 2026-09-24 | Owner ruled an Airbnb-like look with 3D plan icons; `14 §4` rewritten, visual page restyled, placeholder 3D tiles in `visual/icons-3d/` |
+| 2026-09-24 | Owner ruled "as close to Airbnb as legally sensible": colour roles, register, filter sheet, illustrations; coral hue kept distinct from Rausch on purpose |

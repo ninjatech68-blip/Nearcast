@@ -4,7 +4,7 @@
 
 Conventions: **Shows** is what is on screen. **Does** is what a tap can do. **Rules** are the invariants the database also enforces. **States** are loading · empty · error · offline · disabled · restricted. Where a state is the same as another screen's, it says so. Names are placeholders for the real first name.
 
-Global rules that apply to every screen and are not repeated: sentence case; exit words `Done` / `Never mind` / `Back`; Dynamic Type reflows, never truncates; every control has a VoiceOver label naming the action; the six states are visible states, never a spinner alone; nothing user-facing carries an exclamation mark, an emoji or a bare error code.
+Global rules that apply to every screen and are not repeated: the visual language is Airbnb's roles with Truegoing's hue (`14 §4`): one gradient primary button per screen at most, black for selected and secondary, white cards with shadow, 3D plan icons as the picture, empty states illustrated with three of them; sentence case; exit words `Done` / `Never mind` / `Back`; Dynamic Type reflows, never truncates; every control has a VoiceOver label naming the action; the six states are visible states, never a spinner alone; nothing user-facing carries an exclamation mark, an emoji or a bare error code.
 
 ---
 
@@ -64,7 +64,7 @@ Global rules that apply to every screen and are not repeated: sentence case; exi
 **Shows:** same header and chips. Cards: icon on category colour, the host's sentence, `Thu 7pm · about 2 km`, `✓ Aarav · 31 plans · showed up 97%`, why line `Shown because you're into badminton`. Two to three per screen. Sparse banner when under 6: `Not many plans this week.` · `Show more interests`.
 **Does:** Tap card → B3. Swipe left → `Not for me` (hides, sends a not-relevant signal). Pull to refresh.
 **Rules:** Order is fixed and published: start time ascending within `This week`; ties by distance. No popularity sort, ever.
-**States:** loading: three skeleton cards · empty: `Quiet here this week.` · `Show more interests` · `Post a plan` · error: `Couldn't load plans.` · `Try again` · offline: cached cards, banner as B1 · disabled: n/a · restricted: banner as B1; cards fully readable
+**States:** loading: three skeleton cards · empty: illustration of three 3D icons from the person's interests fanned together · `Quiet here this week` · `Nobody's posted a badminton, chess or cycling plan near Sector 5 yet. You could be first.` · gradient `Post a plan` · quiet `Show plans in other interests too` · error: `Couldn't load plans.` · `Try again` · offline: cached cards, banner as B1 · disabled: n/a · restricted: banner as B1; cards fully readable
 
 ### B3 · Plan details (sheet)
 **Shows:** grab handle · icon, sentence, `Thu 7pm · about 2 km · 2 of 4 going` · host row: photo, `✓ Aarav`, `31 plans · showed up 97% · since March`, `›` → D1 · host's note · `You see a rough distance for now. If Aarav accepts you, you get the exact place and the chat.` · why line · `Ask to go` · `Not for me`. For a women-only plan, a line above the buttons: `For women. Everyone here said they're a woman. The host can remove anyone.`
@@ -77,6 +77,12 @@ Global rules that apply to every screen and are not repeated: sentence case; exi
 **Does:** Tap a starter → fills the field, `Send` enabled. Send → B3 in its asked state, toast `Sent. Aarav will accept or decline. We'll tell you here.`
 **Rules:** A note, chosen or typed, always accompanies an ask. The host receives first name, photo, record, note; nothing else.
 **States:** loading: `Send` → `Sending…` · empty: `Send` disabled until a starter or text · error: `That didn't send. Your note is still here.` · `Try again` · offline: `Send` → `Send when online`; queued, B3 shows `Asked · sends when you're back online` · disabled: as empty · restricted: cannot reach this sheet (B3 handles)
+
+### B6 · Filters (full-screen sheet)
+**Shows:** `×` · `Filters` · **When**: chips `This week` (on) · `Today` · `This weekend` · `Any time` · **Your interests**: a checkbox per chosen sub-interest, all on by default, plus `Show plans in other interests too` off · **Plan type**: `Any` (on) · `One to one` · `Group` · `For women` (shown only to declared women) · footer: `Clear all` underlined · gradient button `Show 12 plans` with the live count.
+**Does:** Every change updates the count without leaving the sheet. `Show N plans` applies and closes. `Clear all` returns to the defaults. `×` discards changes (`Never mind` semantics, no confirmation because the previous state is one tap away).
+**Rules:** Filters only narrow what delivery already produced; nothing here widens reach. `Show plans in other interests too` is the one exception and it is the person's explicit tap. Filter state persists across sessions and is shared by map and list.
+**States:** loading (count): the button shows `Show plans` until the count arrives, under 300 ms · empty (count 0): button reads `No plans match` and is disabled; `Clear all` stays live · error: count line `Couldn't check. Try again.` with the button still applying · offline: counts from the cached feed, banner · disabled: as empty · restricted (unverified): identical; filters are a read
 
 ### B5 · Share a plan (system)
 **Shows:** system share sheet with text `Badminton after work, need two · Thu 7pm near Sector 5 · truegoing.app/p/…`.
