@@ -51,9 +51,9 @@ Not used, by decision: background location, Contacts, SharePlay, StoreKit, any t
 
 ### M0 · Foundation (before any screen)
 
-**Do:** choose and wire the SMS provider; create the two repositories; port the database per `16 §10` with the rename; write the structural law tests first (L1, L2, L15, L22) and make them pass over the new schema; set up CI that runs pgTAP, the Swift tests, the copy test and the contrast test on every change; generate the token file from `14`; draw the first thirty plan icons (`13` 2.1 vocabulary) as SF-Symbol-compatible SVGs.
+**Do:** wire phone verification with a **static development code** (owner's ruling 2026-09-24; the SMS provider comes later): the code is accepted only when the database is in development mode, a release build refuses to start with the switch on, and a test fails if either guard is missing; create the two repositories; port the database per `16 §10` with the rename; write the structural law tests first (L1, L2, L15, L22) and make them pass over the new schema; set up CI that runs pgTAP, the Swift tests, the copy test and the contrast test on every change; generate the token file from `14`; draw the first thirty plan icons (`13` 2.1 vocabulary) as SF-Symbol-compatible SVGs.
 **Depends on:** nothing.
-**Exit test:** a phone receives a real code by text and the database accepts the verification. `db test` and `db contract` green with the 18 denied-path tests from `16 §7` written and failing where the feature does not exist yet.
+**Exit test:** a phone signs in with the static development code against a development database and is refused against a production-mode database. `db test` and `db contract` green with the 18 denied-path tests from `16 §7` written and failing where the feature does not exist yet.
 
 ### M1 · Sign in and look
 
@@ -129,13 +129,13 @@ M5 and M6 can run in parallel after M3. M4 needs M3's receipts. M7 needs everyth
 
 ## 5. Seeding and the first city
 
-The app is available everywhere from day one and works everywhere (iOS resolves any location to a neighbourhood name). Effort is concentrated in one city, to be named before M3's exit test, because that test needs real people in one place. Seed plans are real plans by real people the owner knows, labelled as such in the moderation console, never fabricated accounts (`08 §3.6` still applies).
+The app is available everywhere from day one and works everywhere (iOS resolves any location to a neighbourhood name). Effort is concentrated in **Panchkula** (ruled 2026-09-24; the fixed 20 km reach also covers Chandigarh and Mohali), because that test needs real people in one place. Seed plans are real plans by real people the owner knows, labelled as such in the moderation console, never fabricated accounts (`08 §3.6` still applies).
 
 ## 6. Risks, named
 
 | Risk | What it would do | Mitigation |
 |---|---|---|
-| SMS provider slips | Nothing ships | M0 gate; Apple and Google sign-in let people look while it is resolved |
+| SMS provider slips | Nothing ships to real users | Static code for development only, guarded in the database and the build; Apple and Google sign-in let people look; the provider must exist before M7's TestFlight to outside testers |
 | Extraction of what, where, when from a sentence is unreliable | Posting feels broken | On-device Foundation Models with a pure fallback parser; chips are always editable; quick picks cover when; the home neighbourhood covers where; a test corpus of 200 real sentences before M2 |
 | Two looks (iOS 17–25 and 26+) | Design drift between them; double the snapshot suite | No custom materials anywhere, standard components only, so the system owns both looks; snapshot tests run on an iOS 17 and an iOS 26 simulator in CI; design review on two physical phones before M7 |
 | Rooms make blocking messy | Two people at one place | L18 test in M3 before the UI exists |
@@ -149,9 +149,10 @@ Android. Points before data. Partner rewards. Plan photos. Recurring plans. Wait
 
 ## 8. What the owner does next
 
-1. Choose the SMS provider (M0 cannot start without it).
-2. Name the designer for the icon set and the app icon.
-3. Name the first city before M3.
-4. Decide the four defaults in `16 §11` or accept them.
+1. ~~Choose the SMS provider~~ Static development code for now; provider before M7.
+2. Icons: a first full set is produced for review on the visual page; the owner decides afterwards whether a designer redraws it. The app icon goes to a designer.
+3. ~~Name the first city~~ Panchkula.
+4. The four defaults in `16 §11` stand unless changed.
+5. Decide who builds: an iOS engineer against the contracts, or the assistant building the database, domain layer, parser and tests with a person on Xcode, signing, TestFlight and devices.
 
 Everything else in this plan can start now.

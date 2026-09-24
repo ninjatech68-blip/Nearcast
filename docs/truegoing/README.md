@@ -51,6 +51,8 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-23 | Vocabulary: plan · ask · offer · host · people going · connection; tabs Nearby · Chats · Post · You |
 | 2026-09-23 | Women-only plans: set by, delivered to, and joinable by verified women only (superseded 2026-09-24 by `12 §9`: self-declared, host-controlled, one strike) |
 | 2026-09-24 | Platform: iOS 17 minimum, Liquid Glass on iOS 26+ with system fallback, Apple Maps via MapKit, no third-party map SDK |
+| 2026-09-24 | Development sign-in uses a static code, guarded so a release build refuses it; SMS provider deferred to before TestFlight |
+| 2026-09-24 | First city: Panchkula |
 | 2026-09-24 | Accent colour: Ink (`#15130F` light, `#F2F2F7` dark); orange `#FF4D1D` kept only for the verified tick and the app icon mark |
 | 2026-09-23 | Plans are browsable on a map at their coarse (~1 km) point; exact place still hidden until acceptance; people never on the map; host toggle `Show on the map` default on (`11 §11`, D53 draft for `mobileapp`) |
 | 2026-09-23 | One group thread per plan for the host and accepted people only; pair threads retained; a block makes the blocker leave the plan (`11 §12`, D54 draft for `mobileapp`) |
@@ -79,3 +81,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Data rules added (`16`) |
 | 2026-09-24 | iOS build plan added (`17`); it is now the active plan |
 | 2026-09-24 | Owner ruled: iOS 17 minimum with Liquid Glass on iOS 26+ and the system fallback below; Apple Maps for all maps. `17` and `14` updated |
+| 2026-09-24 | Owner answers recorded: static development code, Panchkula, icon approach, defaults accepted |
