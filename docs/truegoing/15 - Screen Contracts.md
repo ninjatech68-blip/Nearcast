@@ -4,7 +4,7 @@
 
 Conventions: **Shows** is what is on screen. **Does** is what a tap can do. **Rules** are the invariants the database also enforces. **States** are loading · empty · error · offline · disabled · restricted. Where a state is the same as another screen's, it says so. Names are placeholders for the real first name.
 
-Global rules that apply to every screen and are not repeated: the visual language is Airbnb's roles with Truegoing's hue (`14 §4`): one gradient primary button per screen at most, black for selected and secondary, white cards with shadow, 3D plan icons as the picture, empty states illustrated with three of them; sentence case; exit words `Done` / `Never mind` / `Back`; Dynamic Type reflows, never truncates; every control has a VoiceOver label naming the action; the six states are visible states, never a spinner alone; nothing user-facing carries an exclamation mark, an emoji or a bare error code.
+Global rules that apply to every screen and are not repeated: five tabs `Plans · Going · Post · Messages · You` (`18`); the visual language is Airbnb's roles with Truegoing's hue (`14 §4`): one gradient primary button per screen at most, black for selected and secondary, white cards with shadow, 3D plan icons as the picture, empty states illustrated with three of them; sentence case; exit words `Done` / `Never mind` / `Back`; Dynamic Type reflows, never truncates; every control has a VoiceOver label naming the action; the six states are visible states, never a spinner alone; nothing user-facing carries an exclamation mark, an emoji or a bare error code.
 
 ---
 
@@ -55,8 +55,8 @@ Global rules that apply to every screen and are not repeated: the visual languag
 ## B. Plans
 
 ### B1 · Plans, map
-**Shows:** header: segmented `Map | List`, `Near Sector 5 ▾`. Filter chips: `This week` (default on), sub-interests the person chose, `All mine`. Map centred on the home neighbourhood, never on the device. Markers: category-coloured disc with the plan icon at the plan's coarse point; own live plan carries `LIVE`. Clusters above 40 in view show `N plans`. Floating `+`. Tab bar Plans · Activity · You.
-**Does:** Tap marker → B3 sheet. Tap cluster → zoom, or B2 filtered to the cluster if already at max zoom. `Near Sector 5 ▾` → sheet: the person's neighbourhood(s), `Near me now` (one-shot, discarded), `Add a place` (later). `+` → C1. Filters persist across sessions.
+**Shows:** search pill `Near Sector 5 · This week · Badminton, Games, Cycling` that collapses on scroll; category row of 3D icons with underline; `Show list` floating pill over the map. Filter chips: `This week` (default on), sub-interests the person chose, `All mine`. Map centred on the home neighbourhood, never on the device. Markers: category-coloured disc with the plan icon at the plan's coarse point; own live plan carries `LIVE`. Clusters above 40 in view show `N plans`. Floating `+`. Tab bar Plans · Activity · You.
+**Does:** Tap marker → the plan card rises in a bottom carousel, swipeable between nearby plans; tap the card → B3. Tap cluster → zoom, or B2 filtered to the cluster if already at max zoom. `Near Sector 5 ▾` → sheet: the person's neighbourhood(s), `Near me now` (one-shot, discarded), `Add a place` (later). `+` → C1. Filters persist across sessions.
 **Rules:** Default view is map when 6 or more plans are in view at open, else B2. No person, photo, initials or name on a marker. Only plans within reach of the chosen neighbourhood, in the person's interests, live, `Show on the map` true.
 **States:** loading: map tiles with grey placeholder markers, `Looking for plans…` chip · empty (0 in view): B2 opens instead; if the person switches to map, an inline card `No plans on the map here this week.` · `Show more interests` · error: `Couldn't load plans. Pull down to try again.` card over the map · offline: last loaded markers stay, banner `You're offline. Showing what we had.` · disabled: n/a · restricted (unverified): full map, banner `You can look. To ask or post, add your number.` · `Add`; `+` dimmed
 
@@ -66,8 +66,8 @@ Global rules that apply to every screen and are not repeated: the visual languag
 **Rules:** Order is fixed and published: start time ascending within `This week`; ties by distance. No popularity sort, ever.
 **States:** loading: three skeleton cards · empty: illustration of three 3D icons from the person's interests fanned together · `Quiet here this week` · `Nobody's posted a badminton, chess or cycling plan near Sector 5 yet. You could be first.` · gradient `Post a plan` · quiet `Show plans in other interests too` · error: `Couldn't load plans.` · `Try again` · offline: cached cards, banner as B1 · disabled: n/a · restricted: banner as B1; cards fully readable
 
-### B3 · Plan details (sheet)
-**Shows:** grab handle · icon, sentence, `Thu 7pm · about 2 km · 2 of 4 going` · host row: photo, `✓ Aarav`, `31 plans · showed up 97% · since March`, `›` → D1 · host's note · `You see a rough distance for now. If Aarav accepts you, you get the exact place and the chat.` · why line · `Ask to go` · `Not for me`. For a women-only plan, a line above the buttons: `For women. Everyone here said they're a woman. The host can remove anyone.`
+### B3 · Plan page (full page, pushed; Airbnb listing shape, `18`)
+**Shows:** hero with the 3D icon, back and share at the top · sentence, `Thu 7pm · about 2 km · 2 of 4 going · Sector 5` · `Hosted by Aarav` card: photo, `✓ Aarav`, `31 plans · showed up 97% · since March`, `›` → D1 · **About this plan** (host's note) · **How this works**: `You see a rough distance for now. If Aarav accepts you, you get the exact place and the chat. If Aarav doesn't reply, that's a no.` · why line · `Report this plan` · sticky bottom bar: `Thu 7pm` and `about 2 km away` on the left, `Ask to go` on the right. `Not for me` lives in the top-right menu. For a women-only plan, a line above the buttons: `For women. Everyone here said they're a woman. The host can remove anyone.`
 **Does:** Ask to go → B4. Not for me → dismisses and hides. Host row → D1. Swipe down → back to map/list, nothing lost. Share (top right) → system share sheet with the plan link (rough area only).
 **Rules:** No exact place, no address, no attendee names to a non-accepted person. "2 of 4 going" is the only count and it is real.
 **States:** loading: skeleton sheet · empty: n/a · error: `This plan isn't available any more.` · `Done` (cancelled or expired) · offline: cached details, `Ask to go` says `Ask to go (sends when online)` · disabled: after asking, `Ask to go` becomes `Asked · waiting for Aarav` with `Take back` quiet action · restricted (unverified): `Ask to go` replaced by `Add your number to ask` → A1 flow; women-only plan and the person has not declared: `This plan is for women.` with no button
@@ -138,8 +138,8 @@ Global rules that apply to every screen and are not repeated: the visual languag
 
 ## E. Activity
 
-### E1 · Activity
-**Shows:** `Activity` · chips `Needs you · N` (default) · `Waiting` · `Your plans` · `Chats`.
+### E1 · Going (Airbnb's Trips tab, `18`)
+**Shows:** `Going` · chips `Needs you · N` (default) · `Upcoming` · `Asked` · `Hosting` · `Past`. Messages are their own tab (F0).
 Needs you rows: `Riya asked to go` + note + plan, `Accept` · `Decline` on the row; `Did you meet Aarav?` + plan, `Yes` · `No` on the row. Waiting rows: `Asked Aarav · Badminton after work · Thu 7pm` with `Take back`. Your plans rows: plan, `1 going, 2 asked`, `Cancel`. Chats: threads with last line and unread dot.
 **Does:** Every action on the row, no long press. Row tap → the plan (B3 host view) or the chat (F1).
 **Rules:** Decline is silent to the asker. `Did it happen?` appears after the plan's time and disappears after 7 days unanswered. Accept fails cleanly when slots are full: `This plan is full.`

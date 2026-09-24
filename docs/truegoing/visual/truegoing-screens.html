@@ -244,11 +244,33 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 .illus svg:nth-child(3){left:calc(50% + 8px);top:16px;transform:rotate(10deg)}
 .etitle{text-align:center;font-weight:700;font-size:19px;letter-spacing:-.02em;padding:0 30px}
 .esub{text-align:center;color:var(--ph-mute);font-size:13px;padding:6px 34px 0}
+
+.slot{width:100%;height:100%;border-radius:22%;background:linear-gradient(180deg,#F2F2F2,#E6E6E6);display:flex;align-items:center;justify-content:center;font-size:9px;line-height:1.1;color:#9A9A9A;text-align:center;font-weight:600;letter-spacing:.02em}
+.phone.dark .slot{background:linear-gradient(180deg,#2A2A2A,#1E1E1E);color:#777}
+.slot.small{width:40px;height:40px}
+.slot.big{width:76px;height:76px;position:absolute}
+.illus .slot.big:nth-child(1){left:calc(50% - 78px);top:14px;transform:rotate(-10deg)}
+.illus .slot.big:nth-child(2){left:calc(50% - 40px);top:0;width:84px;height:84px;z-index:2}
+.illus .slot.big:nth-child(3){left:calc(50% + 6px);top:16px;transform:rotate(10deg)}
+/* five tabs */
+.tabs .tab{width:56px}
+/* full-page plan details */
+.hero{height:190px;background:linear-gradient(180deg,#F7F7F7,#ECECEC);display:flex;align-items:center;justify-content:center;position:relative}
+.phone.dark .hero{background:linear-gradient(180deg,#1E1E1E,#141414)}
+.hero .slot{width:120px;height:120px;font-size:12px}
+.hero .nav{position:absolute;top:8px;left:12px;right:12px;display:flex;justify-content:space-between}
+.hero .nav span{width:32px;height:32px;border-radius:50%;background:var(--ph-bg);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.sect{padding:12px 18px;border-bottom:1px solid var(--ph-line);font-size:13px}
+.sect h5{margin:0 0 6px;font-size:14px;font-weight:600}
+.sticky{position:absolute;left:0;right:0;bottom:0;background:var(--ph-bg);border-top:1px solid var(--ph-line);padding:10px 18px 26px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sticky .bar{margin:0;padding:12px 20px;font-size:14px;width:auto}
+.sticky b{display:block;font-size:14px}
+.sticky small{color:var(--ph-mute);font-size:11.5px;text-decoration:underline}
 @media (prefers-reduced-motion:no-preference){.tog button{transition:background .15s}}
 </style>
 
 <h1>Truegoing screens</h1>
-<p class="lede">Fourteen screens of the first version in the Airbnb direction ruled on 2026-09-24: Airbnb's colour roles with Truegoing coral in the brand slot, white surfaces, soft shadows, a category row of three-dimensional plan icons, a full-screen filter sheet with a live count, illustrated empty states. Every word on these screens is a proposal you can strike. Toggle dark to check both looks, and switch the palette to compare the three accent options on the same screens.</p>
+<p class="lede">Fourteen screens of the first version in the Airbnb direction ruled on 2026-09-24. Icon positions are neutral slots until the 3D set arrives (3dicons.co, public domain, or commissioned), so the layout is judged and not a placeholder: Airbnb's colour roles with Truegoing coral in the brand slot, white surfaces, soft shadows, a category row of three-dimensional plan icons, a full-screen filter sheet with a live count, illustrated empty states. Every word on these screens is a proposal you can strike. Toggle dark to check both looks, and switch the palette to compare the three accent options on the same screens.</p>
 
 <div class="toolbar">
   <div class="tog" role="group" aria-label="Phone theme">
@@ -327,85 +349,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sports & outdoors">
-<defs>
-<linearGradient id="bcatsport" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hcatsport" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatsport" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatsport)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatsport)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatsport)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 25 12 11l5 8 3-4 8 10z"/><path d="M17 19l-2.5 4"/><circle cx="24" cy="8" r="3"/><path d="M4 25h24"/></g>
-</svg><span>Sports</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Games">
-<defs>
-<linearGradient id="bcatgames" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hcatgames" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatgames" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatgames)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatgames)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatgames)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="10" width="26" height="14" rx="7"/><path d="M10 14v6M7 17h6"/><circle cx="21" cy="15.5" r="1.2"/><circle cx="24.5" cy="18.5" r="1.2"/><path d="M12 10V7h8v3"/></g>
-</svg><span>Games</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Food & drinks">
-<defs>
-<linearGradient id="bcatfood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hcatfood" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatfood" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatfood)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatfood)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatfood)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M6 12h14v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6z"/><path d="M20 14h2.5a3 3 0 0 1 0 6H20"/><path d="M10 6c0 1.5 1.2 1.5 1.2 3M14 6c0 1.5 1.2 1.5 1.2 3"/><path d="M4 29h20"/></g>
-</svg><span>Food</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Music & nightlife">
-<defs>
-<linearGradient id="bcatmusic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hcatmusic" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatmusic" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatmusic)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatmusic)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatmusic)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 24V7l14-3v16"/><circle cx="8" cy="24" r="4"/><circle cx="22" cy="20" r="4"/><path d="M12 11l14-3"/></g>
-</svg><span>Music</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Social">
-<defs>
-<linearGradient id="bcatsocial" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hcatsocial" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatsocial" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatsocial)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatsocial)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatsocial)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="11" cy="10" r="4"/><circle cx="22" cy="12" r="3.5"/><path d="M3 27c.8-5.2 4-8.5 8-8.5 2.2 0 4.1 1 5.5 2.7"/><path d="M16.5 27c.4-4 3-6.5 5.5-6.5 3 0 5.5 2.6 6 6.5"/></g>
-</svg><span>Social</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Learning & making">
-<defs>
-<linearGradient id="bcatlearn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hcatlearn" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatlearn" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatlearn)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatlearn)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatlearn)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 8h9a3 3 0 0 1 3 3v15H7a3 3 0 0 1-3-3z"/><path d="M28 8h-9a3 3 0 0 0-3 3v15h9a3 3 0 0 0 3-3z"/><path d="M7 13h6M7 17h6M19 13h6M19 17h6"/></g>
-</svg><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span class="on">Map</span><span>List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
+      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><div class="slot small"></div><span>Sports</span></div><div class="cat"><div class="slot small"></div><span>Games</span></div><div class="cat"><div class="slot small"></div><span>Food</span></div><div class="cat"><div class="slot small"></div><span>Music</span></div><div class="cat"><div class="slot small"></div><span>Social</span></div><div class="cat"><div class="slot small"></div><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span class="on">Map</span><span>List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
       <div class="map">
         <div class="park" style="left:20px;top:40px;width:90px;height:70px"></div>
         <div class="park" style="right:10px;bottom:120px;width:70px;height:110px"></div>
@@ -418,8 +362,8 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
         <div class="cluster" style="left:60px;top:340px">4 plans</div>
         <div class="mk" style="left:250px;top:220px;background:var(--c-music)"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg></div>
       </div>
-      <div class="fab">+</div>
-      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Activity</div><div class="tab"><i></i>You</div></div>
+      
+      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">Markers are the plan's icon on its category colour, at a rough spot. Never a face. Filters stay where you left them.</p>
 </div>
@@ -429,170 +373,34 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sports & outdoors">
-<defs>
-<linearGradient id="bcatsport" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hcatsport" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatsport" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatsport)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatsport)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatsport)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 25 12 11l5 8 3-4 8 10z"/><path d="M17 19l-2.5 4"/><circle cx="24" cy="8" r="3"/><path d="M4 25h24"/></g>
-</svg><span>Sports</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Games">
-<defs>
-<linearGradient id="bcatgames" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hcatgames" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatgames" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatgames)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatgames)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatgames)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="10" width="26" height="14" rx="7"/><path d="M10 14v6M7 17h6"/><circle cx="21" cy="15.5" r="1.2"/><circle cx="24.5" cy="18.5" r="1.2"/><path d="M12 10V7h8v3"/></g>
-</svg><span>Games</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Food & drinks">
-<defs>
-<linearGradient id="bcatfood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hcatfood" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatfood" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatfood)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatfood)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatfood)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M6 12h14v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6z"/><path d="M20 14h2.5a3 3 0 0 1 0 6H20"/><path d="M10 6c0 1.5 1.2 1.5 1.2 3M14 6c0 1.5 1.2 1.5 1.2 3"/><path d="M4 29h20"/></g>
-</svg><span>Food</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Music & nightlife">
-<defs>
-<linearGradient id="bcatmusic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hcatmusic" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatmusic" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatmusic)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatmusic)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatmusic)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 24V7l14-3v16"/><circle cx="8" cy="24" r="4"/><circle cx="22" cy="20" r="4"/><path d="M12 11l14-3"/></g>
-</svg><span>Music</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Social">
-<defs>
-<linearGradient id="bcatsocial" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hcatsocial" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatsocial" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatsocial)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatsocial)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatsocial)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="11" cy="10" r="4"/><circle cx="22" cy="12" r="3.5"/><path d="M3 27c.8-5.2 4-8.5 8-8.5 2.2 0 4.1 1 5.5 2.7"/><path d="M16.5 27c.4-4 3-6.5 5.5-6.5 3 0 5.5 2.6 6 6.5"/></g>
-</svg><span>Social</span></div><div class="cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Learning & making">
-<defs>
-<linearGradient id="bcatlearn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hcatlearn" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatlearn" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatlearn)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatlearn)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatlearn)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 8h9a3 3 0 0 1 3 3v15H7a3 3 0 0 1-3-3z"/><path d="M28 8h-9a3 3 0 0 0-3 3v15h9a3 3 0 0 0 3-3z"/><path d="M7 13h6M7 17h6M19 13h6M19 17h6"/></g>
-</svg><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span>Map</span><span class="on">List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
+      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><div class="slot small"></div><span>Sports</span></div><div class="cat"><div class="slot small"></div><span>Games</span></div><div class="cat"><div class="slot small"></div><span>Food</span></div><div class="cat"><div class="slot small"></div><span>Music</span></div><div class="cat"><div class="slot small"></div><span>Social</span></div><div class="cat"><div class="slot small"></div><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span>Map</span><span class="on">List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
       <div class="banner"><span>Not many plans this week.</span><b>Show more interests</b></div>
-      <div class="card"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Badminton">
-<defs>
-<linearGradient id="bbadminton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hbadminton" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbadminton" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbadminton)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbadminton)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbadminton)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><ellipse cx="12" cy="11" rx="6" ry="7.5" transform="rotate(-40 12 11)"/><path d="M16.5 16.5 27 27"/><path d="M9 8l6 5M8 13l7-6M11 6.5 15 15"/><circle cx="25" cy="7" r="2.5"/><path d="M25 9.5v3"/></g>
-</svg></div>
+      <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
         <div><div class="t">Badminton after work, need two</div><div class="m mono">Thu 7pm · about 2 km</div><div class="h"><span class="tick">✓</span>Aarav · 31 plans · showed up 97%</div><div class="whyl">Shown because you're into badminton</div></div></div>
-      <div class="card"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Chess">
-<defs>
-<linearGradient id="bchess" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hchess" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="schess" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#schess)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bchess)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hchess)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 6h8v4l-2 2v5l4 8H10l4-8v-5l-2-2z"/><path d="M8 28h16M12 6c0-1.5 1.5-2 4-2s4 .5 4 2"/></g>
-</svg></div>
+      <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
         <div><div class="t">Chess in the park, bring a board</div><div class="m mono">Sun 9am · about 1 km</div><div class="h"><span class="tick">✓</span>Meera · 12 plans · showed up 100%</div><div class="whyl">Shown because you're into games</div></div></div>
-      <div class="card"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cycling">
-<defs>
-<linearGradient id="bcycling" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hcycling" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scycling" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scycling)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcycling)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcycling)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="8" cy="22" r="5"/><circle cx="24" cy="22" r="5"/><path d="M8 22l5-10h6l5 10M13 12l3.5 10M16 6.5h4l1.5 3"/><path d="M16.5 22h-5"/></g>
-</svg></div>
+      <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
         <div><div class="t">Sunday cycle to Morni, easy pace</div><div class="m mono">Sun 6am · about 4 km</div><div class="h"><span class="tick">✓</span>Kabir · 8 plans · showed up 88%</div><div class="whyl">Shown because you're into cycling</div></div></div>
-      <div class="fab">+</div>
-      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Activity</div><div class="tab"><i></i>You</div></div>
+      
+      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">A card answers what, when, how far, who, and why you see it. No tap needed to decide.</p>
 </div>
 
 <div class="shot">
-  <h3>Plan details <span>sheet over the map</span></h3>
+  <h3>Plan details <span>full page, sticky bar, like a listing</span></h3>
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="map" style="flex:1"><div class="park" style="left:20px;top:40px;width:90px;height:70px"></div><div class="mk big" style="left:165px;top:150px;background:var(--c-sport)"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="5"/><path d="M11.5 11.5L20 20"/></svg></div></div>
-      <div class="scrim"></div>
-      <div class="sheet">
-        <div class="grab"></div>
-        <div style="display:flex;gap:12px"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Badminton">
-<defs>
-<linearGradient id="bbadminton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hbadminton" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbadminton" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbadminton)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbadminton)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbadminton)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><ellipse cx="12" cy="11" rx="6" ry="7.5" transform="rotate(-40 12 11)"/><path d="M16.5 16.5 27 27"/><path d="M9 8l6 5M8 13l7-6M11 6.5 15 15"/><circle cx="25" cy="7" r="2.5"/><path d="M25 9.5v3"/></g>
-</svg></div>
-          <div><div style="font-weight:700;font-size:17px;line-height:1.2">Badminton after work, need two</div><div class="mono" style="color:var(--ph-mute);font-size:12px;margin-top:4px">Thu 7pm · about 2 km · 2 of 4 going</div></div></div>
-        <div class="row" style="margin-top:8px"><div style="display:flex;gap:10px;align-items:center"><div class="avatar">A</div><div><div style="font-weight:600"><span class="tick">✓</span> Aarav</div><div class="record">31 plans · showed up 97% · since March</div></div></div><span style="color:var(--ph-mute)">›</span></div>
-        <div style="font-size:13px;margin-top:10px">Easy doubles, intermediate is fine. Court's booked, split is ₹80.</div>
-        <div class="help" style="margin-top:10px">You see a rough distance for now. If Aarav accepts you, you get the exact place and the chat.</div>
-        <div class="help" style="margin-top:6px">Shown because you're into badminton.</div>
-        <div class="bar">Ask to go</div>
-        <div class="quiet">Not for me</div>
-      </div>
+      <div class="hero"><div class="nav"><span>‹</span><span style="display:flex;gap:6px;background:none;box-shadow:none;width:auto"><span>⇧</span></span></div><div class="slot" style="width:120px;height:120px;font-size:12px"><span>3D<br>icon</span></div></div>
+      <div class="sect" style="border:0;padding-bottom:6px"><div style="font-weight:700;font-size:19px;letter-spacing:-.02em;line-height:1.2">Badminton after work, need two</div><div class="mono" style="color:var(--ph-mute);font-size:12px;margin-top:5px">Thu 7pm · about 2 km · 2 of 4 going · Sector 5</div></div>
+      <div class="sect"><div style="display:flex;gap:10px;align-items:center"><div class="avatar">A</div><div style="flex:1"><div style="font-weight:600"><span class="tick">✓</span> Hosted by Aarav</div><div class="record">Regular host · 31 plans · showed up 97% · since March</div></div><span style="color:var(--ph-mute)">›</span></div></div>
+      <div class="sect"><h5>About this plan</h5>Easy doubles, intermediate is fine. Court's booked, split is ₹80.</div>
+      <div class="sect"><h5>How this works</h5><div style="color:var(--ph-mute);line-height:1.45">You see a rough distance for now. If Aarav accepts you, you get the exact place and the chat. If Aarav doesn't reply, that's a no.</div></div>
+      <div class="sect" style="border:0;color:var(--ph-mute)">Shown because you're into badminton · <u>Report this plan</u></div>
+      <div class="sticky"><div><b>Thu 7pm</b><small>about 2 km away</small></div><div class="bar">Ask to go</div></div>
     </div><div class="home"></div></div></div>
-  <p class="why">One paragraph says what you see now and what changes on a yes. The button says what it does.</p>
+  <p class="why">Airbnb's listing page shape: hero, title line, host card, about, "how this works" in place of house rules, report link, and the sticky bar with the fact on the left and the action on the right.</p>
 </div>
 
 <div class="shot">
@@ -639,52 +447,13 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div>
-      <div class="illus"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Badminton">
-<defs>
-<linearGradient id="bbadminton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hbadminton" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbadminton" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbadminton)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbadminton)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbadminton)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><ellipse cx="12" cy="11" rx="6" ry="7.5" transform="rotate(-40 12 11)"/><path d="M16.5 16.5 27 27"/><path d="M9 8l6 5M8 13l7-6M11 6.5 15 15"/><circle cx="25" cy="7" r="2.5"/><path d="M25 9.5v3"/></g>
-</svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Chess">
-<defs>
-<linearGradient id="bchess" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hchess" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="schess" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#schess)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bchess)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hchess)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 6h8v4l-2 2v5l4 8H10l4-8v-5l-2-2z"/><path d="M8 28h16M12 6c0-1.5 1.5-2 4-2s4 .5 4 2"/></g>
-</svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cycling">
-<defs>
-<linearGradient id="bcycling" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hcycling" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scycling" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scycling)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcycling)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcycling)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="8" cy="22" r="5"/><circle cx="24" cy="22" r="5"/><path d="M8 22l5-10h6l5 10M13 12l3.5 10M16 6.5h4l1.5 3"/><path d="M16.5 22h-5"/></g>
-</svg></div>
+      <div class="illus"><div class="slot big"></div><div class="slot big"></div><div class="slot big"></div></div>
       <div class="etitle">Quiet here this week</div>
       <div class="esub">Nobody's posted a badminton, chess or cycling plan near Sector 5 yet. You could be first.</div>
       <div class="bar" style="margin-top:22px">Post a plan</div>
       <div class="quiet">Show plans in other interests too</div>
-      <div class="fab" style="display:none"></div>
-      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Activity</div><div class="tab"><i></i>You</div></div>
+      
+      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">The 3D icons are the illustration, the way Airbnb's empty states use their objects. One line of fact, one action.</p>
 </div>
@@ -743,37 +512,24 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 </div>
 
 <div class="shot">
-  <h3>Activity <span>asks, messages, your plans</span></h3>
+  <h3>Going <span>Airbnb's Trips tab: needs you, upcoming, asked, hosting, past</span></h3>
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="pad" style="padding-top:8px"><div class="title">Activity</div></div>
-      <div class="filters" style="margin-top:6px"><span class="chip on">Needs you · 2</span><span class="chip">Waiting</span><span class="chip">Your plans</span><span class="chip">Chats</span></div>
+      <div class="pad" style="padding-top:8px"><div class="title">Going</div></div>
+      <div class="filters" style="margin-top:6px"><span class="chip on">Needs you · 2</span><span class="chip">Upcoming</span><span class="chip">Asked</span><span class="chip">Hosting</span><span class="chip">Past</span></div>
       <div class="card" style="align-items:center"><div class="avatar" style="background:var(--c-games)">R</div>
         <div style="flex:1"><div class="t">Riya asked to go</div><div class="m">"I play regularly, would love to join" · 4 min</div><div class="m">Chess in the park</div></div>
         <div style="display:flex;flex-direction:column;gap:6px"><span class="sbtn">Accept</span><span class="sbtn g">Decline</span></div></div>
       <div class="card" style="align-items:center"><div class="avatar" style="background:var(--c-sport)">A</div>
         <div style="flex:1"><div class="t">Did you meet Aarav?</div><div class="m">Badminton after work · yesterday</div></div>
         <div style="display:flex;flex-direction:column;gap:6px"><span class="sbtn" style="background:var(--settled)">Yes</span><span class="sbtn g">No</span></div></div>
-      <div class="card" style="align-items:center;opacity:.75"><div class="ic3" style="width:40px;height:40px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Chess">
-<defs>
-<linearGradient id="bchess" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hchess" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="schess" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#schess)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bchess)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hchess)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 6h8v4l-2 2v5l4 8H10l4-8v-5l-2-2z"/><path d="M8 28h16M12 6c0-1.5 1.5-2 4-2s4 .5 4 2"/></g>
-</svg></div>
+      <div class="card" style="align-items:center;opacity:.75"><div class="ic3 slotwrap" style="width:40px;height:40px"><div class="slot"><span>3D<br>icon</span></div></div>
         <div style="flex:1"><div class="t">Chess in the park</div><div class="m">Your plan · Sun 9am · 1 going, 2 asked</div></div>
         <span class="sbtn g">Cancel</span></div>
-      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab on"><i></i>Activity</div><div class="tab"><i></i>You</div></div>
+      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab on"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
-  <p class="why">Accept, decline, confirm and cancel sit on the row. Nothing hides behind a long press.</p>
+  <p class="why">Airbnb's Trips tab, for plans. Accept, decline, confirm and cancel sit on the row. Messages get their own tab, as on Airbnb.</p>
 </div>
 </div>
 
@@ -786,20 +542,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="hdr"><span style="color:var(--accent);font-weight:500">‹ Activity</span><span style="font-weight:600">Badminton after work</span><span style="color:var(--ph-mute);font-size:12px">3 going</span></div>
-      <div class="pin"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Social">
-<defs>
-<linearGradient id="bcatsocial" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hcatsocial" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatsocial" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatsocial)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatsocial)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatsocial)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="11" cy="10" r="4"/><circle cx="22" cy="12" r="3.5"/><path d="M3 27c.8-5.2 4-8.5 8-8.5 2.2 0 4.1 1 5.5 2.7"/><path d="M16.5 27c.4-4 3-6.5 5.5-6.5 3 0 5.5 2.6 6 6.5"/></g>
-</svg></div>
+      <div class="pin"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
         <div style="flex:1"><div style="font-weight:600">Thu 7pm · Sector 5 Sports Complex, Court 3</div><div style="color:var(--ph-mute);font-size:11px">Exact place · Add to calendar · Directions</div></div></div>
       <div class="sys">Everyone here is going.<br>Share your number after you've met, not before.<br>Meet in a public place the first time.<br>Report anything off. They won't know it was you.</div>
       <div class="msg them"><b style="font-size:11px;color:var(--ph-mute);display:block">Aarav</b>Court 3, I'll bring extra shuttles.</div>
@@ -830,7 +573,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
         <div class="row"><b>Blocked</b><span class="l">Nobody ›</span></div>
         <div class="row"><b>Settings</b><span class="l">›</span></div>
       </div>
-      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab"><i></i>Activity</div><div class="tab on"><i></i>You</div></div>
+      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab on"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">The card at the top is exactly what a host sees when you ask. Everything else is yours alone.</p>
 </div>
@@ -841,53 +584,14 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="banner" style="background:var(--accent);color:var(--accent-ink)"><span>You can look. To ask or post, add your number.</span><b style="color:var(--accent-ink)">Add</b></div>
-      <div class="card"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Badminton">
-<defs>
-<linearGradient id="bbadminton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hbadminton" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbadminton" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbadminton)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbadminton)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbadminton)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><ellipse cx="12" cy="11" rx="6" ry="7.5" transform="rotate(-40 12 11)"/><path d="M16.5 16.5 27 27"/><path d="M9 8l6 5M8 13l7-6M11 6.5 15 15"/><circle cx="25" cy="7" r="2.5"/><path d="M25 9.5v3"/></g>
-</svg></div>
+      <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
         <div><div class="t">Badminton after work, need two</div><div class="m mono">Thu 7pm · about 2 km</div><div class="h"><span class="tick">✓</span>Aarav · 31 plans · showed up 97%</div></div></div>
-      <div class="card"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Coffee">
-<defs>
-<linearGradient id="bcoffee" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hcoffee" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scoffee" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scoffee)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcoffee)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcoffee)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M6 12h14v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6z"/><path d="M20 14h2.5a3 3 0 0 1 0 6H20"/><path d="M10 6c0 1.5 1.2 1.5 1.2 3M14 6c0 1.5 1.2 1.5 1.2 3"/><path d="M4 29h20"/></g>
-</svg></div>
+      <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
         <div><div class="t">Filter coffee and a walk, Sunday</div><div class="m mono">Sun 8am · about 3 km</div><div class="h"><span class="tick">✓</span>Sana · 5 plans · showed up 100%</div></div></div>
-      <div class="card" style="border:1.5px dashed var(--c-learn);background:transparent"><div class="ic3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pottery">
-<defs>
-<linearGradient id="bpottery" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hpottery" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="spottery" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#spottery)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bpottery)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hpottery)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M9 6h14c0 5-2 8-4 10v6h-6v-6C11 14 9 11 9 6z"/><path d="M6 27h20M9 6c2-1 12-1 14 0"/><path d="M11 22h10"/></g>
-</svg></div>
+      <div class="card" style="border:1.5px dashed var(--c-learn);background:transparent"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
         <div><div class="t">Pottery basics, for women</div><div class="m mono">Sat 4pm · about 2 km</div><div class="whyl">For women. Everyone here said they're a woman. The host can remove anyone.</div></div></div>
-      <div class="fab" style="opacity:.4">+</div>
-      <div class="tabs" style="margin-top:auto"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Activity</div><div class="tab"><i></i>You</div></div>
+      
+      <div class="tabs" style="margin-top:auto"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">Unverified people see real plans and one honest line. The women-only card carries its promise in plain words.</p>
 </div>
@@ -914,796 +618,14 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 </div>
 
 <h2>6 · Icon set</h2>
-<p class="lede">Plan icons in the spirit of Airbnb's 2025 set: small three-dimensional objects with depth, light and a soft shadow, doing the job a photo would do. <b>These are placeholders</b> built from the outline glyphs on shaded tiles so the screens can be judged today; the final set is rendered by a 3D illustrator or licensed as a pack and swapped one for one (brief in document 14 §4). Navigation and marks stay flat, as Airbnb's do. Files are in <code>visual/icons-3d/</code> and <code>visual/icons/</code>.</p>
-<h3 style="margin-top:22px">Categories</h3><div class="icongrid">
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Social">
-<defs>
-<linearGradient id="bcatsocial" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hcatsocial" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatsocial" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatsocial)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatsocial)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatsocial)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="11" cy="10" r="4"/><circle cx="22" cy="12" r="3.5"/><path d="M3 27c.8-5.2 4-8.5 8-8.5 2.2 0 4.1 1 5.5 2.7"/><path d="M16.5 27c.4-4 3-6.5 5.5-6.5 3 0 5.5 2.6 6 6.5"/></g>
-</svg><span>Social</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sports & outdoors">
-<defs>
-<linearGradient id="bcatsport" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hcatsport" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatsport" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatsport)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatsport)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatsport)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 25 12 11l5 8 3-4 8 10z"/><path d="M17 19l-2.5 4"/><circle cx="24" cy="8" r="3"/><path d="M4 25h24"/></g>
-</svg><span>Sports & outdoors</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Food & drinks">
-<defs>
-<linearGradient id="bcatfood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hcatfood" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatfood" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatfood)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatfood)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatfood)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M6 12h14v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6z"/><path d="M20 14h2.5a3 3 0 0 1 0 6H20"/><path d="M10 6c0 1.5 1.2 1.5 1.2 3M14 6c0 1.5 1.2 1.5 1.2 3"/><path d="M4 29h20"/></g>
-</svg><span>Food & drinks</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Music & nightlife">
-<defs>
-<linearGradient id="bcatmusic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hcatmusic" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatmusic" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatmusic)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatmusic)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatmusic)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 24V7l14-3v16"/><circle cx="8" cy="24" r="4"/><circle cx="22" cy="20" r="4"/><path d="M12 11l14-3"/></g>
-</svg><span>Music & nightlife</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Games">
-<defs>
-<linearGradient id="bcatgames" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hcatgames" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatgames" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatgames)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatgames)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatgames)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="10" width="26" height="14" rx="7"/><path d="M10 14v6M7 17h6"/><circle cx="21" cy="15.5" r="1.2"/><circle cx="24.5" cy="18.5" r="1.2"/><path d="M12 10V7h8v3"/></g>
-</svg><span>Games</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Learning & making">
-<defs>
-<linearGradient id="bcatlearn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hcatlearn" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scatlearn" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scatlearn)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcatlearn)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcatlearn)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 8h9a3 3 0 0 1 3 3v15H7a3 3 0 0 1-3-3z"/><path d="M28 8h-9a3 3 0 0 0-3 3v15h9a3 3 0 0 0 3-3z"/><path d="M7 13h6M7 17h6M19 13h6M19 17h6"/></g>
-</svg><span>Learning & making</span></div>
-</div>
-<h3 style="margin-top:22px">Social</h3><div class="icongrid">
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Walk">
-<defs>
-<linearGradient id="bwalk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hwalk" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="swalk" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#swalk)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bwalk)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hwalk)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="17" cy="5.5" r="2.5"/><path d="M10 29l4-9M15.5 12 12 17l-5 2"/><path d="M15.5 12l3.5 5 5 1.5"/><path d="M15.5 12l-2-3"/><path d="M19 17l1 12"/><path d="M4 29h4"/></g>
-</svg><span>Walk</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Meet up">
-<defs>
-<linearGradient id="bmeetup" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hmeetup" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="smeetup" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#smeetup)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bmeetup)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hmeetup)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="10" cy="10" r="4"/><circle cx="22" cy="10" r="4"/><path d="M3 26c.6-4.8 3.5-7.5 7-7.5s6.4 2.7 7 7.5"/><path d="M15 26c.6-4.8 3.5-7.5 7-7.5s6.4 2.7 7 7.5"/></g>
-</svg><span>Meet up</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Volunteer">
-<defs>
-<linearGradient id="bvolunteer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hvolunteer" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="svolunteer" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#svolunteer)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bvolunteer)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hvolunteer)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M16 27S6 21 6 13.5A5 5 0 0 1 16 10a5 5 0 0 1 10 3.5C26 21 16 27 16 27z"/><path d="M11 6c1.5-2 3.5-2.5 5-1.5 1.5-1 3.5-.5 5 1.5"/></g>
-</svg><span>Volunteer</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Picnic">
-<defs>
-<linearGradient id="bpicnic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hpicnic" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="spicnic" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#spicnic)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bpicnic)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hpicnic)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M5 15h22l-2 12H7z"/><path d="M5 15l3.5-7h15l3.5 7"/><path d="M12 21h8M14 8V5M18 8V5"/></g>
-</svg><span>Picnic</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Dog walk">
-<defs>
-<linearGradient id="bdogwalk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hdogwalk" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sdogwalk" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sdogwalk)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bdogwalk)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hdogwalk)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M7 27v-8l3-4h10l4 4v8"/><path d="M10 15 7 9M20 15l3.5-6"/><path d="M10 27v-4M20 27v-4"/><circle cx="15" cy="8" r="3"/><path d="M24 27l3-9 1 4"/></g>
-</svg><span>Dog walk</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Photo walk">
-<defs>
-<linearGradient id="bphotowalk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hphotowalk" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sphotowalk" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sphotowalk)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bphotowalk)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hphotowalk)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="9" width="26" height="18" rx="4"/><circle cx="16" cy="18" r="5"/><path d="M10 9l2-4h8l2 4"/><circle cx="24" cy="13.5" r="1"/></g>
-</svg><span>Photo walk</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Market">
-<defs>
-<linearGradient id="bmarket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hmarket" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="smarket" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#smarket)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bmarket)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hmarket)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 12 7 5h18l3 7"/><path d="M4 12c0 2.2 1.8 3.8 4 3.8s4-1.6 4-3.8c0 2.2 1.8 3.8 4 3.8s4-1.6 4-3.8c0 2.2 1.8 3.8 4 3.8s4-1.6 4-3.8"/><path d="M6 16v11h20V16"/><path d="M13 27v-6h6v6"/></g>
-</svg><span>Market</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Language exchange">
-<defs>
-<linearGradient id="blanguage" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9373"/><stop offset="1" stop-color="#C6522F"/></linearGradient>
-<radialGradient id="hlanguage" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="slanguage" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#slanguage)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#9E4125"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#blanguage)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hlanguage)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M3 8h12M9 5v3c0 5-3 8.5-6 10.5"/><path d="M6 12c1.5 3.5 4 6 7 7"/><path d="M17 27l4.5-12 4.5 12M18.5 23h6"/></g>
-</svg><span>Language exchange</span></div>
-</div>
-<h3 style="margin-top:22px">Sports & outdoors</h3><div class="icongrid">
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Badminton">
-<defs>
-<linearGradient id="bbadminton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hbadminton" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbadminton" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbadminton)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbadminton)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbadminton)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><ellipse cx="12" cy="11" rx="6" ry="7.5" transform="rotate(-40 12 11)"/><path d="M16.5 16.5 27 27"/><path d="M9 8l6 5M8 13l7-6M11 6.5 15 15"/><circle cx="25" cy="7" r="2.5"/><path d="M25 9.5v3"/></g>
-</svg><span>Badminton</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cricket">
-<defs>
-<linearGradient id="bcricket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hcricket" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scricket" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scricket)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcricket)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcricket)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M19 4l9 9L15 26H9v-6z"/><path d="M9 20l-5 5M22 7l3-3"/><circle cx="8" cy="8" r="3"/><path d="M6 7c1 1 3 1 4 0"/></g>
-</svg><span>Cricket</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Football">
-<defs>
-<linearGradient id="bfootball" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hfootball" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sfootball" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sfootball)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bfootball)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hfootball)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="16" cy="16" r="12"/><path d="M16 9.5 21.5 13.5 19.5 20h-7l-2-6.5z"/><path d="M16 9.5V4M21.5 13.5l5.5-2M19.5 20l3.5 4.5M12.5 20 9 24.5M10.5 13.5 5 11.5"/></g>
-</svg><span>Football</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Running">
-<defs>
-<linearGradient id="brunning" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hrunning" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="srunning" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#srunning)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#brunning)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hrunning)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="20" cy="5.5" r="2.5"/><path d="M7 28l5.5-8.5M18 12l-4.5 6.5 5.5 3.5V28"/><path d="M18 12l4 5 5 .5M18 12l-4-2-4 4"/></g>
-</svg><span>Running</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cycling">
-<defs>
-<linearGradient id="bcycling" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hcycling" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scycling" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scycling)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcycling)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcycling)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="8" cy="22" r="5"/><circle cx="24" cy="22" r="5"/><path d="M8 22l5-10h6l5 10M13 12l3.5 10M16 6.5h4l1.5 3"/><path d="M16.5 22h-5"/></g>
-</svg><span>Cycling</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Trekking">
-<defs>
-<linearGradient id="btrekking" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="htrekking" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="strekking" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#strekking)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#btrekking)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#htrekking)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M3 26 11 10l5 8.5L19.5 13 29 26z"/><path d="M9.5 13 11 10M14 15.5l2 3"/><path d="M24 5v4M22 7h4"/><path d="M3 26h26"/></g>
-</svg><span>Trekking</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Swimming">
-<defs>
-<linearGradient id="bswimming" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hswimming" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sswimming" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sswimming)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bswimming)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hswimming)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="22" cy="9" r="3"/><path d="M5 17l5-6 6 5M5 17h4"/><path d="M3 23c2.5-2 5-2 7.5 0s5 2 7.5 0 5-2 7.5 0 5 2 3.5 0"/><path d="M3 27c2.5-2 5-2 7.5 0s5 2 7.5 0 5-2 7.5 0"/></g>
-</svg><span>Swimming</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Tennis">
-<defs>
-<linearGradient id="btennis" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="htennis" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="stennis" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#stennis)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#btennis)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#htennis)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="13" cy="12" r="8"/><path d="M18.5 17.5 27 26"/><path d="M7 9c3 1.5 9 1.5 12 0M7 15c3-1.5 9-1.5 12 0M13 4v16"/></g>
-</svg><span>Tennis</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Basketball">
-<defs>
-<linearGradient id="bbasketball" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hbasketball" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbasketball" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbasketball)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbasketball)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbasketball)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="16" cy="16" r="12"/><path d="M4 16h24M16 4v24"/><path d="M8 7.5c4 4 4 13 0 17M24 7.5c-4 4-4 13 0 17"/></g>
-</svg><span>Basketball</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Yoga">
-<defs>
-<linearGradient id="byoga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hyoga" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="syoga" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#syoga)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#byoga)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hyoga)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="16" cy="6" r="2.5"/><path d="M16 9v8"/><path d="M16 17l-7 5M16 17l7 5"/><path d="M4 27h24"/><path d="M9 22 7 27M23 22l2 5"/><path d="M11 12l5 2 5-2"/></g>
-</svg><span>Yoga</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gym">
-<defs>
-<linearGradient id="bgym" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hgym" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sgym" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sgym)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bgym)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hgym)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M3 13v6M29 13v6"/><rect x="5" y="10" width="4" height="12" rx="1"/><rect x="23" y="10" width="4" height="12" rx="1"/><rect x="9" y="12" width="3" height="8" rx="1"/><rect x="20" y="12" width="3" height="8" rx="1"/><path d="M12 16h8"/></g>
-</svg><span>Gym</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Table tennis">
-<defs>
-<linearGradient id="btabletennis" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="htabletennis" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="stabletennis" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#stabletennis)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#btabletennis)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#htabletennis)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="13" cy="13" r="8"/><path d="M18.5 18.5 25 27"/><circle cx="25" cy="8" r="2.5"/><path d="M8 13h10"/></g>
-</svg><span>Table tennis</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Skating">
-<defs>
-<linearGradient id="bskating" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
-<radialGradient id="hskating" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sskating" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sskating)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bskating)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hskating)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M6 21h14a4 4 0 0 0 4-4V6"/><path d="M4 26h24M9 21v5M18 21v5"/><path d="M24 6h3"/></g>
-</svg><span>Skating</span></div>
-</div>
-<h3 style="margin-top:22px">Food & drinks</h3><div class="icongrid">
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Coffee">
-<defs>
-<linearGradient id="bcoffee" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hcoffee" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scoffee" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scoffee)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcoffee)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcoffee)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M6 12h14v8a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6z"/><path d="M20 14h2.5a3 3 0 0 1 0 6H20"/><path d="M10 6c0 1.5 1.2 1.5 1.2 3M14 6c0 1.5 1.2 1.5 1.2 3"/><path d="M4 29h20"/></g>
-</svg><span>Coffee</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Dinner">
-<defs>
-<linearGradient id="bdinner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hdinner" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sdinner" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sdinner)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bdinner)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hdinner)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="16" cy="16" r="8"/><circle cx="16" cy="16" r="3"/><path d="M4 8v16M4 8c0 3 0 5 2 5M4 8c0 3 0 5-2 5"/><path d="M28 8v16M28 8c-2 0-3 2-3 5v2h3"/></g>
-</svg><span>Dinner</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Drinks">
-<defs>
-<linearGradient id="bdrinks" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hdrinks" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sdrinks" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sdrinks)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bdrinks)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hdrinks)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M6 5h20l-10 11z"/><path d="M16 16v10M10 26h12"/><path d="M9 9h14"/><circle cx="20" cy="7.5" r="1"/></g>
-</svg><span>Drinks</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Street food">
-<defs>
-<linearGradient id="bstreetfood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hstreetfood" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sstreetfood" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sstreetfood)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bstreetfood)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hstreetfood)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M5 14h22a11 11 0 0 0-22 0z"/><path d="M4 18h24"/><path d="M5 22h22v1a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M10 9.5v1M16 8v1M22 9.5v1"/></g>
-</svg><span>Street food</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Brunch">
-<defs>
-<linearGradient id="bbrunch" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hbrunch" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbrunch" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbrunch)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbrunch)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbrunch)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="15" cy="17" r="9"/><circle cx="15" cy="17" r="3.5"/><path d="M27 6v8M27 6c-1.5 0-2.5 1.5-2.5 4v4h2.5"/></g>
-</svg><span>Brunch</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cooking">
-<defs>
-<linearGradient id="bcooking" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="hcooking" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scooking" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scooking)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcooking)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcooking)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M5 14h22v6a7 7 0 0 1-7 7h-8a7 7 0 0 1-7-7z"/><path d="M2 14h28"/><path d="M11 10c0-2 1.5-2 1.5-4M16 10c0-2 1.5-2 1.5-4M21 10c0-2 1.5-2 1.5-4"/><path d="M5 17H2M27 17h3"/></g>
-</svg><span>Cooking</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Tea">
-<defs>
-<linearGradient id="btea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5C76C"/><stop offset="1" stop-color="#BC8A27"/></linearGradient>
-<radialGradient id="htea" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="stea" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#stea)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#966E1F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#btea)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#htea)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M7 12h13v7a5 5 0 0 1-5 5h-3a5 5 0 0 1-5-5z"/><path d="M20 14h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M13 12V7l4-3"/><path d="M4 28h20"/><path d="M16 8v4"/></g>
-</svg><span>Tea</span></div>
-</div>
-<h3 style="margin-top:22px">Music & nightlife</h3><div class="icongrid">
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gig">
-<defs>
-<linearGradient id="bgig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hgig" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sgig" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sgig)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bgig)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hgig)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 27c2.5-4.5 7-7 12-7s9.5 2.5 12 7"/><path d="M16 20V8"/><path d="M11 6l5 2 5-2"/><path d="M8 12l3 2M24 12l-3 2M6 18l2.5 1M26 18l-2.5 1"/></g>
-</svg><span>Gig</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Club">
-<defs>
-<linearGradient id="bclub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hclub" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sclub" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sclub)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bclub)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hclub)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="16" cy="12" r="7"/><path d="M16 5v14M9 12h14M11 7l10 10M21 7 11 17"/><path d="M16 19v8M11 27h10"/></g>
-</svg><span>Club</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Jam session">
-<defs>
-<linearGradient id="bjam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hjam" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sjam" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sjam)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bjam)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hjam)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M11 17 20 8l4 4-9 9"/><circle cx="8.5" cy="22.5" r="5"/><path d="M22 6l4 4M24 4l4 4M20 8l-1-1"/></g>
-</svg><span>Jam session</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Karaoke">
-<defs>
-<linearGradient id="bkaraoke" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hkaraoke" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="skaraoke" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#skaraoke)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bkaraoke)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hkaraoke)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="12" y="4" width="8" height="13" rx="4"/><path d="M8 14a8 8 0 0 0 16 0"/><path d="M16 22v5M12 27h8"/><path d="M4 6l3 3M28 6l-3 3M3 12h3M26 12h3"/></g>
-</svg><span>Karaoke</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Open mic">
-<defs>
-<linearGradient id="bopenmic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A089FF"/><stop offset="1" stop-color="#6047C6"/></linearGradient>
-<radialGradient id="hopenmic" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sopenmic" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sopenmic)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#4C399E"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bopenmic)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hopenmic)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="12" y="4" width="8" height="13" rx="4"/><path d="M8 14a8 8 0 0 0 16 0"/><path d="M16 22v5"/><path d="M6 27h20"/><path d="M12 9h8M12 12h8"/></g>
-</svg><span>Open mic</span></div>
-</div>
-<h3 style="margin-top:22px">Games</h3><div class="icongrid">
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Chess">
-<defs>
-<linearGradient id="bchess" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hchess" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="schess" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#schess)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bchess)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hchess)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M12 6h8v4l-2 2v5l4 8H10l4-8v-5l-2-2z"/><path d="M8 28h16M12 6c0-1.5 1.5-2 4-2s4 .5 4 2"/></g>
-</svg><span>Chess</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Board games">
-<defs>
-<linearGradient id="bboardgame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hboardgame" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sboardgame" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sboardgame)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bboardgame)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hboardgame)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="4" y="4" width="24" height="24" rx="3"/><path d="M4 12h24M4 20h24M12 4v24M20 4v24"/><circle cx="8" cy="8" r="1.5"/><circle cx="24" cy="24" r="1.5"/><circle cx="16" cy="16" r="1.5"/></g>
-</svg><span>Board games</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cards">
-<defs>
-<linearGradient id="bcards" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hcards" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scards" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scards)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcards)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcards)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="5" y="7" width="13" height="18" rx="2" transform="rotate(-10 11.5 16)"/><rect x="14" y="7" width="13" height="18" rx="2" transform="rotate(10 20.5 16)"/><path d="M20.5 13.5c-1-1-2.5 0-1.5 1.3l1.5 1.7 1.5-1.7c1-1.3-.5-2.3-1.5-1.3z"/></g>
-</svg><span>Cards</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Quiz">
-<defs>
-<linearGradient id="bquiz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hquiz" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="squiz" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#squiz)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bquiz)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hquiz)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="4" y="5" width="24" height="18" rx="3"/><path d="M12 27h8M16 23v4"/><path d="M13 11.5a3 3 0 1 1 4.5 2.6c-1 .5-1.5 1-1.5 2v.4"/><circle cx="16" cy="19.5" r=".8"/></g>
-</svg><span>Quiz</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Video games">
-<defs>
-<linearGradient id="bvideogames" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hvideogames" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="svideogames" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#svideogames)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bvideogames)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hvideogames)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="10" width="26" height="14" rx="7"/><path d="M10 14v6M7 17h6"/><circle cx="21" cy="15.5" r="1.2"/><circle cx="24.5" cy="18.5" r="1.2"/><path d="M12 10V7h8v3"/></g>
-</svg><span>Video games</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Carrom">
-<defs>
-<linearGradient id="bcarrom" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hcarrom" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scarrom" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scarrom)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcarrom)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcarrom)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="4" y="4" width="24" height="24" rx="2"/><circle cx="16" cy="16" r="3"/><circle cx="8" cy="8" r="1.5"/><circle cx="24" cy="8" r="1.5"/><circle cx="8" cy="24" r="1.5"/><circle cx="24" cy="24" r="1.5"/><path d="M8 8l5 5M24 8l-5 5M8 24l5-5M24 24l-5-5"/></g>
-</svg><span>Carrom</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pool">
-<defs>
-<linearGradient id="bpool" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#69BDED"/><stop offset="1" stop-color="#247FB4"/></linearGradient>
-<radialGradient id="hpool" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="spool" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#spool)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#1D658F"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bpool)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hpool)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><circle cx="10" cy="21" r="4"/><circle cx="21" cy="14" r="4"/><path d="M3 5l9 11"/><path d="M3 5 5 3"/><path d="M20 12.5v3M19 13.5h2"/></g>
-</svg><span>Pool</span></div>
-</div>
-<h3 style="margin-top:22px">Learning & making</h3><div class="icongrid">
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Workshop">
-<defs>
-<linearGradient id="bworkshop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hworkshop" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sworkshop" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sworkshop)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bworkshop)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hworkshop)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M19 5a6 6 0 0 0-7 8.5L5 20.5 8.5 24l7-7A6 6 0 0 0 24 10l-3.5 3.5-2-2z"/><path d="M4 28h24"/></g>
-</svg><span>Workshop</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Book club">
-<defs>
-<linearGradient id="bbookclub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hbookclub" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sbookclub" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sbookclub)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bbookclub)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hbookclub)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M4 8h9a3 3 0 0 1 3 3v15H7a3 3 0 0 1-3-3z"/><path d="M28 8h-9a3 3 0 0 0-3 3v15h9a3 3 0 0 0 3-3z"/><path d="M7 13h6M7 17h6M19 13h6M19 17h6"/></g>
-</svg><span>Book club</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Coding">
-<defs>
-<linearGradient id="bcoding" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hcoding" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="scoding" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#scoding)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bcoding)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hcoding)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="6" width="26" height="18" rx="3"/><path d="M11 12l-4 3 4 3M21 12l4 3-4 3M17.5 10l-3 10"/><path d="M10 28h12"/></g>
-</svg><span>Coding</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Art & sketching">
-<defs>
-<linearGradient id="bart" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hart" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sart" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sart)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bart)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hart)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M16 4a12 12 0 1 0 0 24c2 0 3-1.5 2-3s.5-3 2.5-3h1.5a6 6 0 0 0 6-6c0-7-5.5-12-12-12z"/><circle cx="10" cy="13" r="1.5"/><circle cx="15" cy="9" r="1.5"/><circle cx="21" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/></g>
-</svg><span>Art & sketching</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Photography">
-<defs>
-<linearGradient id="bphotography" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hphotography" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sphotography" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sphotography)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bphotography)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hphotography)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="9" width="26" height="18" rx="4"/><circle cx="16" cy="18" r="5"/><path d="M10 9l2-4h8l2 4"/><circle cx="24" cy="13.5" r="1"/></g>
-</svg><span>Photography</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pottery">
-<defs>
-<linearGradient id="bpottery" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hpottery" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="spottery" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#spottery)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bpottery)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hpottery)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M9 6h14c0 5-2 8-4 10v6h-6v-6C11 14 9 11 9 6z"/><path d="M6 27h20M9 6c2-1 12-1 14 0"/><path d="M11 22h10"/></g>
-</svg><span>Pottery</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Film">
-<defs>
-<linearGradient id="bfilm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hfilm" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="sfilm" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#sfilm)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bfilm)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hfilm)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><rect x="3" y="6" width="26" height="20" rx="3"/><path d="M3 11h26M3 21h26M9 6v20M23 6v20"/><path d="M14 13v6l5-3z"/></g>
-</svg><span>Film</span></div>
-<div class="icn icn3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Writing">
-<defs>
-<linearGradient id="bwriting" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E885AE"/><stop offset="1" stop-color="#AE436F"/></linearGradient>
-<radialGradient id="hwriting" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-<filter id="swriting" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g filter="url(#swriting)">
-<rect x="8" y="12" width="48" height="46" rx="16" fill="#8A3558"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#bwriting)"/>
-<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#hwriting)"/>
-<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
-</g>
-<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M5 27l1.5-5.5L21 7a3 3 0 0 1 4 4L10.5 25.5z"/><path d="M19 9l4 4M6.5 21.5l4 4"/><path d="M16 27h12"/></g>
-</svg><span>Writing</span></div>
-</div>
-<h3 style="margin-top:22px">Marks and navigation, flat</h3><div class="icongrid">
-<div class="icn" style="color:var(--tick)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Verified"><circle cx="16" cy="16" r="11"/><path d="M10.5 16.5l3.5 3.5 7.5-8"/></svg><span>Verified</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="For women"><circle cx="16" cy="12" r="7"/><path d="M16 19v9M12 24h8"/></svg><span>For women</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Regular host"><path d="M16 4l3.2 7.5 8 .7-6 5.3 1.8 8L16 21.3 9 25.5l1.8-8-6-5.3 8-.7z"/></svg><span>Regular host</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Live"><circle cx="16" cy="16" r="3.5"/><path d="M9 9a10 10 0 0 0 0 14M23 9a10 10 0 0 1 0 14"/><path d="M5.5 5.5a15 15 0 0 0 0 21M26.5 5.5a15 15 0 0 1 0 21"/></svg><span>Live</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Post a plan"><path d="M16 6v20M6 16h20"/></svg><span>Post a plan</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Plans"><path d="M4 9l8-3 8 3 8-3v17l-8 3-8-3-8 3z"/><path d="M12 6v17M20 9v17"/></svg><span>Plans</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Activity"><path d="M8 22V14a8 8 0 0 1 16 0v8l2 3H6z"/><path d="M13 27a3 3 0 0 0 6 0"/></svg><span>Activity</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="You"><circle cx="16" cy="11" r="5.5"/><path d="M5 27c1-5.5 5-9 11-9s10 3.5 11 9"/></svg><span>You</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Search"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><span>Search</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Share"><path d="M16 20V5M11 10l5-5 5 5"/><path d="M6 16v8a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-8"/></svg><span>Share</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Add to calendar"><rect x="4" y="6" width="24" height="21" rx="3"/><path d="M4 13h24M10 3v6M22 3v6"/><path d="M16 17v6M13 20h6"/></svg><span>Add to calendar</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Directions"><path d="M16 3l13 13-13 13L3 16z"/><path d="M11 16.5h7l-2-2M18 16.5l-2 2"/></svg><span>Directions</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Exact place"><path d="M16 28S7 20 7 12.5a9 9 0 0 1 18 0C25 20 16 28 16 28z"/><circle cx="16" cy="12.5" r="3"/></svg><span>Exact place</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Photo"><rect x="3" y="9" width="26" height="18" rx="4"/><circle cx="16" cy="18" r="5"/><path d="M10 9l2-4h8l2 4"/></svg><span>Photo</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Block"><circle cx="16" cy="16" r="11"/><path d="M8 8l16 16"/></svg><span>Block</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Report"><path d="M7 28V5h16l-2 5 2 5H7"/></svg><span>Report</span></div>
-<div class="icn" style="color:var(--ink)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Settings"><circle cx="16" cy="16" r="4"/><path d="M16 4v3M16 25v3M4 16h3M25 16h3M7.5 7.5l2 2M22.5 22.5l2 2M7.5 24.5l2-2M22.5 9.5l2-2"/></svg><span>Settings</span></div>
-</div>
+<p class="lede">Ruled 2026-09-24: the plan icons are three-dimensional rendered objects in Airbnb's style. Nothing drawn here can match a render, so the screens above carry neutral slots instead of an imitation. Two legal ways to fill them, either of which drops in without a screen change:</p>
+<div class="tblwrap"><table>
+<tr><th style="width:22%">Route</th><th>What it is</th><th style="width:22%">Cost and time</th></tr>
+<tr><td><b>3dicons.co</b> (recommended to start)</td><td>Over a thousand Blender-rendered objects released into the public domain (CC0): sports gear, food, music, games, tools, travel, in several colour styles. The closest free match to Airbnb's toy-like look. Download the set, pick one style, and I map objects to our 56 sub-interests and categories, commissioning only the handful that are missing.</td><td>Free. One afternoon to map.</td></tr>
+<tr><td><b>Commission</b></td><td>A 3D illustrator renders the 56 to the brief in document 14 §4: one stage, one light, one material, Airbnb's 2025 set as the reference. Yields a set that is ours alone.</td><td>Roughly two to four weeks.</td></tr>
+<tr><td style="color:var(--warn)"><b>Not an option</b></td><td>Copying Airbnb's own icon files. Their copyright; an App Store takedown waiting to happen.</td><td></td></tr>
+</table></div>
+<p class="note" style="margin-top:12px">Flat outline glyphs for navigation and marks remain in <code>visual/icons/</code>; those are ours and stay.</p>
 
 <h2>7 · Copy, rewritten for a first-time user</h2>
 <p class="lede">The lines from document 14 that read like a rulebook, and what the screens above say instead. The rule behind each line is unchanged; only the words are plainer.</p>

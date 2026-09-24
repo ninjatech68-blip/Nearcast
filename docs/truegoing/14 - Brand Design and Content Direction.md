@@ -193,7 +193,7 @@ Plan photos are optional and later (`13` 1.4). Until then the icon on the catego
 
 ## 6. Layout and navigation
 
-- **Three destinations in the system tab bar** (Liquid Glass, minimising on scroll, on iOS 26+): Plans (map or list), Activity (asks, messages, your plans), You. A floating `+` posts a plan from anywhere on Plans.
+- **Five tabs in the system tab bar** (Liquid Glass, minimising on scroll, on iOS 26+): Plans · Going · Post · Messages · You, Airbnb's structure with posting in the centre (`18`).
 - **Plans** opens on map or list by density (`12 §5`). The switch is a segmented control at the top; filters are chips under it.
 - **Sheets over screens.** Posting, asking and plan detail are sheets; they never navigate away from the map.
 - **Back is the system back.** No custom gesture is the only way out.

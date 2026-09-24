@@ -21,7 +21,7 @@ What it is not: a dating app, a people-discovery app, a social network, an event
 3. **The exact place is hidden until acceptance.** Everyone else sees a rough area, about one kilometre, never the address.
 4. **The app never knows where you are.** A person names a neighbourhood. Nothing tracks, stores or watches location.
 
-Everything else in this document can change. These four cannot without rewriting the promise.
+Everything else in this document can change. (Navigation moved to five tabs on 2026-09-24, see `18`.) These four cannot without rewriting the promise.
 
 ## 3. Who it is for
 

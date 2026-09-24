@@ -35,6 +35,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement. Copy deck rewritten 2026-09-24 for a first-time user; screens drawn in `visual/truegoing-screens.html`. Accent ruled Ink 2026-09-24, orange kept for the verified tick |
 | 15 | [Screen Contracts](./15%20-%20Screen%20Contracts.md) | One contract per V1 screen: shows, does, rules, six states, final copy; acceptance criteria |
 | 16 | [Data Rules](./16%20-%20Data%20Rules.md) | Laws L1–L22 (carried and new), tables, transitions, reads, the permission matrix, 18 denied-path tests, retention, payload hygiene, port plan from the previous database |
+| 18 | [Airbnb UX Adoption](./18%20-%20Airbnb%20UX%20Adoption.md) | Every Airbnb pattern taken, what it becomes, where it lands; what was not taken and why; five tabs, plan page, collapsing search pill |
 | 17 | [iOS Build Plan](./17%20-%20iOS%20Build%20Plan.md) | Stack, eight milestones with contracts, laws and exit tests, dependency order, definition of done, risks, what the owner does next |
 
 `tg-captures-2026-09-23/` holds the *nearcast repo* prototype screens (research only). `tg-real-captures-2026-09-23/` holds the real Truegoing app (`mobileapp` at `d2959d7`, fixture mode) captured from a web dev build; SF Symbols render as letters and the map is stubbed there.
@@ -89,3 +90,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Icons redrawn in an Airbnb-like outline style; one repository `truegoing` ruled instead of two; owner confirmed Mac and developer account |
 | 2026-09-24 | Owner ruled an Airbnb-like look with 3D plan icons; `14 §4` rewritten, visual page restyled, placeholder 3D tiles in `visual/icons-3d/` |
 | 2026-09-24 | Owner ruled "as close to Airbnb as legally sensible": colour roles, register, filter sheet, illustrations; coral hue kept distinct from Rausch on purpose |
+| 2026-09-24 | Owner ruled icons must be real 3D renders (3dicons.co CC0 or commissioned); screens show neutral slots meanwhile. Airbnb UX taken wholesale where the rules allow (`18`): five tabs, plan page with sticky bar, collapsing search pill, marker carousel, Going tab |
