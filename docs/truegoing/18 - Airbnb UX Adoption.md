@@ -6,7 +6,7 @@
 
 | Airbnb pattern | Truegoing version | Contract |
 |---|---|---|
-| Five-tab bar: Explore, Wishlists, Trips, Messages, Profile | **Plans · Going · Post · Messages · You.** Posting is a core act, so it takes the centre tab; Wishlists comes later as Saved | all |
+| Five-tab bar: Explore, Wishlists, Trips, Messages, Profile | **Four tabs: Plans · Going · Messages · You** (ruled 2026-09-24 after a five-tab draft). Post is a prominent pill on Plans, not a tab; Wishlists comes later as Saved | all |
 | Search pill at the top that collapses into a compact header on scroll | `Near Sector 5 · This week · Badminton, Games, Cycling`, collapsing on scroll; tap opens a search sheet with three steps: where, when, what | B1, B2 |
 | Category row of 3D icons with underline | Same, six categories, underline on the selected one, scrolls | B1, B2 |
 | Full-screen filter sheet with live count and Clear all | Same, with When, Your interests, Plan type; no distance | B6 |
@@ -42,6 +42,7 @@
 
 ## Changes to earlier documents
 
-- `12 §5` navigation: three destinations plus a floating post button becomes **five tabs with Post in the centre**.
+- `12 §5` navigation: **four tabs, Plans · Going · Messages · You**, with Post as a pill on Plans.
+- Lightening rulings 2026-09-24: cards are three lines (sentence · `Thu 7pm · 2 km` · `✓ Aarav · 97% showed up`); the why line appears only when the reason is not the obvious one (browsing the map, outside your interests); no monospace anywhere, SF Pro with tabular numbers; map-or-list switches through a floating pill at the bottom and Filters is an icon inside the search pill; sheets carry one line of explanation, the rest lives in "How this works" on the plan page.
 - `15`: B1 gains the collapsing pill, the marker card carousel and the Show list pill; B3 becomes a full page with a sticky bar; E1 becomes Going with five chips; Messages becomes its own tab (F0 inbox contract to be added with M3).
 - `14 §6` layout updated to five tabs.

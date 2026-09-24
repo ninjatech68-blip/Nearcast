@@ -21,7 +21,7 @@ What it is not: a dating app, a people-discovery app, a social network, an event
 3. **The exact place is hidden until acceptance.** Everyone else sees a rough area, about one kilometre, never the address.
 4. **The app never knows where you are.** A person names a neighbourhood. Nothing tracks, stores or watches location.
 
-Everything else in this document can change. (Navigation moved to five tabs on 2026-09-24, see `18`.) These four cannot without rewriting the promise.
+Everything else in this document can change. (Navigation: four tabs, Plans · Going · Messages · You, ruled 2026-09-24, see `18`.) These four cannot without rewriting the promise.
 
 ## 3. Who it is for
 
@@ -46,7 +46,7 @@ Posting is the other half of the loop: write one sentence, confirm what, where a
 - **Map or list, by density.** Six or more plans in view: map first. Fewer: list first. The other view is one tap away. Above **40** plans in view, markers cluster and show a count.
 - **Map markers** are the plan's icon in its category colour at the plan's rough one-kilometre point. Never a person's photo, name or initials on the map.
 - **List cards** show icon or image, the host's sentence, start time, rough distance, host's first name and record. Two to three cards per screen. References: Airbnb for the map-list flip, podcast apps for the card.
-- **Every plan says why you see it.** `Near you · into sports`. A plan you found by browsing says `You're browsing the map`.
+- **Every plan has a stored reason for reaching you**, and the app shows it whenever the reason is not the obvious one: `You're browsing the map`, `Outside your interests`. A plan in a category you selected needs no line; the row already says why (ruled 2026-09-24).
 - **Filters** persist: this week by default, plus category chips. One filter state for map and list.
 - **Unverified people** see all of this and can do nothing else. Every card carries `Verify your number to ask`.
 

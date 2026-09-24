@@ -187,6 +187,8 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 .phone.dark .searchpill{box-shadow:none;border:1px solid var(--ph-line)}
 .searchpill small{font-weight:400;color:var(--ph-mute);font-size:12px}
 .searchpill .glass{width:18px;height:18px;flex:none}
+.searchpill .fico{margin-left:auto;width:30px;height:30px;border-radius:50%;border:1px solid var(--ph-line);display:flex;align-items:center;justify-content:center;flex:none}
+.searchpill .fico svg{width:16px;height:16px}
 .catrow{display:flex;gap:6px;padding:2px 16px 8px;overflow:hidden}
 .cat{display:flex;flex-direction:column;align-items:center;gap:3px;width:52px;flex:none;font-size:9.5px;color:var(--ph-mute);text-align:center;line-height:1.1;padding-bottom:4px;border-bottom:2px solid transparent}
 .cat svg{width:40px;height:40px}
@@ -253,7 +255,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 .illus .slot.big:nth-child(2){left:calc(50% - 40px);top:0;width:84px;height:84px;z-index:2}
 .illus .slot.big:nth-child(3){left:calc(50% + 6px);top:16px;transform:rotate(10deg)}
 /* five tabs */
-.tabs .tab{width:56px}
+.tabs .tab{width:64px}
 /* full-page plan details */
 .hero{height:190px;background:linear-gradient(180deg,#F7F7F7,#ECECEC);display:flex;align-items:center;justify-content:center;position:relative}
 .phone.dark .hero{background:linear-gradient(180deg,#1E1E1E,#141414)}
@@ -266,11 +268,15 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
 .sticky .bar{margin:0;padding:12px 20px;font-size:14px;width:auto}
 .sticky b{display:block;font-size:14px}
 .sticky small{color:var(--ph-mute);font-size:11.5px;text-decoration:underline}
+.postpill{position:absolute;left:50%;transform:translateX(-50%);bottom:84px;background:#222;color:#fff;border-radius:999px;padding:11px 18px;font-weight:600;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:4}
+.phone.dark .postpill{background:#F7F7F7;color:#222}
+.viewpill{position:absolute;left:50%;transform:translateX(-50%);bottom:84px;background:#222;color:#fff;border-radius:999px;padding:10px 16px;font-weight:600;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:4;display:flex;gap:8px;align-items:center}
+.phone.dark .viewpill{background:#F7F7F7;color:#222}
 @media (prefers-reduced-motion:no-preference){.tog button{transition:background .15s}}
 </style>
 
 <h1>Truegoing screens</h1>
-<p class="lede">Fourteen screens of the first version in the Airbnb direction ruled on 2026-09-24. Icon positions are neutral slots until the 3D set arrives (3dicons.co, public domain, or commissioned), so the layout is judged and not a placeholder: Airbnb's colour roles with Truegoing coral in the brand slot, white surfaces, soft shadows, a category row of three-dimensional plan icons, a full-screen filter sheet with a live count, illustrated empty states. Every word on these screens is a proposal you can strike. Toggle dark to check both looks, and switch the palette to compare the three accent options on the same screens.</p>
+<p class="lede">Fourteen screens of the first version in the Airbnb direction ruled on 2026-09-24, lightened on the owner's call: four tabs, three-line cards, the why line only when the reason is not obvious, no monospace. Icon positions are neutral slots until the 3D set arrives (3dicons.co, public domain, or commissioned), so the layout is judged and not a placeholder: Airbnb's colour roles with Truegoing coral in the brand slot, white surfaces, soft shadows, a category row of three-dimensional plan icons, a full-screen filter sheet with a live count, illustrated empty states. Every word on these screens is a proposal you can strike. Toggle dark to check both looks, and switch the palette to compare the three accent options on the same screens.</p>
 
 <div class="toolbar">
   <div class="tog" role="group" aria-label="Phone theme">
@@ -349,7 +355,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><div class="slot small"></div><span>Sports</span></div><div class="cat"><div class="slot small"></div><span>Games</span></div><div class="cat"><div class="slot small"></div><span>Food</span></div><div class="cat"><div class="slot small"></div><span>Music</span></div><div class="cat"><div class="slot small"></div><span>Social</span></div><div class="cat"><div class="slot small"></div><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span class="on">Map</span><span>List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
+      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div><span class="fico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 10h20M10 16h12M13 22h6"/></svg></span></div><div class="catrow"><div class="cat on"><div class="slot small"></div><span>Sports</span></div><div class="cat"><div class="slot small"></div><span>Games</span></div><div class="cat"><div class="slot small"></div><span>Food</span></div><div class="cat"><div class="slot small"></div><span>Music</span></div><div class="cat"><div class="slot small"></div><span>Social</span></div><div class="cat"><div class="slot small"></div><span>Learning</span></div></div>
       <div class="map">
         <div class="park" style="left:20px;top:40px;width:90px;height:70px"></div>
         <div class="park" style="right:10px;bottom:120px;width:70px;height:110px"></div>
@@ -359,11 +365,11 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
         <div class="mk" style="left:230px;top:100px;background:var(--c-food)"><svg viewBox="0 0 24 24"><path d="M4 8h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 9h2a2 2 0 0 1 0 4h-2"/></svg></div>
         <div class="mk" style="left:110px;top:260px;background:var(--c-games)"><svg viewBox="0 0 24 24"><path d="M9 4h6v4l-2 2v4l3 6H8l3-6v-4L9 8z"/></svg></div>
         <div class="mk" style="left:210px;top:300px;background:var(--c-learn)"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H4z"/><path d="M8 21h8"/></svg></div>
-        <div class="cluster" style="left:60px;top:340px">4 plans</div>
+        <div class="cluster" style="left:60px;top:300px">4 plans</div>
         <div class="mk" style="left:250px;top:220px;background:var(--c-music)"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg></div>
       </div>
-      
-      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
+      <div class="viewpill" style="left:auto;right:16px;transform:none">List ☰</div><div class="postpill" style="left:16px;transform:none">Post a plan</div>
+      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">Markers are the plan's icon on its category colour, at a rough spot. Never a face. Filters stay where you left them.</p>
 </div>
@@ -373,16 +379,17 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="catrow"><div class="cat on"><div class="slot small"></div><span>Sports</span></div><div class="cat"><div class="slot small"></div><span>Games</span></div><div class="cat"><div class="slot small"></div><span>Food</span></div><div class="cat"><div class="slot small"></div><span>Music</span></div><div class="cat"><div class="slot small"></div><span>Social</span></div><div class="cat"><div class="slot small"></div><span>Learning</span></div></div><div class="hdr" style="padding-top:0"><div class="seg"><span>Map</span><span class="on">List</span></div><span style="font-size:12px;font-weight:600;text-decoration:underline">Filters</span></div>
+      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div><span class="fico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 10h20M10 16h12M13 22h6"/></svg></span></div><div class="catrow"><div class="cat on"><div class="slot small"></div><span>Sports</span></div><div class="cat"><div class="slot small"></div><span>Games</span></div><div class="cat"><div class="slot small"></div><span>Food</span></div><div class="cat"><div class="slot small"></div><span>Music</span></div><div class="cat"><div class="slot small"></div><span>Social</span></div><div class="cat"><div class="slot small"></div><span>Learning</span></div></div>
       <div class="banner"><span>Not many plans this week.</span><b>Show more interests</b></div>
       <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
-        <div><div class="t">Badminton after work, need two</div><div class="m mono">Thu 7pm · about 2 km</div><div class="h"><span class="tick">✓</span>Aarav · 31 plans · showed up 97%</div><div class="whyl">Shown because you're into badminton</div></div></div>
+        <div><div class="t">Badminton after work, need two</div><div class="m">Thu 7pm · 2 km</div><div class="h"><span class="tick">✓</span>Aarav · 97% showed up</div></div></div>
       <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
-        <div><div class="t">Chess in the park, bring a board</div><div class="m mono">Sun 9am · about 1 km</div><div class="h"><span class="tick">✓</span>Meera · 12 plans · showed up 100%</div><div class="whyl">Shown because you're into games</div></div></div>
+        <div><div class="t">Chess in the park, bring a board</div><div class="m">Sun 9am · 1 km</div><div class="h"><span class="tick">✓</span>Meera · 100% showed up</div></div></div>
       <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
-        <div><div class="t">Sunday cycle to Morni, easy pace</div><div class="m mono">Sun 6am · about 4 km</div><div class="h"><span class="tick">✓</span>Kabir · 8 plans · showed up 88%</div><div class="whyl">Shown because you're into cycling</div></div></div>
+        <div><div class="t">Sunday cycle to Morni, easy pace</div><div class="m">Sun 6am · 4 km</div><div class="h"><span class="tick">✓</span>Kabir · 88% showed up</div></div></div>
       
-      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
+      <div class="viewpill" style="left:auto;right:16px;transform:none">Map ◈</div><div class="postpill" style="left:16px;transform:none">Post a plan</div>
+      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">A card answers what, when, how far, who, and why you see it. No tap needed to decide.</p>
 </div>
@@ -393,11 +400,11 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
       <div class="hero"><div class="nav"><span>‹</span><span style="display:flex;gap:6px;background:none;box-shadow:none;width:auto"><span>⇧</span></span></div><div class="slot" style="width:120px;height:120px;font-size:12px"><span>3D<br>icon</span></div></div>
-      <div class="sect" style="border:0;padding-bottom:6px"><div style="font-weight:700;font-size:19px;letter-spacing:-.02em;line-height:1.2">Badminton after work, need two</div><div class="mono" style="color:var(--ph-mute);font-size:12px;margin-top:5px">Thu 7pm · about 2 km · 2 of 4 going · Sector 5</div></div>
+      <div class="sect" style="border:0;padding-bottom:6px"><div style="font-weight:700;font-size:19px;letter-spacing:-.02em;line-height:1.2">Badminton after work, need two</div><div style="color:var(--ph-mute);font-size:12.5px;margin-top:5px">Thu 7pm · 2 km · Sector 5 · 2 of 4 going</div></div>
       <div class="sect"><div style="display:flex;gap:10px;align-items:center"><div class="avatar">A</div><div style="flex:1"><div style="font-weight:600"><span class="tick">✓</span> Hosted by Aarav</div><div class="record">Regular host · 31 plans · showed up 97% · since March</div></div><span style="color:var(--ph-mute)">›</span></div></div>
       <div class="sect"><h5>About this plan</h5>Easy doubles, intermediate is fine. Court's booked, split is ₹80.</div>
-      <div class="sect"><h5>How this works</h5><div style="color:var(--ph-mute);line-height:1.45">You see a rough distance for now. If Aarav accepts you, you get the exact place and the chat. If Aarav doesn't reply, that's a no.</div></div>
-      <div class="sect" style="border:0;color:var(--ph-mute)">Shown because you're into badminton · <u>Report this plan</u></div>
+      <div class="sect"><h5>How this works</h5><div style="color:var(--ph-mute);line-height:1.45">Ask, and Aarav decides. If yes, you get the exact place and the chat. No reply means no.</div></div>
+      <div class="sect" style="border:0;color:var(--ph-mute)"><u>Report this plan</u></div>
       <div class="sticky"><div><b>Thu 7pm</b><small>about 2 km away</small></div><div class="bar">Ask to go</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">Airbnb's listing page shape: hero, title line, host card, about, "how this works" in place of house rules, report link, and the sticky bar with the fact on the left and the action on the right.</p>
@@ -415,7 +422,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
         <div class="sub">Pick a line or write your own.</div>
         <div class="chips"><span class="chip on">I can make it</span><span class="chip">First time, is a beginner fine?</span><span class="chip">Can I bring one more?</span></div>
         <div class="field" style="min-height:56px;align-items:flex-start;font-size:14px"><b>I can make it</b></div>
-        <div class="help">Aarav sees your first name, photo, record and this note. If Aarav doesn't reply, that's a no.</div>
+        <div class="help">Aarav sees your first name, photo, record and this note.</div>
         <div class="bar">Send</div>
         <div class="quiet">Never mind</div>
       </div>
@@ -446,14 +453,14 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div>
+      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div><span class="fico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 10h20M10 16h12M13 22h6"/></svg></span></div>
       <div class="illus"><div class="slot big"></div><div class="slot big"></div><div class="slot big"></div></div>
       <div class="etitle">Quiet here this week</div>
       <div class="esub">Nobody's posted a badminton, chess or cycling plan near Sector 5 yet. You could be first.</div>
       <div class="bar" style="margin-top:22px">Post a plan</div>
       <div class="quiet">Show plans in other interests too</div>
       
-      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
+      <div class="tabs"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">The 3D icons are the illustration, the way Airbnb's empty states use their objects. One line of fact, one action.</p>
 </div>
@@ -480,7 +487,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
         </div>
         <div class="row" style="margin-top:8px"><span>Show on the map</span><span class="sw on"></span></div>
         <div class="row"><span>For women only</span><span class="sw"></span></div>
-        <div class="help">People nearby who like badminton will see this. Only the people you accept see the exact place.</div>
+        <div class="help">Only the people you accept see the exact place.</div>
         <div class="bar">Post plan</div>
       </div>
     </div><div class="home"></div></div></div>
@@ -527,7 +534,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
       <div class="card" style="align-items:center;opacity:.75"><div class="ic3 slotwrap" style="width:40px;height:40px"><div class="slot"><span>3D<br>icon</span></div></div>
         <div style="flex:1"><div class="t">Chess in the park</div><div class="m">Your plan · Sun 9am · 1 going, 2 asked</div></div>
         <span class="sbtn g">Cancel</span></div>
-      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab on"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
+      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab on"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">Airbnb's Trips tab, for plans. Accept, decline, confirm and cancel sit on the row. Messages get their own tab, as on Airbnb.</p>
 </div>
@@ -573,7 +580,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
         <div class="row"><b>Blocked</b><span class="l">Nobody ›</span></div>
         <div class="row"><b>Settings</b><span class="l">›</span></div>
       </div>
-      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab on"><i></i>You</div></div>
+      <div class="tabs" style="margin-top:auto"><div class="tab"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Messages</div><div class="tab on"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">The card at the top is exactly what a host sees when you ask. Everything else is yours alone.</p>
 </div>
@@ -583,15 +590,15 @@ code{font-family:"JetBrains Mono",monospace;font-size:.9em}
   <div class="phone light p-coral"><div class="screen"><div class="island"></div>
     <div class="status"><span>9:41</span><span>●●● ▲ ▮</span></div>
     <div class="body">
-      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div></div><div class="banner" style="background:var(--accent);color:var(--accent-ink)"><span>You can look. To ask or post, add your number.</span><b style="color:var(--accent-ink)">Add</b></div>
+      <div class="searchpill"><svg class="glass" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="14" cy="14" r="8"/><path d="M20 20l7 7"/></svg><div>Near Sector 5<br><small>This week · Badminton, Games, Cycling</small></div><span class="fico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 10h20M10 16h12M13 22h6"/></svg></span></div><div class="banner" style="background:var(--accent);color:var(--accent-ink)"><span>You can look. To ask or post, add your number.</span><b style="color:var(--accent-ink)">Add</b></div>
       <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
-        <div><div class="t">Badminton after work, need two</div><div class="m mono">Thu 7pm · about 2 km</div><div class="h"><span class="tick">✓</span>Aarav · 31 plans · showed up 97%</div></div></div>
+        <div><div class="t">Badminton after work, need two</div><div class="m">Thu 7pm · 2 km</div><div class="h"><span class="tick">✓</span>Aarav · 97% showed up</div></div></div>
       <div class="card"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
-        <div><div class="t">Filter coffee and a walk, Sunday</div><div class="m mono">Sun 8am · about 3 km</div><div class="h"><span class="tick">✓</span>Sana · 5 plans · showed up 100%</div></div></div>
+        <div><div class="t">Filter coffee and a walk, Sunday</div><div class="m">Sun 8am · 3 km</div><div class="h"><span class="tick">✓</span>Sana · 100% showed up</div></div></div>
       <div class="card" style="border:1.5px dashed var(--c-learn);background:transparent"><div class="ic3 slotwrap"><div class="slot"><span>3D<br>icon</span></div></div>
-        <div><div class="t">Pottery basics, for women</div><div class="m mono">Sat 4pm · about 2 km</div><div class="whyl">For women. Everyone here said they're a woman. The host can remove anyone.</div></div></div>
+        <div><div class="t">Pottery basics, for women</div><div class="m">Sat 4pm · 2 km · For women</div></div></div>
       
-      <div class="tabs" style="margin-top:auto"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Post</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
+      <div class="tabs" style="margin-top:auto"><div class="tab on"><i></i>Plans</div><div class="tab"><i></i>Going</div><div class="tab"><i></i>Messages</div><div class="tab"><i></i>You</div></div>
     </div><div class="home"></div></div></div>
   <p class="why">Unverified people see real plans and one honest line. The women-only card carries its promise in plain words.</p>
 </div>

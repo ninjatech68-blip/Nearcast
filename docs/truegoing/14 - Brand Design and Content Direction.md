@@ -121,7 +121,7 @@ Placeholder names are examples; real copy substitutes the real first name.
 
 Either way the tiles are replaced one for one; the code refers to icons by name from `manifest.json`, so no screen changes when the art arrives.
 
-**Type.** SF Pro throughout at heavier weights for headings (Airbnb's Cereal is proprietary and SF Pro is what its iOS app reads as), Dynamic Type at every size. Facts (record, time, distance) in SF Mono at small sizes.
+**Type.** SF Pro only, at heavier weights for headings (Airbnb's Cereal is proprietary and SF Pro is what its iOS app reads as), Dynamic Type at every size, tabular numbers for facts. **No monospace anywhere** (ruled 2026-09-24). System text styles only: page title Title 2 (22, bold) · card title Headline (17, semibold) · body Body (17) · facts and host line Footnote (13) · why line and captions Caption (12) · buttons Body semibold.
 
 ### Colour (ruled by the owner 2026-09-24: Airbnb's roles, Truegoing's hue)
 
@@ -174,7 +174,7 @@ Plan photos are optional and later (`13` 1.4). Until then the icon on the catego
 
 | Component | What it is | Rules |
 |---|---|---|
-| **Plan card** | White card with shadow, 20-point corners; the 3D plan icon at 56 points, the host's sentence in Headline, start time and rough distance in Footnote mono, host first name and record, why line | Two to three per screen. Whole card taps to the plan. No buttons on the card |
+| **Plan card** | White card with shadow, 20-point corners; the 3D plan icon at 56 points and **three lines**: the sentence (Headline), `Thu 7pm · 2 km` (Footnote), `✓ Aarav · 97% showed up` (Footnote) | Two to three per screen. Whole card taps to the plan. No buttons, no counts, no why line unless the reason is not obvious |
 | **Map marker** | Category-coloured disc with the plan icon; cluster shows a count | Never a face, initials or name |
 | **Plan sheet** | Half-screen sheet from a marker or card: full card, host row, host's note, reach line, `Ask to go` | Swipe down to dismiss; nothing lost |
 | **Post sheet** | Half-screen sheet: one text field, three chips, how many, two switches, `Send` | Rises from the `+` button; expands to full only if the keyboard needs it |
@@ -186,14 +186,14 @@ Plan photos are optional and later (`13` 1.4). Until then the icon on the catego
 | **Empty state** | Three 3D icons fanned as the illustration, one-line title, one line of fact, one gradient button, one quiet action | Airbnb's empty-state pattern with our objects |
 | **Search pill** | `Near Sector 5 · This week · Badminton, Games, Cycling` in a shadowed pill | One tap to change any part |
 | **Chips** | Sentence case pills, one row that scrolls, white with a light shadow | Selected chip is ink with paper text |
-| **Why line** | Footnote, secondary colour, on every plan | Product law; never omitted |
+| **Why line** | Caption, secondary colour | Shown only when the reason is not the obvious one: `You're browsing the map`, `Outside your interests`. A plan in a selected category needs no line; the row already says why (ruled 2026-09-24). The reason is always stored |
 | **Record row** | Tick, first name, `31 plans · showed up 97%` | Facts in mono; never a star rating |
 | **Activity row** | What happened, who, when, one inline action | Accept and decline live on the row |
 | **Banner** | One line, dismissible where allowed | Used for `Verify your number to ask` and offline |
 
 ## 6. Layout and navigation
 
-- **Five tabs in the system tab bar** (Liquid Glass, minimising on scroll, on iOS 26+): Plans · Going · Post · Messages · You, Airbnb's structure with posting in the centre (`18`).
+- **Four tabs in the system tab bar** (Liquid Glass, minimising on scroll, on iOS 26+): Plans · Going · Messages · You. `Post a plan` is a pill on Plans. Chrome is Apple's, content is Airbnb's: the tab bar is never custom-drawn (`18`).
 - **Plans** opens on map or list by density (`12 §5`). The switch is a segmented control at the top; filters are chips under it.
 - **Sheets over screens.** Posting, asking and plan detail are sheets; they never navigate away from the map.
 - **Back is the system back.** No custom gesture is the only way out.
