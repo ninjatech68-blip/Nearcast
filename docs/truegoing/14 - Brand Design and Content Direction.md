@@ -85,9 +85,25 @@ Rewritten 2026-09-24 after the owner's review: the goal is a first-time user who
 
 Placeholder names are examples; real copy substitutes the real first name.
 
-## 4. Visual direction
+## 4. Visual direction (ruled by the owner 2026-09-24: Airbnb-like)
 
-**Principle: native iOS first, Truegoing on top.** iOS 17 minimum (owner's ruling); Liquid Glass is the material of the tab bar, toolbars and sheets on iOS 26 and later, and the system's own older material below, with no custom glass anywhere so both looks are Apple's; system navigation, sheets with detents, lists, haptics and type. The brand lives in an ink accent, six category colours on the plans, the orange tick, the plan icons and the voice. A person should feel they are on an iPhone, and know within a second which app it is.
+**Principle: warm, white, three-dimensional. Native iOS underneath.** The owner ruled the look and feel should follow Airbnb's 2025 direction. What that means here, in order of importance:
+
+1. **Plan icons are small three-dimensional objects**, rendered with light, depth and a soft shadow, the way Airbnb's category and service icons are. They do the job photographs do elsewhere: a plan card with a badminton racket you could pick up reads instantly and warmly. One icon per sub-interest, about fifty, plus six category icons. Flat outline icons remain only for navigation and marks, as in Airbnb.
+2. **White surfaces, soft shadows, generous rounding.** Cards sit on white with a shadow, not on grey with a border. Corners are 20 points on cards, 28 on sheets, pills for chips and the search bar. Dark mode keeps the same shapes with a thin border in place of the shadow.
+3. **A category row at the top of Plans**, the icons in a scrolling line with a label under each and a black underline on the selected one, exactly the Airbnb pattern. Under it the map or list.
+4. **A search pill** at the top: `Near Sector 5 · This week · Badminton, Games, Cycling`, one tap to change any part. It replaces the segmented neighbourhood control.
+5. **Ink buttons, orange tick.** Airbnb's interface is black text and black buttons on white with its brand colour used sparingly; ours is the same, with the orange tick as the brand moment. The Ink ruling stands.
+6. **Liquid Glass** for the tab bar and sheets on iOS 26 and later, the system material below (`17`).
+
+**The icon set, and how it gets made.** [Certain] Airbnb's icons are 3D renders made by illustrators. The placeholder set on the visual page (`visual/icons-3d/`) is built from the outline glyphs on shaded tiles so screens can be judged today; it is not the final art. The final set comes from one of two routes, the owner's choice:
+
+- **Commission a 3D illustrator.** Brief: about fifty-six objects on a shared 3D stage, three-quarter view, soft studio light from the top left, matte plastic with a subtle gloss, one dominant colour per category family with two or three accent colours per object, no text, no people, no faces, transparent background, delivered at 3x for 56 and 40 point display plus a 1024 app icon. Consistency matters more than detail: same camera, same light, same material across all fifty-six. Reference: Airbnb's 2025 category icons. Estimate: two to four weeks for a freelance illustrator.
+- **License a 3D icon pack** that covers sport, food, music, games and learning objects in one consistent style, and commission only the missing pieces. Faster and cheaper; the risk is a look shared with other apps.
+
+Either way the tiles are replaced one for one; the code refers to icons by name from `manifest.json`, so no screen changes when the art arrives.
+
+**Type.** SF Pro throughout at heavier weights for headings (Airbnb's Cereal is proprietary and SF Pro is what its iOS app reads as), Dynamic Type at every size. Facts (record, time, distance) in SF Mono at small sizes.
 
 ### Colour (ruled by the owner 2026-09-24: Ink)
 
@@ -128,7 +144,6 @@ Scale: system text styles only (Large Title, Title 2, Headline, Body, Subheadlin
 ### Icons
 
 - **UI icons:** SF Symbols, always with a label or an accessibility label. Never an icon alone as the only way to understand a control.
-- **Plan icons:** a drawn set of about thirty, one per sub-interest, two-tone, sized for a card, a map marker and a chat header. Consistent stroke, rounded, no faces, no people. Emoji are never used as icons.
 - **Marks:** the verified tick (accent), `For women` mark, `Regular host` mark. Three marks, no more.
 
 ### Imagery
@@ -139,14 +154,16 @@ Plan photos are optional and later (`13` 1.4). Until then the icon on the catego
 
 | Component | What it is | Rules |
 |---|---|---|
-| **Plan card** | Icon on category colour, the host's sentence in Headline, start time and rough distance in Footnote mono, host first name and record, why line | Two to three per screen. Whole card taps to the plan. No buttons on the card |
+| **Plan card** | White card with shadow, 20-point corners; the 3D plan icon at 56 points, the host's sentence in Headline, start time and rough distance in Footnote mono, host first name and record, why line | Two to three per screen. Whole card taps to the plan. No buttons on the card |
 | **Map marker** | Category-coloured disc with the plan icon; cluster shows a count | Never a face, initials or name |
 | **Plan sheet** | Half-screen sheet from a marker or card: full card, host row, host's note, reach line, `Ask to go` | Swipe down to dismiss; nothing lost |
 | **Post sheet** | Half-screen sheet: one text field, three chips, how many, two switches, `Send` | Rises from the `+` button; expands to full only if the keyboard needs it |
 | **Ask sheet** | Half-screen: starters, field, one disclosure line, `Send`, `Never mind` | `Send` enabled once a starter is tapped or text exists |
 | **Bar button** | Full-width, ink (paper in dark), one action | One per screen at most |
 | **Quiet action** | Text button, no fill | For the exit and the secondary action |
-| **Chips** | Sentence case, one row that scrolls | Selected chip is ink with paper text |
+| **Category row** | Scrolling row of 3D icons with labels, black underline on the selected one | The Airbnb pattern; sits under the search pill on Plans |
+| **Search pill** | `Near Sector 5 · This week · Badminton, Games, Cycling` in a shadowed pill | One tap to change any part |
+| **Chips** | Sentence case pills, one row that scrolls, white with a light shadow | Selected chip is ink with paper text |
 | **Why line** | Footnote, secondary colour, on every plan | Product law; never omitted |
 | **Record row** | Tick, first name, `31 plans · showed up 97%` | Facts in mono; never a star rating |
 | **Activity row** | What happened, who, when, one inline action | Accept and decline live on the row |

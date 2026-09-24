@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Trekking">
+<defs>
+<linearGradient id="btrekking" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#66CA9A"/><stop offset="1" stop-color="#218D59"/></linearGradient>
+<radialGradient id="htrekking" cx=".3" cy=".2" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<filter id="strekking" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g filter="url(#strekking)">
+<rect x="8" y="12" width="48" height="46" rx="16" fill="#1A7047"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#btrekking)"/>
+<rect x="8" y="8" width="48" height="46" rx="16" fill="url(#htrekking)"/>
+<rect x="11" y="10.5" width="42" height="18" rx="12" fill="#fff" opacity=".18"/>
+</g>
+<g transform="translate(16 15) scale(1)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".97"><path d="M3 26 11 10l5 8.5L19.5 13 29 26z"/><path d="M9.5 13 11 10M14 15.5l2 3"/><path d="M24 5v4M22 7h4"/><path d="M3 26h26"/></g>
+</svg>
