@@ -35,6 +35,7 @@ The earlier Nearcast documents are kept for history, and each carries a banner:
 | 14 | [Brand Design and Content Direction](./14%20-%20Brand%20Design%20and%20Content%20Direction.md) | Brand core, voice rules, vocabulary, copy deck, colour and type, icons, components, navigation, motion, six states, accessibility, store, guardrails, enforcement. Copy deck rewritten 2026-09-24 for a first-time user; screens drawn in `visual/truegoing-screens.html`. Accent ruled Ink 2026-09-24, orange kept for the verified tick |
 | 15 | [Screen Contracts](./15%20-%20Screen%20Contracts.md) | One contract per V1 screen: shows, does, rules, six states, final copy; acceptance criteria |
 | 16 | [Data Rules](./16%20-%20Data%20Rules.md) | Laws L1–L22 (carried and new), tables, transitions, reads, the permission matrix, 18 denied-path tests, retention, payload hygiene, port plan from the previous database |
+| 19 | [Naming](./19%20-%20Naming.md) | Naming study: brand idea, criteria, territories, six finalists with story, line, mark, domain path and risk; how to close |
 | 18 | [Airbnb UX Adoption](./18%20-%20Airbnb%20UX%20Adoption.md) | Every Airbnb pattern taken, what it becomes, where it lands; what was not taken and why; five tabs, plan page, collapsing search pill |
 | 17 | [iOS Build Plan](./17%20-%20iOS%20Build%20Plan.md) | Stack, eight milestones with contracts, laws and exit tests, dependency order, definition of done, risks, what the owner does next |
 
@@ -92,3 +93,4 @@ MigoMap screenshots are referenced as SS1–SS38, in the order they were uploade
 | 2026-09-24 | Owner ruled "as close to Airbnb as legally sensible": colour roles, register, filter sheet, illustrations; coral hue kept distinct from Rausch on purpose |
 | 2026-09-24 | Owner ruled icons must be real 3D renders (3dicons.co CC0 or commissioned); screens show neutral slots meanwhile. Airbnb UX taken wholesale where the rules allow (`18`): five tabs, plan page with sticky bar, collapsing search pill, marker carousel, Going tab |
 | 2026-09-24 | Owner ruled: four tabs (Plans · Going · Messages · You) with Post as a pill; why line only when the reason is not obvious; no monospace, SF Pro with system text styles. Screens lightened: three-line cards, view switch as a floating pill, filters icon inside the search pill, one-line sheets |
+| 2026-09-26 | Naming study added (`19`); no name chosen yet |
