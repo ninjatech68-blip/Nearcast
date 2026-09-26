@@ -1,126 +1,189 @@
 # 19 - Naming
 
-**Written 2026-09-26.** A naming study for the product currently called Truegoing, run the way a branding agency runs one: from the brand idea, through criteria and territories, to six finalists with a story, a line, a mark, a domain path and a risk note each. The owner's brief: a colour or an animal, unique, easy to remember, with recall, domain available. Availability here is DNS-checked only (no record on the ending shown); a registrar page and a trademark search are the only certainties.
+**Written 2026-09-26, revised the same day** as a full naming study, the way a top naming agency runs one for a consumer app: brief, insight, positioning, naming strategy, a screened longlist, a shortlist with stories and clearance notes, a recommendation, and a validation plan. The owner's original constraint (a colour or an animal) is kept as one territory of four; the study is not limited to it.
+
+Availability throughout is DNS-checked from this environment on 2026-09-26 (no record on the endings shown). [Likely] registrable; a registrar page is the only certainty, and a trademark search is separate and mandatory (§8).
 
 ---
 
-## 1. The brand idea the name has to carry
+## 1. The brief, and what we heard underneath it
 
-**Find a plan near you that fits you, from someone who shows up.**
+Asked for: a unique, memorable name with recall, a colour or an animal, domain available.
 
-Three things a name can stand for, and every finalist is judged on which one it owns:
+Heard: the owner has watched testers say a competitor "gets the job done" and wants a name that sounds like an app people actually use, not a description of a feature. The current name, Truegoing, is honest and forgettable: two common words, a compound wordmark, nothing to draw, nothing to say.
 
-- **Presence**: showing up, being there, being real.
-- **Nearness**: the neighbourhood, the local, the walkable.
-- **Signal**: the call that says "this is happening, come".
+The real requirement is not a colour or an animal. It is **a word people say to each other when a plan becomes real.**
 
-A colour tends to own presence (a colour is simply there). An animal tends to own signal or nearness (a bird calls; a fox is local). The strongest names own one clearly rather than hinting at all three.
+## 2. The insight
 
-## 2. Naming criteria, in order of weight
+Plans die in the group chat. Everyone has typed "we should do something this weekend" and watched it evaporate. The moment a plan survives is a single reply: *ho jaye* · *I'm in* · *chalo* · *done*. The product is the mechanism that turns "we should" into "we did". The name should be that reply, or feel like it.
 
-| # | Criterion | Why it matters here |
+This is why the best-known names in adjacent categories are not descriptions. Bumble is a sound, Tinder a spark, Strava a made-up word that sounds like effort, Zomato a mangled tomato, Swiggy a noise. None describes the product. Each is short, sayable, ownable, and drawable.
+
+## 3. Positioning the name has to serve
+
+**For** people who want to do something specific near home and would rather do it with someone than not at all,
+**Truegoing is** the plans app where the host says yes and people show up,
+**unlike** event listings and dating apps,
+**because** every plan reaches only verified people who share the interest, the exact place unlocks on acceptance, and the record shows who turned up.
+
+Name job, in one line: **be the word for "this is actually happening".**
+
+## 4. Naming strategy
+
+Four name types were generated against one set of criteria.
+
+| Type | What it is | Examples in market |
 |---|---|---|
-| 1 | **Say it once, spell it once** | The app spreads by a WhatsApp message: "get on X". A name that needs spelling out dies in the forward |
-| 2 | **Means something on day one in Panchkula** | India-first for a year; a name that lands in Hindi and English ears both |
-| 3 | **Empty in the category** | No plans, events, dating or social app already owns the sound |
-| 4 | **Wears the Airbnb-like visual system** | A noun that becomes a 3D object; a wordmark that sits on white with the coral accent |
-| 5 | **Grows past India** | Not so local it embarrasses a London launch |
-| 6 | **Verb-able** | "Let's koel it" is a stretch; "put it on Marigold" is not. A name that becomes a verb is free marketing |
-| 7 | **Clean `.com` or `.app`, and the Instagram handle** | Or a short prefix form that reads as the brand (`gokoel`) |
+| Hindi-rooted coined | A Hindi or Hinglish word or phrase, shaped into a brand | Zomato, Dunzo, Meesho, Swiggy, Zepto |
+| English evocative | A real English word or phrase that carries the idea | Hinge, Bumble, Meetup, Turnout |
+| Colour or animal | The owner's territory: a noun that becomes a mark | Airbnb's icon world, Duolingo's owl |
+| Pure coinage | An invented sound with the right feel | Strava, Hopin, Zepto |
 
-## 3. Territories
+**Criteria, weighted in this order**
 
-**A. Warm colour** (presence): the app is the colour of a good evening. Ochre, marigold, vermilion, amber, mango.
-**B. Indian bird** (signal): heard before seen, everyone knows the call. Koel, myna, hoopoe, bulbul.
-**C. Global small animal** (nearness): quick, clever, local, drawable. Fox, magpie, otter, gecko, plover.
-**D. Colour + animal** (a made-up creature that is ours alone): coral koel, amber gecko, ochre otter.
+1. **Say it once, spell it once.** Growth is a WhatsApp forward: "get on X". One spelling, no vowel ambiguity in Latin letters.
+2. **Means something on day one in Panchkula**, and is not embarrassing in London later.
+3. **Empty in the category**: no plans, events, social or dating app owns the sound; no famous brand in any category owns the word in India.
+4. **Two syllables, six letters or fewer** where possible; seven at most.
+5. **Drawable**: the name suggests a mark or an object for the Airbnb-like icon world.
+6. **Verb-able**: "let's X it" or "X kar" works in a sentence.
+7. **`.com` and `.app` both free**, `.in` where possible, and the Instagram handle.
 
-## 4. Finalists
+## 5. What was screened out, and why
 
-Scores are 1 to 5 against the criteria above. No single recommendation; the trade-offs are stated so the owner chooses.
+798 candidates were generated and screened against `.com` and `.app`. The whole categories below fell out; the study does not spend the owner's attention on them.
 
-### 4.1 Koel · territory B · owns *signal*
+- **Every single-word colour and animal** (myna, koel, marigold, saffron, wren, heron, otter, fox, lynx, ochre and forty more): `.com` and `.app` taken on all but two, and those two (`ochre.com`, `magpie.com`) show no DNS record, which for a dictionary word means parked for sale, not free.
+- **Every common Hindi word for the idea**: chalo (a transit app), adda (Adda247), mohalla (ShareChat's parent company), milo (Nestlé), yaar, aaja, mehfil, nukkad, chowk, baithak, sangat, saathi, jugaad, masti, mauka, fursat: all `.com` and `.app` taken, several with live brands and trademark exposure.
+- **Every descriptive English phrase**: dropby, popby, showup, turnup, turnout, letsgo, countmein, imin, bethere, upto, nearby, around: all taken.
+- **Well-known foreign "let's go" words**: vamos, andiamo, yalla: taken.
 
-- **Story.** The koel sings before summer arrives; you hear it long before you see it. A plan on Koel is the same: a call goes out, the people who hear it come. "Heard before seen" is also the privacy promise in four words: the plan is heard, the person is not seen until they say yes.
-- **Line.** *Heard before seen.* Secondary: *Plans that call you.*
-- **Mark.** A single koel silhouette with an open beak, drawn in the 3D icon style, coral on white. The app icon is the bird alone.
-- **Verbal system.** Plans are "calls". Ask to go stays. The digest is "This weekend's calls". Keep the disclosure lines.
-- **Domain path.** `koel.com` and `koel.app` taken; `koel.in` and `koel.co` free; `gokoel.com` / `gokoel.app` / `gokoel.in` free; `koelhq.com` free. Bundle `com.koel.app` or `com.gokoel.app`.
-- **Scores.** Say-spell 4 · Meaning in India 5 · Empty category 5 · Wears the system 5 · Grows 2 · Verb 2 · Domain 3.
-- **Risk.** [Guessing] "Koel" exists as small brands in India (a sari label, a music school); a trademark search in classes 9, 42 and 45 is required. Outside India it is a new word to teach.
+What survived is coined, and that is not a compromise. It is how every name in §2 was made.
 
-### 4.2 Marigold · territory A · owns *presence*
+## 6. The shortlist
 
-- **Story.** The marigold shows up at every Indian celebration, every doorway, every taxi dashboard. It is the flower of being there. A plan on Marigold is one people actually turn up to.
-- **Line.** *Shows up.* Secondary: *Plans people turn up to.*
-- **Mark.** A single 3D marigold head, orange-coral, top-down; the app icon is the flower. The category icons sit naturally beside it.
-- **Verbal system.** No vocabulary change; the name does the warmth so the copy can stay plain.
-- **Domain path.** `marigold.com` / `.app` / `.in` taken; `marigoldplans.com` / `.app` / `.in` / `.co` free; `marigo.app` / `.in` free (a shortening that reads as the brand). Bundle `com.marigoldplans.app` or `com.marigo.app`.
-- **Scores.** Say-spell 5 · Meaning in India 5 · Empty category 4 · Wears the system 5 · Grows 4 · Verb 3 · Domain 3.
-- **Risk.** [Certain] Marigold is a common word with many small brands (a hotel chain in India, food brands abroad); the trademark position depends on the class search. The bare `.com` is not obtainable.
+Ten names, four territories. Each carries a story, how it is said, what it means in Hindi and English ears, the domain position, a mark idea, and the clearance risk as we can see it without a search.
 
-### 4.3 Ochre · territory A · owns *presence*, quieter
+### 6.1 Hojaye · Hindi-rooted · the reply that makes a plan real
 
-- **Story.** Ochre is the oldest colour humans ever used: earth, walls, the ground you stand on. It says grounded, real, unpolished. A plan on Ochre is real people on real ground.
-- **Line.** *Real plans. Real people.* Secondary: *On the ground near you.*
-- **Mark.** An ochre disc with a coral edge; the wordmark in heavy SF-style type. Restrained, adult.
-- **Verbal system.** No change.
-- **Domain path.** `ochre.com` and `ochre.app` show no record today, which is rare for a colour word and worth checking within the hour; `ochre.in` and `.co` taken. Bundle `com.ochre.app`.
-- **Scores.** Say-spell 3 (the "ch" trips people) · Meaning in India 3 · Empty category 5 · Wears the system 4 · Grows 5 · Verb 2 · Domain 5 if the `.com` is truly free.
-- **Risk.** [Guessing] A one-word colour `.com` showing no DNS is usually parked or held for sale; expect a price rather than a registration. Spelling is the daily cost.
+- **Say:** ho-JAA-yay. **Means:** "let it happen" / "it's on". The word people already reply with when a plan is agreed: *"Badminton kal 7?" "Ho jaye."*
+- **Story:** The app is named after the moment it exists for. Every plan on Hojaye ends the way it started: someone said ho jaye.
+- **Line:** *Ho jaye.* (no translation needed in India) · abroad: *Make it happen.*
+- **Mark:** A speech bubble with a tick, or the two words as a lettermark; the 3D icons carry the rest.
+- **Verb:** already a verb. "Hojaye kar de" will happen on its own.
+- **Domains:** `hojaye.com` `.app` `.in` `.co` `.io` all free. `hojayeapp.*` free.
+- **Risk:** [Guessing] no known brand; a search is still required. Abroad it is a new sound, learnable like "Zomato" was. Spelling variants `hojaaye`, `hojaye`, `hojae`: register the two nearest.
 
-### 4.4 Myna · territory B · owns *nearness*
+### 6.2 Yahaan · Hindi-rooted · "here"
 
-- **Story.** The myna is the bird of every Indian balcony and bus stop, always in pairs, always talking. It is the most social bird in the country and nobody has branded it. A plan on Myna is two people who found each other a street away.
-- **Line.** *Your street is full of plans.* Secondary: *Always in pairs.*
-- **Mark.** A 3D myna with its yellow eye-patch; distinctive enough to work at 60 points.
-- **Verbal system.** No change.
-- **Domain path.** `myna.com` / `.app` / `.in` taken; `joinmyna` and `mynaplans` free on all four; `getmyna.app` free. Bundle `com.joinmyna.app`.
-- **Scores.** Say-spell 3 (read as "mine-ah" abroad) · Meaning in India 5 · Empty category 4 · Wears the system 5 · Grows 2 · Verb 2 · Domain 3.
-- **Risk.** [Guessing] "Myna" and "Mynah" are used by small Indian brands; search required. Pronunciation abroad is the ceiling.
+- **Say:** ya-HAAN. **Means:** "here". The answer to *kahan?* (where?), the question every plan starts with.
+- **Story:** Yahaan is the place you already are. The app shows what is happening here, near you, not somewhere else.
+- **Line:** *Plans, yahaan.* · abroad: *Right here.*
+- **Mark:** A location dot, drawn soft, in the coral. The place mark is already the app icon direction.
+- **Verb:** weak; it is an adverb. "Check Yahaan" works.
+- **Domains:** `yahaan.com` `.app` `.in` `.co` `.io` all free. Spelling risk: `yahan.com` and `yaha.com` are taken; `yahan.app` is free and should be taken too.
+- **Risk:** The double-a spelling is the cost: people will type "yahan". Own both spellings, and the wordmark teaches the long vowel.
 
-### 4.5 Magpie · territory C · owns *nearness*, global
+### 6.3 Hopo · pure coinage · "hop over"
 
-- **Story.** The magpie is the neighbourhood bird of half the world: clever, curious, collects the bright things. A plan on Magpie is the bright thing you collect from your own neighbourhood.
-- **Line.** *Collect your neighbourhood.* Secondary: *Bright plans nearby.*
-- **Mark.** A black-and-white 3D magpie with a coral eye; the one finalist whose natural colours are the brand's ink and white.
-- **Verbal system.** No change.
-- **Domain path.** `magpie.com` and `magpie.in` show no record; `magpie.app` taken; `magpieplans` free on all four. Bundle `com.magpie.app` if the `.com` is obtainable.
-- **Scores.** Say-spell 5 · Meaning in India 2 (the bird is not common in the plains) · Empty category 3 (several small apps have used the word) · Wears the system 5 · Grows 5 · Verb 3 · Domain 3.
-- **Risk.** [Certain] "Magpie" is used by existing products in adjacent categories (finance, shopping); a clearance search is essential and may fail.
+- **Say:** HOH-poh. **Means:** nothing, which is the point; it sounds like hopping over to something. Four letters, two syllables, the shape of Zepto and Dunzo.
+- **Story:** A plan on Hopo is a hop, not a trip: close, quick, easy to say yes to.
+- **Line:** *Hop over.* · *Plans a hop away.*
+- **Mark:** A small bouncing dot or a rabbit-like 3D object, playful, close to the icon world.
+- **Verb:** "Hopo it" is natural. "Hopo kar" works in Hinglish.
+- **Domains:** `hopo.com` and `hopo.app` show no record; `.in` `.co` `.io` taken. `gethopo.*` and `hopoapp.*` free. A four-letter `.com` with no record is likely parked; expect to buy it.
+- **Risk:** Global and India-neutral, so it means nothing at first sight anywhere; recall comes from the sound and the mark. [Guessing] "Hopo" may exist as small brands; search required.
 
-### 4.6 Amber Gecko · territory D · a creature that is ours
+### 6.4 Nuko · Hindi-rooted coinage · from *nukkad*, the street corner
 
-- **Story.** The house gecko is on every Indian wall at night, harmless, quick, everywhere you look once you notice. Amber is the colour of a lit window. An amber gecko is the small quick thing that gets you out of the house.
-- **Line.** *Quick plans, close by.* Secondary: *Out tonight.*
-- **Mark.** A 3D gecko in amber on white; the most fun icon of the six and the easiest to animate.
-- **Verbal system.** No change; the mascot does the personality.
-- **Domain path.** `ambergecko` free on `.com` / `.app` / `.in` / `.co`. Bundle `com.ambergecko.app`.
-- **Scores.** Say-spell 5 · Meaning in India 4 · Empty category 5 · Wears the system 5 · Grows 4 · Verb 2 · Domain 5.
-- **Risk.** Two words, eleven letters; reads younger and lighter than "people who show up". [Likely] the cleanest trademark position of the six because the pairing is invented.
+- **Say:** NOO-koh. **Means:** shaped from nukkad, the corner where the neighbourhood meets; the *nukkad natak* is the street play everyone knows.
+- **Story:** Every neighbourhood has a corner where things happen. Nuko is that corner, in your pocket.
+- **Line:** *Your corner of the city.* · *Nukkad, now.*
+- **Mark:** A street-corner sign or a corner shape in coral.
+- **Verb:** "Nuko pe daal de" (put it on Nuko) reads naturally.
+- **Domains:** `nuko.com` `nuko.app` free; `.in` `.co` taken; `nukko.app` free.
+- **Risk:** Four letters that could be anything abroad; the story has to travel with it. [Guessing] small conflicts possible.
 
-## 5. Side by side
+### 6.5 Chowkie · Hindi-rooted coinage · from *chowk*, the square
 
-| Finalist | Owns | Say once | India day 1 | Empty | System | Grows | Verb | Domain | Total /35 |
+- **Say:** CHOW-kee. **Means:** the square where roads meet, made friendly.
+- **Story:** The chowk is where a town gathers. Chowkie is the gathering, made small and personal.
+- **Line:** *Meet at the chowk.*
+- **Mark:** A crossroads mark, four coral dots meeting.
+- **Domains:** `chowkie.com` `.app` `.in` `.co` `.io` all free.
+- **Risk:** "Chowki" also means a police post; the "-ie" ending softens it but the echo is there. Seven letters.
+
+### 6.6 Kabmile · Hindi phrase · "when shall we meet?"
+
+- **Say:** kab-MI-lay. **Means:** *kab milein?*, the question itself.
+- **Story:** The app is the question everyone asks and nobody answers. Kabmile answers it.
+- **Line:** *Kab milein? Aaj.*
+- **Domains:** `kabmile.com` `.app` `.in` `.co` `.io` all free.
+- **Risk:** Seven letters and a phrase, so it reads as a campaign line more than a brand; abroad it is opaque.
+
+### 6.7 Aajki · Hindi-rooted · "today's"
+
+- **Say:** AAJ-kee. **Means:** "today's", as in *aaj ki plan*.
+- **Story:** Not someday. Today. The app for tonight and this weekend.
+- **Line:** *Aaj ki plan.*
+- **Mark:** A calendar tile with today circled, in coral.
+- **Domains:** `aajki.com` `.app` `.in` `.co` `.io` all free.
+- **Risk:** Feminine-gendered in Hindi grammar ("aaj ki" pairs with feminine nouns); harmless but a purist will notice. Meaningless abroad.
+
+### 6.8 Meetly · English coinage · descriptive
+
+- **Say:** MEET-lee. **Means:** meeting, softened.
+- **Story:** Says exactly what it is. The safest name here and the least distinctive.
+- **Domains:** `meetly.com` and `meetly.app` show no record; `.in` `.co` `.io` taken, which means the word is in use elsewhere.
+- **Risk:** [Likely] generic and crowded; "-ly" names read as 2014. Included so the owner can see the descriptive option next to the others.
+
+### 6.9 Amber Gecko · colour + animal · the owner's territory
+
+- Carried from the earlier study. Playful, drawable, clean on `.com` `.app` `.in` `.co`. Reads younger than "people who show up". Eleven letters, two words.
+
+### 6.10 Marigold · colour · the owner's territory
+
+- Carried. Warm, Indian, the flower that shows up at every celebration. Bare domains taken; `marigoldplans.*` and `marigo.app` free. Common word, so the trademark position is the weakest of the ten.
+
+## 7. Side by side
+
+| Name | Type | Say once | India day 1 | Empty | ≤6 letters | Drawable | Verb | `.com` + `.app` | Total /35 |
 |---|---|---|---|---|---|---|---|---|---|
-| Koel | signal | 4 | 5 | 5 | 5 | 2 | 2 | 3 | 26 |
-| Marigold | presence | 5 | 5 | 4 | 5 | 4 | 3 | 3 | 29 |
-| Ochre | presence | 3 | 3 | 5 | 4 | 5 | 2 | 5* | 27 |
-| Myna | nearness | 3 | 5 | 4 | 5 | 2 | 2 | 3 | 24 |
-| Magpie | nearness | 5 | 2 | 3 | 5 | 5 | 3 | 3 | 26 |
-| Amber Gecko | nearness | 5 | 4 | 5 | 5 | 4 | 2 | 5 | 30 |
+| Hojaye | Hindi | 4 | 5 | 5 | 4 | 3 | 5 | 5 | 31 |
+| Yahaan | Hindi | 3 | 5 | 5 | 4 | 4 | 2 | 5 | 28 |
+| Hopo | coined | 5 | 3 | 4 | 5 | 4 | 4 | 4 | 29 |
+| Nuko | Hindi coined | 5 | 4 | 4 | 5 | 4 | 3 | 5 | 30 |
+| Chowkie | Hindi coined | 4 | 4 | 5 | 3 | 4 | 2 | 5 | 27 |
+| Kabmile | Hindi phrase | 3 | 5 | 5 | 2 | 2 | 2 | 5 | 24 |
+| Aajki | Hindi | 4 | 5 | 5 | 5 | 3 | 2 | 5 | 29 |
+| Meetly | English | 5 | 3 | 2 | 5 | 2 | 3 | 4 | 24 |
+| Amber Gecko | colour + animal | 5 | 4 | 5 | 1 | 5 | 2 | 5 | 27 |
+| Marigold | colour | 5 | 5 | 3 | 3 | 5 | 3 | 2 | 26 |
 
-\* Ochre's domain score depends on whether the `.com` is registrable or merely parked.
+## 8. The team's recommendation
 
-The totals are a guide, not a verdict; the criteria are weighted by the order in §2, and the owner may weigh them differently.
+Three names go to validation. Presented in the order the team would fight for them.
 
-## 6. How an agency would close this
+1. **Hojaye.** It is the product's own moment as a word, it is already a verb, it is clean on every ending, and it has no known conflict. The cost is that it means nothing outside India for a year, and that is the year the app is only in India. Zomato paid the same price and nobody remembers.
+2. **Nuko.** Four letters, a real Indian root, clean `.com` and `.app`, a mark that draws itself. The cost is a story that has to be told once ("from nukkad").
+3. **Hopo.** The global-first option: sayable anywhere, four letters, playful, with a `.com` that will likely cost money. The cost is that it means nothing anywhere until the brand teaches it.
 
-1. **Clearance first, taste second.** Run the six through a trademark search in India (classes 9, 42, 45) and a global knock-out search before anyone falls for a name. Budget: a trademark attorney's half-day. Expect one or two to fall out.
-2. **Five-second test.** Show ten people who have never seen the app the name on the list screen with the line, and ask "what does this app do?" The name that gets "plans with people nearby" most often wins the recall criterion for real.
-3. **Say-it test.** Read each name aloud to five people over a phone call and ask them to type it. Count the misspellings.
-4. **Register on the day of the decision:** `.com` where obtainable, `.app`, `.in`, and the Instagram handle. Then rename the bundle identifier, the repository references and the documents in one commit, before M1 starts on the Mac.
+If the owner wants to stay in the original brief, **Amber Gecko** is the strongest colour-animal name and the cleanest to clear.
 
-## 7. What Truegoing already has, for a fair comparison
+## 9. Validation, in the order it should run
 
-Truegoing scores: say-spell 4, India 4, empty 5, system 3 (a compound word makes a weak mark), grows 5, verb 1, domain 4 (`truegoing.app` and `.com` status unverified from here). Total 26. It is not a bad name; it is a descriptive one, which is safer and less memorable than a noun.
+1. **Trademark knock-out search**, India classes 9 (software), 42 (online services), 45 (social introduction), plus a global search in the same classes, for the three finalists. One attorney, one day. Expect at least one surprise.
+2. **Linguistic check** for the three across Hindi, Punjabi, Marathi, Tamil, Bengali and English: any rude or unfortunate reading kills the name.
+3. **Say-and-spell test**: read each name over a phone call to ten people; they type it back. Under 20 percent misspelling passes.
+4. **Five-second test**: show the name with its line on the list screen to ten strangers; ask what the app does. The name that gets "plans with people nearby" most often has recall.
+5. **Register on the day of the decision**: `.com`, `.app`, `.in`, and the two nearest misspellings; the Instagram handle; the App Store name. Then rename the bundle identifier, the repository references and every document in one commit, before M1 starts on the Mac.
+
+## 10. Name architecture, whichever wins
+
+- **App Store name:** the name alone, followed by the descriptor: *Hojaye: plans near you.*
+- **Line under the name everywhere:** *Plans near you, with people who show up.* The promise does not change with the name.
+- **Handles:** the name alone where free, else `get` + name.
+- **Bundle identifier:** `com.<name>.app`, development `com.<name>.app.dev`.
+- **Wordmark:** SF Pro heavy weight in ink, with the coral used for one letter or the mark only, in line with `14 §4`.
+- **The four rules, the copy deck and the visual system are unaffected** by the name; only the wordmark, the app icon and the tagline's first word change.
