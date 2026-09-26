@@ -187,3 +187,32 @@ If the owner wants to stay in the original brief, **Amber Gecko** is the stronge
 - **Bundle identifier:** `com.<name>.app`, development `com.<name>.app.dev`.
 - **Wordmark:** SF Pro heavy weight in ink, with the coral used for one letter or the mark only, in line with `14 §4`.
 - **The four rules, the copy deck and the visual system are unaffected** by the name; only the wordmark, the app icon and the tagline's first word change.
+
+---
+
+## 11. Addendum, 2026-09-26: abstract names, after the registrar disagreed
+
+The owner checked Hojaye and Nuko at a registrar: both taken. [Certain] The DNS method used above has false positives: a registered domain with no records looks free. Every "free" in this document is therefore a candidate to check, not a fact.
+
+The owner now wants an **abstract** name: no meaning, brand built by the product, the Strava and Zepto shape.
+
+**What the screen showed.** 181 hand-crafted four- and five-letter coinages: 4 with no DNS on both `.com` and `.app`. 104 six-letter coinages: 4 more. [Certain] the pleasant short `.com` space is exhausted; a clean four-letter `.com` is bought, not registered.
+
+**Candidates with no DNS on `.com` and `.app` (registrar check required on each):**
+
+| Name | Say | Feel | `.in` |
+|---|---|---|---|
+| Zavi | ZAH-vee | quick, bright, two syllables, ends open | no record |
+| Yavo | YAH-voh | warm, easy in Hindi and English mouths | has a record |
+| Suvo | SOO-voh | soft, calm | has a record |
+| Tevla | TEV-lah | crisp, a little technical | no record |
+| Tovino | toh-VEE-noh | rounded, friendly, Italianate | no record |
+| Tavvi | TAH-vee | playful; the double v reads as a mark | no record |
+| Zavvo | ZAH-voh | bold; double v again | no record |
+| Tovlio | TOV-lee-oh | distinctive, harder to spell | no record |
+
+**How an agency treats an abstract name.** It has no story on day one, so the product gives it one: the line under the name does the work (*Plans near you, with people who show up*), the mark is a single 3D object, and the name is used as a verb from the first screen (*Put it on Zavi*). Abstract names clear trademarks most easily because nothing in the register sounds like them; they cost more in first-year marketing because nothing in a person's head helps.
+
+**Domain strategy the owner should accept.** Modern mobile brands launch on `.app` (Google's own ending, HTTPS-only, trusted by Apple's universal links) and buy the `.com` when they can afford it. If the owner insists on a clean `.com` at registration price, the name will be seven letters or a two-part form (`getzavi`, `joinzavi`), and those are respectable: Meesho, Dunzo and Zepto all launched with modifiers or bought their `.com` later.
+
+**Next step.** Owner checks the eight at a registrar for `.com`, `.app` and `.in` in one sitting, marks which survive, and picks up to three for the trademark search in §9.
